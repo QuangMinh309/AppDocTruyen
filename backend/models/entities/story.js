@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     storyName: DataTypes.STRING,
     userId: DataTypes.INTEGER,
     tittle: DataTypes.STRING,
-    description: DataTypes.STRING,
+    description: DataTypes.STRING(1500),
     ageRange: DataTypes.INTEGER,
     viewNum: DataTypes.INTEGER,
     voteNum: DataTypes.INTEGER,

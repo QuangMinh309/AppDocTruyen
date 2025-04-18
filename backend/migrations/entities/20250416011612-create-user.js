@@ -3,26 +3,30 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
-      id: {
+      userId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      userId: {
         type: Sequelize.INTEGER
       },
       userName: {
         type: Sequelize.STRING
       },
       roleId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'roles',
+          key: 'roleId'
+        }
       },
       dUserName: {
         type: Sequelize.STRING
       },
       mail: {
         type: Sequelize.STRING
+      },
+      about:{
+        type:Sequelize.STRING(1500)
       },
       DOB: {
         type: Sequelize.DATE
@@ -38,14 +42,6 @@ module.exports = {
       },
       isPremium: {
         type: Sequelize.BOOLEAN
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
       }
     });
   },

@@ -3,28 +3,24 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('story_categories', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      Id: {
-        type: Sequelize.INTEGER
-      },
       storyId: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'stories',
+          key: 'storyId'
+        }
+
       },
       categoryId: {
-        type: Sequelize.INTEGER
-      },
-      createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+        references  : {
+          model: 'categories',
+          key: 'categoryId'
+        }
       }
     });
   },

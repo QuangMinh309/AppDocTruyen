@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     listName: DataTypes.STRING,
     storyId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
-    description: DataTypes.STRING
+    description: DataTypes.STRING(1500)
   }, {
     sequelize,
     modelName: 'favor_list',

@@ -3,26 +3,27 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('stories', {
-      id: {
+      storyId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      storyId: {
         type: Sequelize.INTEGER
       },
       storyName: {
         type: Sequelize.STRING
       },
       userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+      references: {
+          model: 'users',
+          key: 'userId'
+        }
       },
       tittle: {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(1500)
       },
       ageRange: {
         type: Sequelize.INTEGER
@@ -33,11 +34,8 @@ module.exports = {
       voteNum: {
         type: Sequelize.INTEGER
       },
-      createdAt: {
-        type: Sequelize.DATE
-      },
-      updateAt: {
-        type: Sequelize.DATE
+      chapterNum: {
+        type: Sequelize.INTEGER
       },
       status: {
         type: Sequelize.STRING
