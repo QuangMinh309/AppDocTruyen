@@ -1,4 +1,4 @@
-package com.example.frontend.data
+package com.example.frontend.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

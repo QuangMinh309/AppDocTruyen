@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+
 }
 
 android {
@@ -65,12 +67,18 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    kapt ("com.google.dagger:hilt-compiler:2.44")
 
 
     implementation (libs.androidx.core.ktx)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.runtime)
     implementation(libs.ui)
+
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.hilt.android)
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.androidx.paging.runtime)
 
 
 }

@@ -1,5 +1,5 @@
 package com.example.frontend.domain
-import com.example.frontend.data.ImageRepository
+import com.example.frontend.data.repository.ImageRepository
 
 class ImageUrlProvider {
     private val repository = ImageRepository()
