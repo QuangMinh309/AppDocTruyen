@@ -1,4 +1,8 @@
-module.exports = {
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve('../.env') });
+
+const config = {
   development: {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
@@ -14,3 +18,4 @@ module.exports = {
     },
   },
 };
+export default config; 

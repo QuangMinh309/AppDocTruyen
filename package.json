@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cloudinary": "^2.6.0",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2"
   }

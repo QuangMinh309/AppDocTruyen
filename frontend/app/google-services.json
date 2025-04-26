@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "404838944885",
+    "project_id": "se114-novel-app",
+    "storage_bucket": "se114-novel-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404838944885:android:71878ce108f5a45405683c",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDau5mFonSU_qry93b2s7oHI8a7GYcrLJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
