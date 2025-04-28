@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
-import path from 'path';
-dotenv.config({ path: path.resolve('../.env') });
+dotenv.config();
 
 const config = {
   development: {
@@ -18,4 +17,5 @@ const config = {
     },
   },
 };
-export default config; 
+
+export default config;
