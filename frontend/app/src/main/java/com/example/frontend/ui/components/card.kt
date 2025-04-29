@@ -3,13 +3,17 @@ package com.example.frontend.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -94,5 +98,75 @@ fun CommunityCard(item:String){
                 .padding( vertical = 4.dp,horizontal = 10.dp)
         )
 
+    }
+}
+
+
+@Composable
+fun MemberCard(item:String){
+    Row(
+        modifier = Modifier
+            .padding(vertical = 15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Image(
+            painter = painterResource(id = R.drawable.intro_page1_bg),
+            contentDescription = "community avatar",
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop // fill mode
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 15.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ){
+            Text(
+                text = "Peneloped Lynne",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Text(
+                text = "@$item",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp
+                )
+            )
+        }
+        Button(
+            onClick = { /*TODO*/ },
+            colors =  ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+            ),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .wrapContentWidth(Alignment.End)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(100.dp)
+                    .background(color = OrangeRed, shape = RoundedCornerShape(30.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Join chat",
+                    color = Color.Black,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+        }
     }
 }

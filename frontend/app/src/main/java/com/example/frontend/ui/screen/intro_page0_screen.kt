@@ -42,12 +42,12 @@ import com.example.frontend.ui.theme.SalmonRose
 @Preview
 @Composable
 fun ImageUploadScreen(){
-     var imgprovider = ImageUrlProvider()
+    val imgprovider = ImageUrlProvider()
     val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page1_bg)
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     var imageUrl by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) {
-        imageUrl = imgprovider.fetchImage("intro_page3_bg_xmbse7");
+        imageUrl = imgprovider.fetchImage("intro_page3_bg_xmbse7")
     }
 
     val images = listOf(
@@ -75,7 +75,7 @@ fun ImageUploadScreen(){
                 Text(
                     text = "WELCOME TO\n           OURS WORLD >>",
                     style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
                         fontSize = 32.sp,
                         lineHeight = 50.sp,
                         fontWeight = FontWeight.SemiBold,
