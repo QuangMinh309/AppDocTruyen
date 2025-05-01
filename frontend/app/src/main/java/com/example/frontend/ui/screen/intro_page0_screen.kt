@@ -75,7 +75,7 @@ fun ImageUploadScreen(){
                 Text(
                     text = "WELCOME TO\n           OURS WORLD >>",
                     style = TextStyle(
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
                         fontSize = 32.sp,
                         lineHeight = 50.sp,
                         fontWeight = FontWeight.SemiBold,
