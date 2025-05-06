@@ -1,23 +1,20 @@
 package com.example.frontend.ui.screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -45,7 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
-import com.example.frontend.ui.theme.BurntCoral
+import com.example.frontend.ui.components.LinearButton
+import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
@@ -56,48 +55,16 @@ fun CommunityDetailScreen(){
 
     val memberList = listOf("member1","member2","member3")
     val scrollState = rememberScrollState()
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DeepSpace)
-            .padding(
-                WindowInsets.statusBars
-                    .asPaddingValues()
+    ScreenFrame(
+        topBar = {
+            TopBar(
+                showBackButton = true,
+                iconType = "Setting",
+                onBackClick = { /*TODO*/ },
+                onIconClick = { /*TODO*/ }
             )
-            .padding(16.dp)
-    ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ){
-            Button(
-                onClick = { /*TODO*/ },
-                colors =  ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent,
-                ),
-                contentPadding = PaddingValues(0.dp),
-                modifier = Modifier
-                    .height(25.dp)
-            ) {
-                Text(
-                    text = "< Back",
-                    color = Color.White,
-                    style =TextStyle(
-                        fontSize = 16.sp,
-                    )
-                )
-            }
-
-            Icon(
-                painter = painterResource(id = R.drawable.setting_icon),
-                contentDescription = "Custom Icon",
-                tint = Color.White,
-
-            )
-
         }
+    ){
         //Community info
         Row(
             modifier = Modifier
@@ -136,37 +103,21 @@ fun CommunityDetailScreen(){
                         fontSize = 16.sp,
                     )
                 )
-                Button(
-                    onClick = { /*TODO*/ },
-                    colors =  ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                    ),
-                    contentPadding = PaddingValues(0.dp),
+                LinearButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(OrangeRed, BurntCoral),
-                                ),
-                                shape = RoundedCornerShape(30.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Join chat",
-                            color = Color.Black,
-                            style = TextStyle(
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    }
+                         .fillMaxWidth()
+                         .height(30.dp),
+                    onClick = { /*TODO*/ }
 
+                ){
+                    Text(
+                        text = "Join chat",
+                        color = Color.Black,
+                        style =  TextStyle(
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
                 }
             }
 

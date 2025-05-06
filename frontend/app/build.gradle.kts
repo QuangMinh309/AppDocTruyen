@@ -79,6 +79,8 @@ dependencies {
     implementation (libs.hilt.android)
     implementation (libs.androidx.navigation.compose)
     implementation (libs.androidx.paging.runtime)
+    implementation (libs.androidx.material.icons.extended)
+
 
 
 }

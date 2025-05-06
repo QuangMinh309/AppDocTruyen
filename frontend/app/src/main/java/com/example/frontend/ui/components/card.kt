@@ -16,8 +16,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.LocalAtm
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -158,7 +164,7 @@ fun MemberCard(item:String){
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Join chat",
+                    text = "Follow",
                     color = Color.Black,
                     style = TextStyle(
                         fontSize = 12.sp,
@@ -167,6 +173,64 @@ fun MemberCard(item:String){
                 )
             }
 
+        }
+    }
+}
+
+@Composable
+fun NotificationCard(cardType :String ,
+                    transactionContent:String = "",
+                    transactionType: String = "",
+                    time: String = ""
+                    ){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 15.dp)
+    ){
+        if(cardType == "transactionNotification")
+            Icon(
+                imageVector = when (transactionType) {
+                    "Withdraw" -> Icons.Filled.LocalAtm
+                    "Recharge" -> Icons.Filled.AccountBalance
+                    "Transfer" -> Icons.Filled.Payments
+                    else -> Icons.Filled.QuestionMark
+                },
+                contentDescription = "transaction icon" ,
+                tint = Color.White,
+                modifier = Modifier.size(40.dp).padding(horizontal = 5.dp)
+            )
+        else{
+            Image(
+                painter = painterResource(id = R.drawable.intro_page1_bg),
+                contentDescription =null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop // fill mode
+            )
+        }
+        Column(
+            modifier = Modifier
+                .padding(start = 15.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ){
+
+            Text(
+                text = transactionContent,
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp
+                )
+            )
+            Text(
+                text = time,
+                color = Color.LightGray,
+                style = TextStyle(
+                    fontSize = 12.sp
+                )
+            )
         }
     }
 }

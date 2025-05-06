@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 val SteelBlue = Color(0xFF396AAD)
 val DarkDenim = Color(0xFF294C74)
 val OrangeRed = Color(0xFFF76800)
-val BurntCoral = Color(0xFFDF5B42)
+val BurntCoral = Color(0xFFDF4258)
 val SalmonRose = Color(0xFFDE866E)
 val Green = Color(0xFF59FF8B)
 val BrightAquamarine = Color(0xFF01F999)
