@@ -2,34 +2,34 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chapter', {
-      chapterId: {
+    await queryInterface.createTable('notifications', {
+      id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      chapterName: {
+      notificationId: {
+        type: Sequelize.INTEGER
+      },
+      type: {
         type: Sequelize.STRING
       },
-      OrdinalNumber: {
-        type: Sequelize.INTEGER
-      },
-      storyId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'story',
-          key: 'storyId'
-        }
-      },
       content: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.STRING
       },
-      viewNum: {
+      refId: {
         type: Sequelize.INTEGER
       },
-      lockedStatus: {
-        type: Sequelize.BOOLEAN
+      status: {
+        type: Sequelize.STRING
+      },
+      createAt: {
+        type: Sequelize.DATE
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
@@ -38,6 +38,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chapter');
+    await queryInterface.dropTable('notifications');
   }
 };

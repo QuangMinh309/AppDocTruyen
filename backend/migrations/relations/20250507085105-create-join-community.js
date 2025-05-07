@@ -2,33 +2,28 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('history', {
-      historyId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
+    await queryInterface.createTable('join_community', {
       userId: {
+        allowNull: false,
+        primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
           model: 'user',
           key: 'userId'
         }
       },
-      chapterId: {
+      communityId: {
+        allowNull: false,
+        primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'chapter',
-          key: 'chapterId'
+          model: 'user',
+          key: 'userId'
         }
-      },
-      lastReadAt: {
-        type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('history');
+    await queryInterface.dropTable('join_community');
   }
 };
