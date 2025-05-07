@@ -2,14 +2,14 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('authorizations', {
+    await queryInterface.createTable('authorization', {
       roleId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: 
         {
-          model: 'roles',
+          model: 'role',
           key: 'roleId'
         }
       },
@@ -19,13 +19,13 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: 
         {
-          model: 'functionalities',
+          model: 'functionality',
           key: 'funcId'
         }
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('authorizations');
+    await queryInterface.dropTable('authorization');
   }
 };
