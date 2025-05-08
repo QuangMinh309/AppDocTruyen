@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 import com.example.frontend.ui.theme.OrangeRed
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.vectorResource
 import com.example.frontend.ui.theme.BurntCoral
 
 @Composable
-fun NovelInfo() {
+fun StoryInfo() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,7 +99,7 @@ fun NovelInfo() {
         }
     }
 
-    Spacer(modifier = Modifier.height(7.dp))
+    Spacer(modifier = Modifier.height(5.dp))
 
     Row(
         modifier = Modifier
@@ -107,23 +109,23 @@ fun NovelInfo() {
     ) {
         // Icon 1: Sum of vote
         Row(
-            modifier = Modifier.weight(1.3f),
+            modifier = Modifier.weight(1.5f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 "200K",
                 color = Color.White,
-                fontSize = 19.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght)))
             Icon(
-                painterResource(R.drawable.icon_vote),
+                imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
                 contentDescription = "Vote Icon",
                 tint = OrangeRed,
                 modifier = Modifier.then(
                     Modifier
-                        .padding(start = 1.3.dp)
-                        .size(with(LocalDensity.current) { 19.sp.toDp() })
+                        .padding(start = 1.2.dp)
+                        .size(with(LocalDensity.current) { 17.sp.toDp() })
                 )
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -131,23 +133,23 @@ fun NovelInfo() {
 
         // Icon 2: Sum of view
         Row(
-            modifier = Modifier.weight(1.3f),
+            modifier = Modifier.weight(1.5f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 "3.000",
                 color = Color.White,
-                fontSize = 19.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght)))
             Icon(
-                painterResource(R.drawable.icon_view),
+                imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
                 contentDescription = "View Icon",
-                tint = OrangeRed,
+                tint = Color.Unspecified,
                 modifier = Modifier.then(
                     Modifier
-                        .padding(start = 1.3.dp)
-                        .size(with(LocalDensity.current) { 19.sp.toDp() })
+                        .padding(start = 1.2.dp)
+                        .size(with(LocalDensity.current) { 17.sp.toDp() })
                 )
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -155,23 +157,23 @@ fun NovelInfo() {
 
         // Icon 3: Chapter number
         Row(
-            modifier = Modifier.weight(1.3f),
+            modifier = Modifier.weight(1.5f),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 "25",
                 color = Color.White,
-                fontSize = 19.sp,
+                fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght)))
             Icon(
-                painterResource(R.drawable.icon_list_chapter),
+                imageVector = ImageVector.vectorResource(id = R.drawable.list_chapter_icon),
                 contentDescription = "Number Chapter Icon",
-                tint = OrangeRed,
+                tint = Color.Unspecified,
                 modifier = Modifier.then(
                     Modifier
-                        .padding(start = 1.3.dp)
-                        .size(with(LocalDensity.current) { 19.sp.toDp() })
+                        .padding(start = 1.2.dp)
+                        .size(with(LocalDensity.current) { 17.sp.toDp() })
                 )
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -188,21 +190,20 @@ fun NovelInfo() {
                 .padding(start = 7.dp)
                 .background(
                     brush = Brush.horizontalGradient(
-                        colors = listOf(OrangeRed, BurntCoral),
-                        endX = 250f
+                        colors = listOf(OrangeRed, Color(0xFFDF4258)),
+                        endX = 200f
                     ),
                     shape = RoundedCornerShape(30.dp)
                 )
-                .padding(horizontal = 29.dp)
+                .padding(horizontal = 25.dp)
         ) {
             Text(
-                text = "Start read",
+                text = "Start  read",
                 color = Color.Black,
-                fontSize = 20.sp,
+                fontSize = 19.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
         }
-
     }
 }

@@ -10,24 +10,58 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import com.example.frontend.ui.theme.OrangeRed
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
-fun GenreTags() {
+fun GenreTags(
+    genres: List<String>,
+    fontSize: Float = 13.5f,
+    horizontalPadding: Int = 1,
+    verticalPadding: Int = 1,
+    mainAxisSpacing: Int = 1,
+    crossAxisSpacing: Int = 1,
+    cornerRadius: Int = 30
+) {
     FlowRow(
-        mainAxisSpacing = 8.dp,
-        crossAxisSpacing = 8.dp
+        mainAxisSpacing = mainAxisSpacing.dp,
+        crossAxisSpacing = crossAxisSpacing.dp
     ) {
-        listOf(
-            "Adventure", "Mystery", "Autobiography", "Fantasy", "Drama",
-        ).forEach { tag ->
+        genres.forEach { tag ->
             Box(
                 modifier = Modifier
-                    .background(Color(0xFFFF9800), RoundedCornerShape(16.dp))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                    .background(OrangeRed, RoundedCornerShape(cornerRadius.dp))
+                    .padding(horizontal = horizontalPadding.dp, vertical = verticalPadding.dp)
             ) {
-                Text(tag, color = Color.Black, fontSize = 12.sp)
+                Text(
+                    tag,
+                    color = Color.Black,
+                    fontSize = fontSize.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
+}
+
+@Composable
+fun SmallGenreTags(genres: List<String>) {
+    GenreTags(
+        genres,
+        fontSize = 11f,
+        horizontalPadding = 10,
+        verticalPadding = 5,
+        mainAxisSpacing = 9,
+        crossAxisSpacing = 7)
+}
+
+@Composable
+fun LargeGenreTags(genres: List<String>) {
+    GenreTags(genres,
+        fontSize = 14f,
+        horizontalPadding = 17,
+        verticalPadding = 11,
+        mainAxisSpacing = 11,
+        crossAxisSpacing = 19)
 }

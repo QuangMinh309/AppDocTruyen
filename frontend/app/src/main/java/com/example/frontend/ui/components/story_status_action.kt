@@ -1,9 +1,6 @@
 package com.example.frontend.ui.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,84 +8,151 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.ui.theme.Green
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
 fun StoryStatusAction(
     isAuthor: Boolean,
-    hasVoted: Boolean = false,
-    storyStatus: String, // "Full" or "Updating"
+    storyStatus: MutableState<String>, // "Full" or "Updating"
+    hasVoted: MutableState<String>,    // "Vote" or "Voted"
     onActionClick: () -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(13.dp),
+        modifier = Modifier.padding(horizontal = 9.dp)
     ) {
-        // Status of story
-        Box(
+        // Button: story status
+        Button(
+            onClick = {
+                if (isAuthor) {
+                    storyStatus.value = when (storyStatus.value) {
+                        "Full" -> "Updating"
+                        "Updating" -> "Full"
+                        else -> storyStatus.value
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (storyStatus.value == "Full") Green else OrangeRed
+            ),
+            shape = RoundedCornerShape(30.dp),
             modifier = Modifier
-                .height(30.dp)
-                .background(
-                    color = if (storyStatus == "Full") Color(0xFF2ECC71) else Color(0xFFFFC107),
-                    shape = RoundedCornerShape(20.dp)
-                )
-                .padding(horizontal = 14.dp),
-            contentAlignment = Alignment.Center
+                .height(35.dp)
+                .widthIn(min = 115.dp)
         ) {
             Text(
-                text = storyStatus,
-                color = Color.White,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold
+                text = storyStatus.value,
+                color = Color.Black,
+                fontSize = 15.sp
             )
         }
 
-        // Button action (vote or add chapter)
-        val text = if (isAuthor) "Add chapter" else if (hasVoted) "Voted" else "Vote"
-        val textColor = if (isAuthor) Color.Black else if (hasVoted) Color.LightGray else Color(0xFFFF5376)
-//        val icon = if (isAuthor) R.drawable.ic_add_chapter else R.drawable.icon_vote
-        val border = if (!isAuthor) BorderStroke(1.dp, textColor) else null
-        val bgColor = if (isAuthor) OrangeRed else Color.Transparent
+        if (isAuthor) {
+            Button(
+                onClick = onActionClick,
+                colors = ButtonDefaults.buttonColors(Color.White),
+                shape = RoundedCornerShape(30.dp),
+                modifier = Modifier
+                    .height(35.dp)
+                    .widthIn(min = 115.dp)
+            ) {
+                Text(
+                    text = "Add chapter",
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                )
+            }
+        } else {
+            val gradientButton = Brush.verticalGradient(
+                colors = listOf(Color(0xFFDF4258), Color(0xFF792430))
+            )
+            val gradientText = Brush.verticalGradient(
+                colors = listOf(Color(0xFF792430), Color(0xFFDF4258))
+            )
 
-        OutlinedButton(
-            onClick = onActionClick,
-            modifier = Modifier.height(30.dp),
-//            colors = ButtonDefaults.run {
-//                outlinedButtonColors(
-//                        backgroundColor = bgColor,
-//                        contentColor = textColor
-//                    )
-//            },
-            border = border,
-            shape = RoundedCornerShape(20.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.icon_list_chapter),
-                contentDescription = null,
-                modifier = Modifier.size(14.dp),
-                tint = textColor
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                text = text,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = textColor
-            )
+            val isVoted = hasVoted.value == "Voted"
+            val background = if (isVoted) Color(0xFFBA3749) else Color.Transparent
+
+            Button(
+                onClick = {
+                    hasVoted.value = if (isVoted) "Vote" else "Voted"
+                    onActionClick()
+                },
+                modifier = Modifier
+                    .height(35.dp)
+                    .widthIn(min = 115.dp)
+                    .then(
+                        if (!isVoted) Modifier.drawBehind {
+                            val strokeWidth = 3.5.dp.toPx()
+                            val halfStroke = strokeWidth / 2
+
+                            drawRoundRect(
+                                brush = gradientButton,
+                                topLeft = Offset(halfStroke, halfStroke),
+                                size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                                cornerRadius = CornerRadius(30.dp.toPx(), 30.dp.toPx()),
+                                style = Stroke(width = strokeWidth)
+                            )
+                        } else Modifier
+                    )
+                    .clip(RoundedCornerShape(30.dp)),
+                shape = RoundedCornerShape(30.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = background,
+                    contentColor = if (isVoted) Color.Black else Color.Unspecified
+                ),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(35.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                        contentDescription = "Vote",
+                        modifier = Modifier.size(16.dp),
+                        tint = if (isVoted) Color.Black else Color(0xFFBA3749)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = hasVoted.value,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = if (!isVoted) {
+                            TextStyle(brush = gradientText)
+                        } else {
+                            TextStyle(color = Color.Black)
+                        }
+                    )
+                }
+            }
         }
     }
 }

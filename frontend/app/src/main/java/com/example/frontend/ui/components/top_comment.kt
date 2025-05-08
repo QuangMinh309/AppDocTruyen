@@ -1,46 +1,150 @@
 package com.example.frontend.ui.components
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.frontend.R
 
 @Composable
-fun TopComment(
-    username: String,
-    comment: String,
-    chapter: String,
-    date: String,
-    likes: String
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF2C2C2C))
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "@$username", color = Color.White, fontSize = 14.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = comment, color = Color.White, fontSize = 13.sp)
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+fun TopComments(comments: List<List<Any>>) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(17.dp)) {
+        items(comments) { comment ->
+            val username = comment[0] as String
+            val commentText = comment[1] as? String
+            val commentImageRes = comment[2] as? Int
+            val chapter = comment[3] as String
+            val date = comment[4] as String
+            val time = comment[5] as String
+            val likes = comment[6] as String
+            val unlikes = comment[7] as String
+
+            Card(
+                modifier = Modifier
+                    .width(300.dp)
+                    .padding(vertical = 4.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0x48828282))
             ) {
-                Text("$chapter\n$date", color = Color.Gray, fontSize = 12.sp)
-                Text("👍 $likes", color = Color.Gray, fontSize = 12.sp)
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.avt_img),
+                            contentDescription = "avatar",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .heightIn(50.dp)
+                                .widthIn(50.dp)
+                                .border(width = 3.dp, color = Color(0xFF4E7AFF), shape = CircleShape)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(13.dp))
+                        Text(text = "@$username", color = Color.White, fontSize = 16.sp)
+                    }
+
+                    Spacer(modifier = Modifier.height(17.dp))
+
+                    if (!commentText.isNullOrEmpty() || commentImageRes != null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            commentText?.let {
+                                Text(
+                                    text = it,
+                                    color = Color.White,
+                                    fontSize = 13.5.sp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            commentImageRes?.let {
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Image(
+                                    painter = painterResource(id = it),
+                                    contentDescription = "comment image",
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .clip(RoundedCornerShape(8.dp)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(25.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(text = chapter, color = Color.White, fontSize = 14.5.sp)
+                            Spacer(modifier = Modifier.height(7.dp))
+                            Row {
+                                Text(text = date, color = Color(0xFFFF5722), fontSize = 14.5.sp)
+                                Text(
+                                    text = time,
+                                    color = Color.White,
+                                    fontSize = 14.5.sp,
+                                    modifier = Modifier.padding(start = 11.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        // Icon like and unlike
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.like_icon),
+                                contentDescription = "Likes Icon",
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp)
+                            )
+                            Text(text = likes, color = Color.White, fontSize = 15.sp)
+
+                            Spacer(modifier = Modifier.width(9.dp))
+
+                            Icon(
+                                imageVector = ImageVector.vectorResource(id = R.drawable.unlike_icon),
+                                contentDescription = "Unlikes Icon",
+                                tint = Color.White,
+                                modifier = Modifier.size(25.dp)
+                            )
+                            Text(text = unlikes, color = Color.White, fontSize = 15.sp)
+                        }
+                    }
+                }
             }
         }
     }
