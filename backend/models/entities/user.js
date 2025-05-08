@@ -23,7 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     DOB: DataTypes.DATE,
     followerNum: DataTypes.INTEGER,
     password: DataTypes.STRING,
-    avatarURL: DataTypes.STRING,
+    avatarId: DataTypes.STRING,
+    backgroundId: DataTypes.STRING,
+    wallet: DataTypes.DECIMAL(15, 2),
     isPremium: DataTypes.BOOLEAN
   }, {
     sequelize,

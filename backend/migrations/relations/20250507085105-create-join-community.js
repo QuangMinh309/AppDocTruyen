@@ -17,8 +17,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'user',
-          key: 'userId'
+          model: 'community',
+          key: 'communityId'
         }
       }
     });
