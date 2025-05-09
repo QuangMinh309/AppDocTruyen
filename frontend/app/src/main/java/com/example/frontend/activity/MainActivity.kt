@@ -7,18 +7,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.frontend.ui.screen.ImageUploadScreen
 import com.example.frontend.ui.theme.FrontendTheme
+import com.example.frontend.AppNavigation
 
-
-class MainActivity : ComponentActivity() {
+class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             FrontendTheme {
-                ImageUploadScreen()
+//                ImageUploadScreen()
+             AppNavigation()
             }
         }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

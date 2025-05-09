@@ -2,7 +2,6 @@ package com.example.frontend.activity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.R
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,9 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.frontend.R
 import com.example.frontend.domain.StoryItemModel
-
-
 
 @Composable
 fun StoryCard2(
@@ -37,7 +35,7 @@ fun StoryCard2(
     onStoryClick: (StoryItemModel) -> Unit = {}
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .width(200.dp)
             .background(Color(0xFF2F1B24), RoundedCornerShape(8.dp))
             .padding(8.dp),
@@ -81,16 +79,12 @@ fun StoryCard2(
             color = Color(0xFFFF5722), // Màu cam
             fontSize = 12.sp,
             modifier = Modifier
-                .fillMaxWidth()
-            //   .padding(top = 4.dp)
-            ,
+                .fillMaxWidth(),
             textAlign = TextAlign.Start
         )
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-            //    .padding(top = 4.dp)
-            ,
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -113,7 +107,7 @@ fun StoryCard2(
                 tint = Color(0xFFFF5722) // Màu cam
             )
             Text(
-                text = "${story.chaptersnumbers} ",
+                text = "${story.chaptersnumbers}",
                 color = Color(0xFFFF5722), // Màu cam
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 4.dp)
@@ -127,8 +121,8 @@ fun StoryCard2(
 fun StoryCardtestPreview() {
     Column {
         StoryCard2(
-            StoryItemModel(
-                id="1",
+            story = StoryItemModel(
+                id = "1",
                 title = "Alibaba",
                 coverImage = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
                 shortDescription = "",
@@ -136,16 +130,15 @@ fun StoryCardtestPreview() {
                 author = "Hhahaa",
                 likes = 100,
                 chaptersnumbers = 10,
-                genres = listOf("Adventure","Mystery","Autobiography"),
+                genres = listOf("Adventure", "Mystery", "Autobiography"),
                 lastUpdated = "22/12/2024",
                 views = 120
-
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
         StoryCard2(
-            StoryItemModel(
-                id="1",
+            story = StoryItemModel(
+                id = "1",
                 title = "Alibaba",
                 coverImage = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
                 shortDescription = "",
@@ -153,12 +146,10 @@ fun StoryCardtestPreview() {
                 author = "Hhahaa",
                 likes = 100,
                 chaptersnumbers = 10,
-                genres = listOf("Adventure","Mystery","Autobiography"),
+                genres = listOf("Adventure", "Mystery", "Autobiography"),
                 lastUpdated = "22/12/2024",
                 views = 120
-
             )
         )
     }
 }
-
