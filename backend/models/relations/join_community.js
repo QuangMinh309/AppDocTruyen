@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class join - community extends Model {
+  class join_community extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,12 +13,12 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  join - community.init({
+  join_community.init({
     userId: DataTypes.INTEGER,
     communityId: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'join-community',
+    modelName: 'join_community',
   });
-  return join - community;
+  return join_community;
 };
