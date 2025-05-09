@@ -34,6 +34,7 @@ import com.example.frontend.ui.theme.OrangeRed
 @Preview
 @Composable
 fun ChattingScreen(){
+
     val messages = listOf( "sdagthoruaes99ig","Hello?","R.drawable.intro_page1_bg","A")
 
     ScreenFrame(

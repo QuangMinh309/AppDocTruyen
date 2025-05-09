@@ -4,7 +4,7 @@ export const getImageUrl = async (req, res) => {
   try {
     const imageId = req.params.imageId;
     const imageUrl = getImageUrlFromCloudinary(imageId);
-    res.json({ success: true, url: imageUrl });
+    res.json({ url: imageUrl });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error retrieving image from Cloudinary');
@@ -21,7 +21,6 @@ export const uploadImage = async (req, res) => {
     const imgInfo= await uploadImageToCloudinary(req.file, folder);
 
     res.json({
-      success: true,
       url: imgInfo.url,
       id: imgInfo.public_id
     });
