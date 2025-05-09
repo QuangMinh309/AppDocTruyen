@@ -49,11 +49,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
-import com.example.frontend.ui.theme.BlueGray
+//import com.example.frontend.ui.theme.BlueGray
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
 fun CommunityCard(item:String){
+
     Column (
 
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,7 +62,7 @@ fun CommunityCard(item:String){
         modifier = Modifier
             .fillMaxHeight()
             .width(110.dp)
-            .background(BlueGray, RoundedCornerShape(10.dp))
+            .background(Color.Black, RoundedCornerShape(10.dp))
             .padding(vertical = 12.dp)
     ){
         Image(
