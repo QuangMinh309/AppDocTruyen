@@ -94,5 +94,5 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
 
-
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
 }
