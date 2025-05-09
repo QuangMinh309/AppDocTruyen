@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   Premium.init({
     premiumId: DataTypes.INTEGER,
     userId: DataTypes.INTEGER,
-    CreatedAt: DataTypes.DATE
+    createdAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Premium',
