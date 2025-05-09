@@ -2,9 +2,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('password_resets', {
-      resetId: {
-         allowNull: false,
+    await queryInterface.createTable('password_reset', {
+      OTP: {
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
@@ -12,12 +12,9 @@ module.exports = {
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
+          model: 'user',
           key: 'userId'
         }
-      },
-      OTP: {
-        type: Sequelize.STRING
       },
       isUsed: {
         type: Sequelize.BOOLEAN
@@ -29,6 +26,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('password_resets');
+    await queryInterface.dropTable('password_reset');
   }
 };

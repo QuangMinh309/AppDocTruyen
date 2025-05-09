@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     communityId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
     content: DataTypes.TEXT,
-    commentPicURL: DataTypes.STRING,
+    commentPicId: DataTypes.STRING,
     time: DataTypes.DATE
   }, {
     sequelize,

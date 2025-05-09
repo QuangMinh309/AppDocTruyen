@@ -12,10 +12,11 @@ const config = {
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
       ssl: {
-        require: true,
+        require: true,  
         rejectUnauthorized: false,
       },
     },
   },
 };
-export default config; 
+
+export default config;

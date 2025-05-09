@@ -2,13 +2,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('votes', {
+    await queryInterface.createTable('vote', {
       userId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
+          model: 'user',
           key: 'userId'
         }
       },
@@ -17,13 +17,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'stories',
+          model: 'story',
           key: 'storyId'
         }
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('votes');
+    await queryInterface.dropTable('vote');
   }
 };

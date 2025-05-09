@@ -8,15 +8,18 @@ import { getImageUrl, uploadImage } from '../controllers/imageController.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cấu hình multer để lưu tạm thời file upload
+// Khai báo multer để upload file
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads/')); // Đảm bảo đường dẫn đúng
+    const uploadPath = path.join(__dirname, '../uploads/');
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    const uniqueName = file.fieldname + '-' + Date.now() + path.extname(file.originalname);
+    cb(null, uniqueName);
   },
 });
+
 
 const upload = multer({ storage });
 

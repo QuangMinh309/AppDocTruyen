@@ -5,7 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.frontend.ui.screen.CommunityScreen
+import com.example.frontend.ui.screen.IntroScreen
+
 import com.example.frontend.ui.theme.FrontendTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,7 +16,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FrontendTheme {
-                CommunityScreen()
+                IntroScreen()
+
             }
         }
     }
@@ -25,6 +27,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     FrontendTheme {
-                                             CommunityScreen()
+        IntroScreen()
     }
 }

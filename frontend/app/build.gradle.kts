@@ -39,6 +39,9 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 }
 
 dependencies {
@@ -75,6 +78,11 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.ui)
 
+
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
     implementation (libs.androidx.hilt.navigation.compose)
     implementation (libs.hilt.android)
     implementation (libs.androidx.navigation.compose)
@@ -86,5 +94,5 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
 
-
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
 }

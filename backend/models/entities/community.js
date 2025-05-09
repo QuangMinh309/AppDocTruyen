@@ -17,9 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     communityId: DataTypes.INTEGER,
     communitytName: DataTypes.STRING,
     categoryId: DataTypes.INTEGER,
+    avatarId: DataTypes.STRING,
     menberNum: DataTypes.INTEGER,
-    description: DataTypes.STRING(1500),
-    createdAt: DataTypes.DATE
+    description: DataTypes.STRING(1500)
   }, {
     sequelize,
     modelName: 'community',

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chats', {
+    await queryInterface.createTable('chat', {
       chatId: {
         allowNull: false,
         autoIncrement: true,
@@ -12,21 +12,21 @@ module.exports = {
       communityId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'communities',
+          model: 'community',
           key: 'communityId'
         }
       },
       senderId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
+          model: 'user',
           key: 'userId'
         }
       },
       content: {
         type: Sequelize.TEXT
       },
-      commentPicURL: {
+      commentPicId: {
         type: Sequelize.STRING
       },
       time: {
@@ -35,6 +35,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chats');
+    await queryInterface.dropTable('chat');
   }
 };

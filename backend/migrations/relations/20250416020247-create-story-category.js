@@ -2,13 +2,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('story_categories', {
+    await queryInterface.createTable('story_category', {
       storyId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'stories',
+          model: 'story',
           key: 'storyId'
         }
 
@@ -18,13 +18,13 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
         references  : {
-          model: 'categories',
+          model: 'category',
           key: 'categoryId'
         }
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('story_categories');
+    await queryInterface.dropTable('story_category');
   }
 };
