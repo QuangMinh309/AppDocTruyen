@@ -20,6 +20,9 @@ module.exports = {
           key: 'categoryId'
         }
       },
+      avatarId: {
+        type: Sequelize.STRING
+      },
       menberNum: {
         type: Sequelize.INTEGER
       },

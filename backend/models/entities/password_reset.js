@@ -14,9 +14,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   password_reset.init({
-    resetId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
     OTP: DataTypes.STRING,
+    userId: DataTypes.INTEGER,
     createdAt: DataTypes.DATE,
     isUsed: DataTypes.BOOLEAN
   }, {

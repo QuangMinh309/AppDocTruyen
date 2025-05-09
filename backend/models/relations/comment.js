@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
     userId: DataTypes.INTEGER,
     chapterId: DataTypes.INTEGER,
     content: DataTypes.TEXT,
-    updateAt: DataTypes.DATE
+    commentPicId: DataTypes.STRING,
+    createAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'comment',

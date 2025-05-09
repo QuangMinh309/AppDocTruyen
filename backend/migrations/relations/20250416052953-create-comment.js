@@ -23,10 +23,13 @@ module.exports = {
           key: 'chapterId'
         }
       },
+      commentPicId: {
+        type: Sequelize.STRING,
+      },
       content: {
         type: Sequelize.TEXT
       },
-      updateAt: {
+      createAt: {
         type: Sequelize.DATE
       }
     });

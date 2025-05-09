@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     status: DataTypes.STRING,
     price: DataTypes.FLOAT,
     pricePerChapter: DataTypes.FLOAT,
-    coverImgURL: DataTypes.STRING
+    coverImgId: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'story',
