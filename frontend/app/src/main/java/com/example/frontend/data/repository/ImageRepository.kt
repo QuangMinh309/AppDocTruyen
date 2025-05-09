@@ -1,60 +1,45 @@
 package com.example.frontend.data.repository
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.*
+import com.example.frontend.data.model.Result
+import com.example.frontend.data.util.ApiService
+import dagger.hilt.android.scopes.ViewModelScoped
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import org.json.JSONObject
 import java.io.File
+import javax.inject.Inject
 
-class ImageRepository {
+@ViewModelScoped
+class ImageRepository @Inject constructor(
+    private val apiService: ApiService
+) {
+    suspend fun uploadImageToServer(file: File): Result<String> {
+        return try {
+            val mediaType = "image/*".toMediaTypeOrNull()
+            val requestBody = file.asRequestBody(mediaType)
+            val imagePart = MultipartBody.Part.createFormData("image", file.name, requestBody)
 
-    // Upload hình lên server
-    suspend fun uploadImageToServer(file: File): String? {
-        val client = OkHttpClient()
-
-        val mediaType = "image/*".toMediaTypeOrNull()
-        val requestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("image", file.name, file.asRequestBody(mediaType))
-            .build()
-
-        val request = Request.Builder()
-            .url("https://10.0.2.2:3000/api/images/upload")
-            .post(requestBody)
-            .build()
-
-        return withContext(Dispatchers.IO) {
-            val response = client.newCall(request).execute()
+            val response = apiService.uploadImage(imagePart)
             if (response.isSuccessful) {
-                val body = response.body?.string()
-                val json = JSONObject(body ?: "")
-                json.getString("url") // Backend trả về "url", không phải "imageUrl"
+                Result.Success(response.body()?.url ?: "")
             } else {
-                null
+                Result.Failure(Exception("Upload failed with code: ${response.code()}"))
             }
+        } catch (e: Exception) {
+            Result.Failure(e)
         }
     }
 
-    // Lấy URL hình từ server dựa trên imageId
-    suspend fun getImageUrl(imageId: String): String? {
-        val client = OkHttpClient()
-
-        val request = Request.Builder()
-            .url("http://10.0.2.2:3000/api/images/$imageId")
-            .get()
-            .build()
-
-        return withContext(Dispatchers.IO) {
-            val response = client.newCall(request).execute()
+    suspend fun getImageUrl(imageId: String): Result<String> {
+        return try {
+            val response = apiService.getImageUrl(imageId)
             if (response.isSuccessful) {
-                val body = response.body?.string()
-                val json = JSONObject(body ?: "")
-                json.getString("url") // Backend trả về "url"
+                Result.Success(response.body()?.url ?: "")
             } else {
-                null
+                Result.Failure(Exception("Get URL failed with code: ${response.code()}"))
             }
+        } catch (e: Exception) {
+            Result.Failure(e)
         }
     }
 }

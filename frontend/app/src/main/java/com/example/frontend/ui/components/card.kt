@@ -3,17 +3,27 @@ package com.example.frontend.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.LocalAtm
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -94,5 +104,133 @@ fun CommunityCard(item:String){
                 .padding( vertical = 4.dp,horizontal = 10.dp)
         )
 
+    }
+}
+
+
+@Composable
+fun MemberCard(item:String){
+    Row(
+        modifier = Modifier
+            .padding(vertical = 15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        Image(
+            painter = painterResource(id = R.drawable.intro_page1_bg),
+            contentDescription = "community avatar",
+            modifier = Modifier
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop // fill mode
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 15.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ){
+            Text(
+                text = "Peneloped Lynne",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+            Text(
+                text = "@$item",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp
+                )
+            )
+        }
+        Button(
+            onClick = { /*TODO*/ },
+            colors =  ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+            ),
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .wrapContentWidth(Alignment.End)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(100.dp)
+                    .background(color = OrangeRed, shape = RoundedCornerShape(30.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Follow",
+                    color = Color.Black,
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun NotificationCard(cardType :String ,
+                    transactionContent:String = "",
+                    transactionType: String = "",
+                    time: String = ""
+                    ){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 15.dp)
+    ){
+        if(cardType == "transactionNotification")
+            Icon(
+                imageVector = when (transactionType) {
+                    "Withdraw" -> Icons.Filled.LocalAtm
+                    "Recharge" -> Icons.Filled.AccountBalance
+                    "Transfer" -> Icons.Filled.Payments
+                    else -> Icons.Filled.QuestionMark
+                },
+                contentDescription = "transaction icon" ,
+                tint = Color.White,
+                modifier = Modifier.size(40.dp).padding(horizontal = 5.dp)
+            )
+        else{
+            Image(
+                painter = painterResource(id = R.drawable.intro_page1_bg),
+                contentDescription =null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop // fill mode
+            )
+        }
+        Column(
+            modifier = Modifier
+                .padding(start = 15.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(5.dp)
+        ){
+
+            Text(
+                text = transactionContent,
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 14.sp
+                )
+            )
+            Text(
+                text = time,
+                color = Color.LightGray,
+                style = TextStyle(
+                    fontSize = 12.sp
+                )
+            )
+        }
     }
 }

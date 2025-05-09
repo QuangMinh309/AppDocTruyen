@@ -1,4 +1,4 @@
-package com.example.frontend
+package com.example.frontend.data.util
 
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -22,12 +22,10 @@ interface ApiService {
 }
 
 data class UploadResponse(
-    val success: Boolean,
     val url: String, // URL ảnh từ Cloudinary
     val id: String   // ID ảnh (tên file trên Cloudinary)
 )
 
 data class ImageUrlResponse(
-    val success: Boolean,
     val url: String
 )
