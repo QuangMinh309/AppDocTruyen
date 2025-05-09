@@ -22,8 +22,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideBaseUrl(@ApplicationContext context: Context): String {
-        return  "https://10.0.2.2:3000/"
-       // return if (isEmulator()) "https://10.0.2.2:3000/" else "https://your-real-server.com/"
+        return  "http://10.0.2.2:3000/"
+       // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
     }
 
     private fun isEmulator(): Boolean {

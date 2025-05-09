@@ -4,9 +4,9 @@ package com.example.frontend.ui.screen
 import android.content.Intent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,9 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 import com.example.frontend.activity.LoginActivity
-import com.example.frontend.data.model.onFailure
-import com.example.frontend.data.model.onSuccess
-import com.example.frontend.data.util.ImageUrlProvider
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepBlue
@@ -68,16 +61,12 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SalmonRose
 import com.example.frontend.ui.theme.SteelBlue
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.components.SingletonComponent
 
-@EntryPoint
-@InstallIn(SingletonComponent::class)
-interface ImageProviderEntryPoint {
-    fun imageUrlProvider(): ImageUrlProvider
-}
+//@EntryPoint
+//@InstallIn(SingletonComponent::class)
+//interface ImageProviderEntryPoint {
+//    fun imageUrlProvider(): ImageUrlProvider
+//}
 @Preview
 @Composable
 fun IntroScreen() {
@@ -90,17 +79,31 @@ fun IntroScreen() {
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
-
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .background(color = DeepSpace)
     ) {
         HorizontalPager(
             state = pagerState,
-            beyondViewportPageCount = 1,
+            beyondViewportPageCount =1,
 
         ) { page -> pages[page]() }
 
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxWidth()
+                .height(370.dp)
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            DeepBlue
+                        )
+                    )
+                )
+        )
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier
@@ -131,6 +134,7 @@ fun IntroScreen() {
                 )
             }
         }
+
     }
 }
 
@@ -138,34 +142,31 @@ fun IntroScreen() {
 @Composable
 fun Page1()
 {
-    val context = LocalContext.current.applicationContext
-    val entryPoint = remember {
-        EntryPointAccessors.fromApplication(
-            context,
-            ImageProviderEntryPoint::class.java
-        )
-    }
-    val imageProvider = remember { entryPoint.imageUrlProvider() }
-
-    var imageUrl by remember { mutableStateOf<String?>(null) }
-    var errorMessage by remember { mutableStateOf<String?>(null) } // 👉 thêm dòng này
-
-
-    LaunchedEffect("intro_page3_bg_xmbse7") {
-        val result = imageProvider.fetchImage("intro_page3_bg_xmbse7")
-        result
-            .onSuccess { url -> imageUrl = url }
-            .onFailure { ex -> errorMessage = ex.message }
-    }
+//    val context = LocalContext.current.applicationContext
+//    val entryPoint = remember {
+//        EntryPointAccessors.fromApplication(
+//            context,
+//            ImageProviderEntryPoint::class.java
+//        )
+//    }
+//    val imageProvider = remember { entryPoint.imageUrlProvider() }
+//
+//    var imageUrl by remember { mutableStateOf<String?>(null) }
+//    var errorMessage by remember { mutableStateOf<String?>(null) }
+//
+//
+//    LaunchedEffect("intro_page3_bg_xmbse7") {
+//        val result = imageProvider.fetchImage("intro_page3_bg_xmbse7")
+//        result
+//            .onSuccess { url -> imageUrl = url }
+//            .onFailure { ex -> errorMessage = ex.message }
+//    }
     val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page1_bg)
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(DeepSpace)
-            .padding(top = 10.dp),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.Start
     ) {
         Box(
             modifier = Modifier
@@ -206,28 +207,16 @@ fun Page1()
         ) {
 
             Image(
-                painter = painterResource(id = R.drawable.intro_page1_bg),//rememberAsyncImagePainter( imageUrl ),
-                contentDescription = "Ảnh minh họa",
+                //model = painterResource(R.drawable.intro_page1_bg),
+                contentDescription = "Loaded image",
+               painter = painterResource(R.drawable.intro_page1_bg),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .fillMaxWidth()
                     .aspectRatio(ratio),
                 contentScale = ContentScale.FillWidth
             )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .fillMaxWidth()
-                    .height(450.dp)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                DeepBlue
-                            )
-                        )
-                    )
-            )
+
         }
     }
 }
@@ -240,16 +229,14 @@ fun Page2()
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(DeepSpace),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Bottom,
-        horizontalAlignment = Alignment.Start
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.End)
-                .padding(start = 80.dp)
+                .padding(start = 60.dp, end = 20.dp)
         ) {
             Text(
                 text = "A repo with\n thousands of novels.",
@@ -291,20 +278,6 @@ fun Page2()
                     .aspectRatio(ratio),
                 contentScale = ContentScale.FillWidth
             )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .fillMaxWidth()
-                    .height(450.dp)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                DeepBlue
-                            )
-                        )
-                    )
-            )
         }
     }
 }
@@ -317,10 +290,8 @@ fun Page3()
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(DeepSpace),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start
     ) {
         Box(
             modifier = Modifier
@@ -355,7 +326,7 @@ fun Page3()
                             color = OrangeRed
                         )
                     ) {
-                        append("Start creating \n       your \n                 own  ")
+                        append("Start creating \n     your \n           own  ")
                     }
                     withStyle(
                         style = SpanStyle(
@@ -389,17 +360,8 @@ fun Page4()
     val context = LocalContext.current
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        DeepSpace,
-                        DeepBlue
-                    ),
-                )
-            ),
+            .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start
     ) {
         Box(
             modifier = Modifier
@@ -433,37 +395,44 @@ fun Page4()
         }
 
         Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .background(Color.Transparent)
+                .border(2.dp, Brush.linearGradient(
+                    colors = listOf(
+                        BrightAquamarine, SteelBlue
+                    ),
+                ),RoundedCornerShape(50))
+            ,
+            contentAlignment = Alignment.Center
+        ){
 
-        Button(
-            onClick = {
-                val intent =Intent(context, LoginActivity::class.java)
-                context.startActivity(intent)
-            },
-            modifier = Modifier.size(width = 146.dp, height = 38.dp)
-                .align(Alignment.CenterHorizontally),
-            shape = RoundedCornerShape(50),
-            border = BorderStroke(2.dp, Brush.linearGradient(
-                colors = listOf(
-                    BrightAquamarine, SteelBlue
-                ),
-                start = Offset(0f, 0f),
-                end = Offset.Infinite
-            )),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = OrangeRed
-            )
-        ) {
-            Text(
-                text = "LOGIN",
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_bold)),
-                    textAlign = TextAlign.Center,
-                    color = Color.Black
-                ),
+            Button(
+                onClick = {
+                    val intent =Intent(context, LoginActivity::class.java)
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
-                    .size(width = 140.dp, height = 34.dp)
-            )
+                    .size(width = 140.dp, height =45.dp)
+                    .padding(5.dp),
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OrangeRed
+                )
+            ) {
+                Text(
+                    text = "LOGIN",
+                    style = TextStyle(
+                        fontSize = 20.sp,
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_bold)),
+                        textAlign = TextAlign.Center,
+                        color = Color.Black
+                    ),
+                    modifier = Modifier
+                        .size(width = 140.dp, height = 34.dp)
+                )
+            }
         }
     }
 }

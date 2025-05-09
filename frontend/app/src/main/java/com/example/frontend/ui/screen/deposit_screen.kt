@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
@@ -53,7 +55,9 @@ fun DepositScreen(){
 
         Column (
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ){
 
             //deposit info
@@ -102,7 +106,7 @@ fun DepositScreen(){
 
                 //Suggested amount
                 Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxWidth(0.8f)
                         .align(Alignment.End)
                 ){
@@ -110,9 +114,9 @@ fun DepositScreen(){
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .height(35.dp)
+                            .weight(0.3f)
                             .background(Color.Transparent,RoundedCornerShape(5.dp))
                             .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .padding(horizontal = 10.dp)
                             .clickable { /*TODO*/ }
                     ) {
                         Text(
@@ -127,9 +131,9 @@ fun DepositScreen(){
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .height(35.dp)
+                            .weight(0.3f)
                             .background(Color.Transparent,RoundedCornerShape(5.dp))
                             .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .padding(horizontal = 10.dp)
                             .clickable { /*TODO*/ }
                     ) {
                         Text(
@@ -144,9 +148,9 @@ fun DepositScreen(){
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .height(35.dp)
+                            .weight(0.3f)
                             .background(Color.Transparent,RoundedCornerShape(5.dp))
                             .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .padding(horizontal = 10.dp)
                             .clickable { /*TODO*/ }
                     ) {
                         Text(

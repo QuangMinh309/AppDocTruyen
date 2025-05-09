@@ -2,12 +2,16 @@ package com.example.frontend.ui.screen
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -39,88 +43,94 @@ fun CommunityScreen(){
             )
         }
     ){
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Hot Community",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            ),
+        Column(
             modifier = Modifier
-                .padding(vertical = 18.dp)
-        )
-
-        LazyRow(
-            contentPadding = PaddingValues(vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-            items(categoryList) { item ->
-                Button(
-                    onClick = { /*TODO*/ },
-                    colors =  ButtonDefaults.buttonColors(
-                        containerColor = OrangeRed),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .height(30.dp)
-                ) {
-                    Text(
-                        text =item,
-                        color = Color.Black,
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Hot Community",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier
+                    .padding(vertical = 18.dp)
+            )
+
+            LazyRow(
+                contentPadding = PaddingValues(vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categoryList) { item ->
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = OrangeRed
                         ),
+                        contentPadding = PaddingValues(0.dp),
                         modifier = Modifier
-                             .padding( vertical = 4.dp,horizontal = 10.dp)
-                    )
+                            .height(30.dp)
+                    ) {
+                        Text(
+                            text = item,
+                            color = Color.Black,
+                            style = TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier
+                                .padding(vertical = 4.dp, horizontal = 10.dp)
+                        )
+                    }
+
+
                 }
-
-
             }
-        }
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            modifier = Modifier
-                .height(height = 168.dp)
-        ) {
-            items(categoryList) { item ->
-                CommunityCard(
-                    item = item
-                )
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                modifier = Modifier
+                    .height(height = 168.dp)
+            ) {
+                items(categoryList) { item ->
+                    CommunityCard(
+                        item = item
+                    )
 
+                }
             }
-        }
 
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Recommended",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .padding(vertical = 18.dp)
-        )
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                text = "Recommended",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier
+                    .padding(vertical = 18.dp)
+            )
 
 
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(15.dp),
-            modifier = Modifier
-                .height(height = 168.dp)
-        ) {
-            items(categoryList) { item ->
-                CommunityCard(
-                    item = item
-                )
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                modifier = Modifier
+                    .height(height = 168.dp)
+            ) {
+                items(categoryList) { item ->
+                    CommunityCard(
+                        item = item
+                    )
 
+                }
             }
+
         }
-
-
     }
 
 

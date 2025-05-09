@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -31,15 +33,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,11 +62,11 @@ fun NewPasswordScreen()
     var passwordVisible by remember { mutableStateOf(false) }
     var passwordVisible2 by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
@@ -73,7 +77,7 @@ fun NewPasswordScreen()
             )
             .paint(
                 painterResource(R.drawable.login_bg),
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.FillWidth,
                 alignment = Alignment.BottomCenter
             )
     )
@@ -92,14 +96,26 @@ fun NewPasswordScreen()
                 style = TextStyle(
                     textAlign = TextAlign.Start,
                     fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
-                    fontSize = 32.sp,
-                    lineHeight = 40.sp,
+                    fontSize = 28.sp,
                     color = Color.White,
                 ),
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .padding(bottom = 40.dp)
                     .align(Alignment.Start)
+            )
+            Text(
+                buildAnnotatedString {
+                    withStyle (
+                        style = SpanStyle(
+                            fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                            fontSize = 17.sp,
+                            color = Color.White
+                        )
+                    ) {
+                        append("Password must be at least 8 characters and include letters, numbers, and symbols.")
+                    }
+                },
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
             )
             Column ( // password textfield
                 modifier = Modifier
@@ -252,7 +268,7 @@ fun NewPasswordScreen()
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .height(50.dp)
-                    .width(240.dp),
+                    .fillMaxWidth(0.7f),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeRed
@@ -264,7 +280,8 @@ fun NewPasswordScreen()
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
-                        color = Color.Black
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
                     ),
                     textAlign = TextAlign.Center
                 )

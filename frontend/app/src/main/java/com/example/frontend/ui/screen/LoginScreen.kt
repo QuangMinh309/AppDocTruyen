@@ -100,7 +100,7 @@ fun LoginScreen()
             )
             .paint(
                 painterResource(R.drawable.login_bg),
-                contentScale = ContentScale.FillBounds,
+                contentScale = ContentScale.FillWidth   ,
                 alignment = Alignment.BottomCenter
             )
     )
@@ -344,7 +344,7 @@ fun LoginScreen()
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .height(50.dp)
-                    .width(240.dp),
+                    .fillMaxWidth(0.7f),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeRed
@@ -356,7 +356,7 @@ fun LoginScreen()
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
-                        color = Color.Black
+                        color = Color.Black, fontWeight = FontWeight.Bold
                     ),
                     textAlign = TextAlign.Center
                 )
