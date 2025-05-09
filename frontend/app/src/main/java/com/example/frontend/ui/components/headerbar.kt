@@ -27,7 +27,7 @@ fun HeaderBar() {
         Text("< Back", color = Color.White, fontSize = 23.sp, fontFamily = FontFamily(Font(R.font.reemkufifun_wght)))
         Row {
             Icon(
-                painterResource(R.drawable.setting_icon),
+                painterResource(R.drawable.setting_config),
                 contentDescription = "Setting Icon",
                 tint = Color.White
             )

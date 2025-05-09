@@ -7,8 +7,18 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -16,7 +26,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,31 +53,34 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 import com.example.frontend.activity.LoginActivity
-import com.example.frontend.domain.ImageUrlProvider
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
+import com.example.frontend.data.util.ImageUrlProvider
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepBlue
-
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SalmonRose
 import com.example.frontend.ui.theme.SteelBlue
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 
-
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface ImageProviderEntryPoint {
+    fun imageUrlProvider(): ImageUrlProvider
+}
 @Preview
 @Composable
 fun IntroScreen() {
-    var imgprovider = ImageUrlProvider()
-    var imageUrl by remember { mutableStateOf<String?>(null) }
-//    LaunchedEffect(Unit) {
-//        imageUrl = imgprovider.fetchImage("intro_page3_bg_xmbse7")
-//    }
 
     val pages = listOf<@Composable () -> Unit>(
         { Page1() },
@@ -120,6 +138,25 @@ fun IntroScreen() {
 @Composable
 fun Page1()
 {
+    val context = LocalContext.current.applicationContext
+    val entryPoint = remember {
+        EntryPointAccessors.fromApplication(
+            context,
+            ImageProviderEntryPoint::class.java
+        )
+    }
+    val imageProvider = remember { entryPoint.imageUrlProvider() }
+
+    var imageUrl by remember { mutableStateOf<String?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) } // 👉 thêm dòng này
+
+
+    LaunchedEffect("intro_page3_bg_xmbse7") {
+        val result = imageProvider.fetchImage("intro_page3_bg_xmbse7")
+        result
+            .onSuccess { url -> imageUrl = url }
+            .onFailure { ex -> errorMessage = ex.message }
+    }
     val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page1_bg)
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     Column(
@@ -160,7 +197,7 @@ fun Page1()
             )
         }
 
-        Spacer(modifier = Modifier.height(50.dp)) // đẩy xa xuống
+        Spacer(modifier = Modifier.height(50.dp))
 
         Box(
             modifier = Modifier
@@ -399,7 +436,7 @@ fun Page4()
 
         Button(
             onClick = {
-                var intent =Intent(context, LoginActivity::class.java)
+                val intent =Intent(context, LoginActivity::class.java)
                 context.startActivity(intent)
             },
             modifier = Modifier.size(width = 146.dp, height = 38.dp)

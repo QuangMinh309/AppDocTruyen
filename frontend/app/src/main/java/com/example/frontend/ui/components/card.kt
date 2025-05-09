@@ -7,22 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-<<<<<<< HEAD
-=======
 import androidx.compose.foundation.layout.Spacer
->>>>>>> origin/frontend/story-ui
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-<<<<<<< HEAD
+
 import androidx.compose.foundation.layout.wrapContentWidth
-=======
+
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
->>>>>>> origin/frontend/story-ui
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -120,7 +117,7 @@ fun CommunityCard(item:String){
     }
 }
 
-<<<<<<< HEAD
+
 
 @Composable
 fun MemberCard(item:String){
@@ -128,7 +125,7 @@ fun MemberCard(item:String){
         modifier = Modifier
             .padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Image(
             painter = painterResource(id = R.drawable.intro_page1_bg),
             contentDescription = "community avatar",
@@ -142,7 +139,7 @@ fun MemberCard(item:String){
                 .padding(start = 15.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(5.dp)
-        ){
+        ) {
             Text(
                 text = "Peneloped Lynne",
                 color = Color.White,
@@ -161,7 +158,7 @@ fun MemberCard(item:String){
         }
         Button(
             onClick = { /*TODO*/ },
-            colors =  ButtonDefaults.buttonColors(
+            colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
             ),
             contentPadding = PaddingValues(0.dp),
@@ -186,8 +183,11 @@ fun MemberCard(item:String){
                     )
                 )
             }
+        }
+    }
+}
 
-=======
+
 @Composable
 fun StoryCard(
     coverImage: Painter,
@@ -345,13 +345,11 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
                     }
                 }
             }
->>>>>>> origin/frontend/story-ui
         }
     }
 }
 
 @Composable
-<<<<<<< HEAD
 fun NotificationCard(cardType :String ,
                     transactionContent:String = "",
                     transactionType: String = "",
@@ -405,7 +403,13 @@ fun NotificationCard(cardType :String ,
                     fontSize = 12.sp
                 )
             )
-=======
+        }
+    }
+}
+
+
+
+@Composable
 fun ChapterItemCard(
     title: String,
     date: String,
@@ -475,7 +479,6 @@ fun ChapterItemCard(
                     Text("$viewCount", color = Color.White, fontSize = 15.sp)
                 }
             }
->>>>>>> origin/frontend/story-ui
         }
     }
 }
