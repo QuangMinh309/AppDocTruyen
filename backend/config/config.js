@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+dotenv.config({ path: path.resolve('../.env') });
 
 const config = {
   development: {
@@ -11,7 +12,7 @@ const config = {
     dialect: process.env.DB_DIALECT,
     dialectOptions: {
       ssl: {
-        require: true,
+        require: true,  
         rejectUnauthorized: false,
       },
     },
