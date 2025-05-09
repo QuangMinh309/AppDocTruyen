@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -68,6 +70,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+    kapt(libs.hilt.compiler)
 
 
     implementation (libs.androidx.core.ktx)
@@ -75,7 +78,21 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.ui)
 
+
     implementation("androidx.navigation:navigation-compose:2.8.9")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.hilt.android)
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.androidx.paging.runtime)
+    implementation (libs.androidx.material.icons.extended)
+
+    kapt(libs.hilt.compiler)
+    // Optional - nếu dùng ViewModel với Hilt
+    implementation(libs.androidx.hilt.navigation.compose)
+
+
+
 }
