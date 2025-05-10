@@ -15,7 +15,7 @@ const currconfig = configFile[env]; // Lấy đúng environment config
 const db = {};
 
 
-//console.log("DB_DIALECT:", process.env.DB_HOST); // 👈 Dòng này để debug
+//console.log("DB_DIALECT:", process.env.DB_HOST); // Dòng này để debug
 let sequelize;
 
 if (currconfig.use_env_variable) {
