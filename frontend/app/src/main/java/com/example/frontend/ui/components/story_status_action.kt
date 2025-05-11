@@ -41,7 +41,7 @@ fun StoryStatusAction(
     isAuthor: Boolean,
     storyStatus: MutableState<String>, // "Full" or "Updating"
     hasVoted: MutableState<String>,    // "Vote" or "Voted"
-    onActionClick: () -> Unit
+    onActionClick: () -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -65,12 +65,12 @@ fun StoryStatusAction(
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .height(35.dp)
-                .widthIn(min = 115.dp)
+                .widthIn(min = 95.dp)
         ) {
             Text(
                 text = storyStatus.value,
                 color = Color.Black,
-                fontSize = 15.sp
+                fontSize = 14.sp
             )
         }
 
@@ -81,7 +81,7 @@ fun StoryStatusAction(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 115.dp)
+                    .widthIn(min = 95.dp)
             ) {
                 Text(
                     text = "Add chapter",

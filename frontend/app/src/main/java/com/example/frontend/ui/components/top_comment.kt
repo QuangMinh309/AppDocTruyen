@@ -3,6 +3,7 @@ package com.example.frontend.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,13 +31,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 
 @Composable
 fun TopComments(comments: List<List<Any>>) {
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(17.dp)) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         items(comments) { comment ->
             val username = comment[0] as String
             val commentText = comment[1] as? String
@@ -49,59 +51,74 @@ fun TopComments(comments: List<List<Any>>) {
 
             Card(
                 modifier = Modifier
-                    .width(300.dp)
-                    .padding(vertical = 4.dp),
+                    .width(335.dp)
+                    .padding(vertical = 24.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0x48828282))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.avt_img),
-                            contentDescription = "avatar",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .heightIn(50.dp)
-                                .widthIn(50.dp)
-                                .border(width = 3.dp, color = Color(0xFF4E7AFF), shape = CircleShape)
-                                .clip(CircleShape)
-                        )
-                        Spacer(modifier = Modifier.width(13.dp))
-                        Text(text = "@$username", color = Color.White, fontSize = 16.sp)
-                    }
-
-                    Spacer(modifier = Modifier.height(17.dp))
-
-                    if (!commentText.isNullOrEmpty() || commentImageRes != null) {
+                    Box {
+                        //avatar and name
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(0.5f)
                         ) {
-                            commentText?.let {
-                                Text(
-                                    text = it,
-                                    color = Color.White,
-                                    fontSize = 13.5.sp,
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-                            commentImageRes?.let {
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Image(
-                                    painter = painterResource(id = it),
-                                    contentDescription = "comment image",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .clip(RoundedCornerShape(8.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
+                            Image(
+                                painter = painterResource(id = R.drawable.avt_img),
+                                contentDescription = "avatar",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .heightIn(50.dp)
+                                    .widthIn(50.dp)
+                                    .border(
+                                        width = 3.dp,
+                                        color = Color(0xFF4E7AFF),
+                                        shape = CircleShape
+                                    )
+                                    .clip(CircleShape)
+                            )
+                            Spacer(modifier = Modifier.width(13.dp))
+                            Text(
+                                text = "@$username",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+
+                        if (!commentText.isNullOrEmpty() || commentImageRes != null) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                commentText?.let {
+                                    Text(
+                                        text = it,
+                                        color = Color.White,
+                                        fontSize = 13.5.sp,
+                                        modifier = Modifier.weight(1f).padding(top = 70.dp),
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                commentImageRes?.let {
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    Image(
+                                        painter = painterResource(id = it),
+                                        contentDescription = "comment image",
+                                        modifier = Modifier
+                                            .height(110.dp)
+                                            .width(90.dp)
+                                            .clip(RoundedCornerShape(20.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(25.dp))
-
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {

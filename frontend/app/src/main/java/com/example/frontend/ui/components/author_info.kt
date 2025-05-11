@@ -21,36 +21,4 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 
-@Composable
-fun AuthorInfo(authorName: String, username: String, onMoreClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.avt_img),
-            contentDescription = "avatar",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .heightIn(69.dp)
-                .widthIn(69.dp)
-                .padding(end = 19.dp)
-        )
-        Column {
-            Text(
-                text = authorName,
-                color = Color.White,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(bottom = 7.dp)
-            )
-            Text(text = "@$username", color = Color.White, fontSize = 13.sp)
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        TextButton(onClick = onMoreClick) {
-            Text("Thêm >", color = Color.White)
-        }
-    }
-}
+

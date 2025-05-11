@@ -2,15 +2,15 @@ package com.example.frontend.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.font.FontWeight
 import com.example.frontend.ui.theme.OrangeRed
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -49,7 +49,7 @@ fun GenreTags(
 fun SmallGenreTags(genres: List<String>) {
     GenreTags(
         genres,
-        fontSize = 11f,
+        fontSize = 10f,
         horizontalPadding = 10,
         verticalPadding = 5,
         mainAxisSpacing = 9,
@@ -60,8 +60,8 @@ fun SmallGenreTags(genres: List<String>) {
 fun LargeGenreTags(genres: List<String>) {
     GenreTags(genres,
         fontSize = 14f,
-        horizontalPadding = 17,
-        verticalPadding = 11,
+        horizontalPadding = 15,
+        verticalPadding = 8,
         mainAxisSpacing = 11,
         crossAxisSpacing = 19)
 }

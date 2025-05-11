@@ -1,6 +1,6 @@
 package com.example.frontend.domain
 
-data class ReadListItemModel (
+data class  ReadListItemModel (
     val id: String,
     val name: String,
     val date: String,

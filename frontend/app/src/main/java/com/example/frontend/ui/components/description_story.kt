@@ -13,7 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,7 +33,7 @@ fun DescriptionStory(
     aboutContent: @Composable () -> Unit,
     chapterContent: @Composable () -> Unit
 ) {
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
     val tabTitles = listOf("About", "Chapter")
 
     Column {
@@ -59,7 +63,7 @@ fun DescriptionStory(
                         Box(
                             modifier = Modifier
                                 .height(3.dp)
-                                .width(40.dp)
+                                .width(100.dp)
                                 .background(Color.White, RoundedCornerShape(10.dp))
                         )
                     } else {

@@ -1,7 +1,7 @@
 package com.example.frontend.data.repository
 
+import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.model.Result
-import com.example.frontend.data.util.ApiService
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
