@@ -1,47 +1,41 @@
-import dotenv from 'dotenv'
-dotenv.config({ path: './backend/.env' });
+// server.js
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import db from "./models/index.js";
+import imageRoutes from "./routes/imageRoutes.js";
 
-import express from 'express'
-import cors from 'cors'   
-import db from './models/index.js'; // Import object db
-import imageRoutes from './routes/imageRoutes.js'// Import route xử lý ảnh
+dotenv.config(); // Load .env before anything else
 
-const sequelize = db.sequelize; // Lấy sequelize instance từ db
-const app = express()
+const app = express();
+const sequelize = db.sequelize;
 
 // Middleware
-app.use(cors()); // Cho phép kết nối từ Android app
+app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Cho phép gửi dữ liệu từ form lên server
-app.use(express.static('public')); // Cho phép truy cập vào thư mục public
-app.use('/uploads', express.static('uploads'));  // Dùng để phục vụ file tạm thời
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
 // Routes
-app.use('/api/images', imageRoutes);  // URL gốc sẽ là /api/images/:imageId (lấy ảnh) và /api/images/upload (upload ảnh)
-
-//run server
-const PORT = process.env.PORT || 3000;
+app.use("/api/images", imageRoutes);
 
 app.get("/", (req, res) => {
-  res.send("I'm alive!");
+  res.send("Hello from backend!");
 });
-  
-app.listen(PORT , () => {
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
-
-// Gọi kết nối DB
-sequelize.authenticate()
+// DB connection
+sequelize
+  .authenticate()
   .then(() => {
-    console.log('Đã kết nối thành công đến database!');
+    console.log("Đã kết nối thành công đến database!");
   })
   .catch((err) => {
-    console.error('Lỗi kết nối DB:', err);
+    console.error("Lỗi kết nối database:", err);
   });
-
-app.get('/', (req, res) => {
-  res.send('Hello from backend!');
-});
-
-

@@ -1,24 +1,32 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class join_community extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class JoinCommunity extends Sequelize.Model {}
+  JoinCommunity.init(
+    {
+      userId: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      communityId: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+    },
+    {
+      sequelize,
+      modelName: "JoinCommunity",
+      tableName: "join_community",
+      timestamps: false,
     }
-  }
-  join_community.init({
-    userId: DataTypes.INTEGER,
-    communityId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'join_community',
-  });
-  return join_community;
+  );
+
+  JoinCommunity.associate = (models) => {
+    JoinCommunity.belongsTo(models.User, { foreignKey: "userId" });
+    JoinCommunity.belongsTo(models.Community, { foreignKey: "communityId" });
+  };
+
+  return JoinCommunity;
 };

@@ -1,26 +1,35 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class password_reset extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class PasswordReset extends Sequelize.Model {}
+  PasswordReset.init(
+    {
+      OTP: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+      },
+      isUsed: {
+        type: DataTypes.BOOLEAN,
+      },
+    },
+    {
+      sequelize,
+      modelName: "PasswordReset",
+      tableName: "password_reset",
+      timestamps: true,
+      createdAt: true,
+      updatedAt: false,
     }
-  }
-  password_reset.init({
-    OTP: DataTypes.STRING,
-    userId: DataTypes.INTEGER,
-    createdAt: DataTypes.DATE,
-    isUsed: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'password_reset',
-  });
-  return password_reset;
+  );
+
+  PasswordReset.associate = (models) => {
+    PasswordReset.belongsTo(models.User, { foreignKey: "userId" });
+  };
+
+  return PasswordReset;
 };

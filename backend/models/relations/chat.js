@@ -1,28 +1,43 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class chat extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Chat extends Sequelize.Model {}
+  Chat.init(
+    {
+      chatId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      communityId: {
+        type: DataTypes.INTEGER,
+      },
+      senderId: {
+        type: DataTypes.INTEGER,
+      },
+      content: {
+        type: DataTypes.TEXT,
+      },
+      commentPicId: {
+        type: DataTypes.STRING,
+      },
+      time: {
+        type: DataTypes.DATE,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Chat",
+      tableName: "chat",
+      timestamps: false,
     }
-  }
-  chat.init({
-    chatId: DataTypes.INTEGER,
-    communityId: DataTypes.INTEGER,
-    senderId: DataTypes.INTEGER,
-    content: DataTypes.TEXT,
-    commentPicId: DataTypes.STRING,
-    time: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'chat',
-  });
-  return chat;
+  );
+
+  Chat.associate = (models) => {
+    Chat.belongsTo(models.Community, { foreignKey: "communityId" });
+    Chat.belongsTo(models.User, { foreignKey: "senderId" });
+  };
+
+  return Chat;
 };

@@ -1,36 +1,70 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class story extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Story extends Sequelize.Model {}
+  Story.init(
+    {
+      storyId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      storyName: {
+        type: DataTypes.STRING,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+      },
+      title: {
+        type: DataTypes.STRING,
+      },
+      description: {
+        type: DataTypes.STRING(1500),
+      },
+      ageRange: {
+        type: DataTypes.INTEGER,
+      },
+      viewNum: {
+        type: DataTypes.INTEGER,
+      },
+      voteNum: {
+        type: DataTypes.INTEGER,
+      },
+      chapterNum: {
+        type: DataTypes.INTEGER,
+      },
+      status: {
+        type: DataTypes.STRING,
+      },
+      price: {
+        type: DataTypes.FLOAT,
+      },
+      pricePerChapter: {
+        type: DataTypes.FLOAT,
+      },
+      coverImgId: {
+        type: DataTypes.STRING,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Story",
+      tableName: "story",
+      timestamps: true,
+      createdAt: true,
+      updatedAt: true,
     }
-  }
-  story.init({
-    storyId: DataTypes.INTEGER,
-    storyName: DataTypes.STRING,
-    userId: DataTypes.INTEGER,
-    title: DataTypes.STRING,
-    description: DataTypes.STRING(1500),
-    ageRange: DataTypes.INTEGER,
-    viewNum: DataTypes.INTEGER,
-    voteNum: DataTypes.INTEGER,
-    createdAt: DataTypes.DATE,
-    updateAt: DataTypes.DATE,
-    status: DataTypes.STRING,
-    price: DataTypes.FLOAT,
-    pricePerChapter: DataTypes.FLOAT,
-    coverImgId: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'story',
-  });
-  return story;
+  );
+
+  Story.associate = (models) => {
+    Story.belongsTo(models.User, { foreignKey: "userId" });
+    Story.hasMany(models.Chapter, { foreignKey: "storyId" });
+    Story.hasMany(models.StoryCategory, { foreignKey: "storyId" });
+    Story.hasMany(models.Vote, { foreignKey: "storyId" });
+    Story.hasMany(models.Purchase, { foreignKey: "storyId" });
+    Story.hasMany(models.ReadList, { foreignKey: "storyId" });
+  };
+
+  return Story;
 };

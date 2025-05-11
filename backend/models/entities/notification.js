@@ -1,28 +1,40 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class notification extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Notification extends Sequelize.Model {}
+  Notification.init(
+    {
+      notificationId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      type: {
+        type: DataTypes.STRING,
+      },
+      content: {
+        type: DataTypes.STRING,
+      },
+      refId: {
+        type: DataTypes.INTEGER,
+      },
+      status: {
+        type: DataTypes.STRING,
+      },
+      createAt: {
+        type: DataTypes.DATE,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Notification",
+      tableName: "notification",
+      timestamps: false,
     }
-  }
-  notification.init({
-    notificationId: DataTypes.INTEGER,
-    type: DataTypes.STRING,
-    content: DataTypes.STRING,
-    refId: DataTypes.INTEGER,
-    status: DataTypes.STRING,
-    createAt: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'notification',
-  });
-  return notification;
+  );
+
+  Notification.associate = (models) => {};
+
+  return Notification;
 };

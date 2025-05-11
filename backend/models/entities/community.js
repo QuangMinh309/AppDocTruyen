@@ -1,28 +1,44 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class community extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Community extends Sequelize.Model {}
+  Community.init(
+    {
+      communityId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      communitytName: {
+        type: DataTypes.STRING,
+      },
+      categoryId: {
+        type: DataTypes.INTEGER,
+      },
+      avatarId: {
+        type: DataTypes.STRING,
+      },
+      menberNum: {
+        type: DataTypes.INTEGER,
+      },
+      description: {
+        type: DataTypes.STRING(1500),
+      },
+    },
+    {
+      sequelize,
+      modelName: "Community",
+      tableName: "community",
+      timestamps: false,
     }
-  }
-  community.init({
-    communityId: DataTypes.INTEGER,
-    communitytName: DataTypes.STRING,
-    categoryId: DataTypes.INTEGER,
-    avatarId: DataTypes.STRING,
-    menberNum: DataTypes.INTEGER,
-    description: DataTypes.STRING(1500)
-  }, {
-    sequelize,
-    modelName: 'community',
-  });
-  return community;
+  );
+
+  Community.associate = (models) => {
+    Community.belongsTo(models.Category, { foreignKey: "categoryId" });
+    Community.hasMany(models.Chat, { foreignKey: "communityId" });
+    Community.hasMany(models.JoinCommunity, { foreignKey: "communityId" });
+  };
+
+  return Community;
 };

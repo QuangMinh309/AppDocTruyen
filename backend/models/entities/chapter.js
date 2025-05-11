@@ -1,30 +1,50 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class chapter extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Chapter extends Sequelize.Model {}
+  Chapter.init(
+    {
+      chapterId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      chapterName: {
+        type: DataTypes.STRING,
+      },
+      OrdinalNumber: {
+        type: DataTypes.INTEGER,
+      },
+      storyId: {
+        type: DataTypes.INTEGER,
+      },
+      content: {
+        type: DataTypes.TEXT("long"),
+      },
+      viewNum: {
+        type: DataTypes.INTEGER,
+      },
+      lockedStatus: {
+        type: DataTypes.BOOLEAN,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Chapter",
+      tableName: "chapter",
+      timestamps: true,
+      updatedAt: true,
+      createdAt: false,
     }
-  }
-  chapter.init({
-    chapterId: DataTypes.INTEGER,
-    chapterName: DataTypes.STRING,
-    OrdinalNumber: DataTypes.INTEGER,
-    storyId: DataTypes.INTEGER,
-    content: DataTypes.TEXT,
-    viewNum: DataTypes.INTEGER,
-    UpdateAt: DataTypes.DATE,
-    lockedStatus: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'chapter',
-  });
-  return chapter;
+  );
+
+  Chapter.associate = (models) => {
+    Chapter.belongsTo(models.Story, { foreignKey: "storyId" });
+    Chapter.hasMany(models.Purchase, { foreignKey: "chapterId" });
+    Chapter.hasMany(models.History, { foreignKey: "chapterId" });
+    Chapter.hasMany(models.Comment, { foreignKey: "chapterId" });
+  };
+
+  return Chapter;
 };

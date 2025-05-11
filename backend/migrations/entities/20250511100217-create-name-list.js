@@ -1,39 +1,29 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("chat", {
-      chatId: {
+    await queryInterface.createTable("name_list", {
+      nameListId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      communityId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "community",
-          key: "communityId",
-        },
+      nameList: {
+        type: Sequelize.STRING(255),
       },
-      senderId: {
+      userId: {
         type: Sequelize.INTEGER,
         references: {
           model: "user",
           key: "userId",
         },
       },
-      content: {
-        type: Sequelize.TEXT,
-      },
-      commentPicId: {
-        type: Sequelize.STRING,
-      },
-      time: {
-        type: Sequelize.DATE,
+      description: {
+        type: Sequelize.STRING(1500),
       },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("chat");
+    await queryInterface.dropTable("name_list");
   },
 };

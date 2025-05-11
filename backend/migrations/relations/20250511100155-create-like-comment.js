@@ -1,30 +1,28 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("password_reset", {
-      OTP: {
+    await queryInterface.createTable("like_comment", {
+      commentId: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+        references: {
+          model: "comment",
+          key: "commentId",
+        },
       },
       userId: {
+        allowNull: false,
+        primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
           model: "user",
           key: "userId",
         },
       },
-      isUsed: {
-        type: Sequelize.BOOLEAN,
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("password_reset");
+    await queryInterface.dropTable("like_comment");
   },
 };

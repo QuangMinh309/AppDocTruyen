@@ -1,33 +1,33 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('history', {
+    await queryInterface.createTable("history", {
       historyId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'user',
-          key: 'userId'
-        }
+          model: "user",
+          key: "userId",
+        },
       },
       chapterId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'chapter',
-          key: 'chapterId'
-        }
+          model: "chapter",
+          key: "chapterId",
+        },
       },
       lastReadAt: {
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('history');
-  }
+    await queryInterface.dropTable("history");
+  },
 };

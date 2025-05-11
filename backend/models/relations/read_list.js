@@ -1,15 +1,15 @@
 import { Sequelize, DataTypes } from "sequelize";
 
 export default (sequelize) => {
-  class Vote extends Sequelize.Model {}
-  Vote.init(
+  class ReadList extends Sequelize.Model {}
+  ReadList.init(
     {
-      userId: {
+      storyId: {
         allowNull: false,
         primaryKey: true,
         type: DataTypes.INTEGER,
       },
-      storyId: {
+      nameListId: {
         allowNull: false,
         primaryKey: true,
         type: DataTypes.INTEGER,
@@ -17,16 +17,16 @@ export default (sequelize) => {
     },
     {
       sequelize,
-      modelName: "Vote",
-      tableName: "vote",
+      modelName: "ReadList",
+      tableName: "read_list",
       timestamps: false,
     }
   );
 
-  Vote.associate = (models) => {
-    Vote.belongsTo(models.User, { foreignKey: "userId" });
-    Vote.belongsTo(models.Story, { foreignKey: "storyId" });
+  ReadList.associate = (models) => {
+    ReadList.belongsTo(models.Story, { foreignKey: "storyId" });
+    ReadList.belongsTo(models.NameList, { foreignKey: "nameListId" });
   };
 
-  return Vote;
+  return ReadList;
 };

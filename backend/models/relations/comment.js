@@ -1,28 +1,44 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class comment extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+import { Sequelize, DataTypes } from "sequelize";
+
+export default (sequelize) => {
+  class Comment extends Sequelize.Model {}
+  Comment.init(
+    {
+      commentId: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: DataTypes.INTEGER,
+      },
+      userId: {
+        type: DataTypes.INTEGER,
+      },
+      chapterId: {
+        type: DataTypes.INTEGER,
+      },
+      commentPicId: {
+        type: DataTypes.STRING,
+      },
+      content: {
+        type: DataTypes.TEXT,
+      },
+      createAt: {
+        type: DataTypes.DATE,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Comment",
+      tableName: "comment",
+      timestamps: false,
     }
-  }
-  comment.init({
-    commentId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
-    chapterId: DataTypes.INTEGER,
-    content: DataTypes.TEXT,
-    commentPicId: DataTypes.STRING,
-    createAt: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'comment',
-  });
-  return comment;
+  );
+
+  Comment.associate = (models) => {
+    Comment.belongsTo(models.User, { foreignKey: "userId" });
+    Comment.belongsTo(models.Chapter, { foreignKey: "chapterId" });
+    Comment.hasMany(models.LikeComment, { foreignKey: "commentId" });
+  };
+
+  return Comment;
 };
