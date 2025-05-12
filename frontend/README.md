@@ -20,14 +20,14 @@
 
           UI (Jetpack Compose)
                  │
-        ViewModel (State holder)
+       ViewModel (State holder)
                  │
-      Repository (data abstraction)
+     Repository (data abstraction)
                  │
-  ┌──────────────┴───────────────┐
-  │ API │
-  │ (Retrofit) │
-  └──────────────────────────────┘
+    ┌────────────┴───────────────┐
+    │ API │
+    │ (Retrofit) │
+    └────────────────────────────┘
   
 ---
 
