@@ -1,4 +1,4 @@
-package com.example.frontend.activity
+package com.example.frontend.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val navigationManager: NavigationManager) : ViewModel() {
+open class BaseViewModel @Inject constructor(private val navigationManager: NavigationManager) : ViewModel()
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val navigationManager: NavigationManager) : BaseViewModel( navigationManager) {
 //    private val repository=MainRepository()
 //
 //    fun loadUpcoming(): LiveData<MutableList<FilmItemModel>> {
@@ -21,7 +24,7 @@ class HomeViewModel @Inject constructor(private val navigationManager: Navigatio
 
     fun onGoToSearchScreen() {
         viewModelScope.launch {
-            navigationManager.navigate("search")
+            navigationManager.navigate("Profile")
         }
     }
 }

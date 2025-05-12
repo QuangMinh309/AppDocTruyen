@@ -7,7 +7,7 @@ sealed class Screen(val route: String) {
         data object Search :MainNav("Search")
         data object YourStory : MainNav("YourStory")
         data object Community : MainNav("Community")
-        data object Profile : MainNav("Profile ")
+        data object Profile : MainNav("Profile")
     }
     sealed class Community(route: String) :Screen(route) {
         data object Chat : Community("Chat")

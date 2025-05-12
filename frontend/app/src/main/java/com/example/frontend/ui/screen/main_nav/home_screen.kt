@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.activity.HomeViewModel
 import com.example.frontend.domain.ReadListItemModel
 import com.example.frontend.domain.StoryItemModel
+import com.example.frontend.presentation.viewmodel.HomeViewModel
 import com.example.frontend.ui.components.AutoScrollBanner
 import com.example.frontend.ui.components.BannerItem
 import com.example.frontend.ui.components.HorizontalStoryList
@@ -34,7 +34,7 @@ import com.example.frontend.ui.components.TwoLineHorizontalStoryList
 
 @Preview
 @Composable
-fun HomeScreen(viewModel :HomeViewModel = hiltViewModel()) {
+fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
 
 //    val viewModel = HomeViewModel()
 //

@@ -60,7 +60,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -892,17 +891,6 @@ fun ReadListItem(
                         )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
-                TextButton(
-                    onClick = {onClick()},
-                ) {
-                    Text(
-                        text = "Show full list >",
-                        maxLines = 1,
-                        color = OrangeRed,
-                        textDecoration = TextDecoration.Underline,
-                        fontSize = 8.sp
-                    )
-                }
             }
 
             Text(
@@ -919,18 +907,6 @@ fun ReadListItem(
                 overflow = TextOverflow.Ellipsis,
             )
         }
-
-        // Nút "Show full list"
-//            TextButton(
-//                onClick = onClick,
-//                modifier = Modifier.align(Alignment.Bottom)
-//            ) {
-//                Text(
-//                    text = "Show full list >",
-//                    color = Color(0xFF6200EE),
-//                    fontSize = 8.sp
-//                )
-//            }
     }
 }
 
