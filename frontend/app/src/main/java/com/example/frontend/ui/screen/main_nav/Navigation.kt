@@ -25,15 +25,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.frontend.R
 import com.example.frontend.navigation.NavigationCommand
 import com.example.frontend.navigation.Screen
-import com.example.frontend.presentation.viewmodel.AppNavigationViewModel
+import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewModel
 import com.example.frontend.ui.components.BottomNavigationBar
+import com.example.frontend.ui.screen.DiscoverDetailScreen
+import com.example.frontend.ui.screen.NotificationScreen
+import com.example.frontend.ui.screen.SettingScreen
+import com.example.frontend.ui.screen.community.CommunityDetailScreen
+import com.example.frontend.ui.screen.community.SearchingMemberScreen
+import com.example.frontend.ui.screen.story.ReadScreen
+import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.WriteScreen
+import com.example.frontend.ui.screen.story.YourStoryDetailScreen
+import com.example.frontend.ui.screen.transaction.DepositScreen
+import com.example.frontend.ui.screen.transaction.PremiumScreen
+import com.example.frontend.ui.screen.transaction.TransactionAcceptScreen
+import com.example.frontend.ui.screen.transaction.WalletDetailScreen
+import com.example.frontend.ui.screen.transaction.WithdrawScreen
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
@@ -133,9 +149,11 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
             startDestination = Screen.MainNav.Home.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+
+            //region  main nav
             composable(Screen.MainNav.Home.route) { HomeScreen() }
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
-            composable(Screen.MainNav.Search.route) { StoryNavigation() }
+            composable(Screen.MainNav.Search.route) {   StorySearchScreen() }
             composable(Screen.MainNav.Community.route) { CommunityScreen() }
             composable(Screen.MainNav.Profile.route) {
                 AdvancedProfile(
@@ -145,7 +163,89 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
                     nickName= "tolapeneloped",
                 )
             }
+            //endregion
+
+            //region story
+            composable(
+                route = Screen.Story.Detail.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { StoryDetailScreen() }
+
+            composable(
+                route = Screen.Story.Chapter.Read.route,
+                arguments = listOf(
+                    navArgument("chapterId") { type = NavType.StringType },
+                )
+            ) { ReadScreen() }
+
+            composable(
+                route = Screen.Story.Chapter.Write.route,
+                arguments = listOf(
+                    navArgument("chapterId") { type = NavType.StringType },
+                )
+            ) { WriteScreen() }
+            //endregion
+
+            //region community
+            composable(
+                route = Screen.Community.Chat.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) { YourStoryDetailScreen() }
+
+            composable(
+                route = Screen.Community.Detail.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) {
+                CommunityDetailScreen()
+            }
+
+            composable(
+                route = Screen.Community.SearchingMember.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) {
+                SearchingMemberScreen()
+            }
+            //endregion
+
+            //region transaction
+            composable(Screen.Transaction.Deposit.route) { DepositScreen() }
+            composable(Screen.Transaction.Premium.route) { PremiumScreen() }
+            composable(Screen.Transaction.Wallet.route) { WalletDetailScreen() }
+            composable(Screen.Transaction.WithDraw.route) { WithdrawScreen() }
+            composable(Screen.Transaction.Accept.route) { TransactionAcceptScreen() }
+            //endregion
+
+            composable(
+                route = Screen.YourStoryDetail.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { YourStoryDetailScreen() }
+
+            composable(Screen.Discover.route) { DiscoverDetailScreen() }
+            composable(Screen.Notification.route) { NotificationScreen() }
+            composable(Screen.Setting.route) { SettingScreen() }
+            composable(
+                route = Screen.StoryList.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            )  { StoryListScreen() }
+
         }
     }
+}
+
+@Composable
+fun StoryListScreen() {
+    TODO("Not yet implemented")
 }
 

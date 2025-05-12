@@ -61,8 +61,8 @@ fun CommunityDetailScreen(){
             TopBar(
                 showBackButton = true,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){

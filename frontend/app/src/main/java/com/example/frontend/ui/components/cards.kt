@@ -67,75 +67,66 @@ import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import com.example.frontend.R
-import com.example.frontend.domain.ReadListItemModel
-import com.example.frontend.domain.StoryItemModel
+import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.ReadListItemModel
+import com.example.frontend.data.model.StoryItemModel
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 
 //region community Card
 @Composable
-fun CommunityCard(item:String){
+fun CommunityCard(model: Community, onClick: () -> Unit = {}){
 
     Column (
 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .fillMaxHeight()
-            .width(110.dp)
+            .height(180.dp)
+            .width(150.dp)
             .background(Color.DarkGray.copy(0.4f), RoundedCornerShape(10.dp))
             .padding(vertical = 12.dp)
+            .clickable { onClick() }
     ){
         Image(
             painter = painterResource(id = R.drawable.intro_page1_bg),
             contentDescription = "community avatar",
             modifier = Modifier
-                .size(60.dp,60.dp)
+                .size(70.dp,70.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop // Cắt ảnh nếu cần thiết để lấp đầy không gian
         )
-        Text(
-            text =item,
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .padding( vertical = 4.dp,horizontal = 10.dp)
-        )
-        Button(
-            onClick = { /*TODO*/ },
-            colors =  ButtonDefaults.buttonColors(
-                containerColor = OrangeRed
-            ),
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier
-                .height(20.dp)
-        ) {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            // Community name
             Text(
-                text =item,
-                color = Color.Black,
+                text =model.communitytName,
+                color = Color.White,
                 style = TextStyle(
-                    fontSize = 8.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
-                    .padding( horizontal = 8.dp)
+                    .padding( vertical = 4.dp,horizontal = 10.dp)
             )
+            //genre chip
+            GenreChip(genre = model.categoryId.toString())
 
+            //member number
+            Text(
+                text = formatViews(model.menberNum.toLong()) + " members",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 10.sp,
+                    fontStyle = FontStyle.Italic
+                ),
+                modifier = Modifier
+                    .padding( vertical = 4.dp,horizontal = 10.dp)
+            )
         }
-        Text(
-            text ="150k menbers",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 10.sp,
-                fontStyle = FontStyle.Italic
-            ),
-            modifier = Modifier
-                .padding( vertical = 4.dp,horizontal = 10.dp)
-        )
 
     }
 }
@@ -591,13 +582,14 @@ fun StoryCard(
 fun StoryCard2(
     story: StoryItemModel,
     modifier: Modifier = Modifier,
-    onStoryClick: (StoryItemModel) -> Unit = {}
+    onClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .width(200.dp)
             .background(Color.Transparent, RoundedCornerShape(5.dp))
             .padding(8.dp)
+            .clickable { onClick() }
     ) {
         // Story Image (on top)
         AsyncImage(
@@ -835,6 +827,7 @@ fun ReadListItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = modifier.fillMaxWidth()
+            .clickable { onClick() }
     ) {
         // Phần avatar xếp chồng (lấy từ 3 truyện đầu tiên)
         Box(modifier = Modifier.size(110.dp,140.dp)) {

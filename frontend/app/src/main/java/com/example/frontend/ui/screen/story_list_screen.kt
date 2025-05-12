@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.frontend.domain.StoryItemModel
+import com.example.frontend.data.model.StoryItemModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
@@ -26,8 +26,8 @@ fun ReadListScreen(listName: String, storyItems: List<StoryItemModel>) {
                 title = listName,
                 showBackButton = true,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){

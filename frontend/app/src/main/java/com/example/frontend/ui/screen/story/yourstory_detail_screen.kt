@@ -82,7 +82,8 @@ fun YourStoryDetailScreen() {
                 title = "Community",
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){

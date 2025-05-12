@@ -65,7 +65,8 @@ fun AdvancedProfile(
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){

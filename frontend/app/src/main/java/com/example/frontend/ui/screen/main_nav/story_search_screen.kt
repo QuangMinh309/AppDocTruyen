@@ -41,7 +41,7 @@ import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SearchBarv2
 
 @Composable
-fun StoryNavigation() {
+fun StorySearchScreen() {
     val searchQuery = rememberSaveable { mutableStateOf("") }
     var selectedGenreTabIndex by remember { mutableIntStateOf(0) }
     var selectedStatusTabIndex by remember { mutableIntStateOf(0) }
@@ -233,6 +233,6 @@ fun getSampleStories(genreIndex: Int, statusIndex: Int): List<Story> {
 @Composable
 fun StoryNavigationPreview() {
     MaterialTheme {
-        StoryNavigation()
+        StorySearchScreen()
     }
 }

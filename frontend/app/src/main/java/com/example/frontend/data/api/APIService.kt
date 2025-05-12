@@ -15,7 +15,7 @@ interface ApiService {
         @Part image: MultipartBody.Part
     ): Response<UploadResponse>
 
-    @GET("/api/images/{id}")
+    @GET("/api/images/{id}")    
     suspend fun getImageUrl(
         @Path("id") id: String
     ): Response<ImageUrlResponse>

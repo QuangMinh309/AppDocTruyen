@@ -96,7 +96,7 @@ fun ChattingScreen(){
             )
 
             Icon(
-                painter = painterResource(id = R.drawable.setting_icon),
+                painter = painterResource(id = R.drawable.setting_config),
                 contentDescription = "Custom Icon",
                 tint = Color.White,
                 modifier = Modifier

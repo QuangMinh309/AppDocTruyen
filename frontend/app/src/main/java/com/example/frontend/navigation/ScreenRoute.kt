@@ -1,7 +1,7 @@
 package com.example.frontend.navigation
 
 
-sealed class Screen(val route: String) {
+sealed class Screen(var route: String) {
     sealed class MainNav(route: String) :Screen(route) {
         data object Home : MainNav("Home")
         data object Search :MainNav("Search")
@@ -10,17 +10,25 @@ sealed class Screen(val route: String) {
         data object Profile : MainNav("Profile")
     }
     sealed class Community(route: String) :Screen(route) {
-        data object Chat : Community("Chat")
-        data object Detail :Community("CommunityDetail")
-        data object  SearchingMember: Community("SearchingMember")
+        fun createRoute(communityId: String) = route.replace("{communityId}", communityId)
+        data object Chat : Community("Chat/{communityId}")
+        data object Detail :Community("CommunityDetail/{communityId}")
+        data object  SearchingMember: Community("SearchingMember/{communityId}")
     }
 
     sealed class Story(route: String) :Screen(route) {
-        data object Read : Story("Read")
-        data object Detail :Story("StoryDetail")
-        data object Write: Story("Write")
+        data object Detail :Story("StoryDetail/{id}"){
+            fun createRoute(id: String) = "StoryDetail/$id"
+        }
+        sealed class Chapter(route: String) :Story(route) {
+            fun createRoute(chapterId: String) = route.replace("{chapterId}", chapterId)
+            data object Read : Chapter("Read/{chapterId}")
+            data object Write: Chapter("Write/{chapterId}")
+        }
     }
-    data object  YourStory: Screen("YourStoryDetail")
+    data object  YourStoryDetail: Screen("YourStoryDetail/{id}"){
+        fun createRoute(id: String) = "StoryDetail/$id"
+    }
 
     sealed class Transaction(route: String) :Screen(route) {
         data object Deposit: Transaction("Deposit")
@@ -33,5 +41,7 @@ sealed class Screen(val route: String) {
     data object  Discover: Screen("Discover")
     data object  Notification: Screen("Notification")
     data object  Setting: Screen("Setting")
-    data object  StoryList: Screen("List")
+    data object  StoryList: Screen("List/{id}"){
+        fun createRoute(id: String) = "List/$id"
+    }
 }

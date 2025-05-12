@@ -1,7 +1,7 @@
-package com.example.frontend.domain
+package com.example.frontend.data.model
 
 data class StoryItemModel (
-    val id: String,
+    val id: Int,
     val title: String,
     val author: String,
     val coverImage: String,

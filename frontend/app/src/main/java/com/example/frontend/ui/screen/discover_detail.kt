@@ -16,7 +16,7 @@ import com.example.frontend.ui.components.StoryChips
 
 @Preview
 @Composable
-fun DiscoverDetail()
+fun DiscoverDetailScreen()
 {
     val searchQuery = rememberSaveable { mutableStateOf("") }
     ScreenFrame {

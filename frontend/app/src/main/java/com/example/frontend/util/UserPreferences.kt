@@ -1,4 +1,4 @@
-package com.example.frontend.data.util
+package com.example.frontend.util
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

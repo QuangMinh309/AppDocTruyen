@@ -30,8 +30,8 @@ import com.example.frontend.R
 fun TopBar(title: String = "",
               showBackButton: Boolean = true,
               iconType: String = "",
-              onBackClick: () -> Unit = {},
-              onIconClick: () -> Unit = {}){
+              onLeftClick: () -> Unit = {},
+              onRightClick: () -> Unit = {}){
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -40,7 +40,7 @@ fun TopBar(title: String = "",
         // Back button
         if (showBackButton) {
             Button(
-                onClick = onBackClick,
+                onClick = onLeftClick,
                 colors =  ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                 ),
@@ -62,13 +62,13 @@ fun TopBar(title: String = "",
         else{
             Icon(
                 imageVector = Icons.Outlined.NotificationsActive,
-                contentDescription = "Custom Icon",
+                contentDescription = "Custom notification Icon",
                 tint = Color.White,
                 modifier = Modifier
                     .weight(0.33f)
-                    .size(28.dp)
+                    .size(30.dp)
                     .wrapContentWidth(Alignment.Start)
-                    .clickable { onIconClick() }
+                    .clickable { onLeftClick() }
             )
         }
         Text(
@@ -96,9 +96,9 @@ fun TopBar(title: String = "",
             tint = Color.White,
             modifier = Modifier
                 .weight(0.33f)
-                .size(24.dp)
+                .size(22.dp)
                 .wrapContentWidth(Alignment.End)
-                .clickable { onIconClick() }
+                .clickable { onRightClick() }
         )
 
 

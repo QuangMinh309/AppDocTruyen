@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import com.example.frontend.ui.screen.intro_authentication.NewPasswordScreen
 import com.example.frontend.ui.theme.FrontendTheme
 
-class NewPasswordActivity : ComponentActivity()
+class   NewPasswordActivity : ComponentActivity()
 {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

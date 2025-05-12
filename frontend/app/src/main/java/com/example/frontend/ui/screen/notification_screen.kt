@@ -22,8 +22,8 @@ fun NotificationScreen(){
                 title = "Notification",
                 showBackButton = true,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ },
-                onBackClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){

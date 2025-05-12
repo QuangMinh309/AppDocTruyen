@@ -15,24 +15,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.data.model.Community
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
 import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.GerneChipButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenContent() {
+    val fakeViewModel = CommunityViewModel(NavigationManager())
+    CommunityScreen(viewModel = fakeViewModel)
+}
 
 @Preview
 @Composable
-fun CommunityScreen(){
-    val categoryList = listOf("Adventure","Fantastic", "Mystery", "Autobiography")
+fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
+
     ScreenFrame(
         topBar = {
             TopBar(
                 title = "Community",
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = {viewModel.onGoToNotificationScreen()},
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){
@@ -45,13 +56,13 @@ fun CommunityScreen(){
             SectionTitle(title = "Hot Community")
 
             LazyRow(
-                contentPadding = PaddingValues(vertical = 8.dp),
+                contentPadding = PaddingValues(vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(categoryList) { item ->
+                items(viewModel.hotCommunityList) { item ->
                     GerneChipButton(
                         genre = item,
-                        onClick = {}
+                        onClick = {viewModel.filterCommunityFollowCategory(0)}
                     )
                 }
             }
@@ -59,11 +70,12 @@ fun CommunityScreen(){
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
-                    .height(height = 168.dp)
             ) {
-                items(categoryList) { item ->
+                val com =Community(123,"123",123,"123",123,"123")
+                items(viewModel.hotCommunityList) {
                     CommunityCard(
-                        item = item
+                        model = com,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.communityId)}
                     )
 
                 }
@@ -77,11 +89,12 @@ fun CommunityScreen(){
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
-                    .height(height = 168.dp)
             ) {
-                items(categoryList) { item ->
+                val com =Community(123,"1dfvd23",123,"123",123,"123")
+                items(viewModel.hotCommunityList) {
                     CommunityCard(
-                        item = item
+                        model = com,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.communityId)}
                     )
 
                 }

@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 import com.example.frontend.activity.RegisterActivity
 import com.example.frontend.activity.ResetPasswordActivity
-import com.example.frontend.data.util.UserPreferences
+import com.example.frontend.util.UserPreferences
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace

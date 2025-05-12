@@ -43,8 +43,8 @@ fun YourStoryScreen() {
                 title = "Your Story",
                 showBackButton = false,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){
