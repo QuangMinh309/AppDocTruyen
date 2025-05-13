@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.data.model.Community
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
 import com.example.frontend.ui.components.CommunityCard
@@ -71,11 +70,11 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
             ) {
-                val com =Community(123,"123",123,"123",123,"123")
+                val com = demoCommunity
                 items(viewModel.hotCommunityList) {
                     CommunityCard(
                         model = com,
-                        onClick = {viewModel.onGoToCommunityDetailScreen(com.communityId)}
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.id)}
                     )
 
                 }
@@ -90,11 +89,11 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
             ) {
-                val com =Community(123,"1dfvd23",123,"123",123,"123")
+                val coms = demoCommunity
                 items(viewModel.hotCommunityList) {
                     CommunityCard(
-                        model = com,
-                        onClick = {viewModel.onGoToCommunityDetailScreen(com.communityId)}
+                        model = coms,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(coms.id)}
                     )
 
                 }

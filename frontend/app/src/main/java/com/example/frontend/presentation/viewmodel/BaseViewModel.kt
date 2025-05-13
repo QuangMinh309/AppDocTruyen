@@ -12,7 +12,7 @@ import javax.inject.Inject
 open class BaseViewModel @Inject constructor(protected val navigationManager: NavigationManager) : ViewModel() {
     fun onGoToProfileScreen() {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Profile.route)
+            navigationManager.navigate(Screen.MainNav.Profile.createRoute("1"))
         }
     }
     fun onGoToHomeScreen() {
@@ -47,7 +47,18 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     }
     fun onGoToStoryScreen(id: Int) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
+           navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
         }
     }
+    fun onGoBack() {
+        viewModelScope.launch {
+            navigationManager.back()
+        }
+    }
+    fun onGoToSearchingMemberScreen(id: Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Community.SearchingMember.createRoute(id.toString()))
+        }
+    }
+
 }

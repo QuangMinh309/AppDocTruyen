@@ -54,6 +54,7 @@ import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
 
@@ -267,15 +268,7 @@ fun YourStoryDetailScreen() {
 
                         Spacer(modifier = Modifier.height(17.dp))
 
-                        LargeGenreTags(
-                            listOf(
-                                "Adventure",
-                                "Mystery",
-                                "Autobiography",
-                                "Fantasy",
-                                "Drama"
-                            )
-                        )
+                        LargeGenreTags(genreDemoList)
                     },
                     chapterContent = {
                         val chapters = listOf(

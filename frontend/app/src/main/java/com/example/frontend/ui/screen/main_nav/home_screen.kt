@@ -34,8 +34,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.data.model.ReadListItemModel
-import com.example.frontend.data.model.StoryItemModel
+import com.example.frontend.data.model.Author
+import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.Chat
+import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.ReadList
+import com.example.frontend.data.model.Role
+import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.User
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
 import com.example.frontend.ui.components.AutoScrollBanner
@@ -47,6 +53,9 @@ import com.example.frontend.ui.components.StoryCard
 import com.example.frontend.ui.components.StoryCard2
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Preview(showBackground = true)
 @Composable
@@ -257,7 +266,7 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
                 }
             }
 
-            Column{
+            Column(modifier = Modifier.fillMaxWidth()){
                 SectionTitle(title = "Danh sách truyện liên quan")
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -284,145 +293,148 @@ val bannerItems = listOf(
     BannerItem(R.drawable.banner2, "Khuyen mai"),
     BannerItem(R.drawable.banner3, "Moi cap nhat")
 )
+val genreDemoList: List<Category> = listOf(Category(id =1,name ="Adventure"),Category(id =2,name ="Autobiography"),
+    Category(id =3,name ="Mystery"),Category(id =4,name ="Romantic"))
 
-
-var ExampleList: List<StoryItemModel> = listOf(
-    StoryItemModel(
+val ExampleList: List<Story> = listOf(
+    Story(
         id=1,
-        title = "Alibaba",
-        coverImage = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        shortDescription = "",
-        isPremium = true,
-        author = "penelope",
-        likes = 100,
-        chaptersnumbers = 10,
-        genres = listOf("Adventure","Mystery","Autobiography"),
-        lastUpdated = "22/12/2024",
-        views = 120
-
-    ),
-    StoryItemModel(
-        id= 1,
-        title = "Alibaba",
-        coverImage = "https://baodongnai.com.vn/file/e7837c02876411cd0187645a2551379f/022024/18_1_20240229171501.jpg",
-        shortDescription = "",
-        isPremium = true,
-        author = "Hhahaa",
-        likes = 100,
-        chaptersnumbers = 10,
-        genres = listOf("Adventure","Mystery","Autobiography"),
-        lastUpdated = "22/12/2024",
-        views = 120
-    ),
-    StoryItemModel(
-        id=1,
-        title = "Alibaba",
-        coverImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb3Fs752Mx1GL4D6g6EpDw4uPms47KDqDdvQ&s",
-        shortDescription = "",
-        isPremium = true,
-        author = "Hhahaa",
-        likes = 100,
-        chaptersnumbers = 10,
-        genres = listOf("Adventure","Mystery","Autobiography"),
-        lastUpdated = "22/12/2024",
-        views = 120
-    ),
-    StoryItemModel(
-        id=1,
-        title = "Alibaba",
-        coverImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3OOV4uJq_HKA2ReFpTaTT7y0eo7bQ3Hr7Q&s",
-        shortDescription = "",
-        isPremium = true,
-        author = "Hhahaa",
-        likes = 100,
-        chaptersnumbers = 10,
-        genres = listOf("Adventure","Mystery","Autobiography"),
-        lastUpdated = "22/12/2024",
-        views = 120
-    ),
-    StoryItemModel(
-        id=1,
-        title = "Alibaba",
-        coverImage = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        shortDescription = "",
-        isPremium = true,
-        author = "Hhahaa",
-        likes = 100,
-        chaptersnumbers = 10,
-        genres = listOf("Adventure","Mystery","Autobiography"),
-        lastUpdated = "22/12/2024",
-        views = 120
+        name ="Alibaba",
+        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+        description = "fgfssdf",
+        price = BigDecimal(10000),
+        author = Author(id = 1,
+            name = "peneloped",
+            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+            dName = "tolapenee"
+        ),
+        voteNum = 100,
+        chapterNum = 10,
+        viewNum = 100,
+        categories = genreDemoList,
+                createdAt = LocalDate.parse("2024-12-12"),
+        updateAt = LocalDate.parse("2024-12-12"),
+        status = "Full",
+        ageRange = 13,
+        pricePerChapter = BigDecimal(200),
     )
+
 )
 
-var  ReadListItem_= ReadListItemModel(
+
+var  ReadListItem_= ReadList(
     id=1,
     name="item sdsdfcsvsv svdvs ",
-    date="4/5/2025",
     description = "hahadfgdfgsdfsdfsdfsdfsdfdsfdsgdsfgdfgfdgfdgdf",
-    stories = listOf(
-        StoryItemModel(
-            id=1,
-            title = "Alibaba",
-            coverImage = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-            shortDescription = "",
-            isPremium = true,
-            author = "Hhahaa",
-            likes = 100,
-            chaptersnumbers = 10,
-            genres = listOf("Adventure","Mystery","Autobiography"),
-            lastUpdated = "22/12/2024",
-            views = 120
-
-        ),
-        StoryItemModel(
-            id=1,
-            title = "Alibaba",
-            coverImage = "https://baodongnai.com.vn/file/e7837c02876411cd0187645a2551379f/022024/18_1_20240229171501.jpg",
-            shortDescription = "",
-            isPremium = true,
-            author = "Hhahaa",
-            likes = 100,
-            chaptersnumbers = 10,
-            genres = listOf("Adventure","Mystery","Autobiography"),
-            lastUpdated = "22/12/2024",
-            views = 120
-        ),
-        StoryItemModel(
-            id=1,
-            title = "Alibaba",
-            coverImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb3Fs752Mx1GL4D6g6EpDw4uPms47KDqDdvQ&s",
-            shortDescription = "",
-            isPremium = true,
-            author = "Hhahaa",
-            likes = 100,
-            chaptersnumbers = 10,
-            genres = listOf("Adventure","Mystery","Autobiography"),
-            lastUpdated = "22/12/2024",
-            views = 120
-        ),
-        StoryItemModel(
-            id=1,
-            title = "Alibaba",
-            coverImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSI3OOV4uJq_HKA2ReFpTaTT7y0eo7bQ3Hr7Q&s",
-            shortDescription = "",
-            isPremium = true,
-            author = "Hhahaa",
-            likes = 100,
-            chaptersnumbers = 10,
-            genres = listOf("Adventure","Mystery","Autobiography"),
-            lastUpdated = "22/12/2024",
-            views = 120
-        )
-    )
+    userId = 2,
+    stories = ExampleList
 )
 
 
 
 
 
+fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
+    return ExampleList.filter { story ->
+        val matchCategory = story.categories.any { it == category }
+        val matchStatus = if(status == "all") true else story.status == status
+        val matchPrice = when(premiumStatus){
+            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
+            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
+            else -> true
+        }
 
+        matchCategory && matchStatus && matchPrice
+    }
+}
 
+val demoUser =  User(id = 1, name = "Peneloped Lyne",
+    role = Role(1,"User"),
+    dName = "tolapenelopee",
+    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    mail = "peneloped@gmail.com",
+    followerNum = 200,
+    novelsNum = 50,
+    readListNum = 3,
+    about = "Your membership starts as soon as you set up payment and subscribe. " +
+            "Your monthly charge will occur on the last day of the current billing period. " +
+            "We'll renew your membership for you can manage your subscription or turn off " +
+            "auto-renewal under accounts setting.\n" +
+            "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
+    wallet = BigDecimal(0),
+    dob = LocalDate.parse("2020-03-12")
+)
 
+val demoAppUser = User(id = 2, name = "Peneloped Lyne",
+            role = Role(1,"User"),
+            dName = "tolapenelopee",
+            backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+            mail = "peneloped@gmail.com",
+            followerNum = 200,
+            novelsNum = 50,
+            readListNum = 3,
+            about = "Your membership starts as soon as you set up payment and subscribe. " +
+            "Your monthly charge will occur on the last day of the current billing period. " +
+            "We'll renew your membership for you can manage your subscription or turn off " +
+            "auto-renewal under accounts setting.\n" +
+            "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
+            wallet = BigDecimal(0),
+            dob = LocalDate.parse("2020-03-12")
+            )
 
-
+val demoChatList  = listOf(
+    Chat(
+        id = 1,
+        communityId = 1,
+        sender = demoUser,
+        content = "sdagthoruaes99ig",
+        messagePicUrl = null,
+        time = LocalDateTime.parse("2020-10-22T12:22:10"),
+    ),
+    Chat(
+        id = 1,
+        communityId = 1,
+        sender = demoAppUser,
+        content = "Hello?",
+        messagePicUrl = null,
+        time = LocalDateTime.parse("2020-10-22T12:22:10"),
+    ),
+    Chat(
+        id = 1,
+        communityId = 1,
+        sender = demoUser,
+        content = null,
+        messagePicUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        time = LocalDateTime.parse("2020-10-22T12:22:10"),
+    ),
+    Chat(
+        id = 1,
+        communityId = 1,
+        sender = demoAppUser,
+        content = "A",
+        messagePicUrl = null,
+        time = LocalDateTime.parse("2020-10-22T12:22:10"),
+    ),
+)
+var demoCommunity = Community(
+    id =1,
+    name = "Food in anime",
+    category = Category(1,"Fantasy"),
+    avatarUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    memberNum = 150000,
+    description = "A group for everyone to talk about food seen in Anime or manga."
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+            + "A group for everyone to talk about food seen in Anime or manga"
+)
