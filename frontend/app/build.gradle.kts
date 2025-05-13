@@ -39,6 +39,9 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 }
 
 dependencies {
@@ -51,6 +54,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.appcompat)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.window:window:1.3.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,6 +81,11 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.ui)
 
+
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
     implementation (libs.androidx.hilt.navigation.compose)
     implementation (libs.hilt.android)
     implementation (libs.androidx.navigation.compose)
@@ -85,6 +96,21 @@ dependencies {
     // Optional - nếu dùng ViewModel với Hilt
     implementation(libs.androidx.hilt.navigation.compose)
 
+    implementation("com.github.bumptech.glide:glide:4.13.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.x.x")
+    implementation("androidx.compose.runtime:runtime-livedata:x.x.x")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
+    implementation ("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation ("androidx.compose.foundation:foundation-layout:1.6.0")
 
 
+
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
 }
