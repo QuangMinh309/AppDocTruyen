@@ -4,8 +4,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import db from "./models/index.js";
 import imageRoutes from "./routes/imageRoutes.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
-dotenv.config(); // Load .env before anything else
+dotenv.config();
 
 const app = express();
 const sequelize = db.sequelize;
@@ -23,6 +24,9 @@ app.use("/api/images", imageRoutes);
 app.get("/", (req, res) => {
   res.send("Hello from backend!");
 });
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 3000;
