@@ -12,14 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.frontend.data.model.StoryItemModel
+import com.example.frontend.data.model.Story
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.main_nav.ExampleList
 
     @Composable
-fun ReadListScreen(listName: String, storyItems: List<StoryItemModel>) {
+fun ReadListScreen(listName: String, storyItems: List<Story>) {
     ScreenFrame(
         topBar = {
             TopBar(

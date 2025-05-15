@@ -7,7 +7,9 @@ sealed class Screen(var route: String) {
         data object Search :MainNav("Search")
         data object YourStory : MainNav("YourStory")
         data object Community : MainNav("Community")
-        data object Profile : MainNav("Profile")
+        data object Profile : MainNav("Profile/{id}"){
+            fun createRoute(id: String) = "Profile/$id"
+        }
     }
     sealed class Community(route: String) :Screen(route) {
         fun createRoute(communityId: String) = route.replace("{communityId}", communityId)
@@ -27,7 +29,7 @@ sealed class Screen(var route: String) {
         }
     }
     data object  YourStoryDetail: Screen("YourStoryDetail/{id}"){
-        fun createRoute(id: String) = "StoryDetail/$id"
+        fun createRoute(id: String) = "YourStoryDetail/$id"
     }
 
     sealed class Transaction(route: String) :Screen(route) {

@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.main_nav
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -71,6 +72,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
                     navController.navigate(command.route)
                 }
                 is NavigationCommand.Back -> {
+                    Log.e("backk", "Đây là log mức DEBUG")  // Debug
                     navController.popBackStack()
                 }
             }
@@ -82,8 +84,8 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
         Screen.MainNav.Home.route -> true
         Screen.MainNav.Search.route -> true
         Screen.MainNav.Community.route -> true
-        Screen.MainNav.Profile.route -> true
         Screen.MainNav.YourStory.route -> true
+        "Profile/1" -> true
         else -> false
     }
 
@@ -146,7 +148,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MainNav.Home.route,
+            startDestination = Screen.MainNav.Search.route,
             modifier = Modifier.padding(paddingValues)
         ) {
 
@@ -155,14 +157,12 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
             composable(Screen.MainNav.Search.route) {   StorySearchScreen() }
             composable(Screen.MainNav.Community.route) { CommunityScreen() }
-            composable(Screen.MainNav.Profile.route) {
-                AdvancedProfile(
-                    backgroundImageUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-                    avatarImageUrl = "",
-                    name = "Peneloped Lyne",
-                    nickName= "tolapeneloped",
+            composable(
+                route = Screen.MainNav.Profile.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
                 )
-            }
+            ) { ProfileScreen() }
             //endregion
 
             //region story
@@ -233,19 +233,14 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
             composable(Screen.Discover.route) { DiscoverDetailScreen() }
             composable(Screen.Notification.route) { NotificationScreen() }
             composable(Screen.Setting.route) { SettingScreen() }
-            composable(
-                route = Screen.StoryList.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
-                )
-            )  { StoryListScreen() }
+//            composable(
+//                route = Screen.StoryList.route,
+//                arguments = listOf(
+//                    navArgument("id") { type = NavType.StringType },
+//                )
+//            )  { ReadListScreen() }
 
         }
     }
-}
-
-@Composable
-fun StoryListScreen() {
-    TODO("Not yet implemented")
 }
 

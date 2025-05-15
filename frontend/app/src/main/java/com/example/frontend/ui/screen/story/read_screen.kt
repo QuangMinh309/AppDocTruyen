@@ -145,7 +145,7 @@ fun ReadScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(13.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

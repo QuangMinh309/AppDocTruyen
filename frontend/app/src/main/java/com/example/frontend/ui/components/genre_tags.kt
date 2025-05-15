@@ -12,14 +12,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.data.model.Category
 import com.example.frontend.ui.theme.OrangeRed
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
 fun GenreTags(
-    genres: List<String>,
+    genres: List<Category>,
     fontSize: Float = 13.5f,
     horizontalPadding: Int = 1,
     verticalPadding: Int = 1,
@@ -42,7 +41,7 @@ fun GenreTags(
 
             ) {
                 Text(
-                    tag,
+                    text = tag.name,
                     color = Color.Black,
                     fontSize = fontSize.sp,
                     fontWeight = FontWeight.SemiBold
@@ -53,12 +52,12 @@ fun GenreTags(
 }
 
 @Composable
-fun SmallGenreTags(genres: List<String>) {
+fun SmallGenreTags(genres: List<Category>) {
     GenreTags(
         genres,
         fontSize = 10f,
         horizontalPadding = 10,
-        verticalPadding = 5,
+        verticalPadding = 4,
         mainAxisSpacing = 9,
         crossAxisSpacing = 7
 
@@ -67,7 +66,7 @@ fun SmallGenreTags(genres: List<String>) {
 }
 
 @Composable
-fun LargeGenreTags(genres: List<String>) {
+fun LargeGenreTags(genres: List<Category>) {
     GenreTags(genres,
         fontSize = 14f,
         horizontalPadding = 15,

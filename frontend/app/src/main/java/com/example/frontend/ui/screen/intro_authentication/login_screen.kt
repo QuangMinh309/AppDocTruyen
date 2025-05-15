@@ -56,19 +56,30 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.activity.RegisterActivity
 import com.example.frontend.activity.ResetPasswordActivity
-import com.example.frontend.util.UserPreferences
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.intro_authentification.LoginViewModel
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.util.UserPreferences
 import kotlinx.coroutines.launch
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenContent() {
+    val fakeViewModel = LoginViewModel(NavigationManager())
+    LoginScreen(viewModel = fakeViewModel)
+}
 
 @Preview
 @Composable
-fun LoginScreen()
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
 {
     var tbEmailValue by remember { mutableStateOf("") }
     var tbPasswordValue by remember { mutableStateOf("") }
@@ -154,7 +165,8 @@ fun LoginScreen()
                                 color = OrangeRed
                             )
                         ) {
-                            append("register here!")
+                            append(text = "register here!",
+                                modifier = Modifier.clickable {})
                         }
                     },
                     modifier = Modifier
@@ -335,6 +347,7 @@ fun LoginScreen()
                     scope.launch {
                         if (rememberLogin) {
                             UserPreferences.saveUserData(context, tbEmailValue, tbPasswordValue, true)
+                            viewModel.onGoToHomeScreen()
                         } else {
                             UserPreferences.clearUserData(context)
                         }

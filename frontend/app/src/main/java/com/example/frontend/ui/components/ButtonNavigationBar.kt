@@ -47,7 +47,7 @@ fun BottomNavigationBar(navController: NavController) {
                 "Home" -> Screen.MainNav.Home.route
                 "Search" -> Screen.MainNav.Search.route
                 "Community" -> Screen.MainNav.Community.route
-                "User" -> Screen.MainNav.Profile.route
+                "Profile" -> Screen.MainNav.Profile.createRoute("1")
                 else -> Screen.MainNav.Home.route
             }
 
@@ -104,7 +104,7 @@ fun prepareBottomMenu(): List<BottomMenuItem> {
             icon = painterResource(id = R.drawable.community_navigation_ic)
         ),
         BottomMenuItem(
-            label = "User",
+            label = "Profile",
             icon = painterResource(id = R.drawable.user_navigation_ic)
         )
     )

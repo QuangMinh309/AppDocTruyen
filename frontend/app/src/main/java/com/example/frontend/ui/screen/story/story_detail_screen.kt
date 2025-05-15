@@ -44,6 +44,7 @@ import com.example.frontend.ui.components.StoryInfo
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
+import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
 
@@ -106,11 +107,11 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                 fontSize = 16.sp,
                             )
                             Spacer(Modifier.height(29.dp))
-                            LargeGenreTags(listOf("Adventure", "Mystery", "Autobiography", "Fantasy", "Drama"),
-                                )
+
+                            LargeGenreTags(genreDemoList)
+
                             Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (authorName = "PeneLoped Lynne", username = "tolapenelope",
-                               viewModel= viewModel)
+                            AuthorInfoCard (authorName = "PeneLoped Lynne", username = "tolapenelope",)
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
                             val rawComments = listOf(
@@ -126,8 +127,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                     listOf(R.drawable.novel_similar, "Demon Slayer", "Koyoharu Gotouge", "25.000đ", 14952L),
                                     listOf(R.drawable.novel_similar, "One Piece", "Eiichiro Oda", "30.000đ", 8123L),
                                     listOf(R.drawable.novel_similar, "Attack on Titan", "Hajime Isayama", "20.000đ", 12045L)
-                                ),
-                                viewModel
+                                )
                             )
                         },
                         chapterContent = {

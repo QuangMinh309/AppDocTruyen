@@ -1,12 +1,10 @@
 package com.example.frontend.data.model
 
-import androidx.datastore.core.DataStore
-
 data class Community (
-    val communityId: Int,
-    val communitytName: String,
-    val categoryId: Int,
-    val avatarId: String,
-    val menberNum: Int,
+    val id: Int,
+    val name: String,
+    val category: Category,
+    val avatarUrl: String,
+    val memberNum: Int,
     val description: String
 )

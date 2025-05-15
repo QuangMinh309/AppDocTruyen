@@ -10,23 +10,31 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.community.SearchingmemberViewModel
 import com.example.frontend.ui.components.MemberCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SearchBar
 
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenContent6() {
+    val fakeViewModel = SearchingmemberViewModel(NavigationManager())
+    SearchingMemberScreen(viewModel = fakeViewModel)
+}
 @Preview
 @Composable
-fun SearchingMemberScreen(){
+fun SearchingMemberScreen(viewModel: SearchingmemberViewModel = hiltViewModel()){
     val searchQuery = rememberSaveable { mutableStateOf("") }
-    val memberList = listOf("member1","member2","member3","member4","member5")
 
-    ScreenFrame(){
+    ScreenFrame{
         //Search bar
         SearchBar(
             value = searchQuery.value,
             onValueChange = {searchQuery.value = it},
-            cancelClick = {}
+            cancelClick = {viewModel.onGoBack()}
         )
 
         // Members list
@@ -35,10 +43,8 @@ fun SearchingMemberScreen(){
                 .fillMaxWidth()
                 .padding(top = 40.dp)
         ){
-            items(memberList){item->
-                MemberCard(
-                    item = item
-                )
+            items(viewModel.memberList){item->
+                MemberCard(model = item)
             }
 
         }
