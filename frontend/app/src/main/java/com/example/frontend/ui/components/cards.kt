@@ -70,6 +70,7 @@ import com.example.frontend.R
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.ReadListItemModel
 import com.example.frontend.data.model.StoryItemModel
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
@@ -267,7 +268,8 @@ fun ChapterItemCard(
     commentCount: String,
     viewCount: String,
     isLocked: Boolean = false,
-    isAuthor: Boolean = false
+    isAuthor: Boolean = false,
+    onClick: () -> Unit={}
 ) {
     Row(
         modifier = Modifier
@@ -336,7 +338,7 @@ fun ChapterItemCard(
 
 //region story card
 @Composable
-fun SimilarNovelsCard(novels: List<List<Any>>) {
+fun SimilarNovelsCard(novels: List<List<Any>>, viewModel: BaseViewModel) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(17.dp)) {
         items(novels, key = { it[1].toString() }) { novel ->
             val imageRes = novel[0] as Int
@@ -346,7 +348,8 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
             val votes = novel[4] as Long
 
             Column(
-                modifier = Modifier.width(128.dp),
+                modifier = Modifier.width(128.dp)
+                    .clickable { viewModel.onGoBack() },
                 horizontalAlignment = Alignment.Start
             ) {
                 Image(
@@ -783,7 +786,7 @@ internal fun formatViews(views: Long): String {
 //endregion
 
 @Composable
-fun AuthorInfoCard(authorName: String, username: String, onMoreClick: () -> Unit) {
+fun AuthorInfoCard(authorName: String, username: String, viewModel: BaseViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -810,7 +813,7 @@ fun AuthorInfoCard(authorName: String, username: String, onMoreClick: () -> Unit
             Text(text = "@$username", color = Color.White, fontSize = 13.sp)
         }
         Spacer(modifier = Modifier.weight(1f))
-        TextButton(onClick = onMoreClick) {
+        TextButton(onClick = {viewModel.onGoToProfileScreen()}) {
             Text("Thêm >", color = Color.White)
         }
     }

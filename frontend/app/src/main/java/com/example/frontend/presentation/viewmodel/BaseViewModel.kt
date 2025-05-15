@@ -2,6 +2,7 @@ package com.example.frontend.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -50,4 +51,17 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
         }
     }
+    fun onGoBack() {
+        viewModelScope.launch {
+            navigationManager.back()
+        }
+    }
+    fun onGoToChapterScreen(chapterId: Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId.toString()))
+        }
+    }
+
+
+
 }

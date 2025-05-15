@@ -6,5 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class StorySearchViewModel @Inject constructor(navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
+class
+
+StorySearchViewModel @Inject constructor(navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
 }

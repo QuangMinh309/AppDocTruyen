@@ -33,18 +33,21 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.theme.OrangeRed
 
 fun Text(text: String, color: Color, fontSize: TextUnit, fontWeight: FontWeight, any: Any?) {
 
 }
 
+
 @Composable
-fun StoryInfo() {
+fun StoryInfo(viewModel:StoryDetailViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,7 +196,8 @@ fun StoryInfo() {
             }
         }
         // Button start read
-        LinearButton(modifier = Modifier.weight(0.4f).height(35.dp)){
+        LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
+            onClick = {viewModel.onGoToChapterScreen(1) }){
             Text(
                 text = "Start  read",
                 color = Color.Black,

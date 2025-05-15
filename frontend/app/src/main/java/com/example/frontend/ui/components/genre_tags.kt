@@ -1,6 +1,7 @@
 package com.example.frontend.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.OrangeRed
 import com.google.accompanist.flowlayout.FlowRow
 
@@ -23,6 +26,8 @@ fun GenreTags(
     mainAxisSpacing: Int = 1,
     crossAxisSpacing: Int = 1,
     cornerRadius: Int = 30
+
+
 ) {
     FlowRow(
         mainAxisSpacing = mainAxisSpacing.dp,
@@ -33,6 +38,8 @@ fun GenreTags(
                 modifier = Modifier
                     .background(OrangeRed, RoundedCornerShape(cornerRadius.dp))
                     .padding(horizontal = horizontalPadding.dp, vertical = verticalPadding.dp)
+                    .clickable {  }
+
             ) {
                 Text(
                     tag,
@@ -53,7 +60,10 @@ fun SmallGenreTags(genres: List<String>) {
         horizontalPadding = 10,
         verticalPadding = 5,
         mainAxisSpacing = 9,
-        crossAxisSpacing = 7)
+        crossAxisSpacing = 7
+
+
+    )
 }
 
 @Composable
@@ -63,5 +73,7 @@ fun LargeGenreTags(genres: List<String>) {
         horizontalPadding = 15,
         verticalPadding = 8,
         mainAxisSpacing = 11,
-        crossAxisSpacing = 19)
+        crossAxisSpacing = 19
+
+    )
 }

@@ -2,6 +2,7 @@ package com.example.frontend.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 
 @Composable
 fun TopComments(comments: List<List<Any>>) {
@@ -62,6 +64,7 @@ fun TopComments(comments: List<List<Any>>) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(0.5f)
+                                .clickable { }
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.avt_img),

@@ -27,7 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
+import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
 import com.example.frontend.ui.components.ChapterItemCard
@@ -45,6 +49,12 @@ import kotlinx.coroutines.launch
 
 @Preview
 @Composable
+fun PreviewStoryDetailScreen()
+{
+    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
+    StoryDetailScreen(viewModel=fakeviewmodel)
+}
+@Composable
 fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -55,6 +65,8 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
         }
     }
 
+ //   val StoryId=viewModel.storyId
+
     val storyStatus = remember { mutableStateOf("Full") }
     val btnVote = remember { mutableStateOf("Vote") }
 
@@ -64,8 +76,8 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 title = "listName",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting()}
             )
         }
     ){
@@ -80,7 +92,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                     .padding(16.dp)
             ) {
                 item { Spacer(Modifier.height(8.dp)) }
-                item { StoryInfo() }
+                item { StoryInfo(viewModel) }
                 item { Spacer(Modifier.height(19.dp)) }
                 item { StoryStatusAction( isAuthor = false,storyStatus = storyStatus, hasVoted =  btnVote) }
                 item { Spacer(Modifier.height(29.dp)) }
@@ -94,9 +106,11 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                 fontSize = 16.sp,
                             )
                             Spacer(Modifier.height(29.dp))
-                            LargeGenreTags(listOf("Adventure", "Mystery", "Autobiography", "Fantasy", "Drama"))
+                            LargeGenreTags(listOf("Adventure", "Mystery", "Autobiography", "Fantasy", "Drama"),
+                                )
                             Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (authorName = "PeneLoped Lynne", username = "tolapenelope") { }
+                            AuthorInfoCard (authorName = "PeneLoped Lynne", username = "tolapenelope",
+                               viewModel= viewModel)
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
                             val rawComments = listOf(
@@ -112,7 +126,8 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                     listOf(R.drawable.novel_similar, "Demon Slayer", "Koyoharu Gotouge", "25.000đ", 14952L),
                                     listOf(R.drawable.novel_similar, "One Piece", "Eiichiro Oda", "30.000đ", 8123L),
                                     listOf(R.drawable.novel_similar, "Attack on Titan", "Hajime Isayama", "20.000đ", 12045L)
-                                )
+                                ),
+                                viewModel
                             )
                         },
                         chapterContent = {
@@ -131,7 +146,8 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                     commentCount = chapter[3] as String,
                                     viewCount = chapter[4] as String,
                                     isLocked = chapter[5] as Boolean,
-                                    isAuthor = chapter[6] as Boolean
+                                    isAuthor = chapter[6] as Boolean,
+                                    onClick = {viewModel.onGoToChapterScreen(1)}
                                 )
                                 if (index < chapters.lastIndex) {
                                     HorizontalDivider(

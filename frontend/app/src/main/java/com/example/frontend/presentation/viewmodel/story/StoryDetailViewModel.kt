@@ -8,9 +8,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoryDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    //savedStateHandle: SavedStateHandle,
     navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
-        val storyId: String = checkNotNull(savedStateHandle["id"])
-
-
+   //    val storyId: String = checkNotNull(savedStateHandle["id"])
+    //    val command=navigationManager.commands
 }
