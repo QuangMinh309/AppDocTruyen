@@ -30,9 +30,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.components.ScreenFrame
 
-@Preview
+
 @Composable
 fun WriteScreen() {
     var content by remember { mutableStateOf("") }

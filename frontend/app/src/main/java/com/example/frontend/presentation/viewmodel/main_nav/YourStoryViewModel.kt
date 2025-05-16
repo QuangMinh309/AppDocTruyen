@@ -8,6 +8,7 @@ import com.example.frontend.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ExampleList
 import com.example.frontend.ui.screen.main_nav.genreDemoList
+import com.example.frontend.ui.screen.story.Examplechapters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -45,6 +46,7 @@ class YourStoryViewModel @Inject constructor(navigationManager: NavigationManage
             status = "Full",
             ageRange = 13,
             pricePerChapter = BigDecimal("200"),
+            chapters = Examplechapters
         )
 
         onGoToYourStoryDetailScreen(newStory.id)

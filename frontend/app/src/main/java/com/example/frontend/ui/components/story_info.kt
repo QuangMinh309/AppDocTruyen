@@ -1,6 +1,5 @@
 package com.example.frontend.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,15 +27,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.theme.OrangeRed
@@ -59,14 +57,14 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .fillMaxWidth()
                 .height(250.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.story_detail_page1),
+            AsyncImage(
+                model =viewModel.story.coverImgUrl, // URL của hình ảnh
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer(
-                        alpha = 0.5f //Reduce the brightness of the image
+                        alpha = 0.5f // Giữ nguyên độ mờ
                     )
             )
 
@@ -99,7 +97,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Text(
-                "Tempting the divine",
+                text = "${viewModel.story.name}",
                 color = Color.White,
                 fontSize = 21.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -126,7 +124,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = formatViews(200000),
+                    text = formatViews(viewModel.story.voteNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -151,7 +149,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(2000),
+                    text = formatViews(viewModel.story.viewNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -176,7 +174,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(25),
+                    text = formatViews(viewModel.story.chapterNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -197,7 +195,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
         }
         // Button start read
         LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
-            onClick = {viewModel.onGoToChapterScreen(1) }){
+            onClick = {viewModel.onGoToChapterScreen(viewModel.chapterrs[0].chapterId.toString()) }){
             Text(
                 text = "Start  read",
                 color = Color.Black,

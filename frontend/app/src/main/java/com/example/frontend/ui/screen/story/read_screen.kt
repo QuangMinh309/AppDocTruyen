@@ -35,14 +35,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
 
 @Preview
 @Composable
-fun ReadScreen() {
+fun ReadScreen(viewModel: BaseViewModel= hiltViewModel()) {
     var comment by remember { mutableStateOf("") }
 
     ScreenFrame(
@@ -98,7 +100,7 @@ fun ReadScreen() {
                 listOf("huy", null, R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
                 listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
             )
-            TopComments(rawComments.filterIsInstance<List<Any>>())
+            TopComments(comments,viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))
 

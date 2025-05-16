@@ -12,6 +12,7 @@ data class Story (
     val categories: List<Category>,
     val viewNum: Int ,
     val voteNum: Int,
+    val chapters: List<Chapter>,
     val chapterNum :Int,
     val createdAt: LocalDate,
     val updateAt: LocalDate,

@@ -27,6 +27,9 @@ sealed class Screen(var route: String) {
             data object Read : Chapter("Read/{chapterId}")
             data object Write: Chapter("Write/{chapterId}")
         }
+        data object UserProfile :Story("UserProfile/{id}"){
+            fun createRoute(id:String)= "UserProfile/$id"
+        }
     }
     data object  YourStoryDetail: Screen("YourStoryDetail/{id}"){
         fun createRoute(id: String) = "YourStoryDetail/$id"

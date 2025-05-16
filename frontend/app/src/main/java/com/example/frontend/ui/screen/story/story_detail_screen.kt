@@ -27,10 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.R
+import com.example.frontend.data.model.Author
+import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.Comment
+import com.example.frontend.data.model.Story
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
@@ -44,9 +46,13 @@ import com.example.frontend.ui.components.StoryInfo
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
+import com.example.frontend.ui.screen.main_nav.demoUser
 import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.time.LocalDate
+import java.util.Date
 
 @Preview
 @Composable
@@ -74,7 +80,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "listName",
+                title = "${viewModel.story.name}",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -95,23 +101,22 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item { StoryInfo(viewModel) }
                 item { Spacer(Modifier.height(19.dp)) }
-                item { StoryStatusAction( isAuthor = false,storyStatus = storyStatus, hasVoted =  btnVote) }
+                item { StoryStatusAction( isAuthor = true,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(viewModel.story.id)}) }
                 item { Spacer(Modifier.height(29.dp)) }
                 item {
                     DescriptionStory(
                         aboutContent = {
                             Text(
-                                text = "Your membership starts as soon as you set up payment and subscribe. Your monthly charge will occur on the last day of the current billing period." +
-                                        "We’ll renew your membership for you can manage your subscription or turn off auto-renewal under accounts setting.",
+                                text =viewModel.story.description.toString(),
                                 color = Color.White,
                                 fontSize = 16.sp,
                             )
                             Spacer(Modifier.height(29.dp))
 
-                            LargeGenreTags(genreDemoList)
+                            LargeGenreTags(viewModel.story.categories)
 
                             Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (authorName = "PeneLoped Lynne", username = "tolapenelope",)
+                            AuthorInfoCard (model = viewModel.story.author, onClick = {viewModel.onGoToUserProfileScreen(viewModel.story.author.id)})
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
                             val rawComments = listOf(
@@ -119,37 +124,25 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                                 listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
                                 listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
                             )
-                            TopComments(rawComments.filterIsInstance<List<Any>>())
+                            TopComments(comments, viewModel)
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Novel Similar")
-                            SimilarNovelsCard(
-                                listOf(
-                                    listOf(R.drawable.novel_similar, "Demon Slayer", "Koyoharu Gotouge", "25.000đ", 14952L),
-                                    listOf(R.drawable.novel_similar, "One Piece", "Eiichiro Oda", "30.000đ", 8123L),
-                                    listOf(R.drawable.novel_similar, "Attack on Titan", "Hajime Isayama", "20.000đ", 12045L)
-                                )
-                            )
+                            SimilarNovelsCard(Examplestories,viewModel)
                         },
                         chapterContent = {
-                            val chapters = listOf(
-                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
-                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
-                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
-                            )
-
+//                            val chapters = listOf(
+//                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
+//                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
+//                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
+//                            )
                             Spacer(Modifier.height(29.dp))
-                            chapters.forEachIndexed { index, chapter ->
+                            Examplechapters.forEachIndexed { index, chapter ->
                                 ChapterItemCard(
-                                    title = chapter[0] as String,
-                                    date = chapter[1] as String,
-                                    time = chapter[2] as String,
-                                    commentCount = chapter[3] as String,
-                                    viewCount = chapter[4] as String,
-                                    isLocked = chapter[5] as Boolean,
-                                    isAuthor = chapter[6] as Boolean,
-                                    onClick = {viewModel.onGoToChapterScreen(1)}
+                                    chapter = chapter,
+                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
                                 )
-                                if (index < chapters.lastIndex) {
+
+                                if (index < Examplechapters.lastIndex) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(vertical = 8.dp),
                                         thickness = 1.2.dp,
@@ -186,3 +179,152 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
         }
     }
 }
+
+val ExampleChapter: Chapter=Chapter (
+chapterId = 1,
+chapterName = "The Beginning",
+OrdinalNumber = 1,
+storyId = 1,
+content = "The hero embarks on a journey to find the lost artifact...",
+viewNum = 500, commentNumber = 10,
+UpdateAt = Date(2025 - 1900, 4, 12, 9, 15),
+lockedStatus = false
+)
+
+val Examplechapters: List<Chapter> = listOf(
+    ExampleChapter,
+    ExampleChapter,
+    ExampleChapter,
+    ExampleChapter,
+    ExampleChapter
+)
+
+val ExamplStory=Story(
+    id=1,
+    name ="Alibaba",
+    coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+    description = "fgfssdf",
+    price = BigDecimal(10000),
+    author = Author(id = 1,
+        name = "peneloped",
+        avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+        dName = "tolapenee"
+    ),
+    voteNum = 100,
+    chapterNum = 10,
+    viewNum = 100,
+    categories = genreDemoList,
+    createdAt = LocalDate.parse("2024-12-12"),
+    updateAt = LocalDate.parse("2024-12-12"),
+    status = "Full",
+    ageRange = 13,
+    pricePerChapter = BigDecimal(200),
+    chapters = Examplechapters
+)
+
+val ExampleCategories = listOf(
+    Category(1, "Fantasy"),
+    Category(2, "Adventure")
+)
+
+val Examplestories = listOf(
+    Story(
+        id=1,
+        name ="Alibaba",
+        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+        description = "fgfssdf",
+        price = BigDecimal(10000),
+        author = Author(id = 1,
+            name = "peneloped",
+            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+            dName = "tolapenee"
+        ),
+        voteNum = 100,
+        chapterNum = 10,
+        viewNum = 100,
+        categories = genreDemoList,
+        createdAt = LocalDate.parse("2024-12-12"),
+        updateAt = LocalDate.parse("2024-12-12"),
+        status = "Full",
+        ageRange = 13,
+        pricePerChapter = BigDecimal(200),
+        chapters = Examplechapters
+
+    ),
+    Story(
+        id=1,
+        name ="Alibaba",
+        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+        description = "fgfssdf",
+        price = BigDecimal(10000),
+        author = Author(id = 1,
+            name = "peneloped",
+            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+            dName = "tolapenee"
+        ),
+        voteNum = 100,
+        chapterNum = 10,
+        viewNum = 100,
+        categories = genreDemoList,
+        createdAt = LocalDate.parse("2024-12-12"),
+        updateAt = LocalDate.parse("2024-12-12"),
+        status = "Full",
+        ageRange = 13,
+        pricePerChapter = BigDecimal(200),
+        chapters = Examplechapters
+    )
+)
+
+val comments: List<Comment> = listOf(
+    Comment(
+        commentId = 1,
+        user = demoUser, // nguyen_author
+        chapter= ExampleChapter,
+        content = "Great start to the story! Can't wait for the next chapter.",
+        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        createAt = Date(2025 - 1900, 4, 10, 10, 0), // 2025-05-10 10:00
+        likeNumber = 15,
+        disLikeNumber = 2
+    ),
+    Comment(
+        commentId = 2,
+        user = demoUser, // tran_reader
+        chapter= ExampleChapter,
+        content = "I love the dragon fight scene!",
+        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        createAt = Date(2025 - 1900, 4, 11, 14, 30), // 2025-05-11 14:30
+        likeNumber = 10,
+        disLikeNumber = 0
+    ),
+    Comment(
+        commentId = 3,
+        user = demoUser, // le_fan
+        chapter= ExampleChapter,
+        content = "This chapter was intense! More please!",
+        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        createAt = Date(2025 - 1900, 4, 12, 9, 15), // 2025-05-12 09:15
+        likeNumber = 8,
+        disLikeNumber = 1
+    ),
+    Comment(
+        commentId = 4,
+        user = demoUser, // tran_reader
+        chapter= ExampleChapter,
+        content = "The plot twist was unexpected!",
+        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        createAt = Date(2025 - 1900, 4, 13, 16, 20), // 2025-05-13 16:20
+        likeNumber = 12,
+        disLikeNumber = 3
+    ),
+    Comment(
+        commentId = 5,
+        user = demoUser, // nguyen_author
+        chapter = ExampleChapter,
+        content = "Thanks for the feedback, everyone! Stay tuned for more.",
+        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+        createAt = Date(2025 - 1900, 4, 15, 11, 45), // 2025-05-15 11:45
+        likeNumber = 20,
+        disLikeNumber = 0
+    )
+)
+

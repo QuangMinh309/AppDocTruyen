@@ -1,6 +1,7 @@
 package com.example.frontend.data.model
 
 import java.time.LocalDate
+import java.util.Date
 
 data class Chapter (
     val chapterId: Int,
@@ -9,6 +10,7 @@ data class Chapter (
     val storyId: Int,
     val content: String,
     val viewNum: Int,
-    val UpdateAt: LocalDate,
+    val commentNumber: Int,
+    val UpdateAt: Date,
     val lockedStatus: Boolean
 )

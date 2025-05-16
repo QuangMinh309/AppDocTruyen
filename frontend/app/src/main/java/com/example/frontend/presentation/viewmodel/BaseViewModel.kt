@@ -2,7 +2,6 @@ package com.example.frontend.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,18 +56,26 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         }
     }
 
-    fun onGoToChapterScreen(chapterId: Int) {
+    fun onGoToChapterScreen(chapterId: String) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId.toString()))
         }
     }
 
-
-
-
     fun onGoToSearchingMemberScreen(id: Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Community.SearchingMember.createRoute(id.toString()))
+        }
+    }
+    fun onGoToWriteScreen(id:Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.Chapter.Write.createRoute(id.toString()))
+        }
+    }
+
+    fun onGoToUserProfileScreen(id:Int){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.UserProfile.createRoute(id.toString()))
         }
     }
 

@@ -278,18 +278,13 @@ fun YourStoryDetailScreen() {
                         )
 
                         Spacer(Modifier.height(29.dp))
-                        chapters.forEachIndexed { index, chapter ->
+                        Examplechapters.forEachIndexed { index, chapter ->
                             ChapterItemCard(
-                                title = chapter[0] as String,
-                                date = chapter[1] as String,
-                                time = chapter[2] as String,
-                                commentCount = chapter[3] as String,
-                                viewCount = chapter[4] as String,
-                                isLocked = chapter[5] as Boolean,
-                                isAuthor = chapter[6] as Boolean
+                                chapter = chapter,
+                                onClick = {  }
                             )
-                            // Show divider between two chapter
-                            if (index < chapters.lastIndex) {
+
+                            if (index < Examplechapters.lastIndex) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 8.dp),
                                     thickness = 1.2.dp,

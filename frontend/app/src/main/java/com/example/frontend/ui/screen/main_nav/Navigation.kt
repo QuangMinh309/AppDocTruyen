@@ -44,6 +44,7 @@ import com.example.frontend.ui.screen.community.CommunityDetailScreen
 import com.example.frontend.ui.screen.community.SearchingMemberScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.UserProfileScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -239,6 +240,14 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
 //                    navArgument("id") { type = NavType.StringType },
 //                )
 //            )  { ReadListScreen() }
+
+
+            composable(
+                route = Screen.Story.UserProfile.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { UserProfileScreen() }
 
         }
     }

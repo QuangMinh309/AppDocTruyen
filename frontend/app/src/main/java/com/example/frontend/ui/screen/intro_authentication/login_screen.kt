@@ -146,9 +146,10 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     ),
                     modifier = Modifier.padding(bottom = 10.dp)
                 )
+                //Lỗi đoạn này
                 Text(
                     buildAnnotatedString {
-                        withStyle (
+                        withStyle(
                             style = SpanStyle(
                                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                                 fontSize = 17.sp,
@@ -158,25 +159,22 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                             append("If you don't have an account to login with, you can ")
                         }
 
-                        withStyle (
+                        withStyle(
                             style = SpanStyle(
                                 fontFamily = FontFamily(Font(R.font.poppins_medium)),
                                 fontSize = 17.sp,
                                 color = OrangeRed
                             )
                         ) {
-                            append(text = "register here!",
-                                modifier = Modifier.clickable {})
+                            append("register here!")
                         }
                     },
                     modifier = Modifier
                         .align(alignment = Alignment.Start)
-                        .clickable(
-                            onClick = {
-                                val intent = Intent(context, RegisterActivity::class.java)
-                                context.startActivity(intent)
-                            }
-                        )
+                        .clickable {
+                            val intent = Intent(context, RegisterActivity::class.java)
+                            context.startActivity(intent)
+                        }
                 )
             }
             Column ( // email textfield

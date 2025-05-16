@@ -35,21 +35,15 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.data.model.Comment
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 
 @Composable
-fun TopComments(comments: List<List<Any>>) {
+fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         items(comments) { comment ->
-            val username = comment[0] as String
-            val commentText = comment[1] as? String
-            val commentImageRes = comment[2] as? Int
-            val chapter = comment[3] as String
-            val date = comment[4] as String
-            val time = comment[5] as String
-            val likes = comment[6] as String
-            val unlikes = comment[7] as String
 
             Card(
                 modifier = Modifier
@@ -64,10 +58,10 @@ fun TopComments(comments: List<List<Any>>) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(0.5f)
-                                .clickable { }
+                                .clickable { viewModel.onGoToUserProfileScreen(comment.user.id) }
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.avt_img),
+                            AsyncImage(
+                                model = comment.user.avatarUrl, // URL của hình ảnh avatar
                                 contentDescription = "avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -82,7 +76,7 @@ fun TopComments(comments: List<List<Any>>) {
                             )
                             Spacer(modifier = Modifier.width(13.dp))
                             Text(
-                                text = "@$username",
+                                text = "@${comment.user.dName}",
                                 color = Color.White,
                                 fontSize = 16.sp,
                                 maxLines = 1,
@@ -90,12 +84,12 @@ fun TopComments(comments: List<List<Any>>) {
                             )
                         }
 
-                        if (!commentText.isNullOrEmpty() || commentImageRes != null) {
+                        if (!comment.content.isNullOrEmpty() || comment.commentPicId != null) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
                             ) {
-                                commentText?.let {
+                                comment.content?.let {
                                     Text(
                                         text = it,
                                         color = Color.White,
@@ -104,10 +98,10 @@ fun TopComments(comments: List<List<Any>>) {
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 }
-                                commentImageRes?.let {
+                                comment.commentPicId?.let {
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    Image(
-                                        painter = painterResource(id = it),
+                                    AsyncImage(
+                                        model =  comment.commentPicId, // URL của hình ảnh bình luận
                                         contentDescription = "comment image",
                                         modifier = Modifier
                                             .height(110.dp)
@@ -125,12 +119,12 @@ fun TopComments(comments: List<List<Any>>) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(text = chapter, color = Color.White, fontSize = 14.5.sp)
+                            Text(text = "chapter ${comment.chapter.OrdinalNumber}", color = Color.White, fontSize = 14.5.sp)
                             Spacer(modifier = Modifier.height(7.dp))
                             Row {
-                                Text(text = date, color = Color(0xFFFF5722), fontSize = 14.5.sp)
+                                Text(text = comment.createAt.date.toString(), color = Color(0xFFFF5722), fontSize = 14.5.sp)
                                 Text(
-                                    text = time,
+                                    text = comment.createAt.time.toString(),
                                     color = Color.White,
                                     fontSize = 14.5.sp,
                                     modifier = Modifier.padding(start = 11.dp)
@@ -151,7 +145,7 @@ fun TopComments(comments: List<List<Any>>) {
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp)
                             )
-                            Text(text = likes, color = Color.White, fontSize = 15.sp)
+                            Text(text = comment.likeNumber.toString(), color = Color.White, fontSize = 15.sp)
 
                             Spacer(modifier = Modifier.width(9.dp))
 
@@ -161,7 +155,7 @@ fun TopComments(comments: List<List<Any>>) {
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp)
                             )
-                            Text(text = unlikes, color = Color.White, fontSize = 15.sp)
+                            Text(text = comment.disLikeNumber.toString(), color = Color.White, fontSize = 15.sp)
                         }
                     }
                 }

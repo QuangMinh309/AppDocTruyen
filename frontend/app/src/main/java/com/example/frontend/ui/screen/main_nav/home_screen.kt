@@ -53,6 +53,7 @@ import com.example.frontend.ui.components.StoryCard
 import com.example.frontend.ui.components.StoryCard2
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.screen.story.Examplechapters
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -317,6 +318,7 @@ val ExampleList: List<Story> = listOf(
         status = "Full",
         ageRange = 13,
         pricePerChapter = BigDecimal(200),
+        chapters = Examplechapters
     )
 
 )
