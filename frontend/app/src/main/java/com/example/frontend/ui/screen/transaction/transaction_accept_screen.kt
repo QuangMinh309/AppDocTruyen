@@ -26,23 +26,37 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.transaction.TransactionAcceptViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
+import java.text.DecimalFormat
 
 
 @Preview
 @Composable
-fun TransactionAcceptScreen(){
+fun PreViewTransactionAcceptScreen(){
+    val fakeviewmodel=TransactionAcceptViewModel(NavigationManager())
+    TransactionAcceptScreen(fakeviewmodel)
+}
+@Composable
+fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel()){
+    val money=200000L
+    fun formatMoney(money: Long): String {
+        val formatter = DecimalFormat("#,###"+"đ")
+        return formatter.format(money)
+    }
     ScreenFrame(
         topBar = {
             TopBar(
                 title = "Transaction Accept",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){
@@ -101,7 +115,7 @@ fun TransactionAcceptScreen(){
                                     )
                                 )
                                 Text(
-                                    text= "200,000đ",
+                                    text= formatMoney(money),
                                     style = TextStyle(
                                         color = Color.Green,
                                         fontSize = 16.sp,
@@ -150,7 +164,7 @@ fun TransactionAcceptScreen(){
                             )
                             //account number
                             Text(
-                                text= "Account Number: 123456789",
+                                text= "Account Number: 5811666400",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -158,7 +172,7 @@ fun TransactionAcceptScreen(){
                             )
                             //Account Holder
                             Text(
-                                text= "Account Holder: kashfkldshlakf",
+                                text= "Account Holder: Nguyen Minh Thien",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -174,7 +188,7 @@ fun TransactionAcceptScreen(){
                             )
                             //transaction message
                             Text(
-                                text= "Message: aksjfkljdsflkjsdfjsld",
+                                text= "Message: Nạp ${formatMoney(money)}",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -211,7 +225,7 @@ fun TransactionAcceptScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                onClick = { /*TODO*/ }
+                onClick = { viewModel.onGoBack() }
 
             ){
                 Row (
@@ -231,3 +245,4 @@ fun TransactionAcceptScreen(){
         }
     }
 }
+

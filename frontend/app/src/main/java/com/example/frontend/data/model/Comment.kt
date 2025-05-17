@@ -4,7 +4,7 @@ import java.util.Date
 
 data class Comment (
     val commentId: Int,
-    val user: User,
+    val user: User ,
     val chapter: Chapter,
     val content: String,
     val commentPicId: String,

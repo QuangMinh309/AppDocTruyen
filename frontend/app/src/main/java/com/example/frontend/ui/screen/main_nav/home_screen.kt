@@ -350,7 +350,9 @@ fun getSampleStories(category: Category, status :String,premiumStatus: String ):
     }
 }
 
-val demoUser =  User(id = 1, name = "Peneloped Lyne",
+val demoUser =  User(
+    id = 1,
+    name = "Peneloped Lyne",
     role = Role(1,"User"),
     dName = "tolapenelopee",
     backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
@@ -363,8 +365,10 @@ val demoUser =  User(id = 1, name = "Peneloped Lyne",
             "We'll renew your membership for you can manage your subscription or turn off " +
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
-    wallet = BigDecimal(0),
-    dob = LocalDate.parse("2020-03-12")
+    wallet = BigDecimal(500.00),
+    dob = LocalDate.parse("2020-03-12"),
+    isPremium = true
+
 )
 
 val demoAppUser = User(id = 2, name = "Peneloped Lyne",

@@ -32,7 +32,9 @@ import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Comment
+import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.User
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
@@ -46,6 +48,7 @@ import com.example.frontend.ui.components.StoryInfo
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
+import com.example.frontend.ui.screen.main_nav.demoAppUser
 import com.example.frontend.ui.screen.main_nav.demoUser
 import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
@@ -80,7 +83,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "${viewModel.story.name}",
+                title = "${ExamplStory.name}",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -101,29 +104,29 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item { StoryInfo(viewModel) }
                 item { Spacer(Modifier.height(19.dp)) }
-                item { StoryStatusAction( isAuthor = true,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(viewModel.story.id)}) }
+                item { StoryStatusAction( isAuthor = true,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(ExamplStory.id)}) }
                 item { Spacer(Modifier.height(29.dp)) }
                 item {
                     DescriptionStory(
                         aboutContent = {
                             Text(
-                                text =viewModel.story.description.toString(),
+                                text = ExamplStory.description.toString(),
                                 color = Color.White,
                                 fontSize = 16.sp,
                             )
                             Spacer(Modifier.height(29.dp))
 
-                            LargeGenreTags(viewModel.story.categories)
+                            LargeGenreTags(ExamplStory.categories)
 
                             Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (model = viewModel.story.author, onClick = {viewModel.onGoToUserProfileScreen(viewModel.story.author.id)})
+                            AuthorInfoCard (model = ExamplStory.author, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
-                            val rawComments = listOf(
-                                listOf("linh", null, R.drawable.story_detail_page1, "Chap 2", "2025-05-07", "10:10", "10", "0"),
-                                listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
-                                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
-                            )
+//                            val rawComments = listOf(
+//                                listOf("linh", null, R.drawable.story_detail_page1, "Chap 2", "2025-05-07", "10:10", "10", "0"),
+//                                listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
+//                                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
+//                            )
                             TopComments(comments, viewModel)
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Novel Similar")
@@ -275,10 +278,12 @@ val Examplestories = listOf(
     )
 )
 
+
+
 val comments: List<Comment> = listOf(
     Comment(
         commentId = 1,
-        user = demoUser, // nguyen_author
+        user = demoAppUser, // nguyen_author
         chapter= ExampleChapter,
         content = "Great start to the story! Can't wait for the next chapter.",
         commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
@@ -288,7 +293,7 @@ val comments: List<Comment> = listOf(
     ),
     Comment(
         commentId = 2,
-        user = demoUser, // tran_reader
+        user = demoAppUser, // tran_reader
         chapter= ExampleChapter,
         content = "I love the dragon fight scene!",
         commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
@@ -298,7 +303,7 @@ val comments: List<Comment> = listOf(
     ),
     Comment(
         commentId = 3,
-        user = demoUser, // le_fan
+        user = demoAppUser, // le_fan
         chapter= ExampleChapter,
         content = "This chapter was intense! More please!",
         commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
@@ -308,7 +313,7 @@ val comments: List<Comment> = listOf(
     ),
     Comment(
         commentId = 4,
-        user = demoUser, // tran_reader
+        user = demoAppUser, // tran_reader
         chapter= ExampleChapter,
         content = "The plot twist was unexpected!",
         commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
@@ -318,7 +323,7 @@ val comments: List<Comment> = listOf(
     ),
     Comment(
         commentId = 5,
-        user = demoUser, // nguyen_author
+        user = demoAppUser, // nguyen_author
         chapter = ExampleChapter,
         content = "Thanks for the feedback, everyone! Stay tuned for more.",
         commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",

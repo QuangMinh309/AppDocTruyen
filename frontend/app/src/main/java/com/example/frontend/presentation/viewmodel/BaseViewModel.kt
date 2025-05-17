@@ -2,6 +2,7 @@ package com.example.frontend.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -76,6 +77,34 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     fun onGoToUserProfileScreen(id:Int){
         viewModelScope.launch {
             navigationManager.navigate(Screen.Story.UserProfile.createRoute(id.toString()))
+        }
+    }
+
+    fun onGoToWithDraw(){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Transaction.WithDraw.route)
+        }
+    }
+    fun onGoToDepositScreen(){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Transaction.Deposit.route)
+        }
+    }
+    fun onGoToTransactionAcceptScreen(money:Long){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Transaction.Accept.createRoute(money))
+        }
+    }
+
+    fun onGoToWalletDetailScreen(){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Transaction.Wallet.route)
+        }
+    }
+
+    fun onGoToPremiumScreen(){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Transaction.Premium.route)
         }
     }
 

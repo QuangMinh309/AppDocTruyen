@@ -26,6 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.transaction.WithDrawViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
@@ -34,7 +37,12 @@ import com.example.frontend.ui.components.WithdrawRadioOption
 
 @Preview
 @Composable
-fun WithdrawScreen(){
+fun PreViewWithDrawScreen(){
+    val fakeviewmodel= WithDrawViewModel(NavigationManager())
+    WithdrawScreen(fakeviewmodel)
+}
+@Composable
+fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
     val selectedOption = rememberSaveable { mutableStateOf("full") }
     ScreenFrame(
         topBar = {
@@ -42,8 +50,8 @@ fun WithdrawScreen(){
                 title = "Withdraw money",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewmodel.onGoBack() },
+                onRightClick = { viewmodel.onGoToSetting() }
             )
         }
     ){

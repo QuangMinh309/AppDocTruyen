@@ -113,4 +113,6 @@ dependencies {
 
 
     implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
+
+    implementation ("com.google.zxing:core:3.5.3")
 }

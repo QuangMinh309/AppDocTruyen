@@ -55,6 +55,7 @@ import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.formatViews
+import com.example.frontend.ui.screen.main_nav.demoUser
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepSpace
@@ -93,7 +94,7 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
             ) {
                 // Background Image
                 AsyncImage(
-                    model = viewModel.user.backgroundUrl,
+                    model = demoUser.backgroundUrl,
                     contentDescription = "Profile background",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -146,7 +147,7 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                                 )
                             ){
                                 AsyncImage(
-                                    model =  viewModel.user.avatarUrl,
+                                    model =  demoUser.avatarUrl,
                                     contentDescription = "Profile avatar",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop,
@@ -186,7 +187,7 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
                             Text(
-                                text =  viewModel.user.name,
+                                text =  demoUser.name,
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,
@@ -194,7 +195,7 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                                 )
                             )
                             Text(
-                                text =  "@${viewModel.user.dName}",
+                                text =  "@${demoUser.dName}",
                                 style = TextStyle(
                                     color = Color.White.copy(alpha = 0.8f),
                                     fontSize = 10.sp
@@ -211,9 +212,9 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier= Modifier.weight(1f))
-                StatItem(value = viewModel.user.followerNum, label = "Followers")
-                StatItem(value = viewModel.user.novelsNum, label = "Novels")
-                StatItem(value = viewModel.user.readListNum, label = "ReadList")
+                StatItem(value = demoUser.followerNum, label = "Followers")
+                StatItem(value = demoUser.novelsNum, label = "Novels")
+                StatItem(value = demoUser.readListNum, label = "ReadList")
             }
 
             // Email and dob
@@ -232,12 +233,12 @@ fun UserProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                     .padding(15.dp)
             )
             {
-                InforItem(Icons.Outlined.Mail,viewModel.user.mail)
+                InforItem(Icons.Outlined.Mail, demoUser.mail)
                 Spacer(modifier= Modifier.height(8.dp))
-                InforItem(Icons.Outlined.Cake,viewModel.user.dob.toString())
+                InforItem(Icons.Outlined.Cake, demoUser.dob.toString())
 
             }
-            AboutSection(content = viewModel.user.about)
+            AboutSection(content = demoUser.about)
             //user readList
             Column (modifier = Modifier.fillMaxWidth()){
                 SectionTitle(title = "StoryList")

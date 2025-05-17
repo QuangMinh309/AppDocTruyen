@@ -37,6 +37,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
+import com.example.frontend.ui.screen.story.ExamplStory
+import com.example.frontend.ui.screen.story.ExampleChapter
+import com.example.frontend.ui.screen.story.Examplechapters
 import com.example.frontend.ui.theme.OrangeRed
 
 fun Text(text: String, color: Color, fontSize: TextUnit, fontWeight: FontWeight, any: Any?) {
@@ -58,7 +61,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .height(250.dp)
         ) {
             AsyncImage(
-                model =viewModel.story.coverImgUrl, // URL của hình ảnh
+                model = ExamplStory.coverImgUrl, // URL của hình ảnh
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -97,7 +100,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Text(
-                text = "${viewModel.story.name}",
+                text = "${ExamplStory.name}",
                 color = Color.White,
                 fontSize = 21.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -124,7 +127,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = formatViews(viewModel.story.voteNum.toLong()),
+                    text = formatViews(ExamplStory.voteNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -149,7 +152,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(viewModel.story.viewNum.toLong()),
+                    text = formatViews(ExamplStory.viewNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -174,7 +177,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(viewModel.story.chapterNum.toLong()),
+                    text = formatViews(ExamplStory.chapterNum.toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -195,7 +198,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
         }
         // Button start read
         LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
-            onClick = {viewModel.onGoToChapterScreen(viewModel.chapterrs[0].chapterId.toString()) }){
+            onClick = {viewModel.onGoToChapterScreen(Examplechapters[0].chapterId.toString()) }){
             Text(
                 text = "Start  read",
                 color = Color.Black,

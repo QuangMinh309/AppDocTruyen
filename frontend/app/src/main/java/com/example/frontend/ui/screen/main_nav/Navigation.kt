@@ -221,7 +221,14 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
             composable(Screen.Transaction.Premium.route) { PremiumScreen() }
             composable(Screen.Transaction.Wallet.route) { WalletDetailScreen() }
             composable(Screen.Transaction.WithDraw.route) { WithdrawScreen() }
-            composable(Screen.Transaction.Accept.route) { TransactionAcceptScreen() }
+            composable(
+                route=Screen.Transaction.Accept.route,
+                arguments = listOf(
+                    navArgument("depositMoney") {type=NavType.LongType}
+                )
+            ) {
+                TransactionAcceptScreen()
+            }
             //endregion
 
             composable(

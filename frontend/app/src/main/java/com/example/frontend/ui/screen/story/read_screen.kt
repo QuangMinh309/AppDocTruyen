@@ -37,24 +37,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.presentation.viewmodel.story.ReadViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
 
 @Preview
 @Composable
-fun ReadScreen(viewModel: BaseViewModel= hiltViewModel()) {
+fun PreviewReadScreen()
+{
+    val fakeviewmodel=ReadViewModel(NavigationManager())
+    ReadScreen(fakeviewmodel)
+}
+
+@Composable
+fun ReadScreen(viewModel: ReadViewModel= hiltViewModel()) {
     var comment by remember { mutableStateOf("") }
 
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "ChapterName",
+                title = ExampleChapter.chapterName,
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting()}
             )
         }
     ){
@@ -76,7 +85,7 @@ fun ReadScreen(viewModel: BaseViewModel= hiltViewModel()) {
             Spacer(modifier = Modifier.weight(1f, fill = true))
 
             Button(
-                onClick = {},
+                onClick = {viewModel.goToNextChapter()},
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 contentPadding = PaddingValues( vertical = 7.dp),
@@ -89,17 +98,18 @@ fun ReadScreen(viewModel: BaseViewModel= hiltViewModel()) {
                     color = Color.Black,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
+
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            val rawComments = listOf(
-                listOf("huy", "Cảnh này chất!", R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
-                listOf("huy", null, R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
-                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
-            )
+//            val rawComments = listOf(
+//                listOf("huy", "Cảnh này chất!", R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
+//                listOf("huy", null, R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
+//                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
+//            )
             TopComments(comments,viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))

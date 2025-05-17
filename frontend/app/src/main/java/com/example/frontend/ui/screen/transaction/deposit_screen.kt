@@ -1,7 +1,5 @@
 package com.example.frontend.ui.screen.transaction
 
-
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,6 +22,8 @@ import androidx.compose.material.icons.filled.DoubleArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,35 +32,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.navigation.Screen
+import com.example.frontend.presentation.viewmodel.transaction.DepositeViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import androidx.compose.foundation.layout.Box as Box1
-
+import java.text.DecimalFormat
 
 @Preview
 @Composable
-fun DepositScreen(){
+fun PreViewDepositeScreen() {
+    val fakeViewModel = DepositeViewModel(NavigationManager())
+    DepositScreen(fakeViewModel)
+}
+
+@Composable
+fun DepositScreen(viewModel: DepositeViewModel = hiltViewModel()) {
+    // State để lưu giá trị số tiền dưới dạng Long
+    val amountState = remember { mutableLongStateOf(200000L) }
+
+    // Hàm định dạng số tiền thành chuỗi (ví dụ: 200000 -> "200,000")
+    fun formatAmount(amount: Long): String {
+        val formatter = DecimalFormat("#,###")
+        return formatter.format(amount)
+    }
+
     ScreenFrame(
         topBar = {
             TopBar(
                 title = "Deposite money",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
-    ){
-
-        Column (
+    ) {
+        Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-        ){
-
-            //deposit info
+        ) {
+            // Deposit info
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
@@ -68,9 +85,8 @@ fun DepositScreen(){
                     .padding(vertical = 66.dp)
             ) {
                 Text(
-                    modifier = Modifier
-                        .padding(bottom = 10.dp),
-                    text ="Enter the amount you want to deposit",
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    text = "Enter the amount you want to deposit",
                     style = TextStyle(
                         color = Color.White,
                         fontSize = 20.sp,
@@ -78,10 +94,15 @@ fun DepositScreen(){
                     )
                 )
 
-                //money enter text box
+                // Money enter text box
                 BasicTextField(
-                    value =  "200,000",
-                    onValueChange =  {},
+                    value = formatAmount(amountState.longValue), // Hiển thị số tiền đã định dạng
+                    onValueChange = { newValue ->
+                        // Chuyển đổi chuỗi nhập vào thành Long
+                        val cleanedValue = newValue.replace(",", "").replace("đ", "")
+                        val newAmount = cleanedValue.toLongOrNull() ?: amountState.longValue
+                        amountState.longValue = newAmount
+                    },
                     textStyle = TextStyle(
                         color = Color.Gray,
                         fontSize = 20.sp
@@ -95,29 +116,32 @@ fun DepositScreen(){
                                 text = "đ",
                                 color = Color.Gray,
                                 fontSize = 20.sp,
-                                modifier = Modifier.weight(1f)
+                                modifier = Modifier
+                                    .weight(1f)
                                     .wrapContentWidth(Alignment.End)
                             )
                         }
                         innerTextField()
                     }
-
                 )
 
-                //Suggested amount
+                // Suggested amount
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
                         .align(Alignment.End)
-                ){
+                ) {
                     Box1(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .height(35.dp)
                             .weight(0.3f)
-                            .background(Color.Transparent,RoundedCornerShape(5.dp))
-                            .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .clickable { /*TODO*/ }
+                            .background(Color.Transparent, RoundedCornerShape(5.dp))
+                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
+                            .clickable {
+                                amountState.longValue = 50000L // Cập nhật giá trị Long
+                            }
                     ) {
                         Text(
                             text = "+ 50,000đ",
@@ -132,9 +156,11 @@ fun DepositScreen(){
                         modifier = Modifier
                             .height(35.dp)
                             .weight(0.3f)
-                            .background(Color.Transparent,RoundedCornerShape(5.dp))
-                            .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .clickable { /*TODO*/ }
+                            .background(Color.Transparent, RoundedCornerShape(5.dp))
+                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
+                            .clickable {
+                                amountState.longValue = 200000L // Cập nhật giá trị Long
+                            }
                     ) {
                         Text(
                             text = "+ 200,000đ",
@@ -149,9 +175,11 @@ fun DepositScreen(){
                         modifier = Modifier
                             .height(35.dp)
                             .weight(0.3f)
-                            .background(Color.Transparent,RoundedCornerShape(5.dp))
-                            .border(1.dp,Color.Gray,RoundedCornerShape(5.dp))
-                            .clickable { /*TODO*/ }
+                            .background(Color.Transparent, RoundedCornerShape(5.dp))
+                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
+                            .clickable {
+                                amountState.longValue = 500000L // Cập nhật giá trị Long
+                            }
                     ) {
                         Text(
                             text = "+ 500,000đ",
@@ -161,7 +189,6 @@ fun DepositScreen(){
                             )
                         )
                     }
-
                 }
 
                 Text(
@@ -171,15 +198,15 @@ fun DepositScreen(){
                         fontSize = 14.sp
                     )
                 )
-                //rule and  notification
-                Column (
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ){
 
-                    Row (
+                // Rule and notification
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = "check icon",
@@ -193,10 +220,10 @@ fun DepositScreen(){
                             )
                         )
                     }
-                    Row (
+                    Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Cancel,
                             contentDescription = "cancel icon",
@@ -213,24 +240,30 @@ fun DepositScreen(){
                 }
             }
 
-
-            //accept button
+            // Accept button
             LinearButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
                     .padding(horizontal = 20.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    // Kiểm tra số tiền tối thiểu
+                    if (amountState.longValue >= 20000L) {
+                        viewModel.onGoToTransactionAcceptScreen(amountState.longValue)
 
-            ){
-                Row (
+                    } else {
+                        // TODO: Hiển thị thông báo lỗi (Toast/Snackbar) nếu số tiền < 20,000
+                    }
+                }
+            ) {
+                Row(
                     horizontalArrangement = Arrangement.spacedBy(5.dp),
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Text(
                         text = "Continue",
                         color = Color.Black,
-                        style =  TextStyle(
+                        style = TextStyle(
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )

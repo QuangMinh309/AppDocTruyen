@@ -40,7 +40,9 @@ sealed class Screen(var route: String) {
         data object Premium:Transaction("Premium")
         data object Wallet: Transaction("Wallet")
         data object WithDraw: Transaction("WithDraw")
-        data object Accept: Transaction(" Accept")
+        data object Accept: Transaction(" Accept/{depositMoney}"){
+            fun createRoute(depositMoney:Long)="Accept/$depositMoney"
+        }
     }
 
     data object  Discover: Screen("Discover")

@@ -45,7 +45,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.story.YourStoryDetailViewModel
 import com.example.frontend.ui.components.ChapterItemCard
 import com.example.frontend.ui.components.DescriptionStory
 import com.example.frontend.ui.components.LargeGenreTags
@@ -60,7 +63,13 @@ import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun YourStoryDetailScreen() {
+fun PreviewYourStoryDetailScreen()
+{
+    val fakeviewmodel= YourStoryDetailViewModel(NavigationManager())
+    YourStoryDetailScreen(fakeviewmodel)
+}
+@Composable
+fun YourStoryDetailScreen(viewModel: YourStoryDetailViewModel= hiltViewModel()) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val isFabVisible by remember {

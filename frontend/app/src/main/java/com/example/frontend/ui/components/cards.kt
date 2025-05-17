@@ -617,7 +617,7 @@ fun StoryCard2(
             }
         }
         Text(
-            text = "@${story.author}",
+            text = "@${story.author.name}",
             color = Color.White,
             fontSize = 12.sp,
             modifier = Modifier
@@ -781,7 +781,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = "https://example.com/avatars/user_avatar.jpg", // URL của avatar
+            model = model.avatarUrl, // URL của avatar
             contentDescription = "avatar",
             contentScale = ContentScale.Crop,
             modifier = Modifier
