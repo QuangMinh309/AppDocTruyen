@@ -11,12 +11,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.DiscoverDetailViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryChips
 
 @Preview
 @Composable
-fun DiscoverDetailScreen()
+fun PreViewDiscoverDetailScreen()
+{
+    val fakeviewmodel= DiscoverDetailViewModel(NavigationManager())
+    DiscoverDetailScreen(fakeviewmodel)
+}
+@Composable
+fun DiscoverDetailScreen(viewModel: DiscoverDetailViewModel= hiltViewModel())
 {
     val searchQuery = rememberSaveable { mutableStateOf("") }
     ScreenFrame {
