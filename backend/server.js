@@ -3,13 +3,19 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import db from "./models/index.js";
-import imageRoutes from "./routes/imageRoutes.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config();
 
 const app = express();
 const sequelize = db.sequelize;
+
+// API routes
+import imageRoutes from "./routes/imageRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import passwordResetRoutes from "./routes/passwordResetRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 // Middleware
 app.use(cors());
@@ -20,6 +26,10 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/images", imageRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/passwordResets", passwordResetRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from backend!");
