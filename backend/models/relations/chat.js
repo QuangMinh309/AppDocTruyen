@@ -1,30 +1,35 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Chat extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Chat extends Model {
+    static associate(models) {
+      // Chat belongs to Community
+      Chat.belongsTo(models.Community, {
+        foreignKey: "communityId",
+        as: "community",
+      });
+
+      // Chat belongs to User (sender)
+      Chat.belongsTo(models.User, {
+        foreignKey: "senderId",
+        as: "sender",
+      });
+    }
+  }
+
   Chat.init(
     {
       chatId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      communityId: {
-        type: DataTypes.INTEGER,
-      },
-      senderId: {
-        type: DataTypes.INTEGER,
-      },
-      content: {
-        type: DataTypes.TEXT,
-      },
-      commentPicId: {
-        type: DataTypes.STRING,
-      },
-      time: {
-        type: DataTypes.DATE,
-      },
+      communityId: DataTypes.INTEGER,
+      senderId: DataTypes.INTEGER,
+      content: DataTypes.TEXT,
+      commentPicId: DataTypes.STRING,
+      time: DataTypes.DATE,
     },
     {
       sequelize,
@@ -33,11 +38,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Chat.associate = (models) => {
-    Chat.belongsTo(models.Community, { foreignKey: "communityId" });
-    Chat.belongsTo(models.User, { foreignKey: "senderId" });
-  };
 
   return Chat;
 };

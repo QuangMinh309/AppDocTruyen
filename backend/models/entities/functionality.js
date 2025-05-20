@@ -1,21 +1,28 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Functionality extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Functionality extends Model {
+    static associate(models) {
+      // Functionality belongs to many Roles (many-to-many)
+      Functionality.belongsToMany(models.Role, {
+        through: models.Authorization,
+        foreignKey: "funcId",
+        otherKey: "roleId",
+        as: "roles",
+      });
+    }
+  }
+
   Functionality.init(
     {
       funcId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      funcName: {
-        type: DataTypes.STRING,
-      },
-      funcViewId: {
-        type: DataTypes.STRING,
-      },
+      funcName: DataTypes.STRING,
+      funcViewId: DataTypes.STRING,
     },
     {
       sequelize,
@@ -24,10 +31,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Functionality.associate = (models) => {
-    Functionality.hasMany(models.Authorization, { foreignKey: "funcId" });
-  };
 
   return Functionality;
 };

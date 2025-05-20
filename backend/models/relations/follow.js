@@ -1,18 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Follow extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Follow extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   Follow.init(
     {
       followId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       followedId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
@@ -22,11 +27,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Follow.associate = (models) => {
-    Follow.belongsTo(models.User, { foreignKey: "followId" });
-    Follow.belongsTo(models.User, { foreignKey: "followedId" });
-  };
 
   return Follow;
 };

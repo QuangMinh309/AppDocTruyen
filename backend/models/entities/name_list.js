@@ -1,24 +1,35 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class NameList extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class NameList extends Model {
+    static associate(models) {
+      // NameList belongs to User
+      NameList.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+
+      // NameList has many Stories (many-to-many)
+      NameList.belongsToMany(models.Story, {
+        through: models.ReadList,
+        foreignKey: "nameListId",
+        otherKey: "storyId",
+        as: "stories",
+      });
+    }
+  }
+
   NameList.init(
     {
       nameListId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      nameList: {
-        type: DataTypes.STRING(255),
-      },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      description: {
-        type: DataTypes.STRING(1500),
-      },
+      nameList: DataTypes.STRING(255),
+      userId: DataTypes.INTEGER,
+      description: DataTypes.STRING(1500),
     },
     {
       sequelize,
@@ -27,11 +38,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  NameList.associate = (models) => {
-    NameList.belongsTo(models.User, { foreignKey: "userId" });
-    NameList.hasMany(models.ReadList, { foreignKey: "nameListId" });
-  };
 
   return NameList;
 };

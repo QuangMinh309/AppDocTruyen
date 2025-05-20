@@ -1,50 +1,60 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Chapter extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Chapter extends Model {
+    static associate(models) {
+      // Chapter belongs to Story
+      Chapter.belongsTo(models.Story, {
+        foreignKey: "storyId",
+        as: "story",
+      });
+
+      // Chapter has many Comments
+      Chapter.hasMany(models.Comment, {
+        foreignKey: "chapterId",
+        as: "comments",
+      });
+
+      // Chapter has many Purchases
+      Chapter.hasMany(models.Purchase, {
+        foreignKey: "chapterId",
+        as: "purchases",
+      });
+
+      // Chapter has many History entries
+      Chapter.hasMany(models.History, {
+        foreignKey: "chapterId",
+        as: "histories",
+      });
+    }
+  }
+
   Chapter.init(
     {
       chapterId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      chapterName: {
-        type: DataTypes.STRING,
-      },
-      ordinalNumber: {
-        type: DataTypes.INTEGER,
-      },
-      storyId: {
-        type: DataTypes.INTEGER,
-      },
-      content: {
-        type: DataTypes.TEXT("long"),
-      },
-      viewNum: {
-        type: DataTypes.INTEGER,
-      },
-      lockedStatus: {
-        type: DataTypes.BOOLEAN,
+      chapterName: DataTypes.STRING,
+      ordinalNumber: DataTypes.INTEGER,
+      storyId: DataTypes.INTEGER,
+      content: DataTypes.TEXT("long"),
+      viewNum: DataTypes.INTEGER,
+      lockedStatus: DataTypes.BOOLEAN,
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
     },
     {
       sequelize,
       modelName: "Chapter",
       tableName: "chapter",
-      timestamps: true,
-      updatedAt: true,
-      createdAt: false,
+      timestamps: false, // Only updatedAt exists
     }
   );
-
-  Chapter.associate = (models) => {
-    Chapter.belongsTo(models.Story, { foreignKey: "storyId" });
-    Chapter.hasMany(models.Purchase, { foreignKey: "chapterId" });
-    Chapter.hasMany(models.History, { foreignKey: "chapterId" });
-    Chapter.hasMany(models.Comment, { foreignKey: "chapterId" });
-  };
 
   return Chapter;
 };

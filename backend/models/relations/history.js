@@ -1,24 +1,33 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class History extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class History extends Model {
+    static associate(models) {
+      // History belongs to User
+      History.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+
+      // History belongs to Chapter
+      History.belongsTo(models.Chapter, {
+        foreignKey: "chapterId",
+        as: "chapter",
+      });
+    }
+  }
+
   History.init(
     {
       historyId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      chapterId: {
-        type: DataTypes.INTEGER,
-      },
-      lastReadAt: {
-        type: DataTypes.DATE,
-      },
+      userId: DataTypes.INTEGER,
+      chapterId: DataTypes.INTEGER,
+      lastReadAt: DataTypes.DATE,
     },
     {
       sequelize,
@@ -27,11 +36,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  History.associate = (models) => {
-    History.belongsTo(models.User, { foreignKey: "userId" });
-    History.belongsTo(models.Chapter, { foreignKey: "chapterId" });
-  };
 
   return History;
 };

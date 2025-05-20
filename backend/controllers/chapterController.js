@@ -1,55 +1,151 @@
-import ChapterService from "../services/chapterService";
+import { validationResult } from "express-validator";
+import ChapterService from "../services/chapterService.js";
+import ApiError from "../utils/apiError.js";
 
 const ChapterController = {
-  async create(req, res, next) {
+  async createChapter(req, res, next) {
     try {
-      const chapter = await ChapterService.createChapter({
-        ...req.body,
-        userId: req.user.id,
-      });
-      res.status(201).json({ status: 201, data: chapter });
-    } catch (err) {
-      next(err);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { storyId } = req.params;
+      const chapterData = { ...req.body, storyId };
+      const chapter = await ChapterService.createChapter(chapterData, userId);
+      return res.status(201).json({ success: true, data: chapter });
+    } catch (error) {
+      return next(error);
     }
   },
 
-  async get(req, res, next) {
+  async getChapterById(req, res, next) {
     try {
-      const chapter = await ChapterService.getChapterById(req.params.chapterId);
-      res.status(200).json({ status: 200, data: chapter });
-    } catch (err) {
-      next(err);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { chapterId } = req.params;
+      const userId = req.user ? req.user.userId : null;
+      const chapter = await ChapterService.getChapterById(chapterId, userId);
+      return res.status(200).json({ success: true, data: chapter });
+    } catch (error) {
+      return next(error);
     }
   },
 
-  async read(req, res, next) {
+  async readChapter(req, res, next) {
     try {
-      const chapter = await ChapterService.readChapter(req.params.chapterId);
-      res.status(200).json({ status: 200, data: chapter });
-    } catch (err) {
-      next(err);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { chapterId } = req.params;
+      const userId = req.user.userId;
+      const chapter = await ChapterService.readChapter(chapterId, userId);
+      return res.status(200).json({ success: true, data: chapter });
+    } catch (error) {
+      return next(error);
     }
   },
 
-  async update(req, res, next) {
+  async updateChapter(req, res, next) {
     try {
-      const chapter = await ChapterService.updateChapter(
-        req.params.chapterId,
-        req.body,
-        req.user.id
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { chapterId } = req.params;
+      const userId = req.user.userId;
+      const chapterData = req.body;
+      const updatedChapter = await ChapterService.updateChapter(
+        chapterId,
+        chapterData,
+        userId
       );
-      res.status(200).json({ status: 200, data: chapter });
-    } catch (err) {
-      next(err);
+      return res.status(200).json({ success: true, data: updatedChapter });
+    } catch (error) {
+      return next(error);
     }
   },
 
-  async delete(req, res, next) {
+  async deleteChapter(req, res, next) {
     try {
-      await ChapterService.deleteChapter(req.params.chapterId, req.user.id);
-      res.status(200).json({ status: 200, message: "Xóa chương thành công" });
-    } catch (err) {
-      next(err);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { chapterId } = req.params;
+      const userId = req.user.userId;
+      const result = await ChapterService.deleteChapter(chapterId, userId);
+      return res
+        .status(200)
+        .json({ success: true, message: "Xóa chương thành công" });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async getChaptersByStory(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { storyId } = req.params;
+      const userId = req.user ? req.user.userId : null;
+      const { limit, lastId, orderBy, sort } = req.query;
+      const result = await ChapterService.getChaptersByStory(
+        storyId,
+        userId,
+        limit,
+        lastId,
+        orderBy,
+        sort
+      );
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async purchaseChapter(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { storyId, chapterId } = req.params;
+      const userId = req.user.userId;
+      const result = await ChapterService.purchaseChapter(
+        userId,
+        storyId,
+        chapterId
+      );
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
     }
   },
 };

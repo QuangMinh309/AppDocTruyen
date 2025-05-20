@@ -1,18 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class StoryCategory extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class StoryCategory extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   StoryCategory.init(
     {
       storyId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       categoryId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
@@ -22,11 +27,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  StoryCategory.associate = (models) => {
-    StoryCategory.belongsTo(models.Story, { foreignKey: "storyId" });
-    StoryCategory.belongsTo(models.Category, { foreignKey: "categoryId" });
-  };
 
   return StoryCategory;
 };

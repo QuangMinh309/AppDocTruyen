@@ -1,35 +1,38 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class PasswordReset extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class PasswordReset extends Model {
+    static associate(models) {
+      // PasswordReset belongs to User
+      PasswordReset.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+    }
+  }
+
   PasswordReset.init(
     {
       OTP: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      isUsed: {
-        type: DataTypes.BOOLEAN,
+      userId: DataTypes.INTEGER,
+      isUsed: DataTypes.BOOLEAN,
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
     },
     {
       sequelize,
       modelName: "PasswordReset",
       tableName: "password_reset",
-      timestamps: true,
-      createdAt: true,
-      updatedAt: false,
+      timestamps: false, // Only createdAt exists
     }
   );
-
-  PasswordReset.associate = (models) => {
-    PasswordReset.belongsTo(models.User, { foreignKey: "userId" });
-  };
 
   return PasswordReset;
 };

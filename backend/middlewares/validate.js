@@ -1,13 +1,20 @@
 import ApiError from "../utils/apiError.js";
 
-const validate = (schema) => (req, res, next) => {
-  const data = { ...req.body, ...req.params };
-  const { error } = schema.validate(data, { abortEarly: false });
-  if (error) {
-    const message = error.details.map((detail) => detail.message).join(", ");
-    throw new ApiError(message, 400);
-  }
-  next();
+const validate = (schema, property = "body") => {
+  return (req, res, next) => {
+    const { error } = schema.validate(req[property], { abortEarly: false });
+    if (error) {
+      return next(
+        new ApiError(
+          `Dữ liệu không hợp lệ: ${error.details
+            .map((d) => d.message)
+            .join(", ")}`,
+          400
+        )
+      );
+    }
+    next();
+  };
 };
 
 export default validate;

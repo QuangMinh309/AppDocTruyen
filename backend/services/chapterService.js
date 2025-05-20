@@ -1,133 +1,178 @@
-import { models } from "../models/index.js";
-import ApiError from "./../utils/apiError";
+import { sequelize } from "../models/index.js";
+import ApiError from "../utils/apiError.js";
+import {
+  validateChapter,
+  canUserAccessChapter,
+  getChaptersByStory,
+  handlePurchaseTransaction,
+} from "../utils/chapterUtils.js";
+import { validateStory } from "../utils/storyUtils.js";
+import { handleTransaction } from "../utils/transactionUtils.js";
 
 const ChapterService = {
-  // Tạo chapter mới
-  async createChapter(chapterData) {
+  async createChapter(chapterData, userId) {
     const { storyId } = chapterData;
-    const story = await models.Story.findByPk(storyId);
-    if (!story) {
-      throw new ApiError("Truyện không tồn tại", 404);
-    }
-    if (story.userId !== userId) {
-      throw new ApiError("Bạn không có quyền tạo chương cho truyện này", 403);
-    }
+    await validateStory(
+      storyId,
+      userId,
+      "Bạn không có quyền tạo chương cho truyện này"
+    );
 
-    const transaction = await models.sequelize.transaction();
-    try {
-      const chapter = await models.Chapter.create(
+    return await handleTransaction(async (transaction) => {
+      const shouldLock = await sequelize.models.Story.findOne({
+        where: { storyId },
+        attributes: ["price", "pricePerChapter"],
+        transaction,
+      }).then((story) => story.price > 0 || story.pricePerChapter > 0);
+
+      const maxOrdinal =
+        (await sequelize.models.Chapter.max("ordinalNumber", {
+          where: { storyId },
+          transaction,
+        })) || 0;
+
+      const chapter = await sequelize.models.Chapter.create(
         {
           ...chapterData,
+          ordinalNumber: chapterData.ordinalNumber || maxOrdinal + 1,
           viewNum: 0,
+          lockedStatus:
+            chapterData.ordinalNumber === 1
+              ? false
+              : chapterData.lockedStatus ?? shouldLock,
+          updatedAt: new Date(),
         },
         { transaction }
       );
-      await models.Story.increment("chapterNum", { transaction });
-      await transaction.commit();
-      return chapter;
-    } catch (error) {
-      await transaction.rollback();
-      throw new ApiError("Lỗi khi tạo chương", 500);
-    }
-  },
 
-  // Nhận chapter theo ID
-  async getChapterById(chapterId) {
-    try {
-      const chapter = await models.Chapter.findByPk(chapterId, {
-        include: [
-          {
-            model: models.Story,
-            attributes: ["storyId", "storyName"],
-          },
-        ],
-      });
-      if (!chapter) {
-        throw new ApiError("Chương không tồn tại", 404);
-      }
-      return chapter;
-    } catch (error) {
-      throw new ApiError("Lỗi khi lấy chương", 500);
-    }
-  },
-
-  // Tăng số lượt xem khi đọc chapter
-  async readChapter(chapterId) {
-    const transaction = await models.sequelize.transaction();
-
-    try {
-      const chapter = await models.Chapter.findByPk(chapterId, {
-        include: [
-          {
-            model: models.Story,
-            attributes: ["storyId", "storyName", "lockedStatus"],
-          },
-        ],
+      await sequelize.models.Story.increment("chapterNum", {
+        where: { storyId },
         transaction,
       });
 
-      if (!chapter) {
-        throw new ApiError("Chương không tồn tại", 404);
-      }
-      await chapter.increment("viewNum", { transaction });
-      await models.Story.increment("viewNum", {
-        where: { storyId: chapter.storyId },
-        transaction,
-      });
-
-      await transaction.commit();
       return chapter;
-    } catch (error) {
-      await transaction.rollback();
-      throw new ApiError("Lỗi khi đọc chương", 500);
-    }
+    });
   },
 
-  // Cập nhật chapter
+  async getChapterById(chapterId, userId = null) {
+    const chapter = await validateChapter(chapterId, true);
+    if (userId) {
+      chapter.dataValues.canAccess = await canUserAccessChapter(
+        userId,
+        chapter
+      );
+    }
+    return chapter;
+  },
+
+  async readChapter(chapterId, userId) {
+    return await handleTransaction(async (transaction) => {
+      const chapter = await validateChapter(chapterId, true);
+      if (chapter.lockedStatus && userId !== chapter.story.userId) {
+        const canAccess = await canUserAccessChapter(userId, chapter);
+        if (!canAccess) {
+          throw new ApiError("Bạn cần mua chương này để đọc", 403);
+        }
+      }
+
+      await Promise.all([
+        sequelize.models.History.upsert(
+          { userId, chapterId, lastReadAt: new Date() },
+          { transaction }
+        ),
+        chapter.increment("viewNum", { transaction }),
+        sequelize.models.Story.increment("viewNum", {
+          where: { storyId: chapter.story.storyId },
+          transaction,
+        }),
+      ]);
+
+      return chapter;
+    });
+  },
+
   async updateChapter(chapterId, chapterData, userId) {
-    const chapter = await models.Chapter.findByPk(chapterId, {
-      include: [{ model: models.Story }],
-    });
-    if (!chapter) {
-      throw new ApiError("Chương không tồn tại", 404);
-    }
-    if (chapter.Story.userId !== userId) {
-      throw new ApiError("Bạn không có quyền sửa chương này", 403);
-    }
-
-    try {
-      await chapter.update(chapterData);
-      return chapter;
-    } catch (error) {
-      throw new ApiError("Lỗi khi cập nhật chương", 500);
-    }
+    const chapter = await validateChapter(chapterId, true);
+    await validateStory(
+      chapter.story.storyId,
+      userId,
+      "Bạn không có quyền sửa chương này"
+    );
+    return await chapter.update({ ...chapterData, updatedAt: new Date() });
   },
 
-  // Xóa chapter
   async deleteChapter(chapterId, userId) {
-    const chapter = await models.Chapter.findByPk(chapterId, {
-      include: [{ model: models.Story }],
-    });
+    return await handleTransaction(async (transaction) => {
+      const chapter = await validateChapter(chapterId, true);
+      await validateStory(
+        chapter.story.storyId,
+        userId,
+        "Bạn không có quyền xóa chương này"
+      );
 
-    if (!chapter) {
-      throw new ApiError("Chương không tồn tại", 404);
-    }
-    if (chapter.Story.userId !== userId) {
-      throw new ApiError("Bạn không có quyền xóa chương này", 403);
-    }
+      await Promise.all([
+        sequelize.models.Comment.destroy({ where: { chapterId }, transaction }),
+        sequelize.models.Purchase.destroy({
+          where: { chapterId },
+          transaction,
+        }),
+        sequelize.models.History.destroy({ where: { chapterId }, transaction }),
+        chapter.destroy({ transaction }),
+        sequelize.models.Story.decrement("chapterNum", {
+          where: { storyId: chapter.story.storyId },
+          transaction,
+        }),
+      ]);
 
-    const transaction = await models.sequelize.transaction();
-    try {
-      await chapter.destroy({ transaction });
-      await models.Story.decrement("chapterNum", {
-        where: { storyId: chapter.storyId },
+      const remainingChapters = await sequelize.models.Chapter.findAll({
+        where: {
+          storyId: chapter.story.storyId,
+          ordinalNumber: { [sequelize.Sequelize.Op.gt]: chapter.ordinalNumber },
+        },
+        order: [["ordinalNumber", "ASC"]],
         transaction,
       });
-      await transaction.commit();
-    } catch (error) {
-      await transaction.rollback();
-      throw new ApiError("Lỗi khi xóa chương", 500);
-    }
+
+      for (const ch of remainingChapters) {
+        await ch.update(
+          { ordinalNumber: ch.ordinalNumber - 1 },
+          { transaction }
+        );
+      }
+
+      return true;
+    });
+  },
+
+  async getChaptersByStory(
+    storyId,
+    userId = null,
+    limit = 20,
+    lastId = null,
+    orderBy = "ordinalNumber",
+    sort = "ASC"
+  ) {
+    await validateStory(storyId);
+    return await getChaptersByStory({
+      storyId,
+      userId,
+      limit,
+      lastId,
+      orderBy,
+      sort,
+    });
+  },
+
+  async purchaseChapter(userId, storyId, chapterId) {
+    return await handleTransaction(async (transaction) => {
+      const chapter = await validateChapter(chapterId, true);
+      return await handlePurchaseTransaction(
+        userId,
+        chapter,
+        storyId,
+        transaction
+      );
+    });
   },
 };
 

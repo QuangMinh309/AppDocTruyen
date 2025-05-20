@@ -1,53 +1,343 @@
+import { validationResult } from "express-validator";
 import StoryService from "../services/storyService.js";
+import ApiError from "../utils/apiError.js";
 
 const StoryController = {
-  async create(req, res, next) {
+  async createStory(req, res, next) {
     try {
-      const story = await StoryService.createStory(req.body, req.user.userId);
-      res.status(201).json(story);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const storyData = req.body;
+      const story = await StoryService.createStory(storyData, userId);
+      return res.status(201).json({ success: true, data: story });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   },
 
-  async get(req, res, next) {
+  async getStoryById(req, res, next) {
     try {
-      const story = await StoryService.getStoryById(req.params.storyId);
-      res.status(200).json(story);
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { storyId } = req.params;
+      const story = await StoryService.getStoryById(storyId);
+      return res.status(200).json({ success: true, data: story });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   },
 
-  async update(req, res, next) {
+  async updateStory(req, res, next) {
     try {
-      const { storyId, ...storyData } = req.body;
-      const updated = await StoryService.updateStory(
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { storyId } = req.params;
+      const userId = req.user.userId;
+      const storyData = req.body;
+      const updatedStory = await StoryService.updateStory(
         storyId,
         storyData,
-        req.user.userId
+        userId
       );
-      res.status(200).json(updated);
+      return res.status(200).json({ success: true, data: updatedStory });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   },
 
-  async delete(req, res, next) {
+  async deleteStory(req, res, next) {
     try {
-      await StoryService.deleteStory(req.params.storyId, req.user.userId);
-      res.status(204).send();
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { storyId } = req.params;
+      const userId = req.user.userId;
+      const result = await StoryService.deleteStory(storyId, userId);
+      return res.status(200).json({ success: true, message: result.message });
     } catch (error) {
-      next(error);
+      return next(error);
     }
   },
 
-  async updateViewNum(req, res, next) {
+  async getAllStories(req, res, next) {
     try {
-      await StoryService.updateStoryViewNum(req.params.storyId);
-      res.status(200).json({ message: "Cập nhật lượt xem thành công" });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { limit, lastId, orderBy, sort } = req.query;
+      const result = await StoryService.getAllStories({
+        limit,
+        lastId,
+        orderBy,
+        sort,
+      });
+      return res.status(200).json({ success: true, data: result });
     } catch (error) {
-      next(error);
+      return next(error);
+    }
+  },
+
+  async filterByCategory(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { categoryId } = req.params;
+      const { limit, lastId, orderBy, sort } = req.query;
+      const result = await StoryService.filterByCategory(categoryId, {
+        limit,
+        lastId,
+        orderBy,
+        sort,
+      });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async filterByCategoryAndStatus(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { categoryId, status } = req.params;
+      const { limit, lastId, orderBy, sort } = req.query;
+      const result = await StoryService.filterByCategoryAndStatus(
+        categoryId,
+        status,
+        { limit, lastId, orderBy, sort }
+      );
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async filterByVote(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { limit, lastId } = req.query;
+      const result = await StoryService.filterByVote({ limit, lastId });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async filterByUpdateDate(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { limit, lastId } = req.query;
+      const result = await StoryService.filterByUpdateDate({ limit, lastId });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async filterByUser(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { userId } = req.params;
+      const { limit, lastId, includeAll } = req.query;
+      const result = await StoryService.filterByUser(userId, {
+        limit,
+        lastId,
+        includeAll,
+      });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async searchStories(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const { searchTerm, limit, lastId } = req.query;
+      const result = await StoryService.searchStories(searchTerm, {
+        limit,
+        lastId,
+      });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async getRecentlyReadStories(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { limit, lastId } = req.query;
+      const result = await StoryService.getRecentlyReadStories(userId, {
+        limit,
+        lastId,
+      });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async getPurchasedStories(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { limit, lastId } = req.query;
+      const result = await StoryService.getPurchasedStories(userId, {
+        limit,
+        lastId,
+      });
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  // Chức năng vote
+  async toggleVote(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { storyId } = req.params;
+      const result = await StoryService.toggleVote(userId, storyId);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async checkVoteStatus(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { storyId } = req.params;
+      const result = await StoryService.checkVoteStatus(userId, storyId);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async purchaseEntireStory(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { storyId } = req.params;
+      const result = await StoryService.purchaseEntireStory(userId, storyId);
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async checkChapterPurchase(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return next(
+          new ApiError("Dữ liệu đầu vào không hợp lệ", 400, errors.array())
+        );
+      }
+
+      const userId = req.user.userId;
+      const { storyId, chapterId } = req.params;
+      const result = await StoryService.checkChapterPurchase(
+        userId,
+        storyId,
+        chapterId
+      );
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
     }
   },
 };

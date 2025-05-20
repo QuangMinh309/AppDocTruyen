@@ -1,18 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Authorization extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Authorization extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   Authorization.init(
     {
       roleId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       funcId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
@@ -22,11 +27,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Authorization.associate = (models) => {
-    Authorization.belongsTo(models.Role, { foreignKey: "roleId" });
-    Authorization.belongsTo(models.Functionality, { foreignKey: "funcId" });
-  };
 
   return Authorization;
 };

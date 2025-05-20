@@ -1,21 +1,26 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Premium extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Premium extends Model {
+    static associate(models) {
+      // Premium belongs to User
+      Premium.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+    }
+  }
+
   Premium.init(
     {
       premiumId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      CreatedAt: {
-        type: DataTypes.DATE,
-      },
+      userId: DataTypes.INTEGER,
+      CreatedAt: DataTypes.DATE,
     },
     {
       sequelize,
@@ -24,10 +29,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Premium.associate = (models) => {
-    Premium.belongsTo(models.User, { foreignKey: "userId" });
-  };
 
   return Premium;
 };

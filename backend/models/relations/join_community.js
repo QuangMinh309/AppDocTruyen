@@ -1,18 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class JoinCommunity extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class JoinCommunity extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   JoinCommunity.init(
     {
       userId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       communityId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
@@ -22,11 +27,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  JoinCommunity.associate = (models) => {
-    JoinCommunity.belongsTo(models.User, { foreignKey: "userId" });
-    JoinCommunity.belongsTo(models.Community, { foreignKey: "communityId" });
-  };
 
   return JoinCommunity;
 };

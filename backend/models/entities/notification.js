@@ -1,30 +1,29 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from "sequelize";
 
-export default (sequelize) => {
-  class Notification extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Notification extends Model {
+    static associate(models) {
+      Notification.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
+      });
+    }
+  }
+
   Notification.init(
     {
       notificationId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      type: {
-        type: DataTypes.STRING,
-      },
-      content: {
-        type: DataTypes.STRING,
-      },
-      refId: {
-        type: DataTypes.INTEGER,
-      },
-      status: {
-        type: DataTypes.STRING,
-      },
-      createAt: {
-        type: DataTypes.DATE,
-      },
+      userId: DataTypes.INTEGER,
+      type: DataTypes.STRING,
+      content: DataTypes.STRING,
+      refId: DataTypes.INTEGER,
+      status: DataTypes.STRING,
+      createAt: DataTypes.DATE,
     },
     {
       sequelize,
@@ -33,8 +32,6 @@ export default (sequelize) => {
       timestamps: false,
     }
   );
-
-  Notification.associate = (models) => {};
 
   return Notification;
 };
