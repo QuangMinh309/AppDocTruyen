@@ -1,7 +1,7 @@
-const CategoryService = require('../services/categoryService');
-const categorySchema = require('../validations/categoryValidation');
+import CategoryService from '../services/categoryService.js';
+import categorySchema from'../validators/categoryValidation.js';
 
-class CategoryController {
+const CategoryController = {
   async createCategory(req, res, next) {
     try {
       const { error } = categorySchema.create.validate(req.body);
@@ -12,7 +12,7 @@ class CategoryController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getCategoryById(req, res, next) {
     try {
@@ -24,7 +24,7 @@ class CategoryController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getAllCategories(req, res, next) {
     try {
@@ -33,7 +33,7 @@ class CategoryController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async updateCategory(req, res, next) {
     try {
@@ -45,7 +45,7 @@ class CategoryController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async deleteCategory(req, res, next) {
     try {
@@ -57,7 +57,7 @@ class CategoryController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
-module.exports = new CategoryController();
+export default CategoryController;

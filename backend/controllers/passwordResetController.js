@@ -1,7 +1,7 @@
-const PasswordResetService = require('../services/passwordResetService');
-const passwordResetSchema = require('../validations/passwordResetValidation');
+import PasswordResetService from '../services/passwordResetService.js';
+import passwordResetSchema from '../validators/passwordResetValidation.js';
 
-class PasswordResetController {
+const PasswordResetController = {
   async createPasswordReset(req, res, next) {
     try {
       const { error } = passwordResetSchema.create.validate(req.body);
@@ -12,7 +12,7 @@ class PasswordResetController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async verifyOTP(req, res, next) {
     try {
@@ -25,7 +25,7 @@ class PasswordResetController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getPasswordResetById(req, res, next) {
     try {
@@ -37,7 +37,7 @@ class PasswordResetController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
-module.exports = new PasswordResetController();
+export default PasswordResetController;

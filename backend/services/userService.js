@@ -1,6 +1,9 @@
-const { User, Role, Story, Transaction } = require('../models');
-const bcrypt = require('bcrypt');
-import ApiError from "./../utils/apiError";
+import User from '../models/entities/user.js';
+import Role from '../models/entities/role.js';
+import Story from '../models/entities/story.js';
+import Transaction from '../models/entities/transaction.js';
+import bcrypt from 'bcrypt';
+import ApiError from "./../utils/apiError.js";
 
 class UserService {
   async createUser(data) {
@@ -105,4 +108,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+export default UserService;

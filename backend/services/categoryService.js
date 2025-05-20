@@ -1,5 +1,8 @@
-const { Category, Community, StoryCategory } = require('../models');
-import ApiError from "./../utils/apiError";
+import Category from '../models/entities/category.js';
+import Community from '../models/entities/community.js';
+import StoryCategory from '../models/relations/story_category.js';
+
+import ApiError from "./../utils/apiError.js";
 
 class CategoryService {
   async createCategory(data) {
@@ -58,4 +61,4 @@ class CategoryService {
   }
 }
 
-module.exports = new CategoryService();
+export default CategoryService;

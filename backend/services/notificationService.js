@@ -1,7 +1,7 @@
-const { Notification } = require('../models');
-import ApiError from "./../utils/apiError";
+import Notification from '../models/entities/notification.js';
+import ApiError from "./../utils/apiError.js";
 
-class NotificationService {
+const NotificationService = {
   async createNotification(data) {
       try {
         const notification = await Notification.create(data);
@@ -10,7 +10,7 @@ class NotificationService {
       catch(err) {
         throw new ApiError('Lỗi khi tạo thông báo', 500);
       }
-  }
+  },
 
   async getNotificationById(notificationId) {
       try {
@@ -21,12 +21,12 @@ class NotificationService {
       catch(err) {
         throw new ApiError('Lỗi khi lấy thông báo', 500);
       }
-  }
+  },
 
   async getAllNotifications(limit = 10) {
     const notifications = await Notification.findAll({ limit });
     return notifications.map(notification => notification.toJSON());
-  }
+  },
 
   async updateNotification(notificationId, data) {
       const notification = await Notification.findByPk(notificationId);
@@ -38,7 +38,7 @@ class NotificationService {
       catch(err) {
         throw new ApiError('Lỗi khi cập nhật thông báo', 500);
       }
-  }
+  },
 
   async deleteNotification(notificationId) {
     const notification = await Notification.findByPk(notificationId);
@@ -50,7 +50,7 @@ class NotificationService {
     catch(err) {
         throw err;
     }
-  }
-}
+  },
+};
 
-module.exports = new NotificationService();
+export default NotificationService;

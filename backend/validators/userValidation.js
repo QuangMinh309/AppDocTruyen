@@ -15,7 +15,7 @@ const userValidation = {
          "string.max": "Tên ngắn không được vượt quá 255 ký tự.",
          "string.base": "Tên ngắn phải là chuỗi.",
     }),
-    mail: Joi.string().email.required().max(255).messages({
+    mail: Joi.string().email().required().max(255).messages({
         "string.empty": "Địa chỉ email không được để trống.",
         "string.max": "Địa chỉ email không được vượt quá 255 ký tự.",
         "any.required": "Địa chỉ email là bắt buộc.",
@@ -52,7 +52,7 @@ const userValidation = {
         "string.max": "Tên ngắn không được vượt quá 255 ký tự.",
         "string.base": "Tên ngắn phải là chuỗi.",
     }),
-    mail: dUserName: Joi.string().email.optional().max(255).messages({
+    mail: Joi.string().email().optional().max(255).messages({
         "string.max": "Địa chỉ email không được vượt quá 255 ký tự.",
     }),
     about: Joi.string().optional().max(1500).messages({

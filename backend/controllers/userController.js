@@ -1,7 +1,7 @@
-const UserService = require('../services/userService');
-const userSchema = require('../validations/userValidation');
+import UserService from '../services/userService.js';
+import userSchema from'../validators/userValidation.js';
 
-class UserController {
+const UserController = {
   async createUser(req, res, next) {
     try {
       const { error } = userSchema.create.validate(req.body);
@@ -12,7 +12,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getUserById(req, res, next) {
     try {
@@ -24,7 +24,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getUserByEmail(req, res, next) {
     try {
@@ -36,7 +36,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getAllUsers(req, res, next) {
     try {
@@ -45,7 +45,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async updateUser(req, res, next) {
     try {
@@ -57,7 +57,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async deleteUser(req, res, next) {
     try {
@@ -69,7 +69,7 @@ class UserController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
-module.exports = new UserController();
+export default UserController;

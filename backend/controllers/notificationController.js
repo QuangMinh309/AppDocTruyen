@@ -1,7 +1,7 @@
-const NotificationService = require('../services/notificationService');
-const notificationSchema = require('../validations/notificationValidation');
+import NotificationService from '../services/notificationService.js';
+import notificationSchema from'../validators/notificationValidation.js';
 
-class NotificationController {
+const NotificationController = {
   async createNotification(req, res, next) {
     try {
       const { error } = notificationSchema.create.validate(req.body);
@@ -12,7 +12,7 @@ class NotificationController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getNotificationById(req, res, next) {
     try {
@@ -24,7 +24,7 @@ class NotificationController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async getAllNotifications(req, res, next) {
     try {
@@ -33,7 +33,7 @@ class NotificationController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async updateNotification(req, res, next) {
     try {
@@ -45,7 +45,7 @@ class NotificationController {
     } catch (error) {
       next(error);
     }
-  }
+  },
 
   async deleteNotification(req, res, next) {
     try {
@@ -57,7 +57,7 @@ class NotificationController {
     } catch (error) {
       next(error);
     }
-  }
-}
+  },
+};
 
-module.exports = new NotificationController();
+export default NotificationController;

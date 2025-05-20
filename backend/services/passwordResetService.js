@@ -1,5 +1,6 @@
-const { PasswordReset, User } = require('../models');
-import ApiError from "./../utils/apiError";
+import PasswordReset from '../models/entities/password_reset.js';
+import User from '../models/entities/user.js';
+import ApiError from "./../utils/apiError.js";
 
 class PasswordResetService {
   async createPasswordReset(data) {
@@ -39,4 +40,4 @@ class PasswordResetService {
   }
 }
 
-module.exports = new PasswordResetService();
+export default PasswordResetService;
