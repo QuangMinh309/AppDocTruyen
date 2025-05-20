@@ -13,7 +13,7 @@ export default (sequelize) => {
       chapterName: {
         type: DataTypes.STRING,
       },
-      OrdinalNumber: {
+      ordinalNumber: {
         type: DataTypes.INTEGER,
       },
       storyId: {

@@ -26,6 +26,10 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/images", imageRoutes);
+app.use("/api/categories", categoryRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/passwordResets", passwordResetRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from backend!");
