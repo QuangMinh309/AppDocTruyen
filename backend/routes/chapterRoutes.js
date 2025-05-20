@@ -1,54 +1,49 @@
 import express from "express";
 import ChapterController from "../controllers/chapterController.js";
-import { authenticate } from "../middleware/authenticate.js"; // Giả sử bạn có middleware authenticate
-import { isStoryAuthor, canAccessChapter } from "../middleware/auth.js";
+import { authenticateJWT } from "../middlewares/authMiddleware.js";
+import {
+  isStoryAuthor,
+  canAccessChapter,
+} from "../middlewares/permissionMiddleware.js";
 import {
   validateCreateChapter,
   validateUpdateChapter,
   validateChapterId,
   validateGetStories,
   validatePurchaseChapter,
-} from "../validations/storyValidation.js";
+} from "../validators/chapterValidation.js";
+import validate from "../middlewares/validate.js"
 
 const router = express.Router();
 
-// Không yêu cầu đăng nhập
-router.get("/:chapterId", validateChapterId, ChapterController.getChapterById);
-router.get(
-  "/story/:storyId",
-  validateGetStories,
-  ChapterController.getChaptersByStory
-);
-
-// Yêu cầu đăng nhập
-router.use(authenticate);
+router.use(authenticateJWT);
 router.post(
   "/story/:storyId",
-  validateCreateChapter,
+  validate(validateCreateChapter),
   isStoryAuthor,
   ChapterController.createChapter
 );
 router.put(
   "/story/:storyId/:chapterId",
-  validateUpdateChapter,
+  validate(validateUpdateChapter),
   isStoryAuthor,
   ChapterController.updateChapter
 );
 router.delete(
   "/:chapterId",
-  validateChapterId,
+  validate(validateChapterId),
   isStoryAuthor,
   ChapterController.deleteChapter
 );
 router.get(
   "/:chapterId/read",
-  validateChapterId,
+  validate(validateChapterId),
   canAccessChapter,
   ChapterController.readChapter
 );
 router.post(
   "/story/:storyId/:chapterId/purchase",
-  validatePurchaseChapter,
+  validate(validatePurchaseChapter),
   ChapterController.purchaseChapter
 );
 

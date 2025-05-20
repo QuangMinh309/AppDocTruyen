@@ -1,6 +1,6 @@
 import { models, sequelize } from "../models/index.js";
 import ApiError from "./apiError.js";
-import uploadImageToCloudinary from "./cloudinaryService.js";
+import { uploadImageToCloudinary } from "../services/cloudinaryService.js";
 import { createNotification } from "./notificationUtils.js";
 
 // Kiểm tra truyện tồn tại

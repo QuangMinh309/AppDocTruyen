@@ -1,4 +1,4 @@
-import { models } from "../models/index.js";
+import db from "../models/index.js";
 import ApiError from "./apiError.js";
 
 export const createNotification = async ({
@@ -9,7 +9,7 @@ export const createNotification = async ({
   transaction,
 }) => {
   try {
-    await models.Notification.create(
+    await db.Notification.create(
       {
         type,
         content,

@@ -16,6 +16,8 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import passwordResetRoutes from "./routes/passwordResetRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import chapterRoutes from "./routes/chapterRoutes.js";
+import storyRoutes from "./routes/storyRoutes.js";
 
 // Middleware
 app.use(cors());
@@ -30,6 +32,8 @@ app.use("/api/categories", categoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/passwordResets", passwordResetRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/stories", storyRoutes);
+app.use("/api/chapters", chapterRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from backend!");

@@ -2,7 +2,7 @@ import Joi from "joi";
 
 const statusEnum = ["ongoing", "completed", "hiatus", "cancelled"];
 
-export const createStorySchema = Joi.object({
+export const validateCreateStory = Joi.object({
   storyName: Joi.string().trim().max(255).required().messages({
     "string.empty": "Tên truyện là bắt buộc",
     "string.max": "Tên truyện không được vượt quá 255 ký tự",
@@ -30,7 +30,7 @@ export const createStorySchema = Joi.object({
     .messages({ "number.min": "Giá mỗi chương phải là số không âm" }),
 });
 
-export const updateStorySchema = createStorySchema.fork(
+export const validateUpdateStory = validateCreateStory.fork(
   ["storyName", "coverImg"],
   (field) =>
     field
@@ -38,13 +38,13 @@ export const updateStorySchema = createStorySchema.fork(
       .messages({ "string.empty": `${field._flags.label} không được để trống` })
 );
 
-export const storyIdSchema = Joi.object({
+export const validateStoryId = Joi.object({
   storyId: Joi.number().integer().required().messages({
     "number.base": "ID truyện phải là số nguyên",
   }),
 });
 
-export const getStoriesSchema = Joi.object({
+export const validateGetStories = Joi.object({
   limit: Joi.number()
     .integer()
     .min(1)
@@ -65,9 +65,10 @@ export const getStoriesSchema = Joi.object({
     .messages({ "any.only": "Hướng sắp xếp phải là ASC hoặc DESC" }),
 });
 
-export const filterByCategorySchema = storyIdSchema.concat(getStoriesSchema);
+export const validateFilterByCategory =
+  validateStoryId.concat(validateGetStories);
 
-export const filterByCategoryAndStatusSchema = Joi.object({
+export const validateFilterByCategoryAndStatus = Joi.object({
   categoryId: Joi.number().integer().required().messages({
     "number.base": "ID thể loại phải là số nguyên",
   }),
@@ -75,25 +76,25 @@ export const filterByCategoryAndStatusSchema = Joi.object({
     .valid(...statusEnum)
     .required()
     .messages({ "any.only": "Trạng thái truyện không hợp lệ" }),
-}).concat(getStoriesSchema);
+}).concat(validateGetStories);
 
-export const searchStoriesSchema = Joi.object({
+export const validateSearchStories = Joi.object({
   searchTerm: Joi.string()
     .trim()
     .required()
     .messages({ "string.empty": "Từ khóa tìm kiếm là bắt buộc" }),
-}).concat(getStoriesSchema);
+}).concat(validateGetStories);
 
-export const filterByUserSchema = Joi.object({
+export const validateFilterByUser = Joi.object({
   userId: Joi.number().integer().required().messages({
     "number.base": "ID người dùng phải là số nguyên",
   }),
   includeAll: Joi.boolean().optional().messages({
     "boolean.base": "includeAll phải là boolean",
   }),
-}).concat(getStoriesSchema);
+}).concat(validateGetStories);
 
-export const purchaseChapterSchema = Joi.object({
+export const validatePurchaseChapter = Joi.object({
   storyId: Joi.number().integer().required().messages({
     "number.base": "ID truyện phải là số nguyên",
   }),

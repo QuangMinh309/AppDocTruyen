@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const createChapterSchema = Joi.object({
+export const validateCreateChapter = Joi.object({
   storyId: Joi.number().integer().positive().required().messages({
     "number.base": "ID truyện phải là số",
     "number.integer": "ID truyện phải là số nguyên",
@@ -26,7 +26,7 @@ export const createChapterSchema = Joi.object({
   }),
 });
 
-export const updateChapterSchema = Joi.object({
+export const validateUpdateChapter = Joi.object({
   chapterName: Joi.string().trim().max(255).optional().messages({
     "string.empty": "Tên chương không được để trống",
     "string.max": "Tên chương không được vượt quá 255 ký tự",
@@ -48,7 +48,7 @@ export const updateChapterSchema = Joi.object({
     "object.min": "Phải có ít nhất một trường để cập nhật",
   });
 
-export const purchaseChapterSchema = Joi.object({
+export const validatePurchaseChapter = Joi.object({
   storyId: Joi.number().integer().positive().required().messages({
     "number.base": "ID truyện phải là số",
     "number.integer": "ID truyện phải là số nguyên",
@@ -63,7 +63,7 @@ export const purchaseChapterSchema = Joi.object({
   }),
 });
 
-export const getChaptersByStorySchema = Joi.object({
+export const validateGetStories = Joi.object({
   storyId: Joi.number().integer().positive().required().messages({
     "number.base": "ID truyện phải là số",
     "number.integer": "ID truyện phải là số nguyên",
@@ -104,7 +104,7 @@ export const readChapterSchema = Joi.object({
   }),
 });
 
-export const chapterIdParamSchema = Joi.object({
+export const validateChapterId = Joi.object({
   chapterId: Joi.number().integer().positive().required().messages({
     "number.base": "ID chương phải là số",
     "number.integer": "ID chương phải là số nguyên",
