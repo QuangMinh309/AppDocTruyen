@@ -99,7 +99,6 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
             ) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item { StoryInfo(viewModel) }

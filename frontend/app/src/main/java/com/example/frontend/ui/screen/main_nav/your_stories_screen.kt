@@ -40,7 +40,7 @@ fun PreviewScreenContent4() {
 @Preview
 @Composable
 fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
-
+    val stories = viewModel.stories
     ScreenFrame(
         topBar = {
             TopBar(
@@ -80,7 +80,7 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(8.dp)
                 ){
-                    items(viewModel.stories) { story ->
+                    items(stories) { story ->
                         StoryCard4(story = story, onClick = { viewModel.onGoToYourStoryDetailScreen(story.id) })
                     }
                 }

@@ -721,7 +721,7 @@ fun StoryCard3(
                     }
                     withStyle (
                         style = SpanStyle(
-                            fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                            fontFamily = FontFamily(Font(R.font.poppins_bold)),
                             fontSize = 10.sp,
                             color = OrangeRed
                         )

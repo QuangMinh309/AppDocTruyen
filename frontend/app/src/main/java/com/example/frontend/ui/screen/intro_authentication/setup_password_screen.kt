@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.intro_authentication
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +22,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +36,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -47,20 +51,42 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.intro_authentification.SetUpPasswordViewModel
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.ui.theme.ReemKufifunFontFamily
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenContent9() {
+    val fakeViewModel = SetUpPasswordViewModel(NavigationManager())
+    SetUpPasswordScreen(viewModel = fakeViewModel)
+}
 
 @Preview
 @Composable
-fun NewPasswordScreen()
+fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
 {
-    var tbPasswordValue by remember { mutableStateOf("") }
-    var tbConfirmPasswordValue by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-    var passwordVisible2 by remember { mutableStateOf(false) }
+    val tbConfirmPasswordValue by viewModel.confirmPassword.collectAsState()
+    val tbPasswordValue by viewModel.password.collectAsState()
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
+
+    val toast by viewModel.toast.collectAsState()
+    // Hiển thị Toast khi showToast thay đổi
+    val context = LocalContext.current
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
+
 
 
     Box(
@@ -127,7 +153,7 @@ fun NewPasswordScreen()
                     text = "Password",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
@@ -140,7 +166,7 @@ fun NewPasswordScreen()
                 )
                 TextField(
                     value = tbPasswordValue,
-                    onValueChange = { tbPasswordValue = it },
+                    onValueChange = { viewModel.onPasswordChange(it) },
                     singleLine = true,
                     placeholder = {
                         Text("Enter your password")
@@ -160,7 +186,7 @@ fun NewPasswordScreen()
                         )
                     },
                     trailingIcon = {
-                        val icon = if (passwordVisible) R.drawable.invisible_1 else R.drawable.visible_1
+                        val icon = if (passwordVisible) R.drawable.visible_1 else R.drawable.invisible_1
                         val description = if (passwordVisible) "Hide password" else "Show password"
                         Icon(
                             painter = painterResource(icon),
@@ -199,7 +225,7 @@ fun NewPasswordScreen()
                     text = "Confirm Password",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
@@ -212,13 +238,13 @@ fun NewPasswordScreen()
                 )
                 TextField(
                     value = tbConfirmPasswordValue,
-                    onValueChange = { tbConfirmPasswordValue = it },
+                    onValueChange = { viewModel.onConfirmPasswordChange(it) },
                     singleLine = true,
                     placeholder = {
                         Text("Confirm your password")
                     },
                     textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.reemkufifun_semibold))),
-                    visualTransformation = if (passwordVisible2) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(height = 53.dp),
@@ -232,8 +258,8 @@ fun NewPasswordScreen()
                         )
                     },
                     trailingIcon = {
-                        val icon = if (passwordVisible2) R.drawable.invisible_1 else R.drawable.visible_1
-                        val description = if (passwordVisible2) "Hide password" else "Show password"
+                        val icon = if (confirmPasswordVisible) R.drawable.visible_1 else R.drawable.invisible_1
+                        val description = if (confirmPasswordVisible) "Hide password" else "Show password"
                         Icon(
                             painter = painterResource(icon),
                             contentDescription = description,
@@ -241,7 +267,7 @@ fun NewPasswordScreen()
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
                                 .clickable{
-                                    passwordVisible2 = !passwordVisible2
+                                    confirmPasswordVisible = !confirmPasswordVisible
                                 }
                         )
                     },
@@ -263,7 +289,7 @@ fun NewPasswordScreen()
             }
             Button(
                 onClick = {
-
+                    viewModel.checkSetUpPassword()
                 },
                 modifier = Modifier
                     .padding(top = 40.dp)
@@ -279,7 +305,7 @@ fun NewPasswordScreen()
                     text = "Confirm",
                     style = TextStyle(
                         fontSize = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
+                        fontFamily = ReemKufifunFontFamily,
                         color = Color.Black,
                         fontWeight = FontWeight.Bold
                     ),

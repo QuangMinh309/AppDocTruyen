@@ -1,6 +1,6 @@
 package com.example.frontend.ui.screen.intro_authentication
 
-import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -28,10 +29,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,14 +60,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.activity.RegisterActivity
-import com.example.frontend.activity.ResetPasswordActivity
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.intro_authentification.LoginViewModel
+import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.ui.theme.ReemKufifunFontFamily
 import com.example.frontend.util.UserPreferences
 import kotlinx.coroutines.launch
 
@@ -77,27 +80,37 @@ fun PreviewScreenContent() {
     LoginScreen(viewModel = fakeViewModel)
 }
 
+@Suppress("DEPRECATION")
 @Preview
 @Composable
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
 {
-    var tbEmailValue by remember { mutableStateOf("") }
-    var tbPasswordValue by remember { mutableStateOf("") }
-    var rememberLogin by remember { mutableStateOf(false) }
-    var passwordVisible by remember { mutableStateOf(false) }
+    val tbEmailValue by viewModel.email.collectAsState()
+    val tbPasswordValue by viewModel.password.collectAsState()
+    var rememberLogin by rememberSaveable { mutableStateOf(false) }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
+    val toast by viewModel.toast.collectAsState()
+    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
 
     LaunchedEffect(Unit) {
         UserPreferences.getUserData(context).collect { (savedEmail, savedPassword, remember) ->
             if (remember) {
-                tbEmailValue = savedEmail
-                tbPasswordValue = savedPassword
-                rememberLogin = true
-            }
+//                tbEmailValue = savedEmail
+//                tbPasswordValue = savedPassword
+//                rememberLogin = true
+              }
         }
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -146,36 +159,41 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     ),
                     modifier = Modifier.padding(bottom = 10.dp)
                 )
-                //Lỗi đoạn này
-                Text(
-                    buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                fontSize = 17.sp,
-                                color = Color.White
-                            )
-                        ) {
-                            append("If you don't have an account to login with, you can ")
-                        }
+                val annotatedText = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                            fontSize = 17.sp,
+                            color = Color.White
+                        )
+                    ) {
+                        append("If you don't have an account to login with, you can ")
+                    }
 
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = FontFamily(Font(R.font.poppins_medium)),
-                                fontSize = 17.sp,
-                                color = OrangeRed
-                            )
-                        ) {
-                            append("register here!")
-                        }
+                    pushStringAnnotation(tag = "REGISTER", annotation = "register")
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                            fontSize = 17.sp,
+                            color = OrangeRed
+                        )
+                    ) {
+                        append("register here!")
+                    }
+                    pop()
+                }
+
+                ClickableText(
+                    text = annotatedText,
+                    onClick = { offset ->
+                        annotatedText.getStringAnnotations(tag = "REGISTER", start = offset, end = offset)
+                            .firstOrNull()?.let {
+                                viewModel.onGoToRegisterScreen()
+                            }
                     },
-                    modifier = Modifier
-                        .align(alignment = Alignment.Start)
-                        .clickable {
-                            val intent = Intent(context, RegisterActivity::class.java)
-                            context.startActivity(intent)
-                        }
+                    modifier = Modifier.align(Alignment.Start)
                 )
+
             }
             Column ( // email textfield
                 modifier = Modifier
@@ -187,7 +205,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     text = "Email",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                        fontFamily = ReemKufifunFontFamily,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
@@ -200,12 +218,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 )
                 TextField(
                     value = tbEmailValue,
-                    onValueChange = { tbEmailValue = it },
+                    onValueChange = { viewModel.onEmailChange(it) },
                     singleLine = true,
                     placeholder = {
-                        Text("Enter your email address")
+                        Text("Enter your email address", style = TextStyle(color = Color.Gray))
                     },
-                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_medium))),
+                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_bold))),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(height = 53.dp),
@@ -242,7 +260,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     text = "Password",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
@@ -255,12 +273,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 )
                 TextField(
                     value = tbPasswordValue,
-                    onValueChange = { tbPasswordValue = it },
+                    onValueChange = { viewModel.onPasswordChange(it)},
                     singleLine = true,
                     placeholder = {
-                        Text("Enter your password")
+                        Text("Enter your password", style = TextStyle(color = Color.Gray))
                     },
-                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.reemkufifun_semibold))),
+                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_bold))),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -275,7 +293,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                         )
                     },
                     trailingIcon = {
-                        val icon = if (passwordVisible) R.drawable.invisible_1 else R.drawable.visible_1
+                        val icon = if (passwordVisible) R.drawable.visible_1 else R.drawable.invisible_1
                         val description = if (passwordVisible) "Hide password" else "Show password"
                         Icon(
                             painter = painterResource(icon),
@@ -327,7 +345,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     Text(
                         text = "Remember me",
                         color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght))
+                        fontFamily = ReemKufifunFontFamily
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -335,8 +353,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     text = "Forgot password?",
                     color = Color.LightGray,
                     modifier = Modifier.clickable {
-                        val intent = Intent(context, ResetPasswordActivity::class.java)
-                        context.startActivity(intent)
+                        viewModel.onGoToResetPasswordScreen()
                     }
                 )
             }
@@ -350,6 +367,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                             UserPreferences.clearUserData(context)
                         }
                     }
+                    viewModel.checkingLogin()
 
                 },
                 modifier = Modifier
@@ -426,7 +444,5 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
             }
         }
     }
-//    var intent = Intent(this, HomeActivity::class.java )
-//    intent.putExtra("SUBJECTS", i.subjects as Serializable)
-//    startActivity(intent)
+
 }

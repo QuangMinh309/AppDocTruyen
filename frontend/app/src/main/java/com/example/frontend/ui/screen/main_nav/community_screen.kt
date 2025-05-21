@@ -35,7 +35,8 @@ fun PreviewScreenContent() {
 @Preview
 @Composable
 fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
-
+    val hotCommunityList = viewModel.hotCommunityList
+    val com = demoCommunity
     ScreenFrame(
         topBar = {
             TopBar(
@@ -59,7 +60,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 contentPadding = PaddingValues(vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(viewModel.hotCommunityList) { item ->
+                items(hotCommunityList) { item ->
                     GerneChipButton(
                         genre = item,
                         onClick = {viewModel.filterCommunityFollowCategory(0)}
@@ -71,8 +72,8 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
             ) {
-                val com = demoCommunity
-                items(viewModel.hotCommunityList) {
+
+                items(hotCommunityList) {
                     CommunityCard(
                         model = com,
                         onClick = {viewModel.onGoToCommunityDetailScreen(com.id)}
@@ -90,11 +91,11 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
             ) {
-                val coms = demoCommunity
-                items(viewModel.hotCommunityList) {
+
+                items(hotCommunityList) {
                     CommunityCard(
-                        model = coms,
-                        onClick = {viewModel.onGoToCommunityDetailScreen(coms.id)}
+                        model = com,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.id)}
                     )
 
                 }

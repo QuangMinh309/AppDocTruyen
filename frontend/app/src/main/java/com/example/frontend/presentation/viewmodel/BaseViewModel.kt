@@ -6,11 +6,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor(protected val navigationManager: NavigationManager) : ViewModel() {
+
+    protected val _toast = MutableStateFlow<String?>(null)
+    val toast: StateFlow<String?> get() = _toast
+
+    fun clearToast() {_toast.value = null}
+
+    //region navigation fun
     fun onGoToProfileScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.MainNav.Profile.createRoute("1"))
@@ -68,6 +77,17 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Community.SearchingMember.createRoute(id.toString()))
         }
     }
+    fun onGoToLoginScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Authentication.Login.route)
+        }
+    }
+    fun onGoToRegisterScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Authentication.Register.route)
+        }
+    }
+    //endregion
     fun onGoToWriteScreen(id:Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Story.Chapter.Write.createRoute(id.toString()))
