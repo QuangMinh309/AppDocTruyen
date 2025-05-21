@@ -2,6 +2,7 @@ package com.example.frontend.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,14 +28,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.data.model.Category
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
-fun Chip(text: String) {
+fun Chip(text: String, onClick:()->Unit={}) {
     Surface(
         color = Color.Unspecified,
         shape = RoundedCornerShape(30.dp),
         modifier = Modifier
+            .clickable { onClick }
             .padding(2.dp)
             .border(
                 width = 2.dp,
@@ -57,7 +61,7 @@ fun Chip(text: String) {
 }
 
 @Composable
-fun StoryChips(modifier: Modifier = Modifier,texts: List<String>) {
+fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:BaseViewModel) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -71,7 +75,8 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<String>) {
                 text = "Hot pic",
                 color = Color.White,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 20.dp)
             )
             repeat(times = 3) {
                 Icon(
@@ -93,7 +98,7 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<String>) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             texts.forEach { genre ->
-                Chip(text = genre)
+                Chip(text = genre.name, onClick = {})
             }
         }
     }

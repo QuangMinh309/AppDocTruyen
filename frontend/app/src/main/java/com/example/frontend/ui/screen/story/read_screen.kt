@@ -110,7 +110,7 @@ fun ReadScreen(viewModel: ReadViewModel= hiltViewModel()) {
 //                listOf("huy", null, R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
 //                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
 //            )
-            TopComments(comments,viewModel)
+        //    TopComments(comments,viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))
 

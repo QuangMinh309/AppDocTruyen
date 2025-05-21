@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -52,7 +53,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            SectionTitle(title = "Hot Community")
+            SectionTitle(title = "Hot Community", modifier = Modifier.padding(start = 20.dp))
 
             LazyRow(
                 contentPadding = PaddingValues(vertical = 12.dp),
@@ -81,7 +82,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            SectionTitle(title = "Recommended")
+            SectionTitle(title = "Recommended", modifier = Modifier.padding(start = 20.dp))
 
 
             LazyRow(

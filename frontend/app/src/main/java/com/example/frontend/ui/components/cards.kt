@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
@@ -73,6 +74,7 @@ import com.example.frontend.data.model.ReadList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.ui.screen.main_nav.ReadListItem_
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
@@ -807,7 +809,11 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
     }
 }
 
-
+@Preview
+@Composable
+fun PreviewReadListItem(){
+    ReadListItem(ReadListItem_)
+}
 @Composable
 fun ReadListItem(
     item: ReadList,
@@ -882,7 +888,7 @@ fun ReadListItem(
                 text = item.description,
                 color = Color.White,
                 fontSize = 14.sp,
-                maxLines = 2,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
             )
         }

@@ -1,8 +1,11 @@
 package com.example.frontend.ui.screen.main_nav
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -26,9 +32,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,14 +54,19 @@ import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
 import com.example.frontend.ui.components.AutoScrollBanner
 import com.example.frontend.ui.components.BannerItem
+import com.example.frontend.ui.components.Chip
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.SearchBar
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.StoryCard
 import com.example.frontend.ui.components.StoryCard2
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.screen.story.Examplechapters
+import com.example.frontend.ui.theme.BurntCoral
+import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -92,14 +105,14 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
 //    }
 
     ScreenFrame(
-        topBar = {
-            TopBar(
-                showBackButton = false,
-                iconType = "Setting",
-                onLeftClick = {viewModel.onGoToNotificationScreen()},
-                onRightClick = { viewModel.onGoToSetting() }
-            )
-        }
+//        topBar = {
+//            TopBar(
+//                showBackButton = false,
+//                iconType = "Setting",
+//                onLeftClick = {viewModel.onGoToNotificationScreen()},
+//                onRightClick = { viewModel.onGoToSetting() }
+//            )
+//        }
     ){
         Column(
             modifier = Modifier
@@ -108,12 +121,52 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
                 .padding(vertical = 30.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                   .padding(horizontal = 16.dp ), // Padding cho top bar
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Đảm bảo các phần tử phân bố đều
+            ) {
+                // Icon bên trái (thay cho nút back hoặc notification)
+                Icon(
+                    painter = painterResource(id = R.drawable.notification_ic), // Thay bằng icon notification
+                    contentDescription = "Notification",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clickable{ viewModel.onGoToNotificationScreen() }
+                )
+
+                // Text ở giữa
+                Text(
+                    text = "Home", // Tiêu đề top bar
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .weight(1f) // Chiếm không gian để căn giữa
+                        .wrapContentWidth(Alignment.CenterHorizontally) // Căn giữa text
+                )
+
+                // Icon bên phải (thay cho setting)
+                Icon(
+                    painter = painterResource(id = R.drawable.setting_ic), // Thay bằng icon setting
+                    contentDescription = "Settings",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable { viewModel.onGoToSetting() }
+                )
+            }
 
             Text(
                 text = "Hello penelope !",
                 color = Color.White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 20.dp)
+
             )
 
             //Banner
@@ -124,7 +177,7 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
                 modifier = Modifier.fillMaxSize()
             )
             {
-                SectionTitle(title = "Gợi ý cho bạn ")
+                SectionTitle(title = "Gợi ý cho bạn ", modifier = Modifier.padding(start=20.dp), iconResId = R.drawable.dolphins_ic)
                 if (isStoriesLoading)
                 {
                     Box(
@@ -151,7 +204,7 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ){
-                SectionTitle(title = "Truyện mới")
+                SectionTitle(title = "Truyện mới", modifier = Modifier.padding(start=20.dp), iconResId = R.drawable.firework_ic)
                 if (isStoriesLoading)
                 {
                     Box(
@@ -202,23 +255,25 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween, // Đẩy các thành phần ra hai đầu
-                    verticalAlignment = Alignment.CenterVertically
-                )
-                {
-                    SectionTitle(title = "Top Ranking",modifier = Modifier.weight(1f))
-                    TextButton(
-                        onClick = {},
-                    ) {
-                        Text(
-                            text = "Show full list >",
-                            color = Color.White,
-                            fontSize = 8.sp
-                        )
-                    }
-                }
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.SpaceBetween, // Đẩy các thành phần ra hai đầu
+//                    verticalAlignment = Alignment.CenterVertically
+//                )
+//                {
+                    SectionTitle(title = "Top Ranking",modifier = Modifier.padding(start = 20.dp)
+                        , iconResId = R.drawable.fire_ic
+                    )
+//                    TextButton(
+//                        onClick = {},
+//                    ) {
+//                        Text(
+//                            text = "Show full list >",
+//                            color = Color.White,
+//                            fontSize = 8.sp
+//                        )
+//                    }
+//                }
                 if (isStoriesLoading)
                 {
                     Box(
@@ -265,17 +320,64 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
                         }
                     }
                 }
+                Text(
+                    text = "Show Top Ranking list >>",
+                    color = Color.Black,
+                    fontSize = 10.sp,
+
+
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top=20.dp)
+                        // Giới hạn chiều rộng tối đa
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    OrangeRed,
+                                    BurntCoral
+                                )
+                            ),
+                            shape = RoundedCornerShape(30.dp)
+                        )
+                        .padding(horizontal = 10.dp)
+
+
+                )
             }
 
-            Column(modifier = Modifier.fillMaxWidth()){
-                SectionTitle(title = "Danh sách truyện liên quan")
-                LazyRow(
+            //Chủ đề
+            Column(
+                modifier = Modifier.fillMaxSize()
+            )
+            {
+                SectionTitle(title = "Chủ đề", modifier = Modifier.padding(start=20.dp), iconResId = R.drawable.flower_ic)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(start=20.dp,end=20.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(storyList) { item ->
-                        ReadListItem(item = ReadListItem_, onClick = {viewModel.onGoToStoryScreen(item.id)})
+                    categories.forEach { genre ->
+                        Chip(text = genre.name, onClick ={} )
                     }
                 }
+            }
+
+
+            Column(modifier = Modifier.fillMaxWidth()){
+                SectionTitle(title = "Danh sách truyện", modifier = Modifier.padding(start = 20.dp), iconResId = R.drawable.book_ic)
+                readlistlist.forEach { list->
+                    ReadListItem(item = list)
+                }
+
+//                LazyColumn (
+//                  //  horizontalArrangement = Arrangement.spacedBy(8.dp),
+//                ) {
+//                    items(storyList) { item ->
+//                        ReadListItem(item = ReadListItem_, onClick = {viewModel.onGoToStoryScreen(item.id)})
+//                    }
+//                }
 
             }
 
@@ -285,6 +387,28 @@ fun HomeScreen(viewModel : HomeViewModel = hiltViewModel()) {
 
 
 
+val categories: List<Category> = listOf(
+    Category(
+        id = 1,
+        name = "Fantasy"
+    ),
+    Category(
+        id = 2,
+        name = "Adventure"
+    ),
+    Category(
+        id = 3,
+        name = "Romance"
+    ),
+    Category(
+        id = 4,
+        name = "Mystery"
+    ),
+    Category(
+        id = 5,
+        name = "Science Fiction"
+    )
+)
 
 
 
@@ -319,19 +443,32 @@ val ExampleList: List<Story> = listOf(
         ageRange = 13,
         pricePerChapter = BigDecimal(200),
         chapters = Examplechapters
-    )
+    ),
+    ExamplStory,
+    ExamplStory,
+    ExamplStory,
+    ExamplStory
+
 
 )
 
 
 var  ReadListItem_= ReadList(
     id=1,
-    name="item sdsdfcsvsv svdvs ",
-    description = "hahadfgdfgsdfsdfsdfsdfsdfdsfdsgdsfgdfgfdgfdgdf",
+    name="Yêu thích ",
+    description = "Như tiêu đề thì em mới tập tành xem phim điện ảnh. Em không thích phim chính kịch cho lắm, mọi người giới thiệu cho em vài phim điện ảnh Âu Mĩ, Trung Quốc mà mọi người ấn tượng với ạ. Em cảm ơn.",
     userId = 2,
     stories = ExampleList
 )
 
+val readlistlist=listOf(
+    ReadListItem_,
+    ReadListItem_,
+    ReadListItem_,
+    ReadListItem_,
+    ReadListItem_
+
+)
 
 
 
@@ -444,3 +581,4 @@ var demoCommunity = Community(
             + "A group for everyone to talk about food seen in Anime or manga"
             + "A group for everyone to talk about food seen in Anime or manga"
 )
+

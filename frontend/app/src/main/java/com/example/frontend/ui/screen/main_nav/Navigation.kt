@@ -85,7 +85,8 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
         Screen.MainNav.Home.route -> true
         Screen.MainNav.Search.route -> true
         Screen.MainNav.Community.route -> true
-        Screen.MainNav.YourStory.route -> true
+//        Screen.MainNav.YourStory.route -> true
+        Screen.MainNav.Profile.route->true
         "Profile/1" -> true
         else -> false
     }
@@ -149,7 +150,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MainNav.Search.route,
+            startDestination = Screen.MainNav.Home.route,
             modifier = Modifier.padding(paddingValues)
         ) {
 

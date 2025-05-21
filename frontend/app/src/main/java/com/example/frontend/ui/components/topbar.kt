@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
@@ -34,7 +35,8 @@ fun TopBar(title: String = "",
               onRightClick: () -> Unit = {}){
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(start = 25.dp, end = 25.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         // Back button
@@ -66,7 +68,7 @@ fun TopBar(title: String = "",
                 tint = Color.White,
                 modifier = Modifier
                     .weight(0.33f)
-                    .size(30.dp)
+                    .size(50.dp)
                     .wrapContentWidth(Alignment.Start)
                     .clickable { onLeftClick() }
             )

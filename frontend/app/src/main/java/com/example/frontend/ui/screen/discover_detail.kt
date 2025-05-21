@@ -16,6 +16,7 @@ import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.DiscoverDetailViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryChips
+import com.example.frontend.ui.screen.story.ExampleCategories
 
 @Preview
 @Composable
@@ -40,18 +41,20 @@ fun DiscoverDetailScreen(viewModel: DiscoverDetailViewModel= hiltViewModel())
                 cancelClick = {}
             )
             StoryChips(
-                texts = listOf(
-                "Things We Never Got Over",
-                "Twisted Love",
-                "Twisted Love",
-                "Iron Flame",
-                "Things We Never Got Over",
-                "Things We Never Got Over",
-                "Echoes of Eternity",
-                "The Silent Storm",
-                "Whispers in the Dark",
-                "Fires of Redemption"
-                ),
+              texts = ExampleCategories,
+                viewModel = viewModel,
+//                listOf(
+//                "Things We Never Got Over",
+//                "Twisted Love",
+//                "Twisted Love",
+//                "Iron Flame",
+//                "Things We Never Got Over",
+//                "Things We Never Got Over",
+//                "Echoes of Eternity",
+//                "The Silent Storm",
+//                "Whispers in the Dark",
+//                "Fires of Redemption"
+//                ),
                 modifier = Modifier.padding(vertical = 40.dp)
             )
 

@@ -6,7 +6,7 @@ import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.screen.story.ExampleCategories
 import com.example.frontend.ui.screen.story.Examplechapters
-import com.example.frontend.ui.screen.story.comments
+//import com.example.frontend.ui.screen.story.comments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,6 +18,6 @@ class StoryDetailViewModel @Inject constructor(
   //val story= ExamplStory
     val categories= ExampleCategories
   val chapterrs= Examplechapters
-    val commentlist= comments
+//    val commentlist= comments
 
 }

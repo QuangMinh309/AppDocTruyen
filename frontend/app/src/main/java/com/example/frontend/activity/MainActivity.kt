@@ -34,20 +34,20 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FrontendTheme {
-//                var showSplash by remember { mutableStateOf(true) }
-//
-//                LaunchedEffect(true) {
-//                    delay(4000)
-//                    showSplash = false
-//                }
-//
-//                Crossfade(targetState = showSplash, label = "splash transition") { isSplash ->
-//                    if (isSplash)
-//                        CustomSplashScreen {}
-//                    else
-//                        AppNavigation()
-//                }
-                AppNavigation()
+                var showSplash by remember { mutableStateOf(true) }
+
+                LaunchedEffect(true) {
+                    delay(4000)
+                    showSplash = false
+                }
+
+                Crossfade(targetState = showSplash, label = "splash transition") { isSplash ->
+                    if (isSplash)
+                        CustomSplashScreen {}
+                    else
+                        AppNavigation()
+                }
+
 
             }
         }

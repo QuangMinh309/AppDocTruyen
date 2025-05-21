@@ -127,7 +127,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
 //                                listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
 //                                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
 //                            )
-                            TopComments(comments, viewModel)
+                        //    TopComments(comments, viewModel)
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Novel Similar")
                             SimilarNovelsCard(Examplestories,viewModel)
@@ -280,56 +280,56 @@ val Examplestories = listOf(
 
 
 
-val comments: List<Comment> = listOf(
-    Comment(
-        commentId = 1,
-        user = demoAppUser, // nguyen_author
-        chapter= ExampleChapter,
-        content = "Great start to the story! Can't wait for the next chapter.",
-        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        createAt = Date(2025 - 1900, 4, 10, 10, 0), // 2025-05-10 10:00
-        likeNumber = 15,
-        disLikeNumber = 2
-    ),
-    Comment(
-        commentId = 2,
-        user = demoAppUser, // tran_reader
-        chapter= ExampleChapter,
-        content = "I love the dragon fight scene!",
-        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        createAt = Date(2025 - 1900, 4, 11, 14, 30), // 2025-05-11 14:30
-        likeNumber = 10,
-        disLikeNumber = 0
-    ),
-    Comment(
-        commentId = 3,
-        user = demoAppUser, // le_fan
-        chapter= ExampleChapter,
-        content = "This chapter was intense! More please!",
-        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        createAt = Date(2025 - 1900, 4, 12, 9, 15), // 2025-05-12 09:15
-        likeNumber = 8,
-        disLikeNumber = 1
-    ),
-    Comment(
-        commentId = 4,
-        user = demoAppUser, // tran_reader
-        chapter= ExampleChapter,
-        content = "The plot twist was unexpected!",
-        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        createAt = Date(2025 - 1900, 4, 13, 16, 20), // 2025-05-13 16:20
-        likeNumber = 12,
-        disLikeNumber = 3
-    ),
-    Comment(
-        commentId = 5,
-        user = demoAppUser, // nguyen_author
-        chapter = ExampleChapter,
-        content = "Thanks for the feedback, everyone! Stay tuned for more.",
-        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        createAt = Date(2025 - 1900, 4, 15, 11, 45), // 2025-05-15 11:45
-        likeNumber = 20,
-        disLikeNumber = 0
-    )
-)
+//val comments: List<Comment> = listOf(
+//    Comment(
+//        commentId = 1,
+//        user = demoAppUser, // nguyen_author
+//        chapter= ExampleChapter,
+//        content = "Great start to the story! Can't wait for the next chapter.",
+//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+//        createAt = Date(2025 - 1900, 4, 10, 10, 0), // 2025-05-10 10:00
+//        likeNumber = 15,
+//        disLikeNumber = 2
+//    ),
+//    Comment(
+//        commentId = 2,
+//        user = demoAppUser, // tran_reader
+//        chapter= ExampleChapter,
+//        content = "I love the dragon fight scene!",
+//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+//        createAt = Date(2025 - 1900, 4, 11, 14, 30), // 2025-05-11 14:30
+//        likeNumber = 10,
+//        disLikeNumber = 0
+//    ),
+//    Comment(
+//        commentId = 3,
+//        user = demoAppUser, // le_fan
+//        chapter= ExampleChapter,
+//        content = "This chapter was intense! More please!",
+//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+//        createAt = Date(2025 - 1900, 4, 12, 9, 15), // 2025-05-12 09:15
+//        likeNumber = 8,
+//        disLikeNumber = 1
+//    ),
+//    Comment(
+//        commentId = 4,
+//        user = demoAppUser, // tran_reader
+//        chapter= ExampleChapter,
+//        content = "The plot twist was unexpected!",
+//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+//        createAt = Date(2025 - 1900, 4, 13, 16, 20), // 2025-05-13 16:20
+//        likeNumber = 12,
+//        disLikeNumber = 3
+//    ),
+//    Comment(
+//        commentId = 5,
+//        user = demoAppUser, // nguyen_author
+//        chapter = ExampleChapter,
+//        content = "Thanks for the feedback, everyone! Stay tuned for more.",
+//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+//        createAt = Date(2025 - 1900, 4, 15, 11, 45), // 2025-05-15 11:45
+//        likeNumber = 20,
+//        disLikeNumber = 0
+//    )
+//)
 

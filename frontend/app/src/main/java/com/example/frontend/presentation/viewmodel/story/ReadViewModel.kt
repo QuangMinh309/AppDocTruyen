@@ -3,7 +3,7 @@ package com.example.frontend.presentation.viewmodel.story
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.story.ExampleChapter
-import com.example.frontend.ui.screen.story.comments
+//import com.example.frontend.ui.screen.story.comments
 import javax.inject.Inject
 
 class ReadViewModel @Inject constructor(
@@ -12,7 +12,7 @@ class ReadViewModel @Inject constructor(
 ) : BaseViewModel(navigationManager) {
 //val chapterID=savedStateHandle["id"]
     val chapter= ExampleChapter
-    val topcomment= comments
+//    val topcomment= comments
 
     fun goToNextChapter()
     {
