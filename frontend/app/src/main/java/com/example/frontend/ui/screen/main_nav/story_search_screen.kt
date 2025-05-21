@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Tab
@@ -25,9 +24,7 @@ import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.StorySearchViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SearchBarv2
-import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.StoryCard4
-import com.example.frontend.ui.components.StoryChips
 
 
 @Preview(showBackground = true)
@@ -45,17 +42,6 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
     val categories  = viewModel.categories
     val statuses = viewModel.statuses
 
-    // Danh sách truyện lọc được từ backend (mock tạm thời)
-    val filteredStories by remember { mutableStateOf(ExampleList) }
-
-    LaunchedEffect(searchQuery.value) {
-        if (searchQuery.value.isNotEmpty()) {
-            // Gọi API từ viewModel để lọc truyện (mock tạm thời)
-            // viewModel.searchStories(searchQuery.value).observeForever { stories ->
-            //     filteredStories = stories
-            // }
-        }
-    }
 
     ScreenFrame(
         topBar = {
@@ -65,10 +51,12 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                 onClick = {viewModel.onGoToSetting()}
             )
         }
-    ) {
+    ){
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
+            //   SearchBar
             Spacer(modifier = Modifier.height(20.dp))
 
             // Genre Tab Row
@@ -87,8 +75,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                     )
                 }
             }
-
-            // Status Tab Row
+// Status Tab Row
             TabRow(
                 selectedTabIndex = selectedStatusTabIndex,
                 containerColor = Color.Transparent,
@@ -105,29 +92,30 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                 }
             }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(
-                        if (selectedStatusTabIndex > 1) {
-                            getSampleStories(
-                                category = categories[selectedGenreTabIndex],
-                                status = "all",
-                                premiumStatus = statuses[selectedStatusTabIndex]
-                            )
-                        } else {
-                            getSampleStories(
-                                category = categories[selectedGenreTabIndex],
-                                status = statuses[selectedStatusTabIndex],
-                                premiumStatus = "all"
-                            )
-                        }
-                    ){ story ->  StoryCard4(story=story, onClick = {viewModel.onGoToStoryScreen(story.id)})}
+            // Story List
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(8.dp)
+            ) {
+
+                items(
+                    if(selectedStatusTabIndex>1){
+                        getSampleStories(
+                            category = categories[selectedGenreTabIndex],
+                            status = "all",
+                            premiumStatus = statuses[selectedStatusTabIndex]
+                        )
+                    }
+                    else{
+                        getSampleStories(
+                            category = categories[selectedGenreTabIndex],
+                            status = statuses[selectedStatusTabIndex],
+                            premiumStatus = "all"
+                        )
+                    }
+                ){ story ->  StoryCard4(story=story, onClick = {viewModel.onGoToStoryScreen(story.id)})}
 
             }
         }
     }
 }
-
-

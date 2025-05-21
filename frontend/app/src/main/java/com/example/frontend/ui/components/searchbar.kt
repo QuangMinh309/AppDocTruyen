@@ -20,15 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,13 +34,12 @@ import com.example.frontend.ui.theme.OrangeRed
 @Preview
 @Composable
 fun SearchBar(
-              value: String = "",
-              onValueChange:(String)->Unit = {},
-              cancelClick:()->Unit = {}) {
+    value: String = "",
+    onValueChange:(String)->Unit = {},
+    cancelClick:()->Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .height(35.dp),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -115,64 +108,45 @@ fun SearchBar(
 @Composable
 fun SearchBarv2(
     value: String = "",
-    onValueChange: (String) -> Unit = {},
-    isSearching: Boolean = false,
-    onSearchClick: () -> Unit = {},
-    onCancel: () -> Unit = {},
-    onSettingClick: () -> Unit = {}
-) {
-    // Quản lý focus
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
+    onValueChange:(String)->Unit = {},
+    onClick:()->Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
             .height(35.dp),
         horizontalArrangement = Arrangement.spacedBy(5.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+        verticalAlignment = Alignment.CenterVertically,
+    ){
+
         Row(
             modifier = Modifier
-                .fillMaxWidth(if (isSearching) 0.8f else 0.9f) // Thu ngắn khi tìm kiếm
+                .fillMaxWidth(0.9f)
                 .fillMaxHeight()
                 .background(Color(0xA6747373), shape = RoundedCornerShape(30.dp))
-                .padding(horizontal = 10.dp)
-                .clickable {
-                    onSearchClick()
-                    focusRequester.requestFocus()
-                    keyboardController?.show()
-                },
+                .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
+
+        ){
+
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search Icon",
-                tint = OrangeRed
-            )
+                tint = OrangeRed,
+
+                )
 
             val scrollState = rememberScrollState()
             LaunchedEffect(value) {
                 scrollState.scrollTo(scrollState.maxValue)
             }
             BasicTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    if (!isSearching) onSearchClick()
-                },
-                textStyle = TextStyle(color = Color.Gray),
+                value =  value,
+                onValueChange =  onValueChange,
+                textStyle = TextStyle(
+                    color = Color.Gray
+                ),
                 singleLine = true,
-                modifier = Modifier
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState ->
-                        if (focusState.isFocused && !isSearching) {
-                            onSearchClick()
-                        }
-                    },
                 decorationBox = { innerTextField ->
                     Row(modifier = Modifier.fillMaxWidth()) {
                         if (value.isEmpty()) {
@@ -185,34 +159,20 @@ fun SearchBarv2(
                     }
                     innerTextField()
                 }
-            )
-        }
 
-        // Chuyển đổi giữa icon setting và nút Cancel
-        if (isSearching) {
-            Text(
-                text = "Cancel",
-                color = Color.White,
-                fontSize = 12.sp,
-                modifier = Modifier
-                    .clickable {
-                        onCancel()
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }
-                    .padding(horizontal = 8.dp)
-            )
-        } else {
-            Icon(
-                painter = painterResource(id = R.drawable.setting_config),
-                contentDescription = "Custom Icon",
-                tint = Color.White,
-                modifier = Modifier
-                    .weight(0.33f)
-                    .size(24.dp)
-                    .wrapContentWidth(Alignment.End)
-                    .clickable { onSettingClick() }
             )
         }
+        //cancel text button
+        Icon(
+            painter = painterResource(id = R.drawable.setting_config),
+            contentDescription = "Custom Icon",
+            tint = Color.White,
+            modifier = Modifier
+                .weight(0.33f)
+                .size(24.dp)
+                .wrapContentWidth(Alignment.End)
+                .clickable { onClick() }
+        )
+
     }
 }

@@ -269,7 +269,7 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
 
 
             composable(
-                route = Screen.Story.UserProfile.route,
+                route = Screen.Story.AuthorProfile.route,
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType },
                 )

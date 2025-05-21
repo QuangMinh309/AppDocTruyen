@@ -32,6 +32,9 @@ sealed class Screen(var route: String) {
         data object Detail :Story("Story/StoryDetail/{id}"){
             fun createRoute(id: String) = "Story/StoryDetail/$id"
         }
+        data object AuthorProfile : Story("AuthorProfile/{id}"){
+            fun createRoute(id: String) = "AuthorProfile/$id"
+        }
         sealed class Chapter(route: String) :Story(route) {
             fun createRoute(chapterId: String) = route.replace("{chapterId}", chapterId)
             data object Read : Chapter("Chapter/Read/{chapterId}")
