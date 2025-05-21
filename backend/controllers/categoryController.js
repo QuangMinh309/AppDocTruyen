@@ -4,8 +4,8 @@ import categorySchema from'../validators/categoryValidation.js';
 const CategoryController = {
   async createCategory(req, res, next) {
     try {
-      const { error } = categorySchema.create.validate(req.body);
-      if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
+      // const { error } = categorySchema.create.validate(req.body);
+      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
 
       const category = await CategoryService.createCategory(req.body);
       res.status(201).json(category);
@@ -16,8 +16,8 @@ const CategoryController = {
 
   async getCategoryById(req, res, next) {
     try {
-      const { error } = categorySchema.getById.validate(req.params);
-      if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
+      // const { error } = categorySchema.getById.validate(req.params);
+      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
 
       const category = await CategoryService.getCategoryById(req.params.categoryId);
       res.status(200).json(category);
@@ -37,8 +37,8 @@ const CategoryController = {
 
   async updateCategory(req, res, next) {
     try {
-      const { error } = categorySchema.update.validate(req.body);
-      if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
+      // const { error } = categorySchema.update.validate(req.body);
+      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
 
       const category = await CategoryService.updateCategory(req.params.categoryId, req.body);
       res.status(200).json(category);
@@ -49,8 +49,8 @@ const CategoryController = {
 
   async deleteCategory(req, res, next) {
     try {
-      const { error } = categorySchema.delete.validate(req.params);
-      if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
+      // const { error } = categorySchema.delete.validate(req.params);
+      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
 
       const result = await CategoryService.deleteCategory(req.params.categoryId);
       res.status(200).json(result);

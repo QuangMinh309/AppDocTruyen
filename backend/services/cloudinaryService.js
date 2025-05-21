@@ -1,37 +1,25 @@
-import cloudinary from '../config/cloudinary.js';  // Sửa lại để dùng import
+import cloudinary from "../config/cloudinary.js"; // Sửa lại để dùng import
 
 // Hàm lấy URL của ảnh từ Cloudinary
 const getImageUrlFromCloudinary = (imageId) => {
-    return cloudinary.url(imageId, {
-      fetch_format: 'auto', // tự động chọn định dạng
-      quality: 'auto',      // tự động chọn chất lượng
-    });
+  return cloudinary.url(imageId, {
+    fetch_format: "auto", // tự động chọn định dạng
+    quality: "auto", // tự động chọn chất lượng
+  });
 };
 
-
-const uploadImageToCloudinary  = async (file, folderPath) => {
-  const sanitize = (str) => str.replace(/[^\w\-/]/g, '_');
-  const safeFolder = sanitize(folderPath);  
-  const safeName = sanitize(file.originalname);
-
+const uploadImageToCloudinary = async (imageId) => {
   try {
-    const result = await cloudinary.uploader.upload(file.path, {
-      folder: safeFolder,
-      public_id: safeName,
-      overwrite: true,
-      resource_type: "auto"
+    const url = await new Promise((resolve, reject) => {
+      cloudinary.url(imageId, (error, url) => {
+        if (error || !url) reject(new Error("Không tìm thấy ảnh"));
+        else resolve(url);
+      });
     });
-
-    return {
-      public_id: result.public_id,
-      url: result.secure_url
-    };
+    return url;
   } catch (error) {
-    throw new Error(`Upload failed: ${error.message}`);
+    throw new ApiError(404, "Không tìm thấy ảnh", [error.message]);
   }
 };
 // Export theo chuẩn ES Module
-export {
-  getImageUrlFromCloudinary,
-  uploadImageToCloudinary
-};
+export { getImageUrlFromCloudinary, uploadImageToCloudinary };

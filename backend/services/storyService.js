@@ -22,10 +22,7 @@ const StoryService = {
     return await handleTransaction(async (transaction) => {
       let coverImgId = null;
       if (storyData.coverImg) {
-        const uploadResult = await uploadImageToCloudinary(
-          storyData.coverImg,
-          "stories/covers"
-        );
+        const uploadResult = await uploadImageToCloudinary(storyData.coverImg);
         coverImgId = uploadResult.public_id;
       }
 

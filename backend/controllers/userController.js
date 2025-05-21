@@ -1,4 +1,4 @@
-import UserService from "../services/UserService.js";
+import UserService from "../services/userService.js";
 
 const UserController = {
   async register(req, res, next) {
@@ -11,7 +11,7 @@ const UserController = {
         mail,
         password,
         DOB,
-        // roleId: 2,
+        roleId: 2,
       });
 
       res.status(201).json({

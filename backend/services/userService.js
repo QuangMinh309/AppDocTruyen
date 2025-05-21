@@ -124,11 +124,11 @@ const UserService = {
         include: [
           { model: Role, as: "role", attributes: ["roleId", "roleName"] },
           { model: Story, as: "stories", attributes: ["storyId", "storyName"] },
-          {
-            model: Transaction,
-            as: "transactions",
-            attributes: ["transactionId", "money", "status", "createdAt"],
-          },
+          // {
+          //   model: Transaction,
+          //   as: "transactions",
+          //   attributes: ["transactionId", "money", "status", "createdAt"],
+          // },
         ],
       });
 
