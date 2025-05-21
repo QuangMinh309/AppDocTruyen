@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.frontend.R
 import com.example.frontend.ui.screen.intro_authentication.IntroScreen
 import com.example.frontend.ui.screen.main_nav.AppNavigation
@@ -44,8 +47,28 @@ class MainActivity : BaseActivity() {
                 Crossfade(targetState = showSplash, label = "splash transition") { isSplash ->
                     if (isSplash)
                         CustomSplashScreen {}
-                    else
-                        AppNavigation()
+                    else{
+                        Surface(modifier = Modifier.fillMaxSize()) {
+                            val navController = rememberNavController()
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute = navBackStackEntry?.destination?.route
+
+//                            // Thay đổi orientation dựa trên route hiện tại
+//                            LaunchedEffect(currentRoute) {
+//                                if (currentRoute != null) {
+//                                    requestedOrientation = if (currentRoute == Screen.Intro.route || currentRoute.startsWith("Authentication/")) {
+//                                        ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//                                    } else {
+//                                        ActivityInfo.SCREEN_ORIENTATION_SENSOR
+//                                    }
+//                                }
+//                                else
+//                                    ActivityInfo.SCREEN_ORIENTATION_SENSOR
+//                            }
+                            AppNavigation(navController)
+                        }
+                    }
+
                 }
             }
         }

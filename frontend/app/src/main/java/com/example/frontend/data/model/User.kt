@@ -9,6 +9,7 @@ data class User (
     val role: Role,
     val dName: String,
     val mail: String,
+    val password: String? = null,
     val about: String? = null,
     val dob: LocalDate,
     var followerNum: Int,

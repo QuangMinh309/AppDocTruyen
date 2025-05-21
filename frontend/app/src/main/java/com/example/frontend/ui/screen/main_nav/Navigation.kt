@@ -23,14 +23,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.frontend.R
 import com.example.frontend.navigation.NavigationCommand
@@ -40,8 +39,14 @@ import com.example.frontend.ui.components.BottomNavigationBar
 import com.example.frontend.ui.screen.DiscoverDetailScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
+import com.example.frontend.ui.screen.community.ChattingScreen
 import com.example.frontend.ui.screen.community.CommunityDetailScreen
 import com.example.frontend.ui.screen.community.SearchingMemberScreen
+import com.example.frontend.ui.screen.intro_authentication.IntroScreen
+import com.example.frontend.ui.screen.intro_authentication.LoginScreen
+import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
+import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
+import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.WriteScreen
@@ -56,10 +61,8 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
 
-@Preview
 @Composable
-fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
-    val navController = rememberNavController()
+fun AppNavigation(navController : NavHostController, viewModel: AppNavigationViewModel = hiltViewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var showBottomBar by remember { mutableStateOf(true) }
@@ -148,7 +151,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MainNav.Search.route,
+            startDestination = Screen.Intro.route,
             modifier = Modifier.padding(paddingValues)
         ) {
 
@@ -164,6 +167,21 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
                 )
             ) { ProfileScreen() }
             //endregion
+
+            //region intro
+            composable(Screen.Intro.route) { IntroScreen() }
+            //endregion
+
+            //region authentication
+            composable(Screen.Authentication.Login.route) { LoginScreen() }
+            composable(Screen.Authentication.Register.route) { RegisterScreen() }
+            composable(Screen.Authentication.ResetPassword.route) { ResetPasswordScreen() }
+            composable(
+                route = Screen.Authentication.NewPassword.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { SetUpPasswordScreen() }
 
             //region story
             composable(
@@ -194,7 +212,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
                 arguments = listOf(
                     navArgument("communityId") { type = NavType.StringType },
                 )
-            ) { YourStoryDetailScreen() }
+            ) { ChattingScreen() }
 
             composable(
                 route = Screen.Community.Detail.route,

@@ -27,6 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +70,8 @@ fun PreviewScreenContent2() {
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
 {
+    val user by viewModel.user.collectAsState()
+    val storyList  = viewModel.storyList
     ScreenFrame(
         topBar = {
             TopBar(
@@ -90,7 +94,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
             ) {
                 // Background Image
                 AsyncImage(
-                    model = viewModel.user.backgroundUrl,
+                    model = user.backgroundUrl,
                     contentDescription = "Profile background",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -143,7 +147,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                                 )
                             ){
                                 AsyncImage(
-                                    model =  viewModel.user.avatarUrl,
+                                    model =  user.avatarUrl,
                                     contentDescription = "Profile avatar",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop,
@@ -183,7 +187,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
                             Text(
-                                text =  viewModel.user.name,
+                                text =  user.name,
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,
@@ -191,7 +195,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                                 )
                             )
                             Text(
-                                text =  "@${viewModel.user.dName}",
+                                text =  "@${user.dName}",
                                 style = TextStyle(
                                     color = Color.White.copy(alpha = 0.8f),
                                     fontSize = 10.sp
@@ -208,9 +212,9 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier= Modifier.weight(1f))
-                StatItem(value = viewModel.user.followerNum, label = "Followers")
-                StatItem(value = viewModel.user.novelsNum, label = "Novels")
-                StatItem(value = viewModel.user.readListNum, label = "ReadList")
+                StatItem(value = user.followerNum, label = "Followers")
+                StatItem(value = user.novelsNum, label = "Novels")
+                StatItem(value = user.readListNum, label = "ReadList")
             }
 
             // Email and dob
@@ -229,12 +233,12 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                     .padding(15.dp)
             )
             {
-                InforItem(Icons.Outlined.Mail,viewModel.user.mail)
+                InforItem(Icons.Outlined.Mail,user.mail)
                 Spacer(modifier= Modifier.height(8.dp))
-                InforItem(Icons.Outlined.Cake,viewModel.user.dob.toString())
+                InforItem(Icons.Outlined.Cake,user.dob.toString())
 
             }
-            AboutSection(content = viewModel.user.about)
+            AboutSection(content = user.about)
             //user readList
             Column (modifier = Modifier.fillMaxWidth()){
                 SectionTitle(title = "StoryList")
@@ -243,7 +247,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    items(viewModel.storyList) { item ->
+                    items(storyList ) { item ->
                         ReadListItem(item = ReadListItem_, onClick = {viewModel.onGoToStoryScreen(item.id)})
                     }
                 }

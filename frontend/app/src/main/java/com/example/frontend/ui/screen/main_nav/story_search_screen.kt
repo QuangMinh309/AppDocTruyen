@@ -12,19 +12,14 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.data.model.Category
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.StorySearchViewModel
 import com.example.frontend.ui.components.ScreenFrame
@@ -41,18 +36,18 @@ fun PreviewScreenContent3() {
 
 @Composable
 fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
-    val searchQuery = rememberSaveable { mutableStateOf("") }
-    var selectedGenreTabIndex by remember { mutableIntStateOf(0) }
-    var selectedStatusTabIndex by remember { mutableIntStateOf(0) }
-    val categories  = listOf(Category(id =1,name ="Adventure"),Category(id =2,name ="Autobiography"),Category(id =3,name ="Mystery"))
-    val statuses = listOf("Full", "Updated", "Premium", "Free")
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val selectedGenreTabIndex by viewModel.selectedGenreTabIndex.collectAsState()
+    val selectedStatusTabIndex by viewModel.selectedStatusTabIndex.collectAsState()
+    val categories  = viewModel.categories
+    val statuses = viewModel.statuses
 
 
     ScreenFrame(
         topBar = {
             SearchBarv2(
-                value = searchQuery.value,
-                onValueChange = {searchQuery.value = it},
+                value = searchQuery,
+                onValueChange = {viewModel.onSearchQueryChange(it)},
                 onClick = {viewModel.onGoToSetting()}
             )
         }
@@ -73,7 +68,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                 categories.forEachIndexed { index, genre ->
                     Tab(
                         selected = selectedGenreTabIndex == index,
-                        onClick = { selectedGenreTabIndex = index },
+                        onClick = { viewModel.onSelectedGenreTabIndexChange(index) },
                         text = { Text(text=genre.name, fontSize = 12.sp) },
                         selectedContentColor = Color(0xFFFF9900),
                         unselectedContentColor = Color.LightGray
@@ -90,8 +85,8 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                 statuses.forEachIndexed { index, status ->
                     Tab(
                         selected = selectedStatusTabIndex == index,
-                        onClick = { selectedStatusTabIndex = index },
-                        text = { Text(text=status, fontSize = 12.sp) },
+                        onClick = { viewModel.onSelectedStatusTabIndexChange(index) },
+                        text = { Text(text = status, fontSize = 12.sp) },
                         selectedContentColor = Color(0xFFFF9900),
                         unselectedContentColor = Color.LightGray
                     )
@@ -115,8 +110,8 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                         else{
                             getSampleStories(
                                 category = categories[selectedGenreTabIndex],
-                                status = "all",
-                                premiumStatus = statuses[selectedStatusTabIndex]
+                                status = statuses[selectedStatusTabIndex],
+                                premiumStatus = "all"
                             )
                         }
                     ){ story ->  StoryCard4(story=story, onClick = {viewModel.onGoToStoryScreen(story.id)})}

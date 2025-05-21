@@ -100,7 +100,7 @@ fun PremiumScreen()
                         "You can cancel your membership at any time. " +
                         "By registering, you are agreeing to our Terms. Contact us for more details.",
                 fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
                 color = Color.LightGray
             )
         }

@@ -627,7 +627,7 @@ fun StoryCard2(
             }
         }
         Text(
-            text = "@${story.author}",
+            text = "@${story.author.name}",
             color = Color.White,
             fontSize = 12.sp,
             modifier = Modifier
@@ -729,7 +729,7 @@ fun StoryCard3(
                     }
                     withStyle (
                         style = SpanStyle(
-                            fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                            fontFamily = FontFamily(Font(R.font.poppins_bold)),
                             fontSize = 10.sp,
                             color = OrangeRed
                         )

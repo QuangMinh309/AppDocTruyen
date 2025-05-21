@@ -65,8 +65,8 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 title = "listName",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { /*TODO*/ },
-                onRightClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack()},
+                onRightClick = {viewModel.onGoToSetting()}
             )
         }
     ){
@@ -78,7 +78,6 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
             ) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item { StoryInfo() }
