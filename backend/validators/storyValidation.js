@@ -13,9 +13,8 @@ export const validateCreateStory = Joi.object({
   categories: Joi.array().items(Joi.number().integer()).optional().messages({
     "array.base": "Thể loại phải là một mảng",
   }),
-  coverImg: Joi.string().required().messages({
-    "string.empty": "Ảnh bìa là bắt buộc",
-  }),
+  coverImg: Joi.object().optional(),
+  ageRange: Joi.number().integer().optional(),
   status: Joi.string()
     .valid(...statusEnum)
     .optional()

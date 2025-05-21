@@ -1,6 +1,5 @@
 import { models, sequelize } from "../models/index.js";
 import ApiError from "./apiError.js";
-import { uploadImageToCloudinary } from "../services/cloudinaryService.js";
 import { createNotification } from "./notificationUtils.js";
 
 // Kiểm tra truyện tồn tại
@@ -47,17 +46,6 @@ export const updateStoryViewNum = async (storyId, transaction = null) => {
     return total || 0;
   } catch (err) {
     throw new ApiError("Lỗi khi cập nhật số lượt xem", 500);
-  }
-};
-
-// Xử lý upload ảnh bìa
-export const handleCoverImageUpload = async (imageData) => {
-  if (!imageData) throw new ApiError("Thiếu ảnh bìa", 400);
-  try {
-    const img = await uploadImageToCloudinary(imageData);
-    return img;
-  } catch (err) {
-    throw new ApiError("Lỗi khi upload ảnh bìa", 500);
   }
 };
 

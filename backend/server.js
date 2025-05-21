@@ -18,6 +18,7 @@ import userRoutes from "./routes/userRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import chapterRoutes from "./routes/chapterRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js"
 
 // Middleware
 app.use(cors());
@@ -31,9 +32,10 @@ app.use("/api/images", imageRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/passwordResets", passwordResetRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api", userRoutes);
 app.use("/api/stories", storyRoutes);
 app.use("/api/chapters", chapterRoutes);
+app.use("/api/roles", roleRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from backend!");
@@ -43,7 +45,7 @@ app.get("/", (req, res) => {
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.DB_PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });

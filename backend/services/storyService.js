@@ -4,7 +4,6 @@ import {
   validateStory,
   validateUser,
   validateCategory,
-  handleCoverImageUpload,
   validateSortParams,
   handleStoryPurchaseTransaction,
   updateStoryViewNum,
@@ -16,11 +15,20 @@ import {
   handlePurchaseTransaction,
   checkChapterAccessCore,
 } from "../utils/chapterUtils.js";
+import { uploadImageToCloudinary } from "./cloudinaryService.js";
 
 const StoryService = {
   async createStory(storyData, userId) {
     return await handleTransaction(async (transaction) => {
-      const img = await handleCoverImageUpload(storyData.coverImg);
+      let coverImgId = null;
+      if (storyData.coverImg) {
+        const uploadResult = await uploadImageToCloudinary(
+          storyData.coverImg,
+          "stories/covers"
+        );
+        coverImgId = uploadResult.public_id;
+      }
+
       const story = await models.Story.create(
         {
           ...storyData,
@@ -28,7 +36,7 @@ const StoryService = {
           viewNum: 0,
           voteNum: 0,
           chapterNum: 0,
-          coverImgId: img,
+          coverImgId,
         },
         { transaction }
       );
@@ -92,9 +100,17 @@ const StoryService = {
     return await handleTransaction(async (transaction) => {
       const story = await validateStory(storyId, userId);
       const img = storyData.coverImg
-        ? await handleCoverImageUpload(storyData.coverImg)
-        : story.coverImgId;
-      await story.update({ ...storyData, coverImgId: img }, { transaction });
+        ? await uploadImageToCloudinary(storyData.coverImg, "stories/covers")
+        : { public_id: story.coverImgId, url: story.coverImgUrl };
+
+      await story.update(
+        {
+          ...storyData,
+          coverImgId: img.public_id,
+          coverImgUrl: img.url,
+        },
+        { transaction }
+      );
 
       if (storyData.categories && Array.isArray(storyData.categories)) {
         await models.StoryCategory.destroy({ where: { storyId }, transaction });

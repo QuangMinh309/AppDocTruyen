@@ -2,7 +2,7 @@ import PasswordReset from '../models/entities/password_reset.js';
 import User from '../models/entities/user.js';
 import ApiError from "./../utils/apiError.js";
 
-class PasswordResetService {
+const PasswordResetService = {
   async createPasswordReset(data) {
     try {
         const passwordReset = await PasswordReset.create(data);
@@ -11,7 +11,7 @@ class PasswordResetService {
     catch {
         throw new ApiError('Lỗi khi tạo mã reset mật khẩu', 500);
     }
-  }
+  },
 
   async verifyOTP(OTP, userId) {
     const passwordReset = await PasswordReset.findOne({
@@ -26,7 +26,7 @@ class PasswordResetService {
     catch(err) {
         throw new ApiError('Lỗi khi cập nhật mã reset mật khẩu', 500);
     }
-  }
+  },
 
   async getPasswordResetById(OTP) {
     try {

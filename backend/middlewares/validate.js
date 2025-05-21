@@ -2,6 +2,10 @@ import ApiError from "../utils/apiError.js";
 
 const validate = (schema, property = "body") => {
   return (req, res, next) => {
+    if (!schema || typeof schema.validate !== "function") {
+      return next(new ApiError("Lỗi hệ thống: Joi schema không hợp lệ", 500));
+    }
+
     const { error } = schema.validate(req[property], { abortEarly: false });
     if (error) {
       return next(

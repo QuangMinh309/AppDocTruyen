@@ -1,12 +1,6 @@
 import Joi from "joi";
 
 export const validateCreateChapter = Joi.object({
-  storyId: Joi.number().integer().positive().required().messages({
-    "number.base": "ID truyện phải là số",
-    "number.integer": "ID truyện phải là số nguyên",
-    "number.positive": "ID truyện phải là số dương",
-    "any.required": "ID truyện là bắt buộc",
-  }),
   chapterName: Joi.string().trim().max(255).required().messages({
     "string.empty": "Tên chương không được để trống",
     "string.max": "Tên chương không được vượt quá 255 ký tự",
@@ -23,6 +17,15 @@ export const validateCreateChapter = Joi.object({
   }),
   lockedStatus: Joi.boolean().optional().messages({
     "boolean.base": "Trạng thái khóa phải là true hoặc false",
+  }),
+});
+
+export const validateStoryIdParam = Joi.object({
+  storyId: Joi.number().integer().positive().required().messages({
+    "number.base": "ID truyện phải là số",
+    "number.integer": "ID truyện phải là số nguyên",
+    "number.positive": "ID truyện phải là số dương",
+    "any.required": "ID truyện là bắt buộc",
   }),
 });
 
