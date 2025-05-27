@@ -1,6 +1,6 @@
 package com.example.frontend.data.model
 
-data class ReadList (
+data class NameList (
     val id: Int,
     val name: String,
     val stories: List<Story>,
