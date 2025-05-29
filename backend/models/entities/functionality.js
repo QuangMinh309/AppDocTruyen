@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Functionality extends Model {
@@ -6,10 +6,10 @@ export default (sequelize, DataTypes) => {
       // Functionality belongs to many Roles (many-to-many)
       Functionality.belongsToMany(models.Role, {
         through: models.Authorization,
-        foreignKey: "funcId",
-        otherKey: "roleId",
-        as: "roles",
-      });
+        foreignKey: 'funcId',
+        otherKey: 'roleId',
+        as: 'roles',
+      })
     }
   }
 
@@ -26,11 +26,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Functionality",
-      tableName: "functionality",
+      modelName: 'Functionality',
+      tableName: 'functionality',
       timestamps: false,
     }
-  );
+  )
 
-  return Functionality;
-};
+  return Functionality
+}

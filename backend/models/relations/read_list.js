@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class ReadList extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "ReadList",
-      tableName: "read_list",
+      modelName: 'ReadList',
+      tableName: 'read_list',
       timestamps: false,
     }
-  );
+  )
 
-  return ReadList;
-};
+  return ReadList
+}

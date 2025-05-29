@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class LikeComment extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "LikeComment",
-      tableName: "like_comment",
+      modelName: 'LikeComment',
+      tableName: 'like_comment',
       timestamps: false,
     }
-  );
+  )
 
-  return LikeComment;
-};
+  return LikeComment
+}

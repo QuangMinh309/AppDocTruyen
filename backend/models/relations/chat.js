@@ -1,19 +1,19 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Chat extends Model {
     static associate(models) {
       // Chat belongs to Community
       Chat.belongsTo(models.Community, {
-        foreignKey: "communityId",
-        as: "community",
-      });
+        foreignKey: 'communityId',
+        as: 'community',
+      })
 
       // Chat belongs to User (sender)
       Chat.belongsTo(models.User, {
-        foreignKey: "senderId",
-        as: "sender",
-      });
+        foreignKey: 'senderId',
+        as: 'sender',
+      })
     }
   }
 
@@ -33,11 +33,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Chat",
-      tableName: "chat",
+      modelName: 'Chat',
+      tableName: 'chat',
       timestamps: false,
     }
-  );
+  )
 
-  return Chat;
-};
+  return Chat
+}

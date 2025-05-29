@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Follow extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Follow",
-      tableName: "follow",
+      modelName: 'Follow',
+      tableName: 'follow',
       timestamps: false,
     }
-  );
+  )
 
-  return Follow;
-};
+  return Follow
+}

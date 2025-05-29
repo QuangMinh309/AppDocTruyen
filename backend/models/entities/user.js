@@ -1,107 +1,107 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       // User belongs to a Role
       User.belongsTo(models.Role, {
-        foreignKey: "roleId",
-        as: "role",
-      });
+        foreignKey: 'roleId',
+        as: 'role',
+      })
 
       // User has many Stories
       User.hasMany(models.Story, {
-        foreignKey: "userId",
-        as: "stories",
-      });
+        foreignKey: 'userId',
+        as: 'stories',
+      })
 
       // User has many Comments
       User.hasMany(models.Comment, {
-        foreignKey: "userId",
-        as: "comments",
-      });
+        foreignKey: 'userId',
+        as: 'comments',
+      })
 
       // User has many PasswordResets
       User.hasMany(models.PasswordReset, {
-        foreignKey: "userId",
-        as: "passwordResets",
-      });
+        foreignKey: 'userId',
+        as: 'passwordResets',
+      })
 
       // User has many Transactions
       User.hasMany(models.Transaction, {
-        foreignKey: "userId",
-        as: "transactions",
-      });
+        foreignKey: 'userId',
+        as: 'transactions',
+      })
 
       // User has many NameLists
       User.hasMany(models.NameList, {
-        foreignKey: "userId",
-        as: "nameLists",
-      });
+        foreignKey: 'userId',
+        as: 'nameLists',
+      })
 
       // User has many Purchases
       User.hasMany(models.Purchase, {
-        foreignKey: "userId",
-        as: "purchases",
-      });
+        foreignKey: 'userId',
+        as: 'purchases',
+      })
 
       // User has many History
       User.hasMany(models.History, {
-        foreignKey: "userId",
-        as: "histories",
-      });
+        foreignKey: 'userId',
+        as: 'histories',
+      })
 
       // User has many Chats
       User.hasMany(models.Chat, {
-        foreignKey: "senderId",
-        as: "chats",
-      });
+        foreignKey: 'senderId',
+        as: 'chats',
+      })
 
       // User has Premium (one-to-one)
       User.hasOne(models.Premium, {
-        foreignKey: "userId",
-        as: "premium",
-      });
+        foreignKey: 'userId',
+        as: 'premium',
+      })
 
       // User follows many Users (self-reference many-to-many)
       User.belongsToMany(models.User, {
         through: models.Follow,
-        foreignKey: "followId",
-        otherKey: "followedId",
-        as: "following",
-      });
+        foreignKey: 'followId',
+        otherKey: 'followedId',
+        as: 'following',
+      })
 
       // User has many followers (self-reference many-to-many)
       User.belongsToMany(models.User, {
         through: models.Follow,
-        foreignKey: "followedId",
-        otherKey: "followId",
-        as: "followers",
-      });
+        foreignKey: 'followedId',
+        otherKey: 'followId',
+        as: 'followers',
+      })
 
       // User has many Votes (many-to-many with Story)
       User.belongsToMany(models.Story, {
         through: models.Vote,
-        foreignKey: "userId",
-        otherKey: "storyId",
-        as: "votedStories",
-      });
+        foreignKey: 'userId',
+        otherKey: 'storyId',
+        as: 'votedStories',
+      })
 
       // User belongs to many Communities (many-to-many)
       User.belongsToMany(models.Community, {
         through: models.JoinCommunity,
-        foreignKey: "userId",
-        otherKey: "communityId",
-        as: "communities",
-      });
+        foreignKey: 'userId',
+        otherKey: 'communityId',
+        as: 'communities',
+      })
 
       // User likes many Comments (many-to-many)
       User.belongsToMany(models.Comment, {
         through: models.LikeComment,
-        foreignKey: "userId",
-        otherKey: "commentId",
-        as: "likedComments",
-      });
+        foreignKey: 'userId',
+        otherKey: 'commentId',
+        as: 'likedComments',
+      })
     }
   }
 
@@ -128,11 +128,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "User",
-      tableName: "user",
+      modelName: 'User',
+      tableName: 'user',
       timestamps: false,
     }
-  );
+  )
 
-  return User;
-};
+  return User
+}

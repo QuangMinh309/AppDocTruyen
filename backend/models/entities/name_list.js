@@ -1,21 +1,21 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class NameList extends Model {
     static associate(models) {
       // NameList belongs to User
       NameList.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
 
       // NameList has many Stories (many-to-many)
       NameList.belongsToMany(models.Story, {
         through: models.ReadList,
-        foreignKey: "nameListId",
-        otherKey: "storyId",
-        as: "stories",
-      });
+        foreignKey: 'nameListId',
+        otherKey: 'storyId',
+        as: 'stories',
+      })
     }
   }
 
@@ -33,11 +33,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "NameList",
-      tableName: "name_list",
+      modelName: 'NameList',
+      tableName: 'name_list',
       timestamps: false,
     }
-  );
+  )
 
-  return NameList;
-};
+  return NameList
+}

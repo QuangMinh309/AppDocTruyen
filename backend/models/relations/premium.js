@@ -1,13 +1,13 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Premium extends Model {
     static associate(models) {
       // Premium belongs to User
       Premium.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
 
@@ -24,11 +24,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Premium",
-      tableName: "premium",
+      modelName: 'Premium',
+      tableName: 'premium',
       timestamps: false,
     }
-  );
+  )
 
-  return Premium;
-};
+  return Premium
+}

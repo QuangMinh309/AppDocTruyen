@@ -1,25 +1,25 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Purchase extends Model {
     static associate(models) {
       // Purchase belongs to User
       Purchase.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
 
       // Purchase belongs to Story
       Purchase.belongsTo(models.Story, {
-        foreignKey: "storyId",
-        as: "story",
-      });
+        foreignKey: 'storyId',
+        as: 'story',
+      })
 
       // Purchase belongs to Chapter
       Purchase.belongsTo(models.Chapter, {
-        foreignKey: "chapterId",
-        as: "chapter",
-      });
+        foreignKey: 'chapterId',
+        as: 'chapter',
+      })
     }
   }
 
@@ -38,11 +38,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Purchase",
-      tableName: "purchase",
+      modelName: 'Purchase',
+      tableName: 'purchase',
       timestamps: false,
     }
-  );
+  )
 
-  return Purchase;
-};
+  return Purchase
+}

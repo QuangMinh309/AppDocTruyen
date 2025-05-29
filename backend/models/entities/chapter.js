@@ -1,31 +1,31 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Chapter extends Model {
     static associate(models) {
       // Chapter belongs to Story
       Chapter.belongsTo(models.Story, {
-        foreignKey: "storyId",
-        as: "story",
-      });
+        foreignKey: 'storyId',
+        as: 'story',
+      })
 
       // Chapter has many Comments
       Chapter.hasMany(models.Comment, {
-        foreignKey: "chapterId",
-        as: "comments",
-      });
+        foreignKey: 'chapterId',
+        as: 'comments',
+      })
 
       // Chapter has many Purchases
       Chapter.hasMany(models.Purchase, {
-        foreignKey: "chapterId",
-        as: "purchases",
-      });
+        foreignKey: 'chapterId',
+        as: 'purchases',
+      })
 
       // Chapter has many History entries
       Chapter.hasMany(models.History, {
-        foreignKey: "chapterId",
-        as: "histories",
-      });
+        foreignKey: 'chapterId',
+        as: 'histories',
+      })
     }
   }
 
@@ -40,7 +40,7 @@ export default (sequelize, DataTypes) => {
       chapterName: DataTypes.STRING,
       ordinalNumber: DataTypes.INTEGER,
       storyId: DataTypes.INTEGER,
-      content: DataTypes.TEXT("long"),
+      content: DataTypes.TEXT('long'),
       viewNum: DataTypes.INTEGER,
       lockedStatus: DataTypes.BOOLEAN,
       updatedAt: {
@@ -50,11 +50,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Chapter",
-      tableName: "chapter",
+      modelName: 'Chapter',
+      tableName: 'chapter',
       timestamps: false, // Only updatedAt exists
     }
-  );
+  )
 
-  return Chapter;
-};
+  return Chapter
+}

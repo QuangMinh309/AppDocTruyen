@@ -1,19 +1,19 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class History extends Model {
     static associate(models) {
       // History belongs to User
       History.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
 
       // History belongs to Chapter
       History.belongsTo(models.Chapter, {
-        foreignKey: "chapterId",
-        as: "chapter",
-      });
+        foreignKey: 'chapterId',
+        as: 'chapter',
+      })
     }
   }
 
@@ -31,11 +31,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "History",
-      tableName: "history",
+      modelName: 'History',
+      tableName: 'history',
       timestamps: false,
     }
-  );
+  )
 
-  return History;
-};
+  return History
+}

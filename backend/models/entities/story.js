@@ -1,49 +1,49 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Story extends Model {
     static associate(models) {
       // Story belongs to User
       Story.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "author",
-      });
+        foreignKey: 'userId',
+        as: 'author',
+      })
 
       // Story has many Chapters
       Story.hasMany(models.Chapter, {
-        foreignKey: "storyId",
-        as: "chapters",
-      });
+        foreignKey: 'storyId',
+        as: 'chapters',
+      })
 
       // Story has many Purchases
       Story.hasMany(models.Purchase, {
-        foreignKey: "storyId",
-        as: "purchases",
-      });
+        foreignKey: 'storyId',
+        as: 'purchases',
+      })
 
       // Story belongs to many Categories (many-to-many)
       Story.belongsToMany(models.Category, {
         through: models.StoryCategory,
-        foreignKey: "storyId",
-        otherKey: "categoryId",
-        as: "categories",
-      });
+        foreignKey: 'storyId',
+        otherKey: 'categoryId',
+        as: 'categories',
+      })
 
       // Story has many Votes from Users (many-to-many)
       Story.belongsToMany(models.User, {
         through: models.Vote,
-        foreignKey: "storyId",
-        otherKey: "userId",
-        as: "voters",
-      });
+        foreignKey: 'storyId',
+        otherKey: 'userId',
+        as: 'voters',
+      })
 
       // Story belongs to many NameLists/ReadLists (many-to-many)
       Story.belongsToMany(models.NameList, {
         through: models.ReadList,
-        foreignKey: "storyId",
-        otherKey: "nameListId",
-        as: "nameLists",
-      });
+        foreignKey: 'storyId',
+        otherKey: 'nameListId',
+        as: 'nameLists',
+      })
     }
   }
 
@@ -77,11 +77,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Story",
-      tableName: "story",
+      modelName: 'Story',
+      tableName: 'story',
       timestamps: true,
     }
-  );
+  )
 
-  return Story;
-};
+  return Story
+}

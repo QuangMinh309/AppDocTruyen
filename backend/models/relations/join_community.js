@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class JoinCommunity extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "JoinCommunity",
-      tableName: "join_community",
+      modelName: 'JoinCommunity',
+      tableName: 'join_community',
       timestamps: false,
     }
-  );
+  )
 
-  return JoinCommunity;
-};
+  return JoinCommunity
+}

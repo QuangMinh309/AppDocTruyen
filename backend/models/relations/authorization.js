@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Authorization extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Authorization",
-      tableName: "authorization",
+      modelName: 'Authorization',
+      tableName: 'authorization',
       timestamps: false,
     }
-  );
+  )
 
-  return Authorization;
-};
+  return Authorization
+}

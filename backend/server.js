@@ -1,61 +1,44 @@
 // server.js
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import db from "./models/index.js";
-import errorHandler from "./middlewares/errorHandler.js";
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import db from './models/index.js'
+import errorHandler from './middlewares/errorHandler.js'
+import route from './routes/index.js'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
-const sequelize = db.sequelize;
-
-// API routes
-import imageRoutes from "./routes/imageRoutes.js";
-import notificationRoutes from "./routes/notificationRoutes.js";
-import passwordResetRoutes from "./routes/passwordResetRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import chapterRoutes from "./routes/chapterRoutes.js";
-import storyRoutes from "./routes/storyRoutes.js";
-import roleRoutes from "./routes/roleRoutes.js"
+const app = express()
+const sequelize = db.sequelize
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
+app.use('/uploads', express.static('uploads'))
 
-// Routes
-app.use("/api/images", imageRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/passwordResets", passwordResetRoutes);
-app.use("/api", userRoutes);
-app.use("/api/stories", storyRoutes);
-app.use("/api/chapters", chapterRoutes);
-app.use("/api/roles", roleRoutes);
+route(app)
 
-app.get("/", (req, res) => {
-  res.send("Hello from backend!");
-});
+app.get('/', (req, res) => {
+  res.send('Hello from backend!')
+})
 
 // Error handling middleware
-app.use(errorHandler);
+app.use(errorHandler)
 
 // Start server
-const PORT = process.env.DB_PORT || 3000;
+const PORT = process.env.DB_PORT || 3000
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+  console.log(`Server running at http://localhost:${PORT}`)
+})
 
 // DB connection
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Đã kết nối thành công đến database!");
+    console.log('Đã kết nối thành công đến database!')
   })
   .catch((err) => {
-    console.error("Lỗi kết nối database:", err);
-  });
+    console.error('Lỗi kết nối database:', err)
+  })

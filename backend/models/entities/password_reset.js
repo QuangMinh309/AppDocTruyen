@@ -1,13 +1,13 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class PasswordReset extends Model {
     static associate(models) {
       // PasswordReset belongs to User
       PasswordReset.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
 
@@ -28,11 +28,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "PasswordReset",
-      tableName: "password_reset",
+      modelName: 'PasswordReset',
+      tableName: 'password_reset',
       timestamps: false, // Only createdAt exists
     }
-  );
+  )
 
-  return PasswordReset;
-};
+  return PasswordReset
+}

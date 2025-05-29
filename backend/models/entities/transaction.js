@@ -1,13 +1,13 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Transaction extends Model {
     static associate(models) {
       // Transaction belongs to User
       Transaction.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
 
@@ -28,11 +28,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Transaction",
-      tableName: "transaction",
+      modelName: 'Transaction',
+      tableName: 'transaction',
       timestamps: false,
     }
-  );
+  )
 
-  return Transaction;
-};
+  return Transaction
+}

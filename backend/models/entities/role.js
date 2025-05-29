@@ -1,21 +1,21 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Role extends Model {
     static associate(models) {
       // Role has many Users
       Role.hasMany(models.User, {
-        foreignKey: "roleId",
-        as: "users",
-      });
+        foreignKey: 'roleId',
+        as: 'users',
+      })
 
       // Role has many Functionalities through Authorization (many-to-many)
-      Role.belongsToMany(models.Functionality, {
-        through: models.Authorization,
-        foreignKey: "roleId",
-        otherKey: "funcId",
-        as: "functionalities",
-      });
+      // Role.belongsToMany(models.Functionality, {
+      //   through: models.Authorization,
+      //   foreignKey: 'roleId',
+      //   otherKey: 'funcId',
+      //   as: 'functionalities',
+      // })
     }
   }
 
@@ -31,11 +31,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Role",
-      tableName: "role",
+      modelName: 'Role',
+      tableName: 'role',
       timestamps: false,
     }
-  );
+  )
 
-  return Role;
-};
+  return Role
+}

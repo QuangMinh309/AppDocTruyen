@@ -1,12 +1,12 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class Notification extends Model {
     static associate(models) {
       Notification.belongsTo(models.User, {
-        foreignKey: "userId",
-        as: "user",
-      });
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
 
@@ -27,11 +27,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Notification",
-      tableName: "notification",
+      modelName: 'Notification',
+      tableName: 'notification',
       timestamps: false,
     }
-  );
+  )
 
-  return Notification;
-};
+  return Notification
+}

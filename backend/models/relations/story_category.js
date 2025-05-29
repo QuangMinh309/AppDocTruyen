@@ -1,4 +1,4 @@
-import { Model } from "sequelize";
+import { Model } from 'sequelize'
 
 export default (sequelize, DataTypes) => {
   class StoryCategory extends Model {
@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "StoryCategory",
-      tableName: "story_category",
+      modelName: 'StoryCategory',
+      tableName: 'story_category',
       timestamps: false,
     }
-  );
+  )
 
-  return StoryCategory;
-};
+  return StoryCategory
+}
