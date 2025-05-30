@@ -34,7 +34,15 @@ const loginUser = async (email, password) => {
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
 
-    const { password: _, ...userDataWithoutPassword } = user.toJSON()
+    const { password: _, DOB, ...rest } = user.toJSON()
+
+    const formattedDob = DOB ? new Date(DOB).toISOString().split('T')[0] : null
+
+    const userDataWithoutPassword = {
+      ...rest,
+      DOB: formattedDob,
+    }
+
     return {
       user: userDataWithoutPassword,
       accessToken,

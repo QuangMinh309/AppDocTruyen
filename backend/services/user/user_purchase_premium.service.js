@@ -7,7 +7,7 @@ const Transaction = sequelize.models.Transaction
 
 const purchasePremium = async (userId) => {
   try {
-    const user = validateUser(userId)
+    const user = await validateUser(userId)
 
     if (user.isPremium) {
       throw new ApiError('Bạn đã là thành viên premium', 400)

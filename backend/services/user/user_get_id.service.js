@@ -5,7 +5,7 @@ import { validateUser } from '../../utils/user.util.js'
 const User = sequelize.models.User
 const Role = sequelize.models.Role
 const Story = sequelize.models.Story
-const ReadList = sequelize.models.ReadList
+const NameList = sequelize.models.NameList
 
 const getUserById = async (userId) => {
   try {
@@ -24,31 +24,24 @@ const getUserById = async (userId) => {
         {
           model: Story,
           as: 'stories',
-          attributes: ['storyId', 'storyName', 'price'],
+          attributes: ['storyId', 'storyName', 'price', 'voteNum'],
           include: [
             {
               model: User,
               as: 'author',
               attributes: ['userName'],
             },
-            {
-              model: Vote,
-              as: 'votes',
-              attributes: [],
-              through: { attributes: [] },
-            },
           ],
         },
         {
-          model: ReadList,
-          as: 'readLists',
+          model: NameList,
+          as: 'nameLists',
           attributes: ['description'],
           include: [
             {
               model: Story,
-              as: 'story',
+              as: 'stories',
               attributes: ['storyId', 'storyName', 'coverImgId'],
-              limit: 3,
             },
           ],
         },
@@ -58,16 +51,18 @@ const getUserById = async (userId) => {
     validateUser(user.userId)
 
     const storyCount = await Story.count({ where: { userId } })
-    const readListCount = await ReadList.count({ where: { userId } })
+    const nameListCount = await NameList.count({ where: { userId } })
 
-    const userData = user.toJSON()
+    const { DOB, ...rest } = user.toJSON()
+    const formattedDOB = DOB ? new Date(DOB).toISOString().split('T')[0] : null
+
+    const userData = {
+      ...rest,
+      DOB: formattedDOB,
+    }
+
     userData.storyCount = storyCount
-    userData.readListCount = readListCount
-
-    userData.stories = userData.stories.map((story) => ({
-      ...story,
-      voteCount: story.votes.length,
-    }))
+    userData.nameListCount = nameListCount
 
     return userData
   } catch (err) {

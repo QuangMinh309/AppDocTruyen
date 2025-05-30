@@ -4,7 +4,7 @@ import { validateUser } from '../../utils/user.util.js'
 
 const changePassword = async (userId, currentPassword, newPassword) => {
   try {
-    const user = validateUser(userId)
+    const user = await validateUser(userId)
 
     const isPasswordValid = await bcrypt.compare(currentPassword, user.password)
     if (!isPasswordValid) {

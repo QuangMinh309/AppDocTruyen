@@ -36,6 +36,7 @@ const forgotPassword = async (email) => {
     await sendOTPEmail(email, otp)
     return { message: 'Mã OTP đã được gửi đến email của bạn' }
   } catch (err) {
+    console.error("Lỗi thực sự: ", err)
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi gửi OTP', 500)
   }

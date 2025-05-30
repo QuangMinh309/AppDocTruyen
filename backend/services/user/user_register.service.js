@@ -6,7 +6,7 @@ const User = sequelize.models.User
 
 const registerUser = async (data) => {
   try {
-    const { password, ...userData } = data
+    const { password, userName, dUserName, ...userData } = data
 
     // Check if email already exists
     const existingUser = await User.findOne({
@@ -19,6 +19,7 @@ const registerUser = async (data) => {
     const hashedPassword = await bcrypt.hash(password, 10)
     await User.create({
       ...userData,
+      userName,
       password: hashedPassword,
       dUserName: dUserName || userName,
       followerNum: 0,
@@ -27,7 +28,7 @@ const registerUser = async (data) => {
       status: 'active',
     })
 
-    return { message: 'Đăng ký thành công' }
+    return true
   } catch (err) {
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi đăng ký', 500)

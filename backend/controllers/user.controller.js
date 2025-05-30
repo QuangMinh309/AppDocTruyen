@@ -34,7 +34,6 @@ const UserController = {
       res.status(201).json({
         success: true,
         message: 'Đăng ký thành công',
-        data: result,
       })
     } catch (error) {
       next(error)

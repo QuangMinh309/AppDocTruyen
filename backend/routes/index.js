@@ -9,7 +9,7 @@ import roleRoutes from './role.routes.js'
 
 function route(app) {
   app.use('/api/images', imageRoutes)
-  app.use('/api', userRoutes)
+  app.use('/api/users', userRoutes)
   app.use('/api/categories', categoryRoutes)
   app.use('/api/notifications', notificationRoutes)
   app.use('/api/passwordResets', passwordResetRoutes)

@@ -125,6 +125,7 @@ export default (sequelize, DataTypes) => {
       backgroundId: DataTypes.STRING,
       wallet: DataTypes.DECIMAL(15, 2),
       isPremium: DataTypes.BOOLEAN,
+      status: DataTypes.STRING,
     },
     {
       sequelize,

@@ -34,7 +34,13 @@ const updateUser = async (userId, data) => {
       ],
     })
 
-    return updatedUser.toJSON()
+    const { DOB, ...rest } = updatedUser.toJSON()
+    const formattedDOB = DOB ? new Date(DOB).toISOString().split('T')[0] : null
+
+    return {
+      ...rest,
+      DOB: formattedDOB,
+    }
   } catch (err) {
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi cập nhật người dùng', 500)
