@@ -29,3 +29,4 @@ data class UploadResponse(
 data class ImageUrlResponse(
     val url: String
 )
+
