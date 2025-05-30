@@ -10,9 +10,9 @@ import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.example.frontend.data.model.NameList
 import com.example.frontend.navigation.Screen
 import okhttp3.MultipartBody
-import org.w3c.dom.NameList
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -261,26 +261,26 @@ interface ApiService {
 
 
     // API cho NameList
-    @GET("/api/name-lists")
+    @GET("/api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>
 
-    @GET("/api/name-lists/{id}")
+    @GET("/api/nameLists/{id}")
     suspend fun getNameListById(
         @Path("id") id: Int
     ): Response<NameList>
 
-    @POST("/api/name-lists")
+    @POST("/api/nameLists")
     suspend fun createNameList(
         @Body nameList: NameList
     ): Response<NameList>
 
-    @PUT("/api/name-lists/{id}")
+    @PUT("/api/nameLists/{id}")
     suspend fun updateNameList(
         @Path("id") id: Int,
         @Body nameList: NameList
     ): Response<NameList>
 
-    @DELETE("/api/name-lists/{id}")
+    @DELETE("/api/nameLists/{id}")
     suspend fun deleteNameList(
         @Path("id") id: Int
     ): Response<Unit>

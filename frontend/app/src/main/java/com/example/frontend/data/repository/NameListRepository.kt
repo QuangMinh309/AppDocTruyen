@@ -3,7 +3,7 @@ package com.example.frontend.data.repository
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
-import org.w3c.dom.NameList
+import com.example.frontend.data.model.NameList
 import javax.inject.Inject
 
 class NameListRepository @Inject constructor(
@@ -22,7 +22,7 @@ class NameListRepository @Inject constructor(
         }
     }
 
-    suspend fun getNameListrById(id: Int): Result<NameList> {
+    suspend fun getNameListById(id: Int): Result<NameList> {
         return try {
             val response = apiService.getNameListById(id)
             if (response.isSuccessful) {
