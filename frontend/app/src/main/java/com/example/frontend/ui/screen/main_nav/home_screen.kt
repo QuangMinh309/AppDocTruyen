@@ -548,7 +548,7 @@ import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.ReadList
+import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
@@ -783,7 +783,7 @@ val ExampleList: List<Story> = listOf(
 )
 
 
-var  ReadListItem_= ReadList(
+var  ReadListItem_= NameList(
     id=1,
     name="item sdsdfcsvsv svdvs ",
     description = "hahadfgdfgsdfsdfsdfsdfsdfdsfdsgdsfgdfgfdgfdgdf",

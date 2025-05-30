@@ -70,7 +70,7 @@ import com.example.frontend.R
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.ReadList
+import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -816,7 +816,7 @@ fun PreviewReadListItem(){
 }
 @Composable
 fun ReadListItem(
-    item: ReadList,
+    item: NameList,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {

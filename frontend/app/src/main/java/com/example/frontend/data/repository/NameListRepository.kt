@@ -22,7 +22,7 @@ class NameListRepository @Inject constructor(
         }
     }
 
-    suspend fun getNameListrById(id: Int): Result<NameList> {
+    suspend fun getNameListById(id: Int): Result<NameList> {
         return try {
             val response = apiService.getNameListById(id)
             if (response.isSuccessful) {
