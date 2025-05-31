@@ -36,12 +36,12 @@ import com.example.frontend.ui.components.StoryCard4
 import com.example.frontend.ui.components.StoryChips
 
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun PreviewScreenContent3() {
     val fakeViewModel = StorySearchViewModel(NavigationManager())
     StorySearchScreen(viewModel = fakeViewModel)
-}
+}*/
 
 @Composable
 fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {

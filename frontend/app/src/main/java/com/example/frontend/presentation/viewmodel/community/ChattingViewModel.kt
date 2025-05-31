@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class ChattingViewModel@Inject constructor(
+class ChattingViewModel @Inject constructor(
     //savedStateHandle: SavedStateHandle,
     navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
     val communityId = 1
