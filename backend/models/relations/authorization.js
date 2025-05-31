@@ -1,32 +1,32 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Authorization extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Authorization extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   Authorization.init(
     {
       roleId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       funcId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "Authorization",
-      tableName: "authorization",
+      modelName: 'Authorization',
+      tableName: 'authorization',
       timestamps: false,
     }
-  );
+  )
 
-  Authorization.associate = (models) => {
-    Authorization.belongsTo(models.Role, { foreignKey: "roleId" });
-    Authorization.belongsTo(models.Functionality, { foreignKey: "funcId" });
-  };
-
-  return Authorization;
-};
+  return Authorization
+}

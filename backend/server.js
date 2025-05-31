@@ -1,41 +1,44 @@
 // server.js
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import db from "./models/index.js";
-import imageRoutes from "./routes/imageRoutes.js";
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import db from './models/index.js'
+import errorHandler from './middlewares/errorHandler.js'
+import route from './routes/index.js'
 
-dotenv.config(); // Load .env before anything else
+dotenv.config()
 
-const app = express();
-const sequelize = db.sequelize;
+const app = express()
+const sequelize = db.sequelize
 
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
+app.use('/uploads', express.static('uploads'))
 
-// Routes
-app.use("/api/images", imageRoutes);
+route(app)
 
-app.get("/", (req, res) => {
-  res.send("Hello from backend!");
-});
+app.get('/', (req, res) => {
+  res.send('Hello from backend!')
+})
+
+// Error handling middleware
+app.use(errorHandler)
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.DB_PORT || 3000
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+  console.log(`Server running at http://localhost:${PORT}`)
+})
 
 // DB connection
 sequelize
   .authenticate()
   .then(() => {
-    console.log("Đã kết nối thành công đến database!");
+    console.log('Đã kết nối thành công đến database!')
   })
   .catch((err) => {
-    console.error("Lỗi kết nối database:", err);
-  });
+    console.error('Lỗi kết nối database:', err)
+  })

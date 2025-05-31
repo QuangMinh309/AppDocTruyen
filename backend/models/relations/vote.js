@@ -1,32 +1,32 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Vote extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Vote extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   Vote.init(
     {
       userId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       storyId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "Vote",
-      tableName: "vote",
+      modelName: 'Vote',
+      tableName: 'vote',
       timestamps: false,
     }
-  );
+  )
 
-  Vote.associate = (models) => {
-    Vote.belongsTo(models.User, { foreignKey: "userId" });
-    Vote.belongsTo(models.Story, { foreignKey: "storyId" });
-  };
-
-  return Vote;
-};
+  return Vote
+}

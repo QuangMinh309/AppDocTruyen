@@ -22,6 +22,7 @@ backend/
 ## Hướng dẫn dùng migration
 - Khởi tạo: npx sequelize-cli init
 - Tạo một migration: npx sequelize-cli migration:generate --name create-users (tạo file create-users như trên)
+- Tạo seed file: npx sequelize-cli seed:generate --name seed-admin-user
 - Chạy migration: npx sequelize-cli db:migrate (db sẽ tạo bảng)
 
 ## Hướng dẫn dùng

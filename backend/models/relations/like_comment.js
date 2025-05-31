@@ -1,32 +1,32 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class LikeComment extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class LikeComment extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   LikeComment.init(
     {
       commentId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       userId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "LikeComment",
-      tableName: "like_comment",
+      modelName: 'LikeComment',
+      tableName: 'like_comment',
       timestamps: false,
     }
-  );
+  )
 
-  LikeComment.associate = (models) => {
-    LikeComment.belongsTo(models.Comment, { foreignKey: "commentId" });
-    LikeComment.belongsTo(models.User, { foreignKey: "userId" });
-  };
-
-  return LikeComment;
-};
+  return LikeComment
+}
