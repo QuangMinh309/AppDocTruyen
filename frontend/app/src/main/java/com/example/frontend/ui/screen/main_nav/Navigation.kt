@@ -49,7 +49,6 @@ import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
 import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
-import com.example.frontend.ui.screen.story.UserProfileScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -88,7 +87,7 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
         Screen.MainNav.Home.route -> true
         Screen.MainNav.Search.route -> true
         Screen.MainNav.Community.route -> true
-//        Screen.MainNav.YourStory.route -> true
+        Screen.MainNav.YourStory.route -> true
         Screen.MainNav.Profile.route->true
         "Profile/1" -> true
         else -> false
@@ -273,7 +272,7 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType },
                 )
-            ) { UserProfileScreen() }
+            ) {ProfileScreen() }
 
         }
     }

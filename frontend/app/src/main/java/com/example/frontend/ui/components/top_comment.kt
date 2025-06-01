@@ -1,6 +1,5 @@
 package com.example.frontend.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -39,6 +37,7 @@ import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.data.model.Comment
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
@@ -119,12 +118,12 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(text = "chapter ${comment.chapter.OrdinalNumber}", color = Color.White, fontSize = 14.5.sp)
+                            Text(text = "chapter ${comment.chapter.ordinalNumber}", color = Color.White, fontSize = 14.5.sp)
                             Spacer(modifier = Modifier.height(7.dp))
                             Row {
-                                Text(text = comment.createAt.date.toString(), color = Color(0xFFFF5722), fontSize = 14.5.sp)
+                                Text(text = comment.createAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = Color(0xFFFF5722), fontSize = 14.5.sp)
                                 Text(
-                                    text = comment.createAt.time.toString(),
+                                    text = comment.createAt.format(DateTimeFormatter.ofPattern("HH:mm")),
                                     color = Color.White,
                                     fontSize = 14.5.sp,
                                     modifier = Modifier.padding(start = 11.dp)

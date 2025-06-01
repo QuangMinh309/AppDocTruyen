@@ -62,7 +62,7 @@ fun PreviewScreenContent5() {
     val fakeViewModel = CommunityDetailViewModel(NavigationManager())
     CommunityDetailScreen(viewModel = fakeViewModel)
 }
-@Preview
+
 @Composable
 fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel()){
 
@@ -87,7 +87,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 35.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ){
 
@@ -102,8 +102,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                 )
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ){
@@ -215,7 +214,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                                     Spacer( modifier = Modifier.height(4.dp))
                                     AsyncImage(
                                         model = demoUser.avatarUrl,
-                                        placeholder = painterResource(id = R.drawable.intro_page1_bg),
+                                        placeholder = painterResource(id = R.drawable.avt_img),
                                         contentDescription = "community avatar",
                                         modifier = Modifier
                                             .size(60.dp)
@@ -238,12 +237,19 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(200.dp)
+                            .width(170.dp)
                             .background(brush = Brush.horizontalGradient(
                                 colors = listOf(Color.Transparent, DeepSpace),
                             ))
                             .align(Alignment.CenterEnd)
                     ){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp)
+                                .background(color = DeepSpace)
+                                .align(Alignment.CenterEnd)
+                        )
                         //view all button
                         Button(
                             onClick = { viewModel.onGoToSearchingMemberScreen(viewModel.communityId)},
@@ -261,7 +267,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                                     .fillMaxSize()
                                     .background(
                                         shape = RoundedCornerShape(30.dp),
-                                        color = Color.Transparent
+                                        color = DeepSpace
                                     )
                                 .border(1.dp, OrangeRed, RoundedCornerShape(30.dp)),
                                 contentAlignment = Alignment.Center

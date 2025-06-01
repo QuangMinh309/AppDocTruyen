@@ -1,8 +1,8 @@
 package com.example.frontend.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +57,7 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     }
     fun onGoToStoryScreen(id: Int) {
         viewModelScope.launch {
+            Log.d("StoryId",id.toString())
            navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
         }
     }
