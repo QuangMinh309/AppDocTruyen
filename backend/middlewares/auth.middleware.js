@@ -4,7 +4,6 @@ import ApiError from '../utils/api_error.util.js'
 
 const User = sequelize.models.User
 const Role = sequelize.models.Role
-const Parameter = sequelize.models.Parameter
 
 // Xác thực access token
 export const authenticate = async (req, res, next) => {

@@ -7,7 +7,7 @@ import {
   handlePurchaseTransaction,
 } from '../../utils/chapter.util.js'
 import { validateStory } from '../../utils/story.util.js'
-import { handleTransaction } from '../../utils/transaction.util.js'
+import { handleTransaction } from '../../utils/handle_transaction.util.js'
 
 const ChapterService = {
   async createChapter(chapterData, userId) {
