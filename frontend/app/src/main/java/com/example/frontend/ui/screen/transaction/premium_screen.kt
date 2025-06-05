@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.presentation.viewmodel.transaction.PremiumViewmodel
+import com.example.frontend.presentation.viewmodel.transaction.PremiumViewModel
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.SalmonRose
 
@@ -37,11 +37,11 @@ import com.example.frontend.ui.theme.SalmonRose
 @Composable
 fun PreViewPremiumScreen()
 {
-    val fakeviewmodel=PremiumViewmodel(NavigationManager())
+    val fakeviewmodel= PremiumViewModel(NavigationManager())
     PremiumScreen(fakeviewmodel)
 }
 @Composable
-fun PremiumScreen(viewmodel: PremiumViewmodel= hiltViewModel())
+fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
 {
 //    val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page2_bg)
 //    val ratio = imageBitmap.width.toFloat() / imageBitmap.height

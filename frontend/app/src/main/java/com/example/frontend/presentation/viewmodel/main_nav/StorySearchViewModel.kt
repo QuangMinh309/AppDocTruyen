@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-
 class StorySearchViewModel @Inject constructor(navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
     //Fake data
     val stories = ExampleList

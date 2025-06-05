@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -79,7 +78,6 @@ import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 
 //region community Card
@@ -101,7 +99,7 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
             painter = painterResource(id = R.drawable.intro_page1_bg),
             contentDescription = "community avatar",
             modifier = Modifier
-                .size(70.dp,70.dp)
+                .size(70.dp, 70.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop // Cắt ảnh nếu cần thiết để lấp đầy không gian
         )
@@ -229,7 +227,9 @@ fun NotificationCard(cardType :String ,
                 },
                 contentDescription = "transaction icon" ,
                 tint = Color.White,
-                modifier = Modifier.size(40.dp).padding(horizontal = 5.dp)
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(horizontal = 5.dp)
             )
         else{
             Image(
@@ -303,9 +303,9 @@ fun ChapterItemCard(
             Spacer(modifier = Modifier.height(13.dp))
 
             Row {
-                Text(text = SimpleDateFormat("yyyy-MM-dd").format(chapter.UpdateAt), color = OrangeRed, fontSize = 14.sp)
+                Text(text = chapter.updateAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = OrangeRed, fontSize = 14.sp)
                 Text(
-                    text = SimpleDateFormat("HH:mm").format(chapter.UpdateAt) ,
+                    text = chapter.updateAt.format(DateTimeFormatter.ofPattern("HH:mm")) ,
                     color = Color.White,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 7.dp)
@@ -344,7 +344,8 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(17.dp)) {
         items(novels, key = { it.id }) { novel ->
             Column(
-                modifier = Modifier.width(128.dp)
+                modifier = Modifier
+                    .width(128.dp)
                     .clickable { viewModel.onGoToStoryScreen(novel.id) },
                 horizontalAlignment = Alignment.Start
             ) {
@@ -416,10 +417,12 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
 }
 
 @Composable
-fun StoryCard4(modifier: Modifier = Modifier,story: Story,onClick: () -> Unit = {} ,
+fun StoryCard4(
+    modifier: Modifier = Modifier, story: Story, onClick: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier.padding(8.dp)
+        modifier = modifier
+            .padding(8.dp)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -512,7 +515,7 @@ fun StoryCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp,end=5.dp)
+                    .padding(top = 5.dp, end = 5.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 placeholder = painterResource(R.drawable.placeholder_cover),
                 error = painterResource(R.drawable.placeholder_cover)
@@ -523,7 +526,7 @@ fun StoryCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .background(
-                        color = if (story.price.compareTo(BigDecimal.ZERO) !=0)Color(0xFFFBBC05)  else BrightAquamarine,
+                        color = if (story.price.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp)
@@ -785,11 +788,11 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
         AsyncImage(
             model = model.avatarUrl, // URL của avatar
             contentDescription = "avatar",
-            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.avt_img),
             modifier = Modifier
-                .heightIn(69.dp)
-                .widthIn(69.dp)
-                .padding(end = 19.dp)
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop // fill mode
         )
         Column {
             Text(
@@ -823,7 +826,8 @@ fun ReadListItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .clickable { onClick() }
     ) {
         // Phần avatar xếp chồng (lấy từ 3 truyện đầu tiên)

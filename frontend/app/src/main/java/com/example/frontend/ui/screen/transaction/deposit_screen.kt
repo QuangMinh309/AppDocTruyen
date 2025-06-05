@@ -34,23 +34,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
-import com.example.frontend.presentation.viewmodel.transaction.DepositeViewModel
+import com.example.frontend.presentation.viewmodel.transaction.DepositViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import androidx.compose.foundation.layout.Box as Box1
 import java.text.DecimalFormat
+import androidx.compose.foundation.layout.Box as Box1
 
 @Preview
 @Composable
 fun PreViewDepositeScreen() {
-    val fakeViewModel = DepositeViewModel(NavigationManager())
+    val fakeViewModel = DepositViewModel(NavigationManager())
     DepositScreen(fakeViewModel)
 }
 
 @Composable
-fun DepositScreen(viewModel: DepositeViewModel = hiltViewModel()) {
+fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
     // State để lưu giá trị số tiền dưới dạng Long
     val amountState = remember { mutableLongStateOf(200000L) }
 

@@ -27,14 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.R
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Comment
-import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
-import com.example.frontend.data.model.User
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
@@ -47,15 +43,11 @@ import com.example.frontend.ui.components.SimilarNovelsCard
 import com.example.frontend.ui.components.StoryInfo
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
-import com.example.frontend.ui.components.TopComments
-import com.example.frontend.ui.screen.main_nav.demoAppUser
-import com.example.frontend.ui.screen.main_nav.demoUser
 import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Date
 
 @Preview
 @Composable
@@ -83,7 +75,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "${ExamplStory.name}",
+                title = ExamplStory.name,
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -185,11 +177,11 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
 val ExampleChapter: Chapter=Chapter (
 chapterId = 1,
 chapterName = "The Beginning",
-OrdinalNumber = 1,
+ordinalNumber = 1,
 storyId = 1,
 content = "The hero embarks on a journey to find the lost artifact...",
 viewNum = 500, commentNumber = 10,
-UpdateAt = Date(2025 - 1900, 4, 12, 9, 15),
+updateAt = LocalDate.parse("2024-12-12"),
 lockedStatus = false
 )
 
@@ -254,7 +246,7 @@ val Examplestories = listOf(
 
     ),
     Story(
-        id=1,
+        id=2,
         name ="Alibaba",
         coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
         description = "fgfssdf",

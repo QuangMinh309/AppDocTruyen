@@ -1,5 +1,6 @@
 package com.example.frontend.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.navigation.NavigationManager
@@ -55,7 +56,10 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     }
     fun onGoToStoryScreen(id: Int) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
+
+            Log.d("StoryId",id.toString())
+           navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
+
         }
     }
     fun onGoBack() {
