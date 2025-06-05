@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.window:window:1.3.0")
+    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -115,4 +116,18 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
 
     implementation ("com.google.zxing:core:3.5.3")
+
+    // Retrofit và Gson (để parse JSON)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+// Coroutine support
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+// Gson
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+    //
+//
+//    implementation ("com.google.dagger:hilt-android:2.44")
+//    kapt("com.google.dagger:hilt-android-compiler:2.44")
+//    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 }

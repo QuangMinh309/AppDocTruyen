@@ -2,6 +2,7 @@ package com.example.frontend.di
 
 import android.content.Context
 import android.os.Build
+import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
 import dagger.Module
 import dagger.Provides
@@ -22,7 +23,8 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideBaseUrl(@ApplicationContext context: Context): String {
-        return "http://10.0.2.2:3000/"
+        return context.getString(R.string.base_url)
+        //"http://10.0.2.2:3000/"
         // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
     }
 
@@ -34,17 +36,19 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY // Log toàn bộ yêu cầu và phản hồi
+            level = HttpLoggingInterceptor.Level.BODY
         }
 
         val cacheSize = 10 * 1024 * 1024 // 10MB cache
         val cache = Cache(context.cacheDir, cacheSize.toLong())
 
         return OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(60, TimeUnit.SECONDS) // Tăng timeout lên 60 giây
+            .readTimeout(60, TimeUnit.SECONDS) // Tăng timeout lên 60 giây
+            .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
-            .cache(cache) // Thêm cache để giảm tải mạng
+            .cache(cache)
+            .retryOnConnectionFailure(true) // Thêm retry khi kết nối thất bại
             .build()
     }
 

@@ -1,37 +1,103 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
+import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.ResetPasswordRequest // Thêm import này
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SetUpPasswordViewModel @Inject constructor(
-    navigationManager: NavigationManager) : BaseViewModel(navigationManager){
+    private val apiService: ApiService,
+    navigationManager: NavigationManager
+) : BaseViewModel(navigationManager) {
 
-    private val _password  = MutableStateFlow("")
-    val password  : StateFlow<String> = _password
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password
 
-    private val _confirmPassword  = MutableStateFlow("")
-    val confirmPassword  : StateFlow<String> = _confirmPassword
+    private val _confirmPassword = MutableStateFlow("")
+    val confirmPassword: StateFlow<String> = _confirmPassword
 
-    fun onPasswordChange(password: String)  {
+    private val _otp = MutableStateFlow("")
+    val otp: StateFlow<String> = _otp
+
+    private val _userId = MutableStateFlow(0)
+    val userId: StateFlow<Int> = _userId
+
+    fun setOTP(otp: String) {
+        println("Setting OTP in SetUpPasswordViewModel: $otp")
+        _otp.value = otp
+    }
+
+    fun setUserId(userId: Int) {
+        _userId.value = userId
+    }
+
+    fun onPasswordChange(password: String) {
         _password.value = password
     }
-    fun onConfirmPasswordChange(confirmPassword: String)  {
+
+    fun onConfirmPasswordChange(confirmPassword: String) {
         _confirmPassword.value = confirmPassword
     }
 
     fun checkSetUpPassword() {
-        if(_confirmPassword.value != _password.value){
-            _toast.value = "Password and confirm password do not match"
+        println("OTP value before check: ${_otp.value}")
+        if (_password.value.isEmpty() || _confirmPassword.value.isEmpty()) {
+            _toast.value = "Vui lòng nhập đầy đủ mật khẩu"
             return
         }
-        _toast.value = "Sign Up success!"
-        onGoToLoginScreen()
+        if (_password.value != _confirmPassword.value) {
+            _toast.value = "Mật khẩu và xác nhận mật khẩu không khớp"
+            return
+        }
+        if (_password.value.length < 8 || !isPasswordValid(_password.value)) {
+            _toast.value = "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt"
+            return
+        }
+        if (_otp.value.isEmpty()) {
+            _toast.value = "Không tìm thấy OTP, vui lòng thử lại"
+            return
+        }
+        if (_userId.value == 0) {
+            _toast.value = "Không tìm thấy userId, vui lòng thử lại"
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val request = ResetPasswordRequest( // Sửa ở đây
+                    otp = _otp.value.toIntOrNull() ?: 0,
+                    newPassword = _password.value,
+                    confirmPassword = _confirmPassword.value,
+                    userId = _userId.value
+                )
+                val response = apiService.resetPassword(request)
+                if (response.isSuccessful) {
+                    _toast.value = "Đặt lại mật khẩu thành công!"
+                    onGoToLoginScreen()
+                } else {
+                    _toast.value = "Đặt lại mật khẩu thất bại: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                _toast.value = "Lỗi: ${e.message}"
+            }
+        }
     }
 
-
+    private fun isPasswordValid(password: String): Boolean {
+        val uppercaseRegex = "[A-Z]".toRegex()
+        val lowercaseRegex = "[a-z]".toRegex()
+        val numberRegex = "\\d".toRegex()
+        val specialCharRegex = "[!@#\$%^&*(),.?\":{}|<>]".toRegex()
+        return password.contains(uppercaseRegex) &&
+                password.contains(lowercaseRegex) &&
+                password.contains(numberRegex) &&
+                password.contains(specialCharRegex)
+    }
 }

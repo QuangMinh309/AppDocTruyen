@@ -51,22 +51,20 @@ import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.PoppinsFontFamily
 import com.example.frontend.ui.theme.ReemKufifunFontFamily
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewScreenContent7() {
+//    val fakeViewModel = ResetPasswordViewModel(NavigationManager())
+//    ResetPasswordScreen(viewModel = fakeViewModel)
+//}
+
 @Composable
-fun PreviewScreenContent7() {
-    val fakeViewModel = ResetPasswordViewModel(NavigationManager())
-    ResetPasswordScreen(viewModel = fakeViewModel)
-}
-@Composable
-fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
-{
+fun ResetPasswordScreen(viewModel: ResetPasswordViewModel = hiltViewModel()) {
     val tbEmailValue by viewModel.email.collectAsState()
     val tbOTPValue by viewModel.otp.collectAsState()
-
-
     val toast by viewModel.toast.collectAsState()
-    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
+
     LaunchedEffect(toast) {
         toast?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -78,34 +76,23 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        DeepSpace,
-                        DeepBlue
-                    ),
-                )
+                Brush.verticalGradient(colors = listOf(DeepSpace, DeepBlue))
             )
             .paint(
                 painterResource(R.drawable.sigup_bg),
                 contentScale = ContentScale.FillWidth,
                 alignment = Alignment.BottomCenter
             )
-    )
-    {
-        Column( // main body
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.9f)
                 .align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
-            Column ( // title and desc
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            {
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Reset your password",
                     style = TextStyle(
@@ -129,16 +116,14 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                         fontSize = 17.sp,
                         color = Color.White
                     ),
-                    modifier = Modifier
-                        .align(alignment = Alignment.Start)
+                    modifier = Modifier.align(alignment = Alignment.Start)
                 )
             }
-            Column ( // email textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Email",
                     style = TextStyle(
@@ -146,16 +131,14 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                         fontFamily = ReemKufifunFontFamily,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
-                        color = Color.White,
+                        color = Color.White
                     )
                 )
                 TextField(
                     value = tbEmailValue,
-                    onValueChange = { viewModel. onEmailChange(it) },
+                    onValueChange = { viewModel.onEmailChange(it) },
                     singleLine = true,
-                    placeholder = {
-                        Text("Enter your email address")
-                    },
+                    placeholder = { Text("Enter your email address") },
                     textStyle = TextStyle(fontFamily = PoppinsFontFamily),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -184,23 +167,17 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                 )
             }
 
-            //send otp button
             Button(
-                onClick = {
-                        viewModel.sendOTPToEmail()
-                },
+                onClick = { viewModel.sendOTPToEmail() },
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .height(50.dp)
                     .width(240.dp),
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = OrangeRed
-                )
-            )
-            {
+                colors = ButtonDefaults.buttonColors(containerColor = OrangeRed)
+            ) {
                 Text(
-                    text = "Send  OTP",
+                    text = "Send OTP",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
@@ -220,12 +197,11 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                     .align(alignment = Alignment.Start)
                     .padding(top = 40.dp)
             )
-            Column ( // OTP textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "OTP",
                     style = TextStyle(
@@ -245,9 +221,7 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                     value = tbOTPValue,
                     onValueChange = { viewModel.onOTPChange(it) },
                     singleLine = true,
-                    placeholder = {
-                        Text("Enter your code")
-                    },
+                    placeholder = { Text("Enter your code") },
                     textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_regular))),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -276,19 +250,14 @@ fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
                 )
             }
             Button(
-                onClick = {
-                    viewModel.checkOTP()
-                },
+                onClick = { viewModel.checkOTP() },
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .height(50.dp)
                     .width(240.dp),
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = OrangeRed
-                )
-            )
-            {
+                colors = ButtonDefaults.buttonColors(containerColor = OrangeRed)
+            ) {
                 Text(
                     text = "Confirm",
                     style = TextStyle(

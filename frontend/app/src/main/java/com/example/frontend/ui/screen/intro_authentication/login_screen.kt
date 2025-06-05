@@ -22,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -55,15 +56,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.intro_authentification.LoginViewModel
-import com.example.frontend.ui.components.ScreenFrame
-import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
@@ -72,28 +70,18 @@ import com.example.frontend.ui.theme.ReemKufifunFontFamily
 import com.example.frontend.util.UserPreferences
 import kotlinx.coroutines.launch
 
-
-@Preview(showBackground = true)
 @Composable
-fun PreviewScreenContent() {
-    val fakeViewModel = LoginViewModel(NavigationManager())
-    LoginScreen(viewModel = fakeViewModel)
-}
-
-@Suppress("DEPRECATION")
-@Preview
-@Composable
-fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
-{
-    val tbEmailValue by viewModel.email.collectAsState()
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
+    val tbMailValue by viewModel.mail.collectAsState()
     val tbPasswordValue by viewModel.password.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState() // Thêm trạng thái loading
     var rememberLogin by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val toast by viewModel.toast.collectAsState()
-    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
+
     LaunchedEffect(toast) {
         toast?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -102,12 +90,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
     }
 
     LaunchedEffect(Unit) {
-        UserPreferences.getUserData(context).collect { (savedEmail, savedPassword, remember) ->
+        UserPreferences.getUserData(context).collect { (savedMail, savedPassword, remember) ->
             if (remember) {
-//                tbEmailValue = savedEmail
-//                tbPasswordValue = savedPassword
-//                rememberLogin = true
-              }
+                viewModel.onMailChange(savedMail)
+                viewModel.onPasswordChange(savedPassword)
+                rememberLogin = true
+            }
         }
     }
 
@@ -124,25 +112,31 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
             )
             .paint(
                 painterResource(R.drawable.login_bg),
-                contentScale = ContentScale.FillWidth   ,
+                contentScale = ContentScale.FillWidth,
                 alignment = Alignment.BottomCenter
             )
-    )
-    {
-        Column( // main body
+    ) {
+        if (isLoading) { // Hiển thị loading
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(50.dp),
+                color = OrangeRed
+            )
+        }
+
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.9f)
                 .align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
-            Column ( // title and desc
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            {
+            ) {
                 Text(
                     text = "Login",
                     style = TextStyle(
@@ -193,16 +187,14 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     },
                     modifier = Modifier.align(Alignment.Start)
                 )
-
             }
-            Column ( // email textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
-                    text = "Email",
+                    text = "Mail",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
                         fontFamily = ReemKufifunFontFamily,
@@ -217,11 +209,11 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     )
                 )
                 TextField(
-                    value = tbEmailValue,
-                    onValueChange = { viewModel.onEmailChange(it) },
+                    value = tbMailValue,
+                    onValueChange = { viewModel.onMailChange(it) },
                     singleLine = true,
                     placeholder = {
-                        Text("Enter your email address", style = TextStyle(color = Color.Gray))
+                        Text("Enter your mail address", style = TextStyle(color = Color.Gray))
                     },
                     textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_bold))),
                     modifier = Modifier
@@ -250,12 +242,11 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     )
                 )
             }
-            Column ( // password textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Password",
                     style = TextStyle(
@@ -301,7 +292,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
-                                .clickable{
+                                .clickable {
                                     passwordVisible = !passwordVisible
                                 }
                         )
@@ -327,12 +318,10 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            { //remember credentials and forgot password redirect
-                Row (
+            ) {
+                Row(
                     verticalAlignment = Alignment.CenterVertically
-                )
-                {
+                ) {
                     Checkbox(
                         checked = rememberLogin,
                         onCheckedChange = { rememberLogin = it },
@@ -353,22 +342,15 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                     text = "Forgot password?",
                     color = Color.LightGray,
                     modifier = Modifier.clickable {
-                        viewModel.onGoToResetPasswordScreen()
+                         viewModel.onGoToResetPassWordScreen()
                     }
                 )
             }
             Button(
                 onClick = {
                     scope.launch {
-                        if (rememberLogin) {
-                            UserPreferences.saveUserData(context, tbEmailValue, tbPasswordValue, true)
-                            viewModel.onGoToHomeScreen()
-                        } else {
-                            UserPreferences.clearUserData(context)
-                        }
+                        viewModel.checkingLogin(context, rememberLogin)
                     }
-                    viewModel.checkingLogin()
-
                 },
                 modifier = Modifier
                     .padding(top = 40.dp)
@@ -378,14 +360,14 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeRed
                 )
-            )
-            {
+            ) {
                 Text(
                     text = "Let's get started",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
-                        color = Color.Black, fontWeight = FontWeight.Bold
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
                     ),
                     textAlign = TextAlign.Center
                 )
@@ -398,14 +380,12 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
             )
             Row(
                 modifier = Modifier.padding(top = 20.dp)
-            )
-            {
+            ) {
                 IconButton(
                     onClick = {
-
+                        // Xử lý đăng nhập bằng Facebook
                     }
-                )
-                {
+                ) {
                     Image(
                         painter = painterResource(R.drawable.facebook),
                         contentDescription = "facebook",
@@ -416,10 +396,9 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 Spacer(modifier = Modifier.width(10.dp))
                 IconButton(
                     onClick = {
-
+                        // Xử lý đăng nhập bằng Twitter
                     }
-                )
-                {
+                ) {
                     Image(
                         painter = painterResource(R.drawable.xitter),
                         contentDescription = "X (twitter)",
@@ -430,10 +409,9 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
                 Spacer(modifier = Modifier.width(10.dp))
                 IconButton(
                     onClick = {
-
+                        // Xử lý đăng nhập bằng Google
                     }
-                )
-                {
+                ) {
                     Image(
                         painter = painterResource(R.drawable.google),
                         contentDescription = "google",
@@ -444,5 +422,4 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel())
             }
         }
     }
-
 }

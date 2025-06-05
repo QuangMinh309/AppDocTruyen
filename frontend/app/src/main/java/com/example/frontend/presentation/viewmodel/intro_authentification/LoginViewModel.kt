@@ -1,48 +1,82 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
 import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.LoginRequest
 import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
-import com.example.frontend.ui.screen.main_nav.demoUser
+import com.example.frontend.util.TokenManager
+import com.example.frontend.util.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import android.util.Log
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel@Inject constructor(navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
-    private val _email  = MutableStateFlow("")
-    val email : StateFlow<String> = _email
+class LoginViewModel @Inject constructor(
+    private val apiService: ApiService,
+    private val tokenManager: TokenManager,
+    navigationManager: NavigationManager
+) : BaseViewModel(navigationManager) {
 
-    private val _password  = MutableStateFlow("")
-    val password  : StateFlow<String> = _password
+    private val _mail = MutableStateFlow("")
+    val mail: StateFlow<String> = _mail
 
+    private val _password = MutableStateFlow("")
+    val password: StateFlow<String> = _password
 
-    fun onEmailChange(email: String) {
-        _email.value = email
+    private val _isLoading = MutableStateFlow(false) // Thêm trạng thái loading
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    fun onMailChange(mail: String) {
+        _mail.value = mail
     }
-    fun onPasswordChange(password: String)  {
+
+    fun onPasswordChange(password: String) {
         _password.value = password
     }
 
-    fun onGoToResetPasswordScreen() {
+    fun checkingLogin(context: android.content.Context, rememberLogin: Boolean) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Authentication.ResetPassword.route)
-        }
-    }
+            if (_mail.value.isEmpty() || _password.value.isEmpty()) {
+                _toast.value = "Please fill in all fields"
+                Log.d("LoginViewModel", "Empty fields: mail=${_mail.value}, password=${_password.value}")
+                return@launch
+            }
 
-    fun checkingLogin() {
-        if(_email.value.isEmpty() || _password.value.isEmpty()){
-            _toast.value = "Please fill in all fields"
-            return
+            _isLoading.value = true // Bật loading
+            try {
+                Log.d("LoginViewModel", "Sending login request: mail=${_mail.value}")
+                val response = apiService.login(LoginRequest(_mail.value, _password.value))
+                Log.d("LoginViewModel", "Response received: code=${response.code()}, body=${response.body()}")
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    if (loginResponse?.success == true) {
+                        tokenManager.saveToken(loginResponse.data.accessToken)
+                        if (rememberLogin) {
+                            UserPreferences.saveUserData(context, _mail.value, _password.value, true)
+                        } else {
+                            UserPreferences.clearUserData(context)
+                        }
+                        _toast.value = "Login successful"
+                        Log.d("LoginViewModel", "Login successful, token=${loginResponse.data.accessToken}")
+                        onGoToHomeScreen()
+                    } else {
+                        _toast.value = "Invalid email or password"
+                        Log.d("LoginViewModel", "Login failed: Invalid email or password")
+                    }
+                } else {
+                    _toast.value = "Login failed: ${response.message()}"
+                    Log.d("LoginViewModel", "Login failed: ${response.message()}")
+                }
+            } catch (e: Exception) {
+                _toast.value = "Error: ${e.message}"
+                Log.e("LoginViewModel", "Network error: ${e.message}", e)
+            } finally {
+                _isLoading.value = false // Tắt loading
+            }
         }
-        if(_email.value == demoUser.mail && _password.value == "1234"){
-            onGoToHomeScreen()
-        }else{
-            _toast.value = "Invalid email or password"
-        }
-
     }
 }

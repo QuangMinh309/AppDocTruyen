@@ -2,7 +2,6 @@ package com.example.frontend.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,9 +16,8 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     protected val _toast = MutableStateFlow<String?>(null)
     val toast: StateFlow<String?> get() = _toast
 
-    fun clearToast() {_toast.value = null}
+    fun clearToast() { _toast.value = null }
 
-    //region navigation fun
     fun onGoToProfileScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.MainNav.Profile.createRoute("1"))
@@ -57,7 +55,7 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     }
     fun onGoToStoryScreen(id: Int) {
         viewModelScope.launch {
-           navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
+            navigationManager.navigate(Screen.Story.Detail.createRoute(id.toString()))
         }
     }
     fun onGoBack() {
@@ -65,13 +63,11 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.back()
         }
     }
-
     fun onGoToChapterScreen(chapterId: String) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId.toString()))
         }
     }
-
     fun onGoToSearchingMemberScreen(id: Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Community.SearchingMember.createRoute(id.toString()))
@@ -87,46 +83,49 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Authentication.Register.route)
         }
     }
-    //endregion
-    fun onGoToWriteScreen(id:Int) {
+    fun onGoToWriteScreen(id: Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Story.Chapter.Write.createRoute(id.toString()))
         }
     }
-
-    fun onGoToUserProfileScreen(id:Int){
+    fun onGoToUserProfileScreen(id: Int) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.AuthorProfile.createRoute(id .toString()))
+            navigationManager.navigate(Screen.Story.AuthorProfile.createRoute(id.toString()))
         }
     }
-
-    fun onGoToWithDraw(){
+    fun onGoToWithDraw() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.WithDraw.route)
         }
     }
-    fun onGoToDepositScreen(){
+    fun onGoToDepositScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.Deposit.route)
         }
     }
-    fun onGoToTransactionAcceptScreen(money:Long){
+    fun onGoToTransactionAcceptScreen(money: Long) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.Accept.createRoute(money))
         }
     }
-
-    fun onGoToWalletDetailScreen(){
+    fun onGoToWalletDetailScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.Wallet.route)
         }
     }
-
-    fun onGoToPremiumScreen(){
+    fun onGoToPremiumScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.Premium.route)
         }
     }
-
-
+    fun onGoToResetPassWordScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Authentication.ResetPassword.route)
+        }
+    }
+    fun onGoToSetUpPassWordScreen(otp: String, userId: Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Authentication.NewPassword.createRoute(otp, userId.toString()))
+        }
+    }
 }
