@@ -135,7 +135,7 @@ const updateUserSchema = Joi.object({
       ...messages,
       'string.max': 'Giới thiệu không được vượt quá {#limit} ký tự',
     }),
-  avatarId: Joi.number().integer().min(1).allow(null).messages(messages),
+  avatarId: Joi.string().allow(null).messages(messages),
   backgroundId: Joi.number().integer().min(1).allow(null).messages(messages),
   isPremium: Joi.boolean().messages(messages),
   roleId: Joi.number().integer().min(1).messages(messages),

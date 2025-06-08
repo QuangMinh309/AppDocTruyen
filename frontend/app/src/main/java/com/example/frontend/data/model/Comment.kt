@@ -10,5 +10,4 @@ data class Comment (
     val commentPicId: String?,
     val createAt: LocalDateTime,
     val likeNumber: Int,
-    val disLikeNumber: Int
 )

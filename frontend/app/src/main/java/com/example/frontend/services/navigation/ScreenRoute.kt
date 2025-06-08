@@ -1,4 +1,4 @@
-package com.example.frontend.navigation
+package com.example.frontend.services.navigation
 
 sealed class Screen(var route: String) {
     sealed class MainNav(route: String) : Screen(route) {

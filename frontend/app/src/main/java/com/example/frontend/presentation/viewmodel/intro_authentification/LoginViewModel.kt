@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.LoginRequest
 import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences

@@ -1,6 +1,6 @@
 import { sequelize } from '../../models/index.js'
 import { validateStory } from '../../utils/story.util.js'
-import { handleTransaction } from '../../utils/transaction.util.js'
+import { handleTransaction } from '../../utils/handle_transaction.util.js'
 import { uploadImageToCloudinary } from '../cloudinary.service.js'
 
 const StoryCategory = sequelize.models.StoryCategory

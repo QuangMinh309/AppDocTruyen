@@ -1,8 +1,8 @@
 package com.example.frontend.presentation.viewmodel.community
 
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.demoAppUser
 import com.example.frontend.ui.screen.main_nav.demoCommunity
@@ -13,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommunityDetailViewModel @Inject constructor( //savedStateHandle: SavedStateHandle,
-    navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
+    navigationManager: NavigationManager
+) : BaseViewModel(navigationManager) {
     val communityId = 1
     val community = demoCommunity
     val memberList = listOf(demoUser, demoAppUser, demoUser, demoAppUser)

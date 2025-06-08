@@ -32,7 +32,7 @@ router.post(
   '/refresh-token',
   validate(validators.refreshToken),
   authenticateRefreshToken,
-  UserController.refreshToken
+  UserController.refreshTokenUser
 )
 
 // Tuyến đường yêu cầu xác thực (cho user thường và admin)

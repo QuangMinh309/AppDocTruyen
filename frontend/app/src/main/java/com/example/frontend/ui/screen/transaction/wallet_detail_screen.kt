@@ -31,13 +31,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.User
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.transaction.WalletDetailViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.NotificationCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import com.example.frontend.ui.screen.main_nav.demoUser
 import java.math.BigDecimal
 import java.time.LocalDate
 

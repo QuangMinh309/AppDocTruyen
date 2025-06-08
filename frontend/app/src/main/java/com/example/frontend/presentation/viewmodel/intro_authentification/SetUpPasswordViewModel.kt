@@ -3,7 +3,7 @@ package com.example.frontend.presentation.viewmodel.intro_authentification
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.ResetPasswordRequest // Thêm import này
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SetUpPasswordViewModel @Inject constructor(
+
     private val apiService: ApiService,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
@@ -77,7 +78,7 @@ class SetUpPasswordViewModel @Inject constructor(
                     confirmPassword = _confirmPassword.value,
                     userId = _userId.value
                 )
-                val response = apiService.resetPassword(request)
+                val response = apiService.resetPassword(request)            //chuyển hàm vào trong repository, viewmodel chỉ thao tacacs gọi hàm và xử lí logic nền ui
                 if (response.isSuccessful) {
                     _toast.value = "Đặt lại mật khẩu thành công!"
                     onGoToLoginScreen()

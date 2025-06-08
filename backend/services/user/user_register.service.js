@@ -24,6 +24,7 @@ const registerUser = async (data) => {
       dUserName: dUserName || userName,
       followerNum: 0,
       wallet: 0,
+      roleId: 2,
       isPremium: false,
       status: 'active',
     })

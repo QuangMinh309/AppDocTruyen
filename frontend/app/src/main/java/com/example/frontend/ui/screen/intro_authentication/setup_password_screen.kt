@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.intro_authentification.SetUpPasswordViewModel
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
