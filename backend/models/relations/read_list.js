@@ -1,32 +1,32 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class ReadList extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class ReadList extends Model {
+    static associate(models) {
+      // Junction table associations are defined in the related models
+    }
+  }
+
   ReadList.init(
     {
       storyId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
       nameListId: {
-        allowNull: false,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "ReadList",
-      tableName: "read_list",
+      modelName: 'ReadList',
+      tableName: 'read_list',
       timestamps: false,
     }
-  );
+  )
 
-  ReadList.associate = (models) => {
-    ReadList.belongsTo(models.Story, { foreignKey: "storyId" });
-    ReadList.belongsTo(models.NameList, { foreignKey: "nameListId" });
-  };
-
-  return ReadList;
-};
+  return ReadList
+}

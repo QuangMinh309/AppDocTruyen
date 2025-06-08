@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -45,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,93 +60,92 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import com.example.frontend.R
-import com.example.frontend.domain.ReadListItemModel
-import com.example.frontend.domain.StoryItemModel
+import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.User
+import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.ui.screen.main_nav.ReadListItem_
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
+import java.math.BigDecimal
+import java.time.format.DateTimeFormatter
 
 //region community Card
 @Composable
-fun CommunityCard(item:String){
+fun CommunityCard(model: Community, onClick: () -> Unit = {}){
 
     Column (
 
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
-            .fillMaxHeight()
-            .width(110.dp)
+            .height(180.dp)
+            .width(150.dp)
             .background(Color.DarkGray.copy(0.4f), RoundedCornerShape(10.dp))
             .padding(vertical = 12.dp)
+            .clickable { onClick() }
     ){
         Image(
             painter = painterResource(id = R.drawable.intro_page1_bg),
             contentDescription = "community avatar",
             modifier = Modifier
-                .size(60.dp,60.dp)
+                .size(70.dp, 70.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop // Cắt ảnh nếu cần thiết để lấp đầy không gian
         )
-        Text(
-            text =item,
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier
-                .padding( vertical = 4.dp,horizontal = 10.dp)
-        )
-        Button(
-            onClick = { /*TODO*/ },
-            colors =  ButtonDefaults.buttonColors(
-                containerColor = OrangeRed
-            ),
-            contentPadding = PaddingValues(0.dp),
-            modifier = Modifier
-                .height(20.dp)
-        ) {
+        Column (
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            // Community name
             Text(
-                text =item,
-                color = Color.Black,
+                text =model.name,
+                color = Color.White,
                 style = TextStyle(
-                    fontSize = 8.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
-                    .padding( horizontal = 8.dp)
+                    .padding( vertical = 4.dp,horizontal = 10.dp)
             )
+            //genre chip
+            GenreChip(genre = model.category.name)
 
+            //member number
+            Text(
+                text = formatViews(model.memberNum.toLong()) + " members",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 10.sp,
+                    fontStyle = FontStyle.Italic
+                ),
+                modifier = Modifier
+                    .padding( vertical = 4.dp,horizontal = 10.dp)
+            )
         }
-        Text(
-            text ="150k menbers",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 10.sp,
-                fontStyle = FontStyle.Italic
-            ),
-            modifier = Modifier
-                .padding( vertical = 4.dp,horizontal = 10.dp)
-        )
 
     }
 }
 
 @Composable
-fun MemberCard(item:String){
+fun MemberCard(model : User){
     Row(
         modifier = Modifier
             .padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.intro_page1_bg),
+        AsyncImage(
+            model = model.avatarUrl ,
+            placeholder = painterResource(id = R.drawable.intro_page1_bg),
             contentDescription = "community avatar",
             modifier = Modifier
                 .size(60.dp)
@@ -162,7 +159,7 @@ fun MemberCard(item:String){
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             Text(
-                text = "Peneloped Lynne",
+                text = model.name,
                 color = Color.White,
                 style = TextStyle(
                     fontSize = 18.sp,
@@ -170,7 +167,7 @@ fun MemberCard(item:String){
                 )
             )
             Text(
-                text = "@$item",
+                text = "@${model.dName}",
                 color = Color.White,
                 style = TextStyle(
                     fontSize = 14.sp
@@ -178,7 +175,7 @@ fun MemberCard(item:String){
             )
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { model.plusFollowerNum()},
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
             ),
@@ -229,7 +226,9 @@ fun NotificationCard(cardType :String ,
                 },
                 contentDescription = "transaction icon" ,
                 tint = Color.White,
-                modifier = Modifier.size(40.dp).padding(horizontal = 5.dp)
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(horizontal = 5.dp)
             )
         else{
             Image(
@@ -270,13 +269,8 @@ fun NotificationCard(cardType :String ,
 
 @Composable
 fun ChapterItemCard(
-    title: String,
-    date: String,
-    time: String,
-    commentCount: String,
-    viewCount: String,
-    isLocked: Boolean = false,
-    isAuthor: Boolean = false
+    chapter: Chapter,
+    onClick: () -> Unit={}
 ) {
     Row(
         modifier = Modifier
@@ -286,16 +280,16 @@ fun ChapterItemCard(
     ) {
         Column {
             Row {
-                Text(text = title, color = Color.White, fontSize = 19.sp)
+                Text(text = chapter.chapterName, color = Color.White, fontSize = 19.sp)
                 Spacer(modifier = Modifier.width(11.dp))
-                if (isAuthor) {
+                if (true) {
                     Icon(
                         imageVector = ImageVector.vectorResource(id = R.drawable.write_icon),
                         contentDescription = null,
                         modifier = Modifier.size(17.dp),
                         tint = Color.White
                     )
-                } else if (isLocked) {
+                } else if (chapter.lockedStatus) {
                     Icon(
                         imageVector = Icons.Outlined.Lock,
                         contentDescription = null,
@@ -308,9 +302,9 @@ fun ChapterItemCard(
             Spacer(modifier = Modifier.height(13.dp))
 
             Row {
-                Text(text = date, color = OrangeRed, fontSize = 14.sp)
+                Text(text = chapter.updateAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = OrangeRed, fontSize = 14.sp)
                 Text(
-                    text = time,
+                    text = chapter.updateAt.format(DateTimeFormatter.ofPattern("HH:mm")) ,
                     color = Color.White,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 7.dp)
@@ -325,7 +319,7 @@ fun ChapterItemCard(
                         modifier = Modifier.size(16.dp),
                         tint = Color.White
                     )
-                    Text(commentCount, color = Color.White, fontSize = 15.sp)
+                    Text(chapter.commentNumber.toString(), color = Color.White, fontSize = 15.sp)
 
                     Spacer(modifier = Modifier.width(11.dp))
 
@@ -335,7 +329,7 @@ fun ChapterItemCard(
                         modifier = Modifier.size(16.dp),
                         tint = Color.White
                     )
-                    Text(viewCount, color = Color.White, fontSize = 15.sp)
+                    Text(chapter.viewNum.toString(), color = Color.White, fontSize = 15.sp)
                 }
             }
         }
@@ -345,21 +339,17 @@ fun ChapterItemCard(
 
 //region story card
 @Composable
-fun SimilarNovelsCard(novels: List<List<Any>>) {
+fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(17.dp)) {
-        items(novels, key = { it[1].toString() }) { novel ->
-            val imageRes = novel[0] as Int
-            val title = novel[1] as String
-            val author = novel[2] as String
-            val price = novel[3] as String
-            val votes = novel[4] as Long
-
+        items(novels, key = { it.id }) { novel ->
             Column(
-                modifier = Modifier.width(128.dp),
+                modifier = Modifier
+                    .width(128.dp)
+                    .clickable { viewModel.onGoToStoryScreen(novel.id) },
                 horizontalAlignment = Alignment.Start
             ) {
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = novel.coverImgUrl, // Sử dụng URL từ Story
                     contentDescription = null,
                     modifier = Modifier
                         .height(184.dp)
@@ -369,13 +359,13 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
                 Spacer(modifier = Modifier.height(11.dp))
 
                 Text(
-                    text = title,
+                    text = novel.name, // Thay "title" bằng "name"
                     color = Color.White,
                     fontSize = 16.sp,
                     maxLines = 1
                 )
                 Text(
-                    text = author,
+                    text = novel.author.name, // Giả định Author có thuộc tính name
                     color = Color.White,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light,
@@ -388,9 +378,7 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.price_icon),
                             contentDescription = null,
@@ -399,7 +387,7 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = price,
+                            text = novel.price.toString(), // Sử dụng price từ Story
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -407,9 +395,7 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = ImageVector.vectorResource(id = R.drawable.popular_icon),
                             contentDescription = null,
@@ -418,7 +404,7 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = formatViews(votes),
+                            text = formatViews(novel.voteNum.toLong()), // Sử dụng voteNum từ Story
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -430,55 +416,54 @@ fun SimilarNovelsCard(novels: List<List<Any>>) {
 }
 
 @Composable
-fun StoryCard(
-    coverImage: Painter,
-    title: String,
-    author: String,
-    genres: List<String>,
-    lastUpdated: String,
-    views: Int,
-    chapters: Int,
-    modifier: Modifier = Modifier
+fun StoryCard4(
+    modifier: Modifier = Modifier, story: Story, onClick: () -> Unit = {},
 ) {
     Row(
-        modifier = modifier.padding(8.dp),
+        modifier = modifier
+            .padding(8.dp)
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = coverImage,
+        AsyncImage(
+            model= story.coverImgUrl,
             contentDescription = null,
             modifier = Modifier
-                .size(99.dp, 152.dp),
+                .size(100.dp, 160.dp),
             contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.width(13.dp))
 
         Column(modifier = Modifier.weight(1f)) {
+            //name
             Text(
-                title,
+                story.name,
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
             Spacer(modifier = Modifier.height(7.dp))
-            Text(author, color = Color.Gray, fontSize = 14.sp)
+            Text("@${story.author.dName}", color = Color.LightGray, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            SmallGenreTags(genres)
+            //genre tags
+            SmallGenreTags(story.categories)
             Spacer(modifier = Modifier.height(27.dp))
 
+            //updated time
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Last Updated: ", color = Color.White, fontSize = 11.sp)
                 Spacer(modifier = Modifier.width(2.dp))
-                Text(lastUpdated, color = OrangeRed, fontSize = 11.sp)
+                Text(story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), color = OrangeRed, fontSize = 11.sp)
             }
 
             Spacer(modifier = Modifier.height(11.dp))
 
+            // other info
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
@@ -487,7 +472,7 @@ fun StoryCard(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("$views", color = Color.White, fontSize = 12.5.sp)
+                Text("${story.viewNum}", color = Color.White, fontSize = 12.5.sp)
 
                 Spacer(modifier = Modifier.width(25.dp))
 
@@ -498,7 +483,7 @@ fun StoryCard(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("$chapters", color = Color.White, fontSize = 12.5.sp)
+                Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
             }
         }
     }
@@ -507,7 +492,7 @@ fun StoryCard(
 
 @Composable
 fun StoryCard(
-    story: StoryItemModel,
+    story: Story,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
@@ -524,12 +509,12 @@ fun StoryCard(
         ) {
             // Hình ảnh bìa truyện
             AsyncImage(
-                model = story.coverImage.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
-                contentDescription = story.title,
+                model = story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
+                contentDescription = story.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp,end=5.dp)
+                    .padding(top = 5.dp, end = 5.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 placeholder = painterResource(R.drawable.placeholder_cover),
                 error = painterResource(R.drawable.placeholder_cover)
@@ -540,13 +525,13 @@ fun StoryCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .background(
-                        color = if (story.isPremium)Color(0xFFFBBC05)  else BrightAquamarine,
+                        color = if (story.price.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = if (story.isPremium) "PREMIUM" else "FREE",
+                    text = if (story.price.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
                     color = Color.Black,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -558,7 +543,7 @@ fun StoryCard(
 
         // Tiêu đề truyện
         Text(
-            text = story.title,
+            text = story.name,
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -569,7 +554,7 @@ fun StoryCard(
 
         // Tác giả
         Text(
-            text = "@${story.author}",
+            text = "@${story.author.name}",
             color = Color.White,
             fontSize = 12.sp
         )
@@ -578,7 +563,7 @@ fun StoryCard(
 
         // Mô tả ngắn
         Text(
-            text = story.shortDescription,
+            text = story.description ?:"No description available...",
             color = Color.LightGray,
             fontSize = 12.sp,
             maxLines = 2
@@ -589,19 +574,21 @@ fun StoryCard(
 
 @Composable
 fun StoryCard2(
-    story: StoryItemModel,
+    story: Story,
     modifier: Modifier = Modifier,
-    onStoryClick: (StoryItemModel) -> Unit = {}
+    onClick: () -> Unit = {}
 ) {
+    val isPremium = story.price.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
             .width(200.dp)
             .background(Color.Transparent, RoundedCornerShape(5.dp))
             .padding(8.dp)
+            .clickable { onClick() }
     ) {
         // Story Image (on top)
         AsyncImage(
-            model = story.coverImage,
+            model = story.coverImgUrl,
             contentDescription = "Story Image",
             modifier = Modifier
                 .fillMaxWidth()
@@ -617,12 +604,12 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = story.title,
+                text = story.name,
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
-            if (story.isPremium) { // Chỉ hiển thị biểu tượng khóa nếu truyện là premium
+            if (isPremium) { // Chỉ hiển thị biểu tượng khóa nếu truyện là premium
                 Icon(
                     imageVector = Icons.Outlined.Lock,
                     contentDescription = "Lock",
@@ -634,7 +621,7 @@ fun StoryCard2(
             }
         }
         Text(
-            text = "@${story.author}",
+            text = "@${story.author.name}",
             color = Color.White,
             fontSize = 12.sp,
             modifier = Modifier
@@ -656,7 +643,7 @@ fun StoryCard2(
                 tint = BurntCoral
             )
             Text(
-                text = "${story.likes}",
+                text = formatViews(story.voteNum.toLong()),
                 color = Color.White,
                 fontSize = 12.sp
             )
@@ -668,7 +655,7 @@ fun StoryCard2(
                 tint = OrangeRed
             )
             Text(
-                text = "${story.chaptersnumbers}",
+                text = "${story.chapterNum}",
                 color = Color.White,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 4.dp)
@@ -680,7 +667,7 @@ fun StoryCard2(
 
 @Composable
 fun StoryCard3(
-    story: StoryItemModel,
+    story: Story,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
@@ -697,8 +684,8 @@ fun StoryCard3(
                 .height(160.dp)
         ) {
             AsyncImage(
-                model = story.coverImage.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
-                contentDescription = story.title,
+                model = story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
+                contentDescription = story.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
@@ -713,7 +700,7 @@ fun StoryCard3(
         ) {
             // Tiêu đề
             Text(
-                text = story.title,
+                text = story.name,
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -736,12 +723,12 @@ fun StoryCard3(
                     }
                     withStyle (
                         style = SpanStyle(
-                            fontFamily = FontFamily(Font(R.font.poppins_medium)),
+                            fontFamily = FontFamily(Font(R.font.poppins_bold)),
                             fontSize = 10.sp,
                             color = OrangeRed
                         )
                     ) {
-                        append(story.lastUpdated)
+                        append(story.updateAt.toString())
                     }
                 },
             )
@@ -753,8 +740,8 @@ fun StoryCard3(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                story.genres.forEach { genre ->
-                    Chip(text = genre)
+                story.categories.forEach { genre ->
+                    Chip(text = genre.name)
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -769,7 +756,7 @@ fun StoryCard3(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = formatViews(story.views),
+                    text = formatViews(story.viewNum.toLong()),
                     color = Color.White,
                     fontSize = 14.sp
                 )
@@ -791,57 +778,64 @@ internal fun formatViews(views: Long): String {
 //endregion
 
 @Composable
-fun AuthorInfoCard(authorName: String, username: String, onMoreClick: () -> Unit) {
+fun AuthorInfoCard(model: User, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.avt_img),
+        AsyncImage(
+            model = model.avatarUrl, // URL của avatar
             contentDescription = "avatar",
-            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.avt_img),
             modifier = Modifier
-                .heightIn(69.dp)
-                .widthIn(69.dp)
-                .padding(end = 19.dp)
+                .size(60.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop // fill mode
         )
         Column {
             Text(
-                text = authorName,
+                text = model.name,
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(bottom = 7.dp)
             )
-            Text(text = "@$username", color = Color.White, fontSize = 13.sp)
+            Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp)
         }
         Spacer(modifier = Modifier.weight(1f))
-        TextButton(onClick = onMoreClick) {
+        TextButton(onClick = {}) {
             Text("Thêm >", color = Color.White)
         }
     }
 }
 
-
+@Preview
+@Composable
+fun PreviewReadListItem(){
+    ReadListItem(ReadListItem_)
+}
 @Composable
 fun ReadListItem(
-    item: ReadListItemModel,
+    item: NameList,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
     ) {
         // Phần avatar xếp chồng (lấy từ 3 truyện đầu tiên)
         Box(modifier = Modifier.size(110.dp,140.dp)) {
             item.stories.take(3).forEachIndexed { index, story ->
                 AsyncImage(
-                    model = story.coverImage, // Lấy avatar từ coverImage của truyện
+                    model = story.coverImgUrl, // Lấy avatar từ coverImage của truyện
                     contentDescription = "Story cover ${index + 1}",
+                    placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .height(120.dp)
@@ -894,16 +888,10 @@ fun ReadListItem(
             }
 
             Text(
-                text = item.date,
-                color = OrangeRed,
-                fontSize = 12.sp,
-            )
-
-            Text(
                 text = item.description,
                 color = Color.White,
                 fontSize = 14.sp,
-                maxLines = 2,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
             )
         }

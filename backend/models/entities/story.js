@@ -1,67 +1,87 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Story extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Story extends Model {
+    static associate(models) {
+      // Story belongs to User
+      Story.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'author',
+      })
+
+      // Story has many Chapters
+      Story.hasMany(models.Chapter, {
+        foreignKey: 'storyId',
+        as: 'chapters',
+      })
+
+      // Story has many Purchases
+      Story.hasMany(models.Purchase, {
+        foreignKey: 'storyId',
+        as: 'purchases',
+      })
+
+      // Story belongs to many Categories (many-to-many)
+      Story.belongsToMany(models.Category, {
+        through: models.StoryCategory,
+        foreignKey: 'storyId',
+        otherKey: 'categoryId',
+        as: 'categories',
+      })
+
+      // Story has many Votes from Users (many-to-many)
+      Story.belongsToMany(models.User, {
+        through: models.Vote,
+        foreignKey: 'storyId',
+        otherKey: 'userId',
+        as: 'voters',
+      })
+
+      // Story belongs to many NameLists/ReadLists (many-to-many)
+      Story.belongsToMany(models.NameList, {
+        through: models.ReadList,
+        foreignKey: 'storyId',
+        otherKey: 'nameListId',
+        as: 'nameLists',
+      })
+    }
+  }
+
   Story.init(
     {
       storyId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      storyName: {
-        type: DataTypes.STRING,
+      storyName: DataTypes.STRING,
+      userId: DataTypes.INTEGER,
+      description: DataTypes.STRING(1500),
+      ageRange: DataTypes.INTEGER,
+      viewNum: DataTypes.INTEGER,
+      voteNum: DataTypes.INTEGER,
+      chapterNum: DataTypes.INTEGER,
+      status: DataTypes.STRING,
+      price: DataTypes.FLOAT,
+      pricePerChapter: DataTypes.FLOAT,
+      coverImgId: DataTypes.STRING,
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      description: {
-        type: DataTypes.STRING(1500),
-      },
-      ageRange: {
-        type: DataTypes.INTEGER,
-      },
-      viewNum: {
-        type: DataTypes.INTEGER,
-      },
-      voteNum: {
-        type: DataTypes.INTEGER,
-      },
-      chapterNum: {
-        type: DataTypes.INTEGER,
-      },
-      status: {
-        type: DataTypes.STRING,
-      },
-      price: {
-        type: DataTypes.FLOAT,
-      },
-      pricePerChapter: {
-        type: DataTypes.FLOAT,
-      },
-      coverImgId: {
-        type: DataTypes.STRING,
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
     },
     {
       sequelize,
-      modelName: "Story",
-      tableName: "story",
+      modelName: 'Story',
+      tableName: 'story',
       timestamps: true,
-      createdAt: true,
-      updatedAt: true,
     }
-  );
+  )
 
-  Story.associate = (models) => {
-    Story.belongsTo(models.User, { foreignKey: "userId" });
-    Story.hasMany(models.Chapter, { foreignKey: "storyId" });
-    Story.hasMany(models.StoryCategory, { foreignKey: "storyId" });
-    Story.hasMany(models.Vote, { foreignKey: "storyId" });
-    Story.hasMany(models.Purchase, { foreignKey: "storyId" });
-    Story.hasMany(models.ReadList, { foreignKey: "storyId" });
-  };
-
-  return Story;
-};
+  return Story
+}

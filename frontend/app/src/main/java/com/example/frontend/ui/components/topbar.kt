@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
@@ -30,17 +31,18 @@ import com.example.frontend.R
 fun TopBar(title: String = "",
               showBackButton: Boolean = true,
               iconType: String = "",
-              onBackClick: () -> Unit = {},
-              onIconClick: () -> Unit = {}){
+              onLeftClick: () -> Unit = {},
+              onRightClick: () -> Unit = {}){
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(start = 25.dp, end = 25.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         // Back button
         if (showBackButton) {
             Button(
-                onClick = onBackClick,
+                onClick = onLeftClick,
                 colors =  ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                 ),
@@ -62,13 +64,13 @@ fun TopBar(title: String = "",
         else{
             Icon(
                 imageVector = Icons.Outlined.NotificationsActive,
-                contentDescription = "Custom Icon",
+                contentDescription = "Custom notification Icon",
                 tint = Color.White,
                 modifier = Modifier
                     .weight(0.33f)
-                    .size(28.dp)
+                    .size(50.dp)
                     .wrapContentWidth(Alignment.Start)
-                    .clickable { onIconClick() }
+                    .clickable { onLeftClick() }
             )
         }
         Text(
@@ -96,9 +98,9 @@ fun TopBar(title: String = "",
             tint = Color.White,
             modifier = Modifier
                 .weight(0.33f)
-                .size(24.dp)
+                .size(22.dp)
                 .wrapContentWidth(Alignment.End)
-                .clickable { onIconClick() }
+                .clickable { onRightClick() }
         )
 
 

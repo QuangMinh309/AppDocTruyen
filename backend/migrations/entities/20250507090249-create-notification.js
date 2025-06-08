@@ -1,31 +1,32 @@
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
-export default {
+module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("notification", {
+    await queryInterface.createTable('notification', {
       notificationId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       type: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       content: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       refId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING
       },
       createAt: {
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("notification");
-  },
+    await queryInterface.dropTable('notification');
+  }
 };

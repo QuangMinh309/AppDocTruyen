@@ -27,15 +27,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.data.model.Role
+import com.example.frontend.data.model.User
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.transaction.WalletDetailViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.NotificationCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
+import java.math.BigDecimal
+import java.time.LocalDate
 
 @Preview
 @Composable
-fun WalletDetailScreen(){
+fun PreViewWalletDetailScreen() {
+    val fakeviewmodel=WalletDetailViewModel(NavigationManager())
+    WalletDetailScreen((fakeviewmodel))
+}
+@Composable
+fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
     val historyList = listOf("Bạn đã nạp 300.000₫ vào tài .","Bạn đã chi 300.000₫ để mua “Tempting the divine”.")
     ScreenFrame(
         topBar = {
@@ -43,8 +55,8 @@ fun WalletDetailScreen(){
                 title = "Your Wallet",
                 showBackButton = true,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){
@@ -68,7 +80,7 @@ fun WalletDetailScreen(){
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "300,000đ",
+                    text = "${demoUser_wallet.wallet}",
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
@@ -86,7 +98,7 @@ fun WalletDetailScreen(){
                     modifier = Modifier
                         .weight(0.4f)
                         .height(35.dp),
-                    onClick = { /*TODO*/ }
+                    onClick = {viewModel.onGoToWithDraw()  }
 
                 ){
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -96,6 +108,7 @@ fun WalletDetailScreen(){
                             imageVector = Icons.Filled.CreditScore,
                             contentDescription = "withdraw button icon" ,
                             tint = Color.Black
+
                         )
                         Text(
                             text = "Withdraw",
@@ -113,7 +126,7 @@ fun WalletDetailScreen(){
                         .weight(0.4f)
                         .height(35.dp),
                     backgroundColor = listOf(Color.LightGray,Color.LightGray),
-                    onClick = { /*TODO*/ }
+                    onClick = { viewModel.onGoToDepositScreen() }
 
                 ){
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -172,3 +185,24 @@ fun WalletDetailScreen(){
         }
     }
 }
+
+val demoUser_wallet =  User(
+    id = 1,
+    name = "Peneloped Lyne",
+    role = Role(1,"User"),
+    dName = "tolapenelopee",
+    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    mail = "peneloped@gmail.com",
+    followerNum = 200,
+    novelsNum = 50,
+    readListNum = 3,
+    about = "Your membership starts as soon as you set up payment and subscribe. " +
+            "Your monthly charge will occur on the last day of the current billing period. " +
+            "We'll renew your membership for you can manage your subscription or turn off " +
+            "auto-renewal under accounts setting.\n" +
+            "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
+    wallet = BigDecimal(500.00),
+    dob = LocalDate.parse("2020-03-12"),
+    isPremium = true
+
+)

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
+    "start:dev": "nodemon index.js",
     "migrate": "npx sequelize-cli db:migrate"
   },
   "keywords": [],
@@ -13,16 +14,24 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "multer": "^1.4.5-lts.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.14.0",
-    "nodemon": "^3.1.9",
+    "nodemailer": "^7.0.3",
     "sequelize": "^6.37.7",
-    "sequelize-cli": "^6.6.2"
+    "sequelize-cli": "^6.6.2",
+    "streamifier": "^0.1.1",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

@@ -12,22 +12,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.frontend.domain.StoryItemModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.StoryListViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.main_nav.ExampleList
 
+
     @Composable
-fun ReadListScreen(listName: String, storyItems: List<StoryItemModel>) {
+    @Preview
+    fun PreViewStoryList(){
+        val fakeviewmodel=StoryListViewModel(NavigationManager())
+        ReadListScreen(fakeviewmodel)
+    }
+
+    @Composable
+
+
+fun ReadListScreen(viewModel:StoryListViewModel= hiltViewModel()) {
+    val listName="Listname"
+        val storyItems= ExampleList
+
     ScreenFrame(
         topBar = {
             TopBar(
                 title = listName,
                 showBackButton = true,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack()},
+                onRightClick = {viewModel.onGoToSetting() }
             )
         }
     ){
@@ -43,7 +58,7 @@ fun ReadListScreen(listName: String, storyItems: List<StoryItemModel>) {
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(storyItems) { story ->
-                    StoryCard3(story = story)
+                    StoryCard3(story = story, onClick = {viewModel.onGoToStoryScreen(1)})
                     Spacer(modifier = Modifier.height(8.dp))
                 }
             }
@@ -51,11 +66,11 @@ fun ReadListScreen(listName: String, storyItems: List<StoryItemModel>) {
     }
 }
 
-@Preview
-@Composable
-fun StoryListScrennPreview()
-{
-    ReadListScreen("Litname",
-        ExampleList
-    )
-}
+//@Preview
+//@Composable
+//fun StoryListScrennPreview()
+//{
+//    ReadListScreen("Litname",
+//        ExampleList
+//    )
+//}

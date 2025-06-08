@@ -45,7 +45,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.story.YourStoryDetailViewModel
 import com.example.frontend.ui.components.ChapterItemCard
 import com.example.frontend.ui.components.DescriptionStory
 import com.example.frontend.ui.components.LargeGenreTags
@@ -54,12 +57,19 @@ import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun YourStoryDetailScreen() {
+fun PreviewYourStoryDetailScreen()
+{
+    val fakeviewmodel= YourStoryDetailViewModel(NavigationManager())
+    YourStoryDetailScreen(fakeviewmodel)
+}
+@Composable
+fun YourStoryDetailScreen(viewModel: YourStoryDetailViewModel= hiltViewModel()) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val isFabVisible by remember {
@@ -82,7 +92,8 @@ fun YourStoryDetailScreen() {
                 title = "Community",
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { /*TODO*/ },
+                onRightClick = { /*TODO*/ }
             )
         }
     ){
@@ -266,15 +277,7 @@ fun YourStoryDetailScreen() {
 
                         Spacer(modifier = Modifier.height(17.dp))
 
-                        LargeGenreTags(
-                            listOf(
-                                "Adventure",
-                                "Mystery",
-                                "Autobiography",
-                                "Fantasy",
-                                "Drama"
-                            )
-                        )
+                        LargeGenreTags(genreDemoList)
                     },
                     chapterContent = {
                         val chapters = listOf(
@@ -284,18 +287,13 @@ fun YourStoryDetailScreen() {
                         )
 
                         Spacer(Modifier.height(29.dp))
-                        chapters.forEachIndexed { index, chapter ->
+                        Examplechapters.forEachIndexed { index, chapter ->
                             ChapterItemCard(
-                                title = chapter[0] as String,
-                                date = chapter[1] as String,
-                                time = chapter[2] as String,
-                                commentCount = chapter[3] as String,
-                                viewCount = chapter[4] as String,
-                                isLocked = chapter[5] as Boolean,
-                                isAuthor = chapter[6] as Boolean
+                                chapter = chapter,
+                                onClick = {  }
                             )
-                            // Show divider between two chapter
-                            if (index < chapters.lastIndex) {
+
+                            if (index < Examplechapters.lastIndex) {
                                 HorizontalDivider(
                                     modifier = Modifier.padding(vertical = 8.dp),
                                     thickness = 1.2.dp,

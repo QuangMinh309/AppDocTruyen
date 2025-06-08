@@ -1,45 +1,38 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Transaction extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Transaction extends Model {
+    static associate(models) {
+      // Transaction belongs to User
+      Transaction.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
+    }
+  }
+
   Transaction.init(
     {
       transactionId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      money: {
-        type: DataTypes.INTEGER,
-      },
-      type: {
-        type: DataTypes.STRING,
-      },
-      time: {
-        type: DataTypes.DATE,
-      },
-      status: {
-        type: DataTypes.STRING,
-      },
-      finishAt: {
-        type: DataTypes.DATE,
-      },
+      userId: DataTypes.INTEGER,
+      money: DataTypes.INTEGER,
+      type: DataTypes.STRING,
+      time: DataTypes.DATE,
+      status: DataTypes.STRING,
+      finishAt: DataTypes.DATE,
     },
     {
       sequelize,
-      modelName: "Transaction",
-      tableName: "transaction",
+      modelName: 'Transaction',
+      tableName: 'transaction',
       timestamps: false,
     }
-  );
+  )
 
-  Transaction.associate = (models) => {
-    Transaction.belongsTo(models.User, { foreignKey: "userId" });
-  };
-
-  return Transaction;
-};
+  return Transaction
+}

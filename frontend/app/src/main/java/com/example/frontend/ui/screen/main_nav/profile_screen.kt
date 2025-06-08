@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,32 +44,41 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.main_nav.ProfileViewModel
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.components.formatViews
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
 
+
+@Preview(showBackground = true)
 @Composable
-fun AdvancedProfile(
-    backgroundImageUrl: String,
-    avatarImageUrl: String ,
-    name: String,
-    nickName: String,
-    modifier: Modifier = Modifier
-) {
+fun PreviewScreenContent2() {
+    val fakeViewModel = ProfileViewModel(NavigationManager())
+    ProfileScreen(viewModel = fakeViewModel)
+}
+@Composable
+fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
+{
+    val user by viewModel.user.collectAsState()
+    val storyList  = viewModel.storyList
     ScreenFrame(
         topBar = {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoToNotificationScreen() },
+                onRightClick = { viewModel.onGoToSetting()}
             )
         }
     ){
@@ -77,11 +90,11 @@ fun AdvancedProfile(
         ){
 
             Box(
-                modifier = modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 // Background Image
                 AsyncImage(
-                    model = backgroundImageUrl,
+                    model = user.backgroundUrl,
                     contentDescription = "Profile background",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -116,10 +129,10 @@ fun AdvancedProfile(
                                 .clip(CircleShape)
                                 .size(90.dp)
                             .border(
-                                width = 6.dp, // Độ dày của vòng tròn bao quanh
+                                width = 6.dp,
                                 brush = Brush.linearGradient(
                                     colors = listOf(OrangeRed, BurntCoral)
-                                ), // Vòng tròn trong suốt
+                                ),
                                 shape = CircleShape
                             ),
                             contentAlignment = Alignment.Center
@@ -128,13 +141,13 @@ fun AdvancedProfile(
                                 .clip(CircleShape)
                                 .size(80.dp)
                                 .border(
-                                    width = 5.dp, // Độ dày của vòng tròn bao quanh
+                                    width = 5.dp,
                                     color = DeepSpace,
                                     shape = CircleShape
                                 )
                             ){
                                 AsyncImage(
-                                    model = avatarImageUrl,
+                                    model =  user.avatarUrl,
                                     contentDescription = "Profile avatar",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop,
@@ -170,11 +183,11 @@ fun AdvancedProfile(
                                     ),
                                     shape = RoundedCornerShape(30.dp)
                                 )
-                                .padding(horizontal = 20.dp, vertical = 4.dp ), // Padding bên trong để chữ không dính sát viền
+                                .padding(horizontal = 20.dp, vertical = 4.dp ),
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
                             Text(
-                                text = name,
+                                text =  user.name,
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,
@@ -182,7 +195,7 @@ fun AdvancedProfile(
                                 )
                             )
                             Text(
-                                text = nickName,
+                                text =  "@${user.dName}",
                                 style = TextStyle(
                                     color = Color.White.copy(alpha = 0.8f),
                                     fontSize = 10.sp
@@ -194,14 +207,14 @@ fun AdvancedProfile(
             }
             // Thông tin  number
             Row(
-                modifier = modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier= Modifier.weight(1f))
-                StatItem(value = "200", label = "Followers")
-                StatItem(value = "50", label = "Novels")
-                StatItem(value = "12", label = "ReadList")
+                StatItem(value = user.followerNum?:0, label = "Followers")
+                StatItem(value = user.novelsNum?:0, label = "Novels")
+                StatItem(value = user.readListNum?:0, label = "ReadList")
             }
 
             // Email and dob
@@ -220,13 +233,25 @@ fun AdvancedProfile(
                     .padding(15.dp)
             )
             {
-                InforItem(Icons.Outlined.Mail,"Abc@gmail.com")
+                InforItem(Icons.Outlined.Mail,user.mail?:"")
                 Spacer(modifier= Modifier.height(8.dp))
-                InforItem(Icons.Outlined.Cake,"04/09/2005")
+                InforItem(Icons.Outlined.Cake,user.dob.toString())
 
             }
-            AboutSection()
-            ReadListItem(item= ReadListItem_)
+            AboutSection(content = user.about)
+            //user readList
+            Column (modifier = Modifier.fillMaxWidth()){
+                SectionTitle(title = "StoryList")
+                // Đường phân cách
+                GradientDivider()
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(storyList ) { item ->
+                        ReadListItem(item = ReadListItem_, onClick = {viewModel.onGoToStoryScreen(item.id)})
+                    }
+                }
+            }
 
         }
     }
@@ -237,24 +262,18 @@ fun AdvancedProfile(
 fun AboutSection(
     modifier: Modifier = Modifier,
     title: String = "About",
-    content: String = "Your membership starts as soon as you set up payment and subscribe. " +
-            "Your monthly charge will occur on the last day of the current billing period. " +
-            "We'll renew your membership for you can manage your subscription or turn off " +
-            "auto-renewal under accounts setting.\n" +
-            "By continuing, you are agreeing to these terms. See the private statement and restrictions."
+    content: String?
 ) {
     Column(modifier = modifier) {
         // Tiêu đề "About"
         SectionTitle(title=title)
-
-
         // Đường phân cách
         GradientDivider()
 
         // Nội dung
         Text(
             text = buildAnnotatedString {
-                append(content.substringBefore("\n"))
+                append(content?.substringBefore("\n") ?:"No description available...")
             },
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 14.sp,
@@ -305,14 +324,14 @@ fun InforItem(icon : ImageVector, value: String)
 
 }
 @Composable
-fun StatItem(value: String, label: String) {
+fun StatItem(value: Int, label: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier.padding(horizontal = 10.dp)
     ) {
         Text(
-            text = value,
+            text = formatViews(value.toLong()),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
@@ -326,19 +345,6 @@ fun StatItem(value: String, label: String) {
                 fontSize = 14.sp,
                 color = Color.Gray
             )
-        )
-    }
-}
-
-@Preview
-@Composable
-fun AdvancedProfilePreview() {
-    MaterialTheme {
-        AdvancedProfile(
-            backgroundImageUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-            avatarImageUrl = "",
-            name = "Peneloped Lyne",
-            nickName= "tolapeneloped",
         )
     }
 }

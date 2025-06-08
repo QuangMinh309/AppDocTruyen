@@ -29,12 +29,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.story.WriteViewModel
 import com.example.frontend.ui.components.ScreenFrame
 
 @Preview
 @Composable
-fun WriteScreen() {
+fun PreviewWriteScreen()
+{
+    val fakeviewmodel=WriteViewModel(NavigationManager())
+    WriteScreen(fakeviewmodel)
+}
+
+@Composable
+fun WriteScreen(viewModel: WriteViewModel= hiltViewModel()) {
     var content by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     ScreenFrame{

@@ -1,44 +1,51 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Comment extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Comment extends Model {
+    static associate(models) {
+      // Comment belongs to User
+      Comment.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
+
+      // Comment belongs to Chapter
+      Comment.belongsTo(models.Chapter, {
+        foreignKey: 'chapterId',
+        as: 'chapter',
+      })
+
+      // Comment has many likes from Users (many-to-many)
+      Comment.belongsToMany(models.User, {
+        through: models.LikeComment,
+        foreignKey: 'commentId',
+        otherKey: 'userId',
+        as: 'likedBy',
+      })
+    }
+  }
+
   Comment.init(
     {
       commentId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      userId: {
-        type: DataTypes.INTEGER,
-      },
-      chapterId: {
-        type: DataTypes.INTEGER,
-      },
-      commentPicId: {
-        type: DataTypes.STRING,
-      },
-      content: {
-        type: DataTypes.TEXT,
-      },
-      createAt: {
-        type: DataTypes.DATE,
-      },
+      userId: DataTypes.INTEGER,
+      chapterId: DataTypes.INTEGER,
+      commentPicId: DataTypes.STRING,
+      content: DataTypes.TEXT,
+      createAt: DataTypes.DATE,
     },
     {
       sequelize,
-      modelName: "Comment",
-      tableName: "comment",
+      modelName: 'Comment',
+      tableName: 'comment',
       timestamps: false,
     }
-  );
+  )
 
-  Comment.associate = (models) => {
-    Comment.belongsTo(models.User, { foreignKey: "userId" });
-    Comment.belongsTo(models.Chapter, { foreignKey: "chapterId" });
-    Comment.hasMany(models.LikeComment, { foreignKey: "commentId" });
-  };
-
-  return Comment;
-};
+  return Comment
+}

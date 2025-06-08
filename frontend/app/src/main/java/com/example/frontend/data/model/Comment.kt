@@ -1,12 +1,13 @@
 package com.example.frontend.data.model
 
-import java.util.Date
+import java.time.LocalDateTime
 
 data class Comment (
     val commentId: Int,
-    val userId: Int,
-    val chapterId: Int,
-    val content: String,
-    val commentPicId: String,
-    val createAt: Date
+    val user: User,
+    val chapter: Chapter,
+    val content: String?,
+    val commentPicId: String?,
+    val createAt: LocalDateTime,
+    val likeNumber: Int,
 )

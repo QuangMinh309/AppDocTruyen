@@ -28,9 +28,11 @@ fun ScreenFrame(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth()
                 .fillMaxHeight()
+                .padding(horizontal = 16.dp)
         ) {
+       //     Spacer(modifier = Modifier.height(20.dp))
             topBar?.invoke()
             content()
             bottomBar?.invoke()

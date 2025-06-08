@@ -1,31 +1,41 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Role extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Role extends Model {
+    static associate(models) {
+      // Role has many Users
+      Role.hasMany(models.User, {
+        foreignKey: 'roleId',
+        as: 'users',
+      })
+
+      // Role has many Functionalities through Authorization (many-to-many)
+      // Role.belongsToMany(models.Functionality, {
+      //   through: models.Authorization,
+      //   foreignKey: 'roleId',
+      //   otherKey: 'funcId',
+      //   as: 'functionalities',
+      // })
+    }
+  }
+
   Role.init(
     {
       roleId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
       },
-      roleName: {
-        type: DataTypes.STRING,
-      },
+      roleName: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "Role",
-      tableName: "role",
+      modelName: 'Role',
+      tableName: 'role',
       timestamps: false,
     }
-  );
+  )
 
-  Role.associate = (models) => {
-    Role.hasMany(models.User, { foreignKey: "roleId" });
-    Role.hasMany(models.Authorization, { foreignKey: "roleId" });
-  };
-
-  return Role;
-};
+  return Role
+}

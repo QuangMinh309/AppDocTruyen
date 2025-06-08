@@ -1,6 +1,5 @@
 package com.example.frontend.ui.screen.community
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -41,28 +41,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.community.CommunityDetailViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.components.formatViews
+import com.example.frontend.ui.screen.main_nav.demoUser
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun CommunityDetailScreen(){
+fun PreviewScreenContent5() {
+    val fakeViewModel = CommunityDetailViewModel(NavigationManager())
+    CommunityDetailScreen(viewModel = fakeViewModel)
+}
 
-    val memberList = listOf("member1","member2","member3")
+@Composable
+fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel()){
+
     val scrollState = rememberScrollState()
     ScreenFrame(
         topBar = {
             TopBar(
                 showBackButton = true,
                 iconType = "Setting",
-                onBackClick = { /*TODO*/ },
-                onIconClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack()},
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){
@@ -76,13 +87,14 @@ fun CommunityDetailScreen(){
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 35.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ){
 
-                Image(
-                    painter = painterResource(id = R.drawable.intro_page1_bg),
+                AsyncImage(
+                    model = viewModel.community.avatarUrl,
                     contentDescription = "community avatar",
+                    placeholder = painterResource(id = R.drawable.intro_page1_bg),
                     modifier = Modifier
                         .size(160.dp)
                         .clip(CircleShape),
@@ -90,20 +102,19 @@ fun CommunityDetailScreen(){
                 )
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ){
                     Text(
-                        text = "Food in anime",
+                        text = viewModel.community.name,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 24.sp,
                         )
                     )
                     Text(
-                        text = "150K members",
+                        text = "${formatViews(viewModel.community.memberNum.toLong())} members",
                         color = Color.White,
                         style =TextStyle(
                             fontSize = 16.sp,
@@ -113,7 +124,7 @@ fun CommunityDetailScreen(){
                         modifier = Modifier
                              .fillMaxWidth()
                              .height(30.dp),
-                        onClick = { /*TODO*/ }
+                        onClick = { viewModel.onGoToChattingScreen(viewModel.communityId)}
 
                     ){
                         Text(
@@ -128,7 +139,6 @@ fun CommunityDetailScreen(){
                 }
 
             }
-
             //Description
             Column(
                 modifier = Modifier
@@ -149,27 +159,12 @@ fun CommunityDetailScreen(){
 
                     ){
                         Text(
-                            text = "A group for everyone to talk about food seen in Anime or manga."
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                                    + "A group for everyone to talk about food seen in Anime or manga"
-                            ,
+                            text = viewModel.community.description,
                             color = Color.White,
                             style = TextStyle(
                                 fontSize = 14.sp
                             ),
-                            modifier = Modifier.fillMaxWidth() // đảm bảo text chiếm hết chiều ngang
+                            modifier = Modifier.fillMaxWidth()
 
                         )
                     }
@@ -208,16 +203,18 @@ fun CommunityDetailScreen(){
                         .background(Color.Transparent)
                 ){
                         LazyRow (
-                            horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(15.dp),
                         ){
-                            items(memberList) {item->
+                            items(viewModel.memberList) {item->
                                 Column (
                                     verticalArrangement =Arrangement.spacedBy(10.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.widthIn(max = 80.dp)
                                 ){
                                     Spacer( modifier = Modifier.height(4.dp))
-                                    Image(
-                                        painter = painterResource(id = R.drawable.intro_page1_bg),
+                                    AsyncImage(
+                                        model = demoUser.avatarUrl,
+                                        placeholder = painterResource(id = R.drawable.avt_img),
                                         contentDescription = "community avatar",
                                         modifier = Modifier
                                             .size(60.dp)
@@ -225,11 +222,14 @@ fun CommunityDetailScreen(){
                                         contentScale = ContentScale.Crop // fill mode
                                     )
                                     Text(
-                                        text ="@$item",
+                                        text ="@${item.dName}",
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                         color = Color.White,
                                         style = TextStyle(
                                             fontSize = 14.sp,
-                                            )
+                                            ),
+
                                     )
                                 }
                             }
@@ -237,14 +237,22 @@ fun CommunityDetailScreen(){
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
-                            .width(220.dp)
+                            .width(170.dp)
                             .background(brush = Brush.horizontalGradient(
                                 colors = listOf(Color.Transparent, DeepSpace),
                             ))
                             .align(Alignment.CenterEnd)
                     ){
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(80.dp)
+                                .background(color = DeepSpace)
+                                .align(Alignment.CenterEnd)
+                        )
+                        //view all button
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = { viewModel.onGoToSearchingMemberScreen(viewModel.communityId)},
                             colors =  ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent,
                             ),
@@ -259,7 +267,7 @@ fun CommunityDetailScreen(){
                                     .fillMaxSize()
                                     .background(
                                         shape = RoundedCornerShape(30.dp),
-                                        color = Color.Transparent
+                                        color = DeepSpace
                                     )
                                 .border(1.dp, OrangeRed, RoundedCornerShape(30.dp)),
                                 contentAlignment = Alignment.Center

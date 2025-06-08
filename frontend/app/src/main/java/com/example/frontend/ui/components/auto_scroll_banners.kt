@@ -64,7 +64,7 @@ fun AutoScrollBanner(
             beyondViewportPageCount =1,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
+            //    .clip(RoundedCornerShape(12.dp))
         ) { page ->
             val item = items[page]
             Box(
@@ -78,8 +78,10 @@ fun AutoScrollBanner(
                 Image(
                     painter = painterResource(id = item.imageRes),
                     contentDescription = item.title,
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.FillWidth,
                     modifier = Modifier.fillMaxWidth()
+                        .aspectRatio(2f)
+                        .align(Alignment.TopCenter)
                 )
             }
         }

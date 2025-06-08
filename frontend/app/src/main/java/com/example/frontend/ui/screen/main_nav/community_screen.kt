@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -15,24 +16,35 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
 import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.GerneChipButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewScreenContent() {
+    val fakeViewModel = CommunityViewModel(NavigationManager())
+    CommunityScreen(viewModel = fakeViewModel)
+}
 
 @Preview
 @Composable
-fun CommunityScreen(){
-    val categoryList = listOf("Adventure","Fantastic", "Mystery", "Autobiography")
+fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
+    val hotCommunityList = viewModel.hotCommunityList
+    val com = demoCommunity
     ScreenFrame(
         topBar = {
             TopBar(
                 title = "Community",
                 showBackButton = false,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ }
+                onLeftClick = {viewModel.onGoToNotificationScreen()},
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){
@@ -42,16 +54,16 @@ fun CommunityScreen(){
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(20.dp))
-            SectionTitle(title = "Hot Community")
+            SectionTitle(title = "Hot Community", modifier = Modifier.padding(start = 20.dp))
 
             LazyRow(
-                contentPadding = PaddingValues(vertical = 8.dp),
+                contentPadding = PaddingValues(vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(categoryList) { item ->
+                items(hotCommunityList) { item ->
                     GerneChipButton(
                         genre = item,
-                        onClick = {}
+                        onClick = {viewModel.filterCommunityFollowCategory(0)}
                     )
                 }
             }
@@ -59,29 +71,31 @@ fun CommunityScreen(){
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
-                    .height(height = 168.dp)
             ) {
-                items(categoryList) { item ->
+
+                items(hotCommunityList) {
                     CommunityCard(
-                        item = item
+                        model = com,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.id)}
                     )
 
                 }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
-            SectionTitle(title = "Recommended")
+            SectionTitle(title = "Recommended", modifier = Modifier.padding(start = 20.dp))
 
 
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                 modifier = Modifier
-                    .height(height = 168.dp)
             ) {
-                items(categoryList) { item ->
+
+                items(hotCommunityList) {
                     CommunityCard(
-                        item = item
+                        model = com,
+                        onClick = {viewModel.onGoToCommunityDetailScreen(com.id)}
                     )
 
                 }

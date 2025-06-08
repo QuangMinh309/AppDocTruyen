@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.frontend.R
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
@@ -47,7 +47,7 @@ fun BottomNavigationBar(navController: NavController) {
                 "Home" -> Screen.MainNav.Home.route
                 "Search" -> Screen.MainNav.Search.route
                 "Community" -> Screen.MainNav.Community.route
-                "User" -> Screen.MainNav.Profile.route
+                "Profile" -> Screen.MainNav.Profile.createRoute("1")
                 else -> Screen.MainNav.Home.route
             }
 
@@ -104,7 +104,7 @@ fun prepareBottomMenu(): List<BottomMenuItem> {
             icon = painterResource(id = R.drawable.community_navigation_ic)
         ),
         BottomMenuItem(
-            label = "User",
+            label = "Profile",
             icon = painterResource(id = R.drawable.user_navigation_ic)
         )
     )

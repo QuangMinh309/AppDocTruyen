@@ -1,44 +1,51 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Community extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Community extends Model {
+    static associate(models) {
+      // Community belongs to Category
+      Community.belongsTo(models.Category, {
+        foreignKey: 'categoryId',
+        as: 'category',
+      })
+
+      // Community has many Chats
+      Community.hasMany(models.Chat, {
+        foreignKey: 'communityId',
+        as: 'chats',
+      })
+
+      // Community has many Users (many-to-many)
+      Community.belongsToMany(models.User, {
+        through: models.JoinCommunity,
+        foreignKey: 'communityId',
+        otherKey: 'userId',
+        as: 'members',
+      })
+    }
+  }
+
   Community.init(
     {
       communityId: {
-        allowNull: false,
-        autoIncrement: true,
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
       },
-      communitytName: {
-        type: DataTypes.STRING,
-      },
-      categoryId: {
-        type: DataTypes.INTEGER,
-      },
-      avatarId: {
-        type: DataTypes.STRING,
-      },
-      menberNum: {
-        type: DataTypes.INTEGER,
-      },
-      description: {
-        type: DataTypes.STRING(1500),
-      },
+      communitytName: DataTypes.STRING,
+      categoryId: DataTypes.INTEGER,
+      avatarId: DataTypes.STRING,
+      menberNum: DataTypes.INTEGER,
+      description: DataTypes.STRING(1500),
     },
     {
       sequelize,
-      modelName: "Community",
-      tableName: "community",
+      modelName: 'Community',
+      tableName: 'community',
       timestamps: false,
     }
-  );
+  )
 
-  Community.associate = (models) => {
-    Community.belongsTo(models.Category, { foreignKey: "categoryId" });
-    Community.hasMany(models.Chat, { foreignKey: "communityId" });
-    Community.hasMany(models.JoinCommunity, { foreignKey: "communityId" });
-  };
-
-  return Community;
-};
+  return Community
+}

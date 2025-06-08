@@ -33,7 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.SettingViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
@@ -41,7 +44,12 @@ import com.example.frontend.ui.theme.OrangeRed
 
 @Preview
 @Composable
-fun SettingScreen(){
+fun PreViewSeetingScreen(){
+    val fakeviewmodel=SettingViewModel(NavigationManager())
+    SettingScreen(fakeviewmodel)
+}
+@Composable
+fun SettingScreen( viewModel: SettingViewModel= hiltViewModel()){
     val scrollState = rememberScrollState()
     ScreenFrame(
         topBar = {
@@ -52,7 +60,7 @@ fun SettingScreen(){
             ){
                 // Back button
                 Button(
-                    onClick = {},
+                    onClick = {viewModel.onGoBack()},
                     colors =  ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                     ),

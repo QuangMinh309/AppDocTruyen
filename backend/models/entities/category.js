@@ -1,32 +1,41 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Model } from 'sequelize'
 
-export default (sequelize) => {
-  class Category extends Sequelize.Model {}
+export default (sequelize, DataTypes) => {
+  class Category extends Model {
+    static associate(models) {
+      // Category has many Communities
+      Category.hasMany(models.Community, {
+        foreignKey: 'categoryId',
+        as: 'communities',
+      })
+
+      // Category has many Stories (many-to-many)
+      Category.belongsToMany(models.Story, {
+        through: models.StoryCategory,
+        foreignKey: 'categoryId',
+        otherKey: 'storyId',
+        as: 'stories',
+      })
+    }
+  }
+
   Category.init(
     {
       categoryId: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
         type: DataTypes.INTEGER,
-      },
-      categoryName: {
+        primaryKey: true,
+        autoIncrement: true,
         allowNull: false,
-        type: DataTypes.STRING,
       },
+      categoryName: DataTypes.STRING,
     },
     {
       sequelize,
-      modelName: "Category",
-      tableName: "category",
+      modelName: 'Category',
+      tableName: 'category',
       timestamps: false,
     }
-  );
+  )
 
-  Category.associate = (models) => {
-    Category.hasMany(models.Community, { foreignKey: "categoryId" });
-    Category.hasMany(models.StoryCategory, { foreignKey: "categoryId" });
-  };
-
-  return Category;
-};
+  return Category
+}

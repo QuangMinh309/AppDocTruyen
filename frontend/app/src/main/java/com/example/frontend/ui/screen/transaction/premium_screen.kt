@@ -26,13 +26,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.transaction.PremiumViewModel
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.SalmonRose
 
 @Preview
 @Composable
-fun PremiumScreen()
+fun PreViewPremiumScreen()
+{
+    val fakeviewmodel= PremiumViewModel(NavigationManager())
+    PremiumScreen(fakeviewmodel)
+}
+@Composable
+fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
 {
 //    val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page2_bg)
 //    val ratio = imageBitmap.width.toFloat() / imageBitmap.height
@@ -73,6 +82,7 @@ fun PremiumScreen()
             Spacer(modifier = Modifier.height(350.dp))
             ElevatedButton(
                 onClick = {
+                    viewmodel.onGoToWalletDetailScreen()
                 },
                 modifier = Modifier
                     .height(50.dp)
@@ -100,7 +110,7 @@ fun PremiumScreen()
                         "You can cancel your membership at any time. " +
                         "By registering, you are agreeing to our Terms. Contact us for more details.",
                 fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
                 color = Color.LightGray
             )
         }

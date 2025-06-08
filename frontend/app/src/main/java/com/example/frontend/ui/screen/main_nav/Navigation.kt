@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.main_nav
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -22,27 +23,46 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.frontend.R
-import com.example.frontend.navigation.NavigationCommand
-import com.example.frontend.navigation.Screen
-import com.example.frontend.presentation.viewmodel.AppNavigationViewModel
+import com.example.frontend.services.navigation.NavigationCommand
+import com.example.frontend.services.navigation.Screen
+import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewModel
 import com.example.frontend.ui.components.BottomNavigationBar
+import com.example.frontend.ui.screen.DiscoverDetailScreen
+import com.example.frontend.ui.screen.NotificationScreen
+import com.example.frontend.ui.screen.SettingScreen
+import com.example.frontend.ui.screen.community.ChattingScreen
+import com.example.frontend.ui.screen.community.CommunityDetailScreen
+import com.example.frontend.ui.screen.community.SearchingMemberScreen
+import com.example.frontend.ui.screen.intro_authentication.IntroScreen
+import com.example.frontend.ui.screen.intro_authentication.LoginScreen
+import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
+import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
+import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
+import com.example.frontend.ui.screen.story.ReadScreen
+import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.WriteScreen
+import com.example.frontend.ui.screen.story.YourStoryDetailScreen
+import com.example.frontend.ui.screen.transaction.DepositScreen
+import com.example.frontend.ui.screen.transaction.PremiumScreen
+import com.example.frontend.ui.screen.transaction.TransactionAcceptScreen
+import com.example.frontend.ui.screen.transaction.WalletDetailScreen
+import com.example.frontend.ui.screen.transaction.WithdrawScreen
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
 
-@Preview
 @Composable
-fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
-    val navController = rememberNavController()
+fun AppNavigation(navController : NavHostController, viewModel: AppNavigationViewModel = hiltViewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var showBottomBar by remember { mutableStateOf(true) }
@@ -55,6 +75,7 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
                     navController.navigate(command.route)
                 }
                 is NavigationCommand.Back -> {
+                    Log.e("backk", "Đây là log mức DEBUG")  // Debug
                     navController.popBackStack()
                 }
             }
@@ -66,8 +87,9 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
         Screen.MainNav.Home.route -> true
         Screen.MainNav.Search.route -> true
         Screen.MainNav.Community.route -> true
-        Screen.MainNav.Profile.route -> true
         Screen.MainNav.YourStory.route -> true
+        Screen.MainNav.Profile.route->true
+        "Profile/1" -> true
         else -> false
     }
 
@@ -130,21 +152,128 @@ fun AppNavigation(viewModel: AppNavigationViewModel = hiltViewModel()) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MainNav.Home.route,
+            startDestination = Screen.Intro.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+
+            //region  main nav
             composable(Screen.MainNav.Home.route) { HomeScreen() }
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
-            composable(Screen.MainNav.Search.route) { StoryNavigation() }
+            composable(Screen.MainNav.Search.route) {   StorySearchScreen() }
             composable(Screen.MainNav.Community.route) { CommunityScreen() }
-            composable(Screen.MainNav.Profile.route) {
-                AdvancedProfile(
-                    backgroundImageUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-                    avatarImageUrl = "",
-                    name = "Peneloped Lyne",
-                    nickName= "tolapeneloped",
+            composable(
+                route = Screen.MainNav.Profile.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
                 )
+            ) { ProfileScreen() }
+            //endregion
+
+            //region intro
+            composable(Screen.Intro.route) { IntroScreen() }
+            //endregion
+
+            //region authentication
+            composable(Screen.Authentication.Login.route) { LoginScreen() }
+            composable(Screen.Authentication.Register.route) { RegisterScreen() }
+            composable(Screen.Authentication.ResetPassword.route) { ResetPasswordScreen() }
+            composable(
+                route = Screen.Authentication.NewPassword.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { SetUpPasswordScreen() }
+
+            //region story
+            composable(
+                route = Screen.Story.Detail.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { StoryDetailScreen() }
+
+            composable(
+                route = Screen.Story.Chapter.Read.route,
+                arguments = listOf(
+                    navArgument("chapterId") { type = NavType.StringType },
+                )
+            ) { ReadScreen() }
+
+            composable(
+                route = Screen.Story.Chapter.Write.route,
+                arguments = listOf(
+                    navArgument("chapterId") { type = NavType.StringType },
+                )
+            ) { WriteScreen() }
+            //endregion
+
+            //region community
+            composable(
+                route = Screen.Community.Chat.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) { ChattingScreen() }
+
+            composable(
+                route = Screen.Community.Detail.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) {
+                CommunityDetailScreen()
             }
+
+            composable(
+                route = Screen.Community.SearchingMember.route,
+                arguments = listOf(
+                    navArgument("communityId") { type = NavType.StringType },
+                )
+            ) {
+                SearchingMemberScreen()
+            }
+            //endregion
+
+            //region transaction
+            composable(Screen.Transaction.Deposit.route) { DepositScreen() }
+            composable(Screen.Transaction.Premium.route) { PremiumScreen() }
+            composable(Screen.Transaction.Wallet.route) { WalletDetailScreen() }
+            composable(Screen.Transaction.WithDraw.route) { WithdrawScreen() }
+            composable(
+                route= Screen.Transaction.Accept.route,
+                arguments = listOf(
+                    navArgument("depositMoney") {type=NavType.LongType}
+                )
+            ) {
+                TransactionAcceptScreen()
+            }
+            //endregion
+
+            composable(
+                route = Screen.YourStoryDetail.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) { YourStoryDetailScreen() }
+
+            composable(Screen.Discover.route) { DiscoverDetailScreen() }
+            composable(Screen.Notification.route) { NotificationScreen() }
+            composable(Screen.Setting.route) { SettingScreen() }
+//            composable(
+//                route = Screen.StoryList.route,
+//                arguments = listOf(
+//                    navArgument("id") { type = NavType.StringType },
+//                )
+//            )  { ReadListScreen() }
+
+
+            composable(
+                route = Screen.Story.AuthorProfile.route,
+                arguments = listOf(
+                    navArgument("id") { type = NavType.StringType },
+                )
+            ) {ProfileScreen() }
+
         }
     }
 }

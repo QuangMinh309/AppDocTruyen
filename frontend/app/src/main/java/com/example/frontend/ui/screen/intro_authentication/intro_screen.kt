@@ -1,7 +1,6 @@
 package com.example.frontend.ui.screen.intro_authentication
 
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.ParagraphStyle
@@ -45,14 +43,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.activity.LoginActivity
+import com.example.frontend.presentation.viewmodel.intro_authentification.IntroViewModel
 import com.example.frontend.ui.components.Indicator
 import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.ui.theme.ReemKufifunFontFamily
 import com.example.frontend.ui.theme.SalmonRose
 import com.example.frontend.ui.theme.SteelBlue
 
@@ -63,20 +63,21 @@ import com.example.frontend.ui.theme.SteelBlue
 //}
 @Preview
 @Composable
-fun IntroScreen() {
+fun IntroScreen(viewModel: IntroViewModel = hiltViewModel()) {
 
     val pages = listOf<@Composable () -> Unit>(
         { Page1() },
         { Page2() },
         { Page3() },
-        { Page4() }
+        { Page4(onLoginClick = {viewModel.onGoToLoginScreen()}) }
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(color = DeepSpace)
+            .fillMaxSize()
+            .background(DeepSpace)
+            .padding(top = 27.dp),
     ) {
         HorizontalPager(
             state = pagerState,
@@ -118,25 +119,6 @@ fun IntroScreen() {
 @Composable
 fun Page1()
 {
-//    val context = LocalContext.current.applicationContext
-//    val entryPoint = remember {
-//        EntryPointAccessors.fromApplication(
-//            context,
-//            ImageProviderEntryPoint::class.java
-//        )
-//    }
-//    val imageProvider = remember { entryPoint.imageUrlProvider() }
-//
-//    var imageUrl by remember { mutableStateOf<String?>(null) }
-//    var errorMessage by remember { mutableStateOf<String?>(null) }
-//
-//
-//    LaunchedEffect("intro_page3_bg_xmbse7") {
-//        val result = imageProvider.fetchImage("intro_page3_bg_xmbse7")
-//        result
-//            .onSuccess { url -> imageUrl = url }
-//            .onFailure { ex -> errorMessage = ex.message }
-//    }
     val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page1_bg)
     val ratio = imageBitmap.width.toFloat() / imageBitmap.height
     Column(
@@ -152,10 +134,10 @@ fun Page1()
             Text(
                 text = "WELCOME TO\n           OUR WORLD >>",
                 style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                    fontFamily = ReemKufifunFontFamily,
                     fontSize = 32.sp,
                     lineHeight = 50.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     brush = Brush.linearGradient(
                         colors = listOf(
                             OrangeRed, BrightBlue
@@ -218,7 +200,7 @@ fun Page2()
                 text = "A repo with\n thousands of novels.",
                 style = TextStyle(
                     textAlign = TextAlign.End,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                    fontFamily = ReemKufifunFontFamily,
                     fontSize = 32.sp,
                     lineHeight = 30.sp,
                     fontWeight = FontWeight.Normal,
@@ -269,23 +251,8 @@ fun Page3()
             .fillMaxSize(),
         verticalArrangement = Arrangement.Top,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.intro_page3_bg),
-                contentDescription = "Ảnh minh họa",
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .fillMaxWidth()
-                    .aspectRatio(ratio),
-                contentScale = ContentScale.FillWidth
-            )
-        }
 
         Spacer(modifier = Modifier.height(20.dp))
-
         Text(
             buildAnnotatedString {
                 withStyle (
@@ -296,7 +263,7 @@ fun Page3()
                 {
                     withStyle(
                         style = SpanStyle(
-                            fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                            fontFamily = ReemKufifunFontFamily,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Normal,
                             color = OrangeRed
@@ -306,7 +273,7 @@ fun Page3()
                     }
                     withStyle(
                         style = SpanStyle(
-                            fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                            fontFamily = ReemKufifunFontFamily,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Normal,
                             brush = Brush.linearGradient(
@@ -326,17 +293,33 @@ fun Page3()
                 .padding(start = 10.dp)
                 .align(Alignment.Start)
         )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.intro_page3_bg),
+                contentDescription = "Ảnh minh họa",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .fillMaxWidth()
+                    .aspectRatio(ratio),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+
+
     }
 }
 
 @Preview
 @Composable
-fun Page4()
+fun Page4(onLoginClick: () -> Unit = {})
 {
-    val context = LocalContext.current
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
     ) {
         Box(
@@ -346,7 +329,7 @@ fun Page4()
             Text(
                 text = "LOGIN to join us!",
                 style = TextStyle(
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
+                    fontFamily = ReemKufifunFontFamily,
                     fontSize = 32.sp,
                     lineHeight = 30.sp,
                     fontWeight = FontWeight.Normal,
@@ -386,8 +369,7 @@ fun Page4()
 
             Button(
                 onClick = {
-                    val intent =Intent(context, LoginActivity::class.java)
-                    context.startActivity(intent)
+                    onLoginClick()
                 },
                 modifier = Modifier
                     .size(width = 140.dp, height =45.dp)
@@ -400,7 +382,7 @@ fun Page4()
                 Text(
                     text = "LOGIN",
                     style = TextStyle(
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_bold)),
                         textAlign = TextAlign.Center,
                         color = Color.Black

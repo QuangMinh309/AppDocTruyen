@@ -1,12 +1,12 @@
 package com.example.frontend.data.model
 
-import java.util.Date
+import java.time.LocalDateTime
 
 data class Chat (
-    val chatId: Int,
+    val id: Int,
     val communityId: Int,
-    val senderId: Int,
-    val content: String,
-    val commentPicId: String,
-    val time: Date
+    val sender: User,
+    val content: String?,
+    val messagePicUrl: String?,
+    val time: LocalDateTime
 )

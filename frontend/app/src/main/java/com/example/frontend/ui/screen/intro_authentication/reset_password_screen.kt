@@ -1,6 +1,6 @@
 package com.example.frontend.ui.screen.intro_authentication
 
-import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,10 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -41,21 +40,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.activity.NewPasswordActivity
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.intro_authentification.ResetPasswordViewModel
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.ui.theme.PoppinsFontFamily
+import com.example.frontend.ui.theme.ReemKufifunFontFamily
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun ResetPasswordScreen()
+fun PreviewScreenContent7() {
+    val fakeViewModel = ResetPasswordViewModel(NavigationManager())
+    ResetPasswordScreen(viewModel = fakeViewModel)
+}
+@Composable
+fun ResetPasswordScreen(viewModel : ResetPasswordViewModel = hiltViewModel())
 {
-    var tbEmailValue by remember { mutableStateOf("") }
-    var tbOTPValue by remember { mutableStateOf("") }
+    val tbEmailValue by viewModel.email.collectAsState()
+    val tbOTPValue by viewModel.otp.collectAsState()
 
+
+    val toast by viewModel.toast.collectAsState()
+    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -126,20 +143,20 @@ fun ResetPasswordScreen()
                     text = "Email",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
-                        fontSize = 14.sp,
+                        fontFamily = ReemKufifunFontFamily,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
                     )
                 )
                 TextField(
                     value = tbEmailValue,
-                    onValueChange = { tbEmailValue = it },
+                    onValueChange = { viewModel. onEmailChange(it) },
                     singleLine = true,
                     placeholder = {
                         Text("Enter your email address")
                     },
-                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_medium))),
+                    textStyle = TextStyle(fontFamily = PoppinsFontFamily),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(height = 53.dp),
@@ -166,9 +183,11 @@ fun ResetPasswordScreen()
                     )
                 )
             }
+
+            //send otp button
             Button(
                 onClick = {
-
+                        viewModel.sendOTPToEmail()
                 },
                 modifier = Modifier
                     .padding(top = 40.dp)
@@ -211,8 +230,8 @@ fun ResetPasswordScreen()
                     text = "OTP",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_variablefont_wght)),
-                        fontSize = 14.sp,
+                        fontFamily = ReemKufifunFontFamily,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.White,
                         shadow = Shadow(
@@ -224,12 +243,12 @@ fun ResetPasswordScreen()
                 )
                 TextField(
                     value = tbOTPValue,
-                    onValueChange = { tbOTPValue = it },
+                    onValueChange = { viewModel.onOTPChange(it) },
                     singleLine = true,
                     placeholder = {
                         Text("Enter your code")
                     },
-                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_medium))),
+                    textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_regular))),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(height = 53.dp),
@@ -258,8 +277,7 @@ fun ResetPasswordScreen()
             }
             Button(
                 onClick = {
-                    val intent = Intent(context, NewPasswordActivity::class.java)
-                    context.startActivity(intent)
+                    viewModel.checkOTP()
                 },
                 modifier = Modifier
                     .padding(top = 40.dp)
