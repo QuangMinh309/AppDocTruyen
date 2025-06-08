@@ -3,8 +3,8 @@ package com.example.frontend.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

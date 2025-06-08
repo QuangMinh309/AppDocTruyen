@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import com.example.frontend.R
-import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
@@ -779,7 +778,7 @@ internal fun formatViews(views: Long): String {
 //endregion
 
 @Composable
-fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
+fun AuthorInfoCard(model: User, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.Community
@@ -50,19 +47,17 @@ import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
-import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.AutoScrollBanner
 import com.example.frontend.ui.components.BannerItem
 import com.example.frontend.ui.components.Chip
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
-import com.example.frontend.ui.components.SearchBar
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.StoryCard
 import com.example.frontend.ui.components.StoryCard2
 import com.example.frontend.ui.components.StoryCard3
-import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.screen.story.Examplechapters
 import com.example.frontend.ui.theme.BurntCoral
@@ -428,7 +423,7 @@ val ExampleList: List<Story> = listOf(
         coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
         description = "fgfssdf",
         price = BigDecimal(10000),
-        author = Author(id = 1,
+        author = User(id = 1,
             name = "peneloped",
             avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
             dName = "tolapenee"

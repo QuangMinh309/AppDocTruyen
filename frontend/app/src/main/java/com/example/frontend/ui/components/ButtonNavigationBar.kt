@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.frontend.R
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable

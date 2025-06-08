@@ -4,14 +4,13 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.Functionality
+import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Notification
 import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
-import com.example.frontend.data.model.NameList
-import com.example.frontend.navigation.Screen
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body

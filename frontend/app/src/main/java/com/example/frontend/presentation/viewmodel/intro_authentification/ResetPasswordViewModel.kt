@@ -1,7 +1,7 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
 import android.util.Log
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,7 +11,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    navigationManager: NavigationManager) : BaseViewModel(navigationManager){
+    navigationManager: NavigationManager
+) : BaseViewModel(navigationManager){
     private var sentOTP = "10"
     private val _email  = MutableStateFlow("")
     val email : StateFlow<String> = _email

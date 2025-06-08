@@ -1,10 +1,10 @@
 package com.example.frontend.presentation.viewmodel.main_nav
 
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.model.Author
+import com.example.frontend.data.model.User
 import com.example.frontend.data.model.Story
-import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ExampleList
 import com.example.frontend.ui.screen.main_nav.genreDemoList
@@ -32,7 +32,7 @@ class YourStoryViewModel @Inject constructor(navigationManager: NavigationManage
             coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
             description = "",
             price = BigDecimal("10000"),
-            author = Author(id = 1,
+            author = User(id = 1,
                 name = "peneloped",
                 avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
                 dName = "tolapenee"

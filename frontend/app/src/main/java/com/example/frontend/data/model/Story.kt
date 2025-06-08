@@ -6,7 +6,7 @@ import java.time.LocalDate
 data class Story (
     val id: Int,
     val name: String,
-    val author: Author,
+    val author:User,
     val description: String?,
     val ageRange: Int,
     val categories: List<Category>,

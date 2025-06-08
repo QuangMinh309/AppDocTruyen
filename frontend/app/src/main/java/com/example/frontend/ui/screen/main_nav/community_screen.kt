@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
 import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.GerneChipButton

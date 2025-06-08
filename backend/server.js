@@ -1,14 +1,23 @@
 // server.js
+import { WebSocketServer } from 'ws'
+import jwt from 'jsonwebtoken'
 import express from 'express'
+import http from 'http'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import db from './models/index.js'
 import errorHandler from './middlewares/errorHandler.js'
+
 import route from './routes/index.js'
+import WebSocket from './websocket/socket.js'
 
 dotenv.config()
 
+// Khởi tạo server Express và WebSocket
 const app = express()
+const server = http.createServer(app)
+const wss = new WebSocketServer({ server })
+
 const sequelize = db.sequelize
 
 // Middleware
@@ -16,7 +25,6 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static('public'))
-app.use('/uploads', express.static('uploads'))
 
 route(app)
 
@@ -26,10 +34,39 @@ app.get('/', (req, res) => {
 
 // Error handling middleware
 app.use(errorHandler)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Có thể gửi thông báo hoặc log thêm
+});
 
+// // WebSocket connection handling
+// // Store connected clients  :userId => ws
+// const clients = new Map()
+
+// // WebSocket logic với middleware
+// wss.on('connection', async (ws, req) => {
+//   const user = await authenticateWebSocket(ws, req);
+//   if (user) {
+//     ws.userId = user.userId;
+//     clients.set(ws.userId, ws);
+//     console.log(`User ${user.userId} connected.`);
+
+//     ws.on('message', (message) => {
+//       console.log(`Received: ${message} from ${user.userId}`);
+//     });
+
+//     ws.on('close', () => {
+//       clients.delete(user.userId);
+//       console.log(`User ${user.userId} disconnected.`);
+//     });
+//   }
+// });
 // Start server
+
+WebSocket(wss)
+
 const PORT = process.env.DB_PORT || 3000
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`)
 })
 

@@ -1,10 +1,10 @@
-package com.example.frontend.navigation
+package com.example.frontend.services.navigation
 
 
 sealed class Screen(var route: String) {
-    sealed class MainNav(route: String) :Screen(route) {
+    sealed class MainNav(route: String) : Screen(route) {
         data object Home : MainNav("Home")
-        data object Search :MainNav("Search")
+        data object Search : MainNav("Search")
         data object YourStory : MainNav("YourStory")
         data object Community : MainNav("Community")
         data object Profile : MainNav("Profile/{id}"){
@@ -13,7 +13,7 @@ sealed class Screen(var route: String) {
     }
 
     data object Intro: Screen("Intro")
-    sealed class  Authentication(route: String) :Screen(route) {
+    sealed class  Authentication(route: String) : Screen(route) {
         data object Login : Authentication("Authentication/Login")
         data object Register : Authentication("Authentication/Register")
         data object ResetPassword : Authentication("Authentication/ResetPassword")
@@ -21,21 +21,21 @@ sealed class Screen(var route: String) {
             fun createRoute(id: String) = "Authentication/NewPassword/$id"
         }
     }
-    sealed class Community(route: String) :Screen(route) {
+    sealed class Community(route: String) : Screen(route) {
         fun createRoute(communityId: String) = route.replace("{communityId}", communityId)
         data object Chat : Community("Community/Chat/{communityId}")
-        data object Detail :Community("Community/CommunityDetail/{communityId}")
+        data object Detail : Community("Community/CommunityDetail/{communityId}")
         data object  SearchingMember: Community("Community/SearchingMember/{communityId}")
     }
 
-    sealed class Story(route: String) :Screen(route) {
-        data object Detail :Story("Story/StoryDetail/{id}"){
+    sealed class Story(route: String) : Screen(route) {
+        data object Detail : Story("Story/StoryDetail/{id}"){
             fun createRoute(id: String) = "Story/StoryDetail/$id"
         }
         data object AuthorProfile : Story("AuthorProfile/{id}"){
             fun createRoute(id: String) = "AuthorProfile/$id"
         }
-        sealed class Chapter(route: String) :Story(route) {
+        sealed class Chapter(route: String) : Story(route) {
             fun createRoute(chapterId: String) = route.replace("{chapterId}", chapterId)
             data object Read : Chapter("Chapter/Read/{chapterId}")
             data object Write: Chapter("chapter/Write/{chapterId}")
@@ -45,9 +45,9 @@ sealed class Screen(var route: String) {
         fun createRoute(id: String) = "YourStoryDetail/$id"
     }
 
-    sealed class Transaction(route: String) :Screen(route) {
+    sealed class Transaction(route: String) : Screen(route) {
         data object Deposit: Transaction("Transaction/Deposit")
-        data object Premium:Transaction("Transaction/Premium")
+        data object Premium: Transaction("Transaction/Premium")
         data object Wallet: Transaction("Transaction/Wallet")
         data object WithDraw: Transaction("Transaction/WithDraw")
         data object Accept: Transaction(" Accept/{depositMoney}"){

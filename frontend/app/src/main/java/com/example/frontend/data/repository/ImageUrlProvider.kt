@@ -1,6 +1,8 @@
 package com.example.frontend.data.repository
 
-import com.example.frontend.data.model.Result
+import android.util.Log
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -8,7 +10,15 @@ import javax.inject.Singleton
 class ImageUrlProvider @Inject constructor(
     private val repository: ImageRepository
 ) {
-    suspend fun fetchImage(imageId: String): Result<String> {
-        return repository.getImageUrl(imageId)
+    suspend fun fetchImage(imageId: String): String {
+        val urlResult = repository.getImageUrl(imageId)
+        var url:String=""
+        urlResult.onSuccess { imageUrl ->
+            url = imageUrl
+        }.onFailure { error ->
+            Log.e("Get/imageError","Error: ${error.message}")
+            url = ""
+        }
+        return url
     }
 }

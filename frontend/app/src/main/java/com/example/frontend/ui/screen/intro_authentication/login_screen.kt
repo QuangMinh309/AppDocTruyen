@@ -60,10 +60,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.intro_authentification.LoginViewModel
-import com.example.frontend.ui.components.ScreenFrame
-import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.DeepSpace

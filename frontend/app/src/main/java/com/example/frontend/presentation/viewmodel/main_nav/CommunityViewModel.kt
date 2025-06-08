@@ -2,8 +2,8 @@ package com.example.frontend.presentation.viewmodel.main_nav
 
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Community
-import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

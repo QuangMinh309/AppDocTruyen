@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.frontend.R
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.ProfileViewModel
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
@@ -212,9 +212,9 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier= Modifier.weight(1f))
-                StatItem(value = user.followerNum, label = "Followers")
-                StatItem(value = user.novelsNum, label = "Novels")
-                StatItem(value = user.readListNum, label = "ReadList")
+                StatItem(value = user.followerNum?:0, label = "Followers")
+                StatItem(value = user.novelsNum?:0, label = "Novels")
+                StatItem(value = user.readListNum?:0, label = "ReadList")
             }
 
             // Email and dob
@@ -233,7 +233,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel())
                     .padding(15.dp)
             )
             {
-                InforItem(Icons.Outlined.Mail,user.mail)
+                InforItem(Icons.Outlined.Mail,user.mail?:"")
                 Spacer(modifier= Modifier.height(8.dp))
                 InforItem(Icons.Outlined.Cake,user.dob.toString())
 

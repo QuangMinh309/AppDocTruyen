@@ -32,8 +32,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.frontend.R
-import com.example.frontend.navigation.NavigationCommand
-import com.example.frontend.navigation.Screen
+import com.example.frontend.services.navigation.NavigationCommand
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewModel
 import com.example.frontend.ui.components.BottomNavigationBar
 import com.example.frontend.ui.screen.DiscoverDetailScreen
@@ -240,7 +240,7 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
             composable(Screen.Transaction.Wallet.route) { WalletDetailScreen() }
             composable(Screen.Transaction.WithDraw.route) { WithdrawScreen() }
             composable(
-                route=Screen.Transaction.Accept.route,
+                route= Screen.Transaction.Accept.route,
                 arguments = listOf(
                     navArgument("depositMoney") {type=NavType.LongType}
                 )

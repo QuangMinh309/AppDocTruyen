@@ -1,6 +1,6 @@
 package com.example.frontend.presentation.viewmodel.community
 
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.demoAppUser
 import com.example.frontend.ui.screen.main_nav.demoUser

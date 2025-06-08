@@ -10,6 +10,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -62,5 +65,13 @@ object NetworkModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
+    }
+
+    // khởi tạo WebSocket connection
+    fun createWebSocket(okHttpClient: OkHttpClient, url: String, listener: WebSocketListener): WebSocket {
+        val request = Request.Builder()
+            .url(url)
+            .build()
+        return okHttpClient.newWebSocket(request, listener)
     }
 }

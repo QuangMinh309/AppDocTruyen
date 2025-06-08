@@ -1,4 +1,4 @@
-package com.example.frontend.navigation
+package com.example.frontend.services.navigation
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow

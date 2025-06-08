@@ -1,4 +1,4 @@
-package com.example.frontend.navigation
+package com.example.frontend.services.navigation
 
 sealed class NavigationCommand {
     data class Navigate(val route: String) : NavigationCommand()
