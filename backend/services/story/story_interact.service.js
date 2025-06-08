@@ -4,7 +4,7 @@ import {
   validateStory,
   handleStoryPurchaseTransaction,
 } from '../../utils/story.util.js'
-import { handleTransaction } from '../../utils/transaction.util.js'
+import { handleTransaction } from '../../utils/handle_transaction.util.js'
 import { createNotification } from '../../utils/notification.util.js'
 import {
   validateChapter,

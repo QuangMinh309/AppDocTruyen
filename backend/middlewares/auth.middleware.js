@@ -4,7 +4,6 @@ import ApiError from '../utils/api_error.util.js'
 
 const User = sequelize.models.User
 const Role = sequelize.models.Role
-const Parameter = sequelize.models.Parameter
 
 
 //xử lí logic xác thục chung

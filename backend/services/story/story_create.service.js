@@ -1,16 +1,16 @@
-import { sequelize } from '../../models/index.js'
-import { handleTransaction } from '../../utils/transaction.util.js'
-import { uploadImageToCloudinary } from '../cloudinary.service.js'
+import { sequelize } from '../../models/index.js';
+import { handleTransaction } from '../../utils/handle_transaction.util.js';
+import { uploadImageToCloudinary } from '../cloudinary.service.js';
 
-const Story = sequelize.models.Story
-const StoryCategory = sequelize.models.StoryCategory
+const Story = sequelize.models.Story;
+const StoryCategory = sequelize.models.StoryCategory;
 
 const createStory = async (storyData, userId) => {
   return await handleTransaction(async (transaction) => {
-    let coverImgId = null
+    let coverImgId = null;
     if (storyData.coverImg) {
-      const uploadResult = await uploadImageToCloudinary(storyData.coverImg)
-      coverImgId = uploadResult.public_id
+      const uploadResult = await uploadImageToCloudinary(storyData.coverImg);
+      coverImgId = uploadResult.public_id;
     }
 
     const story = await Story.create(
@@ -24,20 +24,20 @@ const createStory = async (storyData, userId) => {
         coverImgId,
       },
       { transaction }
-    )
+    );
 
     if (storyData.categories && storyData.categories.length > 0) {
       const categoryAssociations = storyData.categories.map((categoryId) => ({
         storyId: story.storyId,
         categoryId,
-      }))
+      }));
       await StoryCategory.bulkCreate(categoryAssociations, {
         transaction,
-      })
+      });
     }
 
-    return story
-  })
-}
+    return story;
+  });
+};
 
-export default createStory
+export default createStory;

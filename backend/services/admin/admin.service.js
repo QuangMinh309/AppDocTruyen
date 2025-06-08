@@ -1,33 +1,33 @@
-import { sequelize } from '../../models/index.js'
-import ApiError from '../../utils/api_error.util.js'
+import { sequelize } from '../../models/index.js';
+import ApiError from '../../utils/api_error.util.js';
 
-const User = sequelize.models.User
-const Role = sequelize.models.Role
+const User = sequelize.models.User;
+const Role = sequelize.models.Role;
 
 const AdminService = {
   async lockUser(userId) {
     try {
-      const user = await User.findByPk(userId)
-      if (!user) throw new ApiError('Người dùng không tồn tại', 404)
+      const user = await User.findByPk(userId);
+      if (!user) throw new ApiError('Người dùng không tồn tại', 404);
 
-      await user.update({ status: 'locked' })
-      return { message: 'Khóa người dùng thành công' }
+      await user.update({ status: 'locked' });
+      return { message: 'Khóa người dùng thành công' };
     } catch (err) {
-      if (err instanceof ApiError) throw err
-      throw new ApiError('Lỗi khi khóa người dùng', 500)
+      if (err instanceof ApiError) throw err;
+      throw new ApiError('Lỗi khi khóa người dùng', 500);
     }
   },
 
   async unlockUser(userId) {
     try {
-      const user = await User.findByPk(userId)
-      if (!user) throw new ApiError('Người dùng không tồn tại', 404)
+      const user = await User.findByPk(userId);
+      if (!user) throw new ApiError('Người dùng không tồn tại', 404);
 
-      await user.update({ status: 'active' })
-      return { message: 'Mở khóa người dùng thành công' }
+      await user.update({ status: 'active' });
+      return { message: 'Mở khóa người dùng thành công' };
     } catch (err) {
-      if (err instanceof ApiError) throw err
-      throw new ApiError('Lỗi khi mở khóa người dùng', 500)
+      if (err instanceof ApiError) throw err;
+      throw new ApiError('Lỗi khi mở khóa người dùng', 500);
     }
   },
 
@@ -36,7 +36,7 @@ const AdminService = {
       const users = await User.findAll({
         offset,
         limit,
-        order: [['createdAt', 'DESC']],
+        order: [['userId', 'DESC']],
         attributes: { exclude: ['password'] },
         include: [
           {
@@ -45,13 +45,26 @@ const AdminService = {
             attributes: ['roleId', 'roleName'],
           },
         ],
-      })
+      });
 
-      return users.map((user) => user.toJSON())
+      const userData = users.map((user) => {
+        const userObj = user.toJSON();
+        const formattedDOB = userObj.DOB
+          ? new Date(userObj.DOB).toISOString().split('T')[0]
+          : null;
+
+        return {
+          ...userObj,
+          DOB: formattedDOB,
+        };
+      });
+
+      return userData;
     } catch (err) {
-      throw new ApiError('Lỗi khi lấy người dùng', 500)
+      console.error(err);
+      throw new ApiError('Lỗi khi lấy người dùng', 500);
     }
   },
-}
+};
 
-export default AdminService
+export default AdminService;

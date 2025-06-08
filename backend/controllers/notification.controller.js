@@ -4,9 +4,6 @@ import notificationSchema from '../validators/notification.validation.js'
 const NotificationController = {
   async createNotification(req, res, next) {
     try {
-      // const { error } = notificationSchema.create.validate(req.body);
-      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
-
       const notification = await NotificationService.createNotification(
         req.body
       )
@@ -18,9 +15,6 @@ const NotificationController = {
 
   async getNotificationById(req, res, next) {
     try {
-      // const { error } = notificationSchema.getById.validate(req.params);
-      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
-
       const notification = await NotificationService.getNotificationById(
         req.params.notificationId
       )
@@ -43,9 +37,6 @@ const NotificationController = {
 
   async updateNotification(req, res, next) {
     try {
-      // const { error } = notificationSchema.update.validate(req.body);
-      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
-
       const notification = await NotificationService.updateNotification(
         req.params.notificationId,
         req.body
@@ -58,9 +49,6 @@ const NotificationController = {
 
   async deleteNotification(req, res, next) {
     try {
-      // const { error } = notificationSchema.delete.validate(req.params);
-      // if (error) throw Object.assign(new Error(error.details[0].message), { statusCode: 400 });
-
       const result = await NotificationService.deleteNotification(
         req.params.notificationId
       )
