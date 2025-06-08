@@ -1,38 +1,92 @@
-import PasswordResetService from '../services/password_reset.service.js'
-import passwordResetSchema from '../validators/password_reset.validation.js'
+import db from '../models/index.js';
+import ApiError from '../utils/api_error.util.js';
+import bcrypt from 'bcrypt';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
-const PasswordResetController = {
-  async createPasswordReset(req, res, next) {
-    try {
-      const passwordReset = await PasswordResetService.createPasswordReset(
-        req.body
-      )
-      res.status(201).json(passwordReset)
-    } catch (error) {
-      next(error)
-    }
-  },
+import PasswordResetService from '../services/password_reset.service.js'; // Sửa đường dẫn
 
-  async verifyOTP(req, res, next) {
-    try {
-      const { OTP, userId } = req.body
-      const result = await PasswordResetService.verifyOTP(OTP, userId)
-      res.status(200).json(result)
-    } catch (error) {
-      next(error)
-    }
-  },
-
-  async getPasswordResetById(req, res, next) {
-    try {
-      const passwordReset = await PasswordResetService.getPasswordResetById(
-        req.params.OTP
-      )
-      res.status(200).json(passwordReset)
-    } catch (error) {
-      next(error)
-    }
-  },
+async function createPasswordReset(req, res, next) {
+  try {
+    const { userId, isUsed = false } = req.body;
+    const result = await PasswordResetService.createPasswordReset({ userId, isUsed });
+    res.status(201).json({
+      success: true,
+      message: 'Tạo mã reset mật khẩu thành công',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
-export default PasswordResetController
+async function sendOTP(req, res, next) {
+  try {
+    const { email } = req.body;
+    const result = await PasswordResetService.sendOTP(email);
+    res.status(200).json({
+      success: true,
+      message: 'OTP đã được gửi đến email của bạn',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function verifyOTP(req, res, next) {
+  try {
+    const { OTP, userId } = req.body;
+    const result = await PasswordResetService.verifyOTP(OTP, userId);
+    res.status(200).json({
+      success: true,
+      message: 'Xác minh OTP thành công',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getPasswordResetById(req, res, next) {
+  try {
+    const { OTP } = req.params;
+    const result = await PasswordResetService.getPasswordResetById(OTP);
+    res.status(200).json({
+      success: true,
+      message: 'Lấy thông tin mã OTP thành công',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function resetPassword(req, res, next) {
+  try {
+    const { otp, newPassword, confirmPassword, userId } = req.body;
+    if (newPassword !== confirmPassword) {
+      return next(new ApiError('Mật khẩu mới và mật khẩu xác nhận không khớp', 400));
+    }
+    if (!userId) {
+      return next(new ApiError('userId là bắt buộc', 400));
+    }
+    const result = await PasswordResetService.resetPassword(otp, newPassword, userId);
+    res.status(200).json({
+      success: true,
+      message: 'Đặt lại mật khẩu thành công',
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default {
+  createPasswordReset,
+  sendOTP,
+  verifyOTP,
+  getPasswordResetById,
+  resetPassword,
+};

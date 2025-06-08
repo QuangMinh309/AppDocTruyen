@@ -1,5 +1,8 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">172.20.10.3</domain>
+        <domain includeSubdomains="true">b586-116-110-43-51.ngrok-free.app</domain>
     </domain-config>
 </network-security-config>

@@ -46,7 +46,8 @@ import com.example.frontend.ui.screen.intro_authentication.IntroScreen
 import com.example.frontend.ui.screen.intro_authentication.LoginScreen
 import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
 import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
-import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
+//import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
+import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.WriteScreen
@@ -60,14 +61,12 @@ import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
-
 @Composable
-fun AppNavigation(navController : NavHostController, viewModel: AppNavigationViewModel = hiltViewModel()) {
+fun AppNavigation(navController: NavHostController, viewModel: AppNavigationViewModel = hiltViewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var showBottomBar by remember { mutableStateOf(true) }
 
-    // Lắng nghe sự kiện điều hướng từ ViewModel
     LaunchedEffect(viewModel.commands) {
         viewModel.commands.collect { command ->
             when (command) {
@@ -75,78 +74,76 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
                     navController.navigate(command.route)
                 }
                 is NavigationCommand.Back -> {
-                    Log.e("backk", "Đây là log mức DEBUG")  // Debug
+                    Log.e("backk", "Đây là log mức DEBUG")
                     navController.popBackStack()
                 }
             }
         }
     }
 
-    //just show bottombar if that screen is in main_nav
     showBottomBar = when (currentRoute) {
         Screen.MainNav.Home.route -> true
         Screen.MainNav.Search.route -> true
         Screen.MainNav.Community.route -> true
+
         Screen.MainNav.YourStory.route -> true
         Screen.MainNav.Profile.route->true
+
         "Profile/1" -> true
         else -> false
     }
 
     Scaffold(
-        bottomBar = {if(showBottomBar) BottomNavigationBar(navController) },
-        floatingActionButton ={ if(showBottomBar)
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .offset(y=60.dp)
-                    .background(
-                        color = DeepSpace.copy(0.7f),
-                        shape = CircleShape
-                    )
-                    .padding(3.dp),
-                contentAlignment = Alignment.Center
-
-            ) {
+        bottomBar = { if (showBottomBar) BottomNavigationBar(navController) },
+        floatingActionButton = {
+            if (showBottomBar)
                 Box(
                     modifier = Modifier
-                        .size(60.dp)
-
+                        .size(80.dp)
+                        .offset(y = 60.dp)
                         .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    OrangeRed,
-                                    BrightBlue
-                                )
-                            ),
+                            color = DeepSpace.copy(0.7f),
                             shape = CircleShape
                         )
-                        .padding(3.dp)
-
+                        .padding(3.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    FloatingActionButton(
-                        onClick = {
-                            navController.navigate(Screen.MainNav.YourStory.route) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
-                        },
-                        containerColor = colorResource(id = R.color.black3), // Thay backgroundColor bằng containerColor
-                        modifier = Modifier.size(58.dp),
-                        contentColor = Color.White,
-                        shape = CircleShape, // Thêm shape cho FAB
-                        content = {
-                            Icon(
-                                painter = painterResource(R.drawable.pen_navigation_ic),
-                                contentDescription = null,
-                                modifier = Modifier.size(60.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        OrangeRed,
+                                        BrightBlue
+                                    )
+                                ),
+                                shape = CircleShape
                             )
-                        },
-                    )
+                            .padding(3.dp)
+                    ) {
+                        FloatingActionButton(
+                            onClick = {
+                                navController.navigate(Screen.MainNav.YourStory.route) {
+                                    popUpTo(navController.graph.startDestinationId)
+                                    launchSingleTop = true
+                                }
+                            },
+                            containerColor = colorResource(id = R.color.black3),
+                            modifier = Modifier.size(58.dp),
+                            contentColor = Color.White,
+                            shape = CircleShape,
+                            content = {
+                                Icon(
+                                    painter = painterResource(R.drawable.pen_navigation_ic),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            },
+                        )
+                    }
                 }
-            }
         },
-
         floatingActionButtonPosition = FabPosition.Center,
         containerColor = colorResource(R.color.blackBackground)
     ) { paddingValues ->
@@ -155,11 +152,9 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
             startDestination = Screen.Intro.route,
             modifier = Modifier.padding(paddingValues)
         ) {
-
-            //region  main nav
             composable(Screen.MainNav.Home.route) { HomeScreen() }
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
-            composable(Screen.MainNav.Search.route) {   StorySearchScreen() }
+            composable(Screen.MainNav.Search.route) { StorySearchScreen() }
             composable(Screen.MainNav.Community.route) { CommunityScreen() }
             composable(
                 route = Screen.MainNav.Profile.route,
@@ -167,24 +162,24 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
                     navArgument("id") { type = NavType.StringType },
                 )
             ) { ProfileScreen() }
-            //endregion
 
-            //region intro
             composable(Screen.Intro.route) { IntroScreen() }
-            //endregion
 
-            //region authentication
             composable(Screen.Authentication.Login.route) { LoginScreen() }
             composable(Screen.Authentication.Register.route) { RegisterScreen() }
             composable(Screen.Authentication.ResetPassword.route) { ResetPasswordScreen() }
             composable(
                 route = Screen.Authentication.NewPassword.route,
                 arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
+                    navArgument("otp") { type = NavType.StringType },
+                    navArgument("userId") { type = NavType.StringType }
                 )
-            ) { SetUpPasswordScreen() }
+            ) { backStackEntry ->
+                val otp = backStackEntry.arguments?.getString("otp") ?: ""
+                val userId = backStackEntry.arguments?.getString("userId") ?: "0"
+                SetUpPasswordScreen(navController = navController, otp = otp, userId = userId)
+            }
 
-            //region story
             composable(
                 route = Screen.Story.Detail.route,
                 arguments = listOf(
@@ -205,9 +200,7 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
                     navArgument("chapterId") { type = NavType.StringType },
                 )
             ) { WriteScreen() }
-            //endregion
 
-            //region community
             composable(
                 route = Screen.Community.Chat.route,
                 arguments = listOf(
@@ -220,34 +213,25 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
                 arguments = listOf(
                     navArgument("communityId") { type = NavType.StringType },
                 )
-            ) {
-                CommunityDetailScreen()
-            }
+            ) { CommunityDetailScreen() }
 
             composable(
                 route = Screen.Community.SearchingMember.route,
                 arguments = listOf(
                     navArgument("communityId") { type = NavType.StringType },
                 )
-            ) {
-                SearchingMemberScreen()
-            }
-            //endregion
+            ) { SearchingMemberScreen() }
 
-            //region transaction
             composable(Screen.Transaction.Deposit.route) { DepositScreen() }
             composable(Screen.Transaction.Premium.route) { PremiumScreen() }
             composable(Screen.Transaction.Wallet.route) { WalletDetailScreen() }
             composable(Screen.Transaction.WithDraw.route) { WithdrawScreen() }
             composable(
-                route= Screen.Transaction.Accept.route,
+                route = Screen.Transaction.Accept.route,
                 arguments = listOf(
-                    navArgument("depositMoney") {type=NavType.LongType}
+                    navArgument("depositMoney") { type = NavType.LongType }
                 )
-            ) {
-                TransactionAcceptScreen()
-            }
-            //endregion
+            ) { TransactionAcceptScreen() }
 
             composable(
                 route = Screen.YourStoryDetail.route,
@@ -259,22 +243,16 @@ fun AppNavigation(navController : NavHostController, viewModel: AppNavigationVie
             composable(Screen.Discover.route) { DiscoverDetailScreen() }
             composable(Screen.Notification.route) { NotificationScreen() }
             composable(Screen.Setting.route) { SettingScreen() }
-//            composable(
-//                route = Screen.StoryList.route,
-//                arguments = listOf(
-//                    navArgument("id") { type = NavType.StringType },
-//                )
-//            )  { ReadListScreen() }
-
 
             composable(
                 route = Screen.Story.AuthorProfile.route,
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType },
                 )
+
             ) {ProfileScreen() }
+
 
         }
     }
 }
-

@@ -62,6 +62,8 @@ dependencies {
     implementation(libs.androidx.material.icons.core)
     // Nếu cần các biểu tượng mở rộng
     implementation(libs.androidx.material.icons.extended.v174)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.window:window:1.3.0")
 
 // Navigation
     implementation(libs.androidx.navigation.compose.v289)
@@ -111,5 +113,67 @@ dependencies {
 //Gson
 
     implementation(libs.gson)
+    implementation(libs.coil.compose)     // Để hiển thị ảnh từ URL
+    implementation(libs.okhttp) // Để gửi file lên backend
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    kapt(libs.hilt.compiler)
+
+
+    implementation (libs.androidx.core.ktx)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.runtime)
+    implementation(libs.ui)
+
+
+    implementation("androidx.navigation:navigation-compose:2.8.9")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+
+    implementation (libs.androidx.hilt.navigation.compose)
+    implementation (libs.hilt.android)
+    implementation (libs.androidx.navigation.compose)
+    implementation (libs.androidx.paging.runtime)
+    implementation (libs.androidx.material.icons.extended)
+
+    kapt(libs.hilt.compiler)
+    // Optional - nếu dùng ViewModel với Hilt
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation("com.github.bumptech.glide:glide:4.13.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation ("androidx.compose.foundation:foundation:1.5.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.x.x")
+    implementation("androidx.compose.runtime:runtime-livedata:x.x.x")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.7")
+    implementation ("com.google.accompanist:accompanist-pager:0.30.1")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.30.1")
+    implementation("androidx.compose.ui:ui:1.5.0")
+    implementation ("androidx.compose.foundation:foundation-layout:1.6.0")
+
+
+
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.1")
+
+    implementation ("com.google.zxing:core:3.5.3")
+
+    // Retrofit và Gson (để parse JSON)
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+// Coroutine support
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+// Gson
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+    //
+//
+//    implementation ("com.google.dagger:hilt-android:2.44")
+//    kapt("com.google.dagger:hilt-android-compiler:2.44")
+//    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 }

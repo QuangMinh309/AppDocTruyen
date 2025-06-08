@@ -1,4 +1,4 @@
-import { Model } from 'sequelize'
+import { Model } from 'sequelize';
 
 export default (sequelize, DataTypes) => {
   class PasswordReset extends Model {
@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
       PasswordReset.belongsTo(models.User, {
         foreignKey: 'userId',
         as: 'user',
-      })
+      });
     }
   }
 
@@ -30,9 +30,10 @@ export default (sequelize, DataTypes) => {
       sequelize,
       modelName: 'PasswordReset',
       tableName: 'password_reset',
-      timestamps: false, // Only createdAt exists
+      timestamps: true, // Bật timestamps để Sequelize tự động quản lý createdAt
+      updatedAt: false,
     }
-  )
+  );
 
-  return PasswordReset
-}
+  return PasswordReset;
+};

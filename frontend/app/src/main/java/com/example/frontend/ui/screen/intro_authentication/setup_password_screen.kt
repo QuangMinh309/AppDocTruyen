@@ -1,4 +1,4 @@
-package com.example.frontend.ui.screen.intro_authentication
+package com.example.frontend.ui.screen.intro_authentification
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -48,10 +48,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.frontend.R
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.intro_authentification.SetUpPasswordViewModel
@@ -61,24 +61,30 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.ReemKufifunFontFamily
 
-@Preview(showBackground = true)
 @Composable
-fun PreviewScreenContent9() {
-    val fakeViewModel = SetUpPasswordViewModel(NavigationManager())
-    SetUpPasswordScreen(viewModel = fakeViewModel)
-}
+fun SetUpPasswordScreen(
+    navController: NavHostController,
+    viewModel: SetUpPasswordViewModel = hiltViewModel(),
+    otp: String,
+    userId: String
+) {
+    println("Received OTP in SetUpPasswordScreen: $otp")
+    println("Received userId in SetUpPasswordScreen: $userId")
+    LaunchedEffect(otp, userId) {
+        if (otp.isNotEmpty()) {
+            viewModel.setOTP(otp)
+        }
+        if (userId.isNotEmpty()) {
+            viewModel.setUserId(userId.toIntOrNull() ?: 0)
+        }
+    }
 
-@Preview
-@Composable
-fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
-{
     val tbConfirmPasswordValue by viewModel.confirmPassword.collectAsState()
     val tbPasswordValue by viewModel.password.collectAsState()
+    val toast by viewModel.toast.collectAsState()
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
-    val toast by viewModel.toast.collectAsState()
-    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
     LaunchedEffect(toast) {
         toast?.let {
@@ -87,36 +93,27 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
         }
     }
 
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        DeepSpace,
-                        DeepBlue
-                    ),
-                )
+                Brush.verticalGradient(colors = listOf(DeepSpace, DeepBlue))
             )
             .paint(
                 painterResource(R.drawable.login_bg),
                 contentScale = ContentScale.FillWidth,
                 alignment = Alignment.BottomCenter
             )
-    )
-    {
-        Column( // main body
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.9f)
                 .align(Alignment.Center),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
+        ) {
             Text(
                 text = "Setup a new password",
                 style = TextStyle(
@@ -125,30 +122,27 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                     fontSize = 28.sp,
                     color = Color.White,
                 ),
-                modifier = Modifier
-                    .align(Alignment.Start)
+                modifier = Modifier.align(Alignment.Start)
             )
             Text(
                 buildAnnotatedString {
-                    withStyle (
+                    withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
                             fontSize = 17.sp,
                             color = Color.White
                         )
                     ) {
-                        append("Password must be at least 8 characters and include letters, numbers, and symbols.")
+                        append("Password must be at least 8 characters and include uppercase letters, lowercase letters, numbers, and special characters.")
                     }
                 },
-                modifier = Modifier
-                    .padding(vertical = 20.dp)
+                modifier = Modifier.padding(vertical = 20.dp)
             )
-            Column ( // password textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Password",
                     style = TextStyle(
@@ -168,9 +162,7 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                     value = tbPasswordValue,
                     onValueChange = { viewModel.onPasswordChange(it) },
                     singleLine = true,
-                    placeholder = {
-                        Text("Enter your password")
-                    },
+                    placeholder = { Text("Enter your password") },
                     textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.reemkufifun_semibold))),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
@@ -194,9 +186,7 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
-                                .clickable{
-                                    passwordVisible = !passwordVisible
-                                }
+                                .clickable { passwordVisible = !passwordVisible }
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -215,12 +205,11 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                     )
                 )
             }
-            Column ( // confirm password textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Confirm Password",
                     style = TextStyle(
@@ -240,9 +229,7 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                     value = tbConfirmPasswordValue,
                     onValueChange = { viewModel.onConfirmPasswordChange(it) },
                     singleLine = true,
-                    placeholder = {
-                        Text("Confirm your password")
-                    },
+                    placeholder = { Text("Confirm your password") },
                     textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.reemkufifun_semibold))),
                     visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
@@ -266,9 +253,7 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
-                                .clickable{
-                                    confirmPasswordVisible = !confirmPasswordVisible
-                                }
+                                .clickable { confirmPasswordVisible = !confirmPasswordVisible }
                         )
                     },
                     colors = TextFieldDefaults.colors(
@@ -288,19 +273,14 @@ fun SetUpPasswordScreen(viewModel: SetUpPasswordViewModel = hiltViewModel())
                 )
             }
             Button(
-                onClick = {
-                    viewModel.checkSetUpPassword()
-                },
+                onClick = { viewModel.checkSetUpPassword() },
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .height(50.dp)
                     .fillMaxWidth(0.7f),
                 shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = OrangeRed
-                )
-            )
-            {
+                colors = ButtonDefaults.buttonColors(containerColor = OrangeRed)
+            ) {
                 Text(
                     text = "Confirm",
                     style = TextStyle(

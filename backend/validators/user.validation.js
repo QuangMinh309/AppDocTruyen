@@ -1,9 +1,9 @@
-import Joi from 'joi'
+import Joi from 'joi';
 
 // Định nghĩa patterns và messages cho validation
 const patterns = {
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-}
+  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+\-=\[\]{};':"\\|,.<>?/~`]{8,}$/,
+};
 
 const messages = {
   'string.base': 'Phải là chuỗi',
@@ -19,7 +19,7 @@ const messages = {
   'number.integer': 'Phải là số nguyên',
   'number.min': 'Không được nhỏ hơn {#limit}',
   'boolean.base': 'Phải là giá trị boolean',
-}
+};
 
 // Schema validation cho đăng ký
 const registerSchema = Joi.object({
@@ -56,7 +56,7 @@ const registerSchema = Joi.object({
     .messages({
       ...messages,
       'string.pattern.base':
-        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số',
+        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và có thể chứa ký tự đặc biệt',
     }),
   DOB: Joi.date()
     .iso()
@@ -77,7 +77,7 @@ const registerSchema = Joi.object({
   confirmPassword: Joi.any().valid(Joi.ref('password')).required().messages({
     'any.only': 'Mật khẩu xác nhận không khớp',
   }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho đăng nhập
 const loginSchema = Joi.object({
@@ -90,7 +90,7 @@ const loginSchema = Joi.object({
       'string.email': 'Email không hợp lệ',
     }),
   password: Joi.string().required().messages(messages),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho cập nhật người dùng
 const updateUserSchema = Joi.object({
@@ -139,7 +139,7 @@ const updateUserSchema = Joi.object({
   backgroundId: Joi.number().integer().min(1).allow(null).messages(messages),
   isPremium: Joi.boolean().messages(messages),
   roleId: Joi.number().integer().min(1).messages(messages),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho thay đổi mật khẩu
 const changePasswordSchema = Joi.object({
@@ -155,7 +155,7 @@ const changePasswordSchema = Joi.object({
     .messages({
       ...messages,
       'string.pattern.base':
-        'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số',
+        'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và có thể chứa ký tự đặc biệt',
     }),
   confirmPassword: Joi.string()
     .valid(Joi.ref('newPassword'))
@@ -165,7 +165,7 @@ const changePasswordSchema = Joi.object({
       'any.only': 'Mật khẩu xác nhận không khớp',
       'any.required': 'Mật khẩu xác nhận là bắt buộc',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho forgot password
 const forgotPasswordSchema = Joi.object({
@@ -177,7 +177,7 @@ const forgotPasswordSchema = Joi.object({
       ...messages,
       'string.email': 'Email không hợp lệ',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho reset password
 const resetPasswordSchema = Joi.object({
@@ -197,7 +197,7 @@ const resetPasswordSchema = Joi.object({
     .messages({
       ...messages,
       'string.pattern.base':
-        'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số',
+        'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và có thể chứa ký tự đặc biệt',
     }),
   confirmPassword: Joi.string()
     .valid(Joi.ref('newPassword'))
@@ -207,7 +207,7 @@ const resetPasswordSchema = Joi.object({
       'any.only': 'Mật khẩu xác nhận không khớp',
       'any.required': 'Mật khẩu xác nhận là bắt buộc',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho follow/unfollow user
 const followUserSchema = Joi.object({
@@ -219,7 +219,7 @@ const followUserSchema = Joi.object({
       ...messages,
       'number.min': 'ID người dùng không hợp lệ',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho refresh token
 const refreshTokenSchema = Joi.object({
@@ -229,7 +229,7 @@ const refreshTokenSchema = Joi.object({
       ...messages,
       'string.empty': 'Refresh token không được để trống',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 // Schema validation cho userId trong params
 const userIdSchema = Joi.object({
@@ -244,7 +244,7 @@ const userIdSchema = Joi.object({
       'number.min': 'ID người dùng không hợp lệ',
       'any.required': 'ID người dùng là bắt buộc',
     }),
-}).options({ stripUnknown: true })
+}).options({ stripUnknown: true });
 
 export default {
   register: registerSchema,
@@ -256,4 +256,4 @@ export default {
   followUser: followUserSchema,
   refreshToken: refreshTokenSchema,
   userId: userIdSchema,
-}
+};

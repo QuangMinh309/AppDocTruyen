@@ -12,13 +12,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -35,6 +39,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -70,28 +76,30 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewScreenContent8() {
-    val fakeViewModel = RegisterViewModel(NavigationManager())
-    RegisterScreen(viewModel = fakeViewModel)
-}
-
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewScreenContent8() {
+//    val fakeViewModel = RegisterViewModel(NavigationManager())
+//    RegisterScreen(viewModel = fakeViewModel)
+//}
 
 @Suppress("DEPRECATION")
 @Composable
-fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
-{
+fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel()) {
     val tbUsernameValue by viewModel.userName.collectAsState()
     val tbConfirmPasswordValue by viewModel.confirmPassword.collectAsState()
     val tbEmailValue by viewModel.email.collectAsState()
     val tbPasswordValue by viewModel.password.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val userNameError by viewModel.userNameError.collectAsState()
+    val emailError by viewModel.emailError.collectAsState()
+    val passwordError by viewModel.passwordError.collectAsState()
+    val confirmPasswordError by viewModel.confirmPasswordError.collectAsState()
+    val dobError by viewModel.dobError.collectAsState()
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var confirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     val toast by viewModel.toast.collectAsState()
-    // Hiển thị Toast khi showToast thay đổi
     val context = LocalContext.current
     LaunchedEffect(toast) {
         toast?.let {
@@ -101,13 +109,19 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
     }
 
     val pickedDate by viewModel.dob.collectAsState()
-    val formattedDate by remember { derivedStateOf {
-        DateTimeFormatter
-            .ofPattern("dd/MM/yyyy")
-            .format(pickedDate)
-    } }
+    val formattedDate by remember {
+        derivedStateOf {
+            DateTimeFormatter
+                .ofPattern("dd/MM/yyyy")
+                .format(pickedDate)
+        }
+    }
 
     val dateDialogState = rememberMaterialDialogState()
+
+    // Sử dụng FocusRequester để hỗ trợ di chuyển focus
+    val passwordFocusRequester = remember { FocusRequester() }
+    val confirmPasswordFocusRequester = remember { FocusRequester() }
 
     Box(
         modifier = Modifier
@@ -125,22 +139,30 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                 contentScale = ContentScale.FillWidth,
                 alignment = Alignment.BottomCenter
             )
-    )
-    {
-        Column( // main body
+            .imePadding() // Padding khi bàn phím xuất hiện
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(50.dp),
+                color = OrangeRed
+            )
+        }
+
+        Column(
             modifier = Modifier
-                .fillMaxHeight()
                 .fillMaxWidth(0.9f)
-                .align(Alignment.Center),
+                .align(Alignment.Center)
+                .verticalScroll(state = rememberScrollState()) // Thêm cuộn
+                .imePadding(), // Đảm bảo padding khi bàn phím xuất hiện
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        )
-        {
-            Column ( // title and desc
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            {
+            ) {
                 Text(
                     text = "Sign up",
                     style = TextStyle(
@@ -187,12 +209,11 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                     modifier = Modifier.align(Alignment.Start)
                 )
             }
-            Column ( // email textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Email",
                     style = TextStyle(
@@ -239,15 +260,23 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         unfocusedLeadingIconColor = BurntCoral,
                         focusedIndicatorColor = BurntCoral,
                         unfocusedIndicatorColor = Color.White
-                    )
+                    ),
+                    isError = emailError != null
                 )
+                if (emailError != null) {
+                    Text(
+                        text = emailError!!,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
-            Column ( // username textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Username",
                     style = TextStyle(
@@ -293,17 +322,25 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         unfocusedLeadingIconColor = BurntCoral,
                         focusedIndicatorColor = BurntCoral,
                         unfocusedIndicatorColor = Color.White
-                    )
+                    ),
+                    isError = userNameError != null
                 )
+                if (userNameError != null) {
+                    Text(
+                        text = userNameError!!,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
-            Column ( // DOB field
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
-                    text = "Date  of  birth",
+                    text = "Date of birth",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
                         fontFamily = ReemKufifunFontFamily,
@@ -321,8 +358,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                )
-                {
+                ) {
                     Button(
                         onClick = {
                             dateDialogState.show()
@@ -330,13 +366,12 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         colors = ButtonDefaults.buttonColors(
                             containerColor = OrangeRed
                         )
-                    )
-                    {
+                    ) {
                         Text("Select date", color = DeepSpace, fontFamily = ReemKufifunFontFamily, fontWeight = FontWeight.Normal)
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Date picked:  ",
+                        text = "Date picked: ",
                         style = TextStyle(
                             textAlign = TextAlign.Center,
                             fontFamily = ReemKufifunFontFamily,
@@ -356,12 +391,20 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         ),
                     )
                 }
-            Column ( // password textfield
+                if (dobError != null) {
+                    Text(
+                        text = dobError!!,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Password",
                     style = TextStyle(
@@ -388,7 +431,8 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(height = 53.dp),
+                        .height(height = 53.dp)
+                        .focusRequester(passwordFocusRequester), // Gán FocusRequester
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.padlock_1),
@@ -407,7 +451,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
-                                .clickable{
+                                .clickable {
                                     passwordVisible = !passwordVisible
                                 }
                         )
@@ -424,16 +468,25 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         focusedIndicatorColor = BurntCoral,
                         unfocusedIndicatorColor = Color.White,
                         focusedTrailingIconColor = Color.White,
-                        unfocusedTrailingIconColor = Color.White
-                    )
+                        unfocusedTrailingIconColor = Color.White,
+                        errorIndicatorColor = Color.Red
+                    ),
+                    isError = passwordError != null
                 )
+                if (passwordError != null) {
+                    Text(
+                        text = passwordError!!,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
-            Column ( // confirm password textfield
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 20.dp)
-            )
-            {
+            ) {
                 Text(
                     text = "Confirm Password",
                     style = TextStyle(
@@ -460,7 +513,8 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                     visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(height = 53.dp),
+                        .height(height = 53.dp)
+                        .focusRequester(confirmPasswordFocusRequester), // Gán FocusRequester
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.padlock_1),
@@ -479,7 +533,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .width(width = 20.dp)
-                                .clickable{
+                                .clickable {
                                     confirmPasswordVisible = !confirmPasswordVisible
                                 }
                         )
@@ -496,9 +550,19 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                         focusedIndicatorColor = BurntCoral,
                         unfocusedIndicatorColor = Color.White,
                         focusedTrailingIconColor = Color.White,
-                        unfocusedTrailingIconColor = Color.White
-                    )
+                        unfocusedTrailingIconColor = Color.White,
+                        errorIndicatorColor = Color.Red
+                    ),
+                    isError = confirmPasswordError != null
                 )
+                if (confirmPasswordError != null) {
+                    Text(
+                        text = confirmPasswordError!!,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
             Button(
                 onClick = {
@@ -513,8 +577,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeRed
                 )
-            )
-            {
+            ) {
                 Text(
                     text = "Register",
                     style = TextStyle(
@@ -525,23 +588,21 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel())
                     textAlign = TextAlign.Center
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp)) // Thêm khoảng trống để tránh bị che
         }
     }
-    MaterialDialog (
+    MaterialDialog(
         dialogState = dateDialogState,
         buttons = {
             positiveButton(text = "OK")
             negativeButton(text = "Cancel")
         }
-    )
-    {
+    ) {
         datepicker(
             initialDate = LocalDate.now(),
             title = "Pick your DOB"
-        )
-        {
-           viewModel.onDOBChange(it)
+        ) {
+            viewModel.onDOBChange(it)
         }
     }
-}
 }
