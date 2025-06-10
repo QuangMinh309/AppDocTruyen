@@ -1,12 +1,12 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
-import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.api.ApiService
-import com.example.frontend.data.api.EmailRequest // Thêm import này
-import com.example.frontend.data.api.VerifyOTPRequest // Thêm import này
-//import com.example.frontend.navigation.Screen
 import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
+import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(
-    private val apiService: ApiService,
+    private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -42,18 +42,15 @@ class ResetPasswordViewModel @Inject constructor(
             _toast.value = "Vui lòng nhập email"
         } else {
             viewModelScope.launch {
-                try {
-                    val response = apiService.sendOTP(EmailRequest(email = _email.value)) // Sửa ở đây
-                    if (response.isSuccessful) {
-                        response.body()?.let {
-                            _userId.value = it.data?.userId
-                            _toast.value = it.message
-                        }
-                    } else {
-                        _toast.value = "Gửi OTP thất bại: ${response.message()}"
-                    }
-                } catch (e: Exception) {
-                    _toast.value = "Lỗi: ${e.message}"
+                val result = authRepository.sendOTP(_email.value)
+                result.onSuccess {
+                    Log.d("ResetPasswordViewModel", "Send OTP Success: ${it.message}")
+                    _toast.value = it.message
+                    _userId.value = it.userId
+                    Log.d("ResetPasswordViewModel", "UserId set to: ${_userId.value}")
+                }.onFailure {
+                    Log.e("ResetPasswordViewModel", "Send OTP Failure: ${it.message}")
+                    _toast.value = "Gửi OTP thất bại: ${it.message}"
                 }
             }
         }
@@ -66,28 +63,14 @@ class ResetPasswordViewModel @Inject constructor(
             _toast.value = "Vui lòng gửi OTP trước"
         } else {
             viewModelScope.launch {
-                try {
-                    val request = VerifyOTPRequest( // Sửa ở đây
-                        OTP = _otp.value.toIntOrNull() ?: 0,
-                        userId = _userId.value!!
-                    )
-                    val response = apiService.verifyOTP(request)
-                    if (response.isSuccessful) {
-                        _toast.value = response.body()?.message ?: "Xác minh OTP thành công"
-                        onGoToSetUpPassWordScreen(_otp.value, _userId.value!!)
-                    } else {
-                        _toast.value = "OTP không đúng hoặc đã hết hạn"
-                    }
-                } catch (e: Exception) {
-                    _toast.value = "Lỗi xác minh OTP: ${e.message}"
+                val result = authRepository.verifyOTP(_otp.value, _userId.value!!)
+                result.onSuccess {
+                    _toast.value = it
+                    onGoToSetUpPassWordScreen(_otp.value, _userId.value!!)
+                }.onFailure {
+                    _toast.value = "OTP không đúng hoặc đã hết hạn"
                 }
             }
         }
     }
-
-//    private fun onGoToSetUpPassWordScreen(otp: String, userId: Int) {
-//        viewModelScope.launch {
-//            navigationManager.navigate(Screen.Authentication.NewPassword.createRoute(otp, userId.toString()))
-//        }
-//    }
 }

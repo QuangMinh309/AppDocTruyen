@@ -16,7 +16,7 @@ import refreshTokenUser from '../services/user/user_refresh_token.service.js';
 const UserController = {
   async register(req, res, next) {
     try {
-      const { password, confirmPassword } = req.body;
+      const { userName, mail, password, confirmPassword, DOB } = req.body;
 
       // Kiểm tra xác nhận mật khẩu
       if (password !== confirmPassword) {

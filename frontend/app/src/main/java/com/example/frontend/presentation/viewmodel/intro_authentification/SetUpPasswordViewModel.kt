@@ -1,8 +1,9 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.api.ApiService
-import com.example.frontend.data.api.ResetPasswordRequest // Thêm import này
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
+import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,8 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SetUpPasswordViewModel @Inject constructor(
-
-    private val apiService: ApiService,
+    private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -31,7 +31,6 @@ class SetUpPasswordViewModel @Inject constructor(
     val userId: StateFlow<Int> = _userId
 
     fun setOTP(otp: String) {
-        println("Setting OTP in SetUpPasswordViewModel: $otp")
         _otp.value = otp
     }
 
@@ -48,7 +47,6 @@ class SetUpPasswordViewModel @Inject constructor(
     }
 
     fun checkSetUpPassword() {
-        println("OTP value before check: ${_otp.value}")
         if (_password.value.isEmpty() || _confirmPassword.value.isEmpty()) {
             _toast.value = "Vui lòng nhập đầy đủ mật khẩu"
             return
@@ -71,22 +69,12 @@ class SetUpPasswordViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            try {
-                val request = ResetPasswordRequest( // Sửa ở đây
-                    otp = _otp.value.toIntOrNull() ?: 0,
-                    newPassword = _password.value,
-                    confirmPassword = _confirmPassword.value,
-                    userId = _userId.value
-                )
-                val response = apiService.resetPassword(request)            //chuyển hàm vào trong repository, viewmodel chỉ thao tacacs gọi hàm và xử lí logic nền ui
-                if (response.isSuccessful) {
-                    _toast.value = "Đặt lại mật khẩu thành công!"
-                    onGoToLoginScreen()
-                } else {
-                    _toast.value = "Đặt lại mật khẩu thất bại: ${response.message()}"
-                }
-            } catch (e: Exception) {
-                _toast.value = "Lỗi: ${e.message}"
+            val result = authRepository.resetPassword(_otp.value, _password.value, _confirmPassword.value, _userId.value)
+            result.onSuccess {
+                _toast.value = it
+                onGoToLoginScreen()
+            }.onFailure {
+                _toast.value = "Đặt lại mật khẩu thất bại: ${it.message}"
             }
         }
     }
@@ -101,4 +89,6 @@ class SetUpPasswordViewModel @Inject constructor(
                 password.contains(numberRegex) &&
                 password.contains(specialCharRegex)
     }
+
+
 }
