@@ -59,6 +59,8 @@ interface ApiService {
 }
 
 // Data classes cho password reset
+data class SendOTPResult(val message: String, val userId: Int?)
+
 data class EmailRequest(
     val email: String
 )

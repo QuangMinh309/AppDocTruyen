@@ -118,7 +118,7 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
                     .padding( vertical = 4.dp,horizontal = 10.dp)
             )
             //genre chip
-            GenreChip(genre = model.category.name)
+         //   GenreChip(genre = model.category.name)
 
             //member number
             Text(

@@ -56,12 +56,12 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewScreenContent5() {
-    val fakeViewModel = CommunityDetailViewModel(NavigationManager())
-    CommunityDetailScreen(viewModel = fakeViewModel)
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewScreenContent5() {
+//    val fakeViewModel = CommunityDetailViewModel(NavigationManager())
+//    CommunityDetailScreen(viewModel = fakeViewModel)
+//}
 
 @Composable
 fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel()){
@@ -158,15 +158,15 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                             .verticalScroll(scrollState) // scroll ability
 
                     ){
-                        Text(
-                            text = viewModel.community.description,
-                            color = Color.White,
-                            style = TextStyle(
-                                fontSize = 14.sp
-                            ),
-                            modifier = Modifier.fillMaxWidth()
-
-                        )
+//                        Text(
+//                            text = viewModel.community.description,
+//                            color = Color.White,
+//                            style = TextStyle(
+//                                fontSize = 14.sp
+//                            ),
+//                            modifier = Modifier.fillMaxWidth()
+//
+//                        )
                     }
                     Box(
                         modifier = Modifier

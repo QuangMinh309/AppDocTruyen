@@ -314,28 +314,7 @@ val genreDemoList: List<Category> = listOf(Category(id =1,name ="Adventure"),Cat
     Category(id =3,name ="Mystery"),Category(id =4,name ="Romantic"))
 
 val ExampleList: List<Story> = listOf(
-    Story(
-        id=1,
-        name ="Alibaba",
-        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        description = "fgfssdf",
-        price = BigDecimal(10000),
-        author = User(id = 1,
-            name = "peneloped",
-            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-            dName = "tolapenee"
-        ),
-        voteNum = 100,
-        chapterNum = 10,
-        viewNum = 100,
-        categories = genreDemoList,
-        createdAt = LocalDate.parse("2024-12-12"),
-        updateAt = LocalDate.parse("2024-12-12"),
-        status = "Full",
-        ageRange = 13,
-        pricePerChapter = BigDecimal(200),
-        chapters = Examplechapters
-    ),
+
     ExamplStory,
     ExamplStory,
     ExamplStory,
