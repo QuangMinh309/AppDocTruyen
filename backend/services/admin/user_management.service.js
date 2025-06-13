@@ -4,7 +4,7 @@ import ApiError from '../../utils/api_error.util.js';
 const User = sequelize.models.User;
 const Role = sequelize.models.Role;
 
-const AdminService = {
+const UserManagerService = {
   async lockUser(userId) {
     try {
       const user = await User.findByPk(userId);
@@ -67,4 +67,4 @@ const AdminService = {
   },
 };
 
-export default AdminService;
+export default UserManagerService;

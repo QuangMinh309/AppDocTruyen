@@ -9,6 +9,7 @@ export const handleTransaction = async (callback) => {
     return result
   } catch (error) {
     await transaction.rollback()
+    console.error("Lỗi: " + error)
     throw error instanceof ApiError ? error : new ApiError('Lỗi giao dịch', 500)
   }
 }

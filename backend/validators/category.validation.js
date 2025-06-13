@@ -1,4 +1,4 @@
-import Joi from 'joi'
+import Joi from 'joi';
 
 const categoryValidation = {
   create: Joi.object({
@@ -9,10 +9,6 @@ const categoryValidation = {
     }),
   }),
   update: Joi.object({
-    categoryId: Joi.number().integer().min(1).required().messages({
-      'number.min': 'ID thể loại phải là số nguyên dương',
-      'any.required': 'ID thể loại là bắt buộc',
-    }),
     categoryName: Joi.string().max(255).required().messages({
       'string.empty': 'Tên thể loại không được để trống.',
       'string.max': 'Tên thể loại không được vượt quá 255 ký tự.',
@@ -20,11 +16,11 @@ const categoryValidation = {
     }),
   }),
   idSchema: Joi.object({
-    id: Joi.number().integer().min(1).required().messages({
+    categoryId: Joi.number().integer().min(1).required().messages({
       'number.min': 'ID phải là số nguyên dương',
       'any.required': 'ID là bắt buộc',
     }),
   }),
-}
+};
 
-export default categoryValidation
+export default categoryValidation;

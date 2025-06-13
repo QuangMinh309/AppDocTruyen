@@ -1,24 +1,43 @@
-import Joi from 'joi'
+import Joi from 'joi';
 
-const statusEnum = ['ongoing', 'completed', 'hiatus', 'cancelled']
+const statusEnum = ['upadate', 'full', 'pending', 'approved', 'rejected'];
 
 export const validateCreateStory = Joi.object({
   storyName: Joi.string().trim().max(255).required().messages({
     'string.empty': 'Tên truyện là bắt buộc',
     'string.max': 'Tên truyện không được vượt quá 255 ký tự',
   }),
-  description: Joi.string().trim().max(1000).optional().messages({
+  description: Joi.string().trim().max(1000).allow('').optional().messages({
     'string.max': 'Mô tả không được vượt quá 1000 ký tự',
   }),
-  categories: Joi.array().items(Joi.number().integer()).optional().messages({
-    'array.base': 'Thể loại phải là một mảng',
-  }),
-  coverImg: Joi.object().optional(),
-  ageRange: Joi.number().integer().optional(),
-  status: Joi.string()
-    .valid(...statusEnum)
-    .optional()
-    .messages({ 'any.only': 'Trạng thái truyện không hợp lệ' }),
+  categories: Joi.alternatives()
+    .try(
+      Joi.array().items(Joi.number().integer()).messages({
+        'array.base': 'Thể loại phải là một mảng',
+        'number.base': 'Mỗi thể loại phải là số nguyên',
+      }),
+      Joi.string()
+        .custom((value, helpers) => {
+          try {
+            const parsed = JSON.parse(value);
+            if (
+              Array.isArray(parsed) &&
+              parsed.every((item) => Number.isInteger(item))
+            ) {
+              return parsed;
+            }
+            return helpers.error('any.invalid');
+          } catch (e) {
+            return helpers.error('any.invalid');
+          }
+        }, 'Custom JSON array parser')
+        .messages({
+          'any.invalid':
+            'Thể loại phải là một mảng hoặc chuỗi JSON hợp lệ (ví dụ: "[1]")',
+        })
+    )
+    .allow(null)
+    .optional(),
   price: Joi.number()
     .min(0)
     .optional()
@@ -27,21 +46,13 @@ export const validateCreateStory = Joi.object({
     .min(0)
     .optional()
     .messages({ 'number.min': 'Giá mỗi chương phải là số không âm' }),
-})
-
-export const validateUpdateStory = validateCreateStory.fork(
-  ['storyName', 'coverImg'],
-  (field) =>
-    field
-      .optional()
-      .messages({ 'string.empty': `${field._flags.label} không được để trống` })
-)
+});
 
 export const validateStoryId = Joi.object({
   storyId: Joi.number().integer().required().messages({
     'number.base': 'ID truyện phải là số nguyên',
   }),
-})
+});
 
 export const validateGetStories = Joi.object({
   limit: Joi.number()
@@ -62,27 +73,23 @@ export const validateGetStories = Joi.object({
     .valid('ASC', 'DESC')
     .optional()
     .messages({ 'any.only': 'Hướng sắp xếp phải là ASC hoặc DESC' }),
-})
+});
 
-export const validateGetByCategory =
-  validateStoryId.concat(validateGetStories)
+export const validateGetByCategory = validateStoryId.concat(validateGetStories);
 
 export const validateFilterByCategoryAndStatus = Joi.object({
-  categoryId: Joi.number().integer().required().messages({
-    'number.base': 'ID thể loại phải là số nguyên',
-  }),
   status: Joi.string()
     .valid(...statusEnum)
     .required()
     .messages({ 'any.only': 'Trạng thái truyện không hợp lệ' }),
-}).concat(validateGetStories)
+}).concat(validateGetStories);
 
 export const validateSearchStories = Joi.object({
   searchTerm: Joi.string()
     .trim()
     .required()
     .messages({ 'string.empty': 'Từ khóa tìm kiếm là bắt buộc' }),
-}).concat(validateGetStories)
+}).concat(validateGetStories);
 
 export const validateFilterByUser = Joi.object({
   userId: Joi.number().integer().required().messages({
@@ -91,7 +98,7 @@ export const validateFilterByUser = Joi.object({
   includeAll: Joi.boolean().optional().messages({
     'boolean.base': 'includeAll phải là boolean',
   }),
-}).concat(validateGetStories)
+}).concat(validateGetStories);
 
 export const validatePurchaseChapter = Joi.object({
   storyId: Joi.number().integer().required().messages({
@@ -100,7 +107,7 @@ export const validatePurchaseChapter = Joi.object({
   chapterId: Joi.number().integer().required().messages({
     'number.base': 'ID chương phải là số nguyên',
   }),
-})
+});
 
 export const createChapterSchema = Joi.object({
   chapterName: Joi.string().trim().max(255).required().messages({
@@ -118,7 +125,7 @@ export const createChapterSchema = Joi.object({
   lockedStatus: Joi.boolean()
     .optional()
     .messages({ 'boolean.base': 'Trạng thái khóa phải là boolean' }),
-})
+});
 
 export const updateChapterSchema = createChapterSchema.fork(
   ['chapterName', 'content'],
@@ -126,10 +133,10 @@ export const updateChapterSchema = createChapterSchema.fork(
     field
       .optional()
       .messages({ 'string.empty': `${field._flags.label} không được để trống` })
-)
+);
 
 export const chapterIdSchema = Joi.object({
   chapterId: Joi.number().integer().required().messages({
     'number.base': 'ID chương phải là số nguyên',
   }),
-})
+});
