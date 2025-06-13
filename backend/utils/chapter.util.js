@@ -1,6 +1,6 @@
 import { models, sequelize } from '../models/index.js'
 import ApiError from './api_error.util.js'
-import { createNotification } from './notification.util.js'
+import NotificationService from '../services/notification.service.js'
 
 export const validateChapter = async (chapterId, includeStory = false) => {
   try {
@@ -215,7 +215,7 @@ export const handlePurchaseTransaction = async (
       { transaction }
     )
 
-    await createNotification({
+    await NotificationService.createNotification({
       type: 'SALE',
       content: `Chương "${chapter.chapterName}" của truyện "${
         story.storyName

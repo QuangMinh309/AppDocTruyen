@@ -7,10 +7,12 @@ import categoryRoutes from './category.routes.js'
 import chapterRoutes from './chapter.routes.js'
 import storyRoutes from './story.routes.js'
 import roleRoutes from './role.routes.js'
+import adminRoutes from './admin.route.js'
 
 function route(app) {
   app.use('/api/images', imageRoutes)
   app.use('/api/users', userRoutes)
+  app.use('/api/admins', adminRoutes)
   app.use('/api/categories', categoryRoutes)
   app.use('/api/transactions', transactionRoutes)
   app.use('/api/notifications', notificationRoutes)

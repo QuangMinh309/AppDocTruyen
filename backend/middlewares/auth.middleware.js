@@ -112,6 +112,7 @@ export const authenticateRefreshToken = async (req, res, next) => {
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
+      console.log("User info in middleware:", req.user);
       return next(new ApiError('Không có quyền truy cập', 403))
     }
 
