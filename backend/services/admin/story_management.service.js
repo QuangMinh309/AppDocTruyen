@@ -1,5 +1,6 @@
 import { sequelize } from '../../models/index.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
+import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
 
@@ -41,8 +42,8 @@ const StoryManagerService = {
 
       const formattedStory = {
         ...story.toJSON(),
-        createdAt: story.createdAt.toISOString().split('T')[0],
-        updatedAt: story.updatedAt.toISOString().split('T')[0],
+        createdAt: formatDate(story.createdAt),
+        updatedAt: formatDate(story.updatedAt),
       };
 
       return {
