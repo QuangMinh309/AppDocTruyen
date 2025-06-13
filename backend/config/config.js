@@ -1,52 +1,37 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
+
+const commonConfig = {
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  dialect: process.env.DB_DIALECT,
+  logging: false,
+  timezone: '+07:00',
+  dialectOptions:
+    process.env.DB_HOST === 'localhost'
+      ? {}
+      : {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        },
+};
 
 const config = {
   development: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
+    ...commonConfig,
     database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
-    logging: false, // Tắt log SQL nếu không cần
-    // Chỉ bật SSL nếu database yêu cầu (ví dụ: trên cloud như AWS RDS)
-    dialectOptions: process.env.DB_HOST === 'localhost' ? {} : {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
   },
   test: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
+    ...commonConfig,
     database: process.env.DB_NAME + '_test',
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
-    logging: false,
-    dialectOptions: process.env.DB_HOST === 'localhost' ? {} : {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
   },
   // production: {
-  //   username: process.env.DB_USERNAME,
-  //   password: process.env.DB_PASSWORD,
+  //   ...commonConfig,
   //   database: process.env.DB_NAME,
-  //   host: process.env.DB_HOST,
-  //   port: process.env.DB_PORT,
-  //   dialect: process.env.DB_DIALECT,
-  //   logging: false,
-  //   dialectOptions: {
-  //     ssl: {
-  //       require: true,
-  //       rejectUnauthorized: false,
-  //     },
-  //   },
   // },
 };
 

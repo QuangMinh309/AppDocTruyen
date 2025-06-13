@@ -1,6 +1,7 @@
 import { sequelize } from '../../models/index.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { uploadImageToCloudinary } from '../cloudinary.service.js';
+import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 
 const Story = sequelize.models.Story;
@@ -61,8 +62,8 @@ const createStory = async (storyData, userId, file) => {
     // Format createdAt to YYYY-MM-DD
     const formattedStory = {
       ...story.toJSON(),
-      createdAt: story.createdAt.toISOString().split('T')[0],
-      updatedAt: story.createdAt.toISOString().split('T')[0],
+      createdAt: formatDate(story.createdAt),
+      updatedAt: formatDate(story.updatedAt),
     };
 
     return formattedStory;
