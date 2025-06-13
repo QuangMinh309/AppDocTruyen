@@ -24,17 +24,15 @@ const StoryManagerService = {
         {
           ageRange: approvalData.ageRange,
           status: finalStatus,
-          createdAt: new Date(), 
+          createdAt: new Date(),
         },
         { transaction }
       );
 
       await NotificationService.createNotification(
         'STORY_APPROVAL',
-        `Your story "${story.storyName}" has been ${
-          approvalData.status === 'approved'
-            ? 'được chấp nhận và sẵn sàng update'
-            : 'bị từ chối'
+        `Truyện "${story.storyName}" của bạn ${
+          approvalData.status === 'approved' ? 'được chấp nhận' : 'bị từ chối'
         }.`,
         story.storyId,
         story.userId,
