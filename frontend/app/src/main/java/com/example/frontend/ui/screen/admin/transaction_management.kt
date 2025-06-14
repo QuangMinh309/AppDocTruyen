@@ -145,8 +145,6 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                     unfocusedTextColor = Color.LightGray,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedPlaceholderColor = Color.White,
-                    unfocusedPlaceholderColor = Color.White,
                     focusedIndicatorColor = BurntCoral,
                     unfocusedIndicatorColor = Color.White
                 )
@@ -180,8 +178,6 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                     unfocusedTextColor = Color.LightGray,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
-                    focusedPlaceholderColor = Color.White,
-                    unfocusedPlaceholderColor = Color.White,
                     focusedIndicatorColor = BurntCoral,
                     unfocusedIndicatorColor = Color.White
                 ),
@@ -295,23 +291,13 @@ fun TransactionCard(item : Transaction)
         {
             Row {
                 Text(
-                    text = "ID: ",
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-                Text(
-                    text = item.transactionId.toString(),
+                    text = "ID: " + item.transactionId.toString(),
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.poppins_bold))
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Time: ",
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-                Text(
-                    text = item.time.toString(),
+                    text = "Time: " + item.time.toString(),
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.poppins_bold))
                 )
@@ -336,24 +322,14 @@ fun TransactionCard(item : Transaction)
                 {
                     Row {
                         Text(
-                            text = "User ID: ",
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.userId.toString(),
+                            text = "User ID: " + item.userId.toString(),
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
                     }
                     Row {
                         Text(
-                            text = "Type: ",
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.type,
+                            text = "Type: " + item.type,
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
@@ -376,19 +352,14 @@ fun TransactionCard(item : Transaction)
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
                         Text(
-                            text = item.money.toString(),
-                            color = Color.White,
+                            text = item.money.toString() + "đ",
+                            color = if(item.type == "withdraw") Color.Red else Color.Green,
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
                     }
                     Row {
                         Text(
-                            text = "Status: ",
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.status,
+                            text = "Status: " + item.status,
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
@@ -396,6 +367,5 @@ fun TransactionCard(item : Transaction)
                 }
             }
         }
-
     }
 }
