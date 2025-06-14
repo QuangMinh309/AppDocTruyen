@@ -5,8 +5,11 @@ import {
   createRoleSchema,
   updateRoleSchema,
 } from '../validators/role.validation.js'
+import { authenticate } from '../middlewares/auth.middleware.js'
 
 const router = express.Router()
+
+router.use(authenticate)
 
 router.post('/', validate(createRoleSchema), RoleController.createRole)
 router.get('/:id', RoleController.getRoleById)

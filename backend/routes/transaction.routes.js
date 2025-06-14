@@ -3,11 +3,14 @@ import TransactionController from '../controllers/transaction.controller.js';
 import validate from '../middlewares/validate.middleware.js';
 import validators from '../validators/transaction.validation.js';
 import {
+  authenticate,
   authorizeRoles,
   isResourceOwner,
 } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.post(
   '/',

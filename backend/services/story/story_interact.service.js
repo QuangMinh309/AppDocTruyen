@@ -5,7 +5,7 @@ import {
   handleStoryPurchaseTransaction,
 } from '../../utils/story.util.js'
 import { handleTransaction } from '../../utils/handle_transaction.util.js'
-import { createNotification } from '../../utils/notification.util.js'
+import NotificationService from '../notification.service.js'
 import {
   validateChapter,
   handlePurchaseTransaction,
@@ -280,7 +280,7 @@ const StoryInteractionService = {
 
         // Tạo notification nếu không phải tác giả vote cho truyện của mình
         if (story.userId !== userId) {
-          await createNotification({
+          await NotificationService.createNotification({
             type: 'VOTE',
             content: `Một người dùng đã vote cho truyện "${story.storyName}" của bạn`,
             refId: story.storyId,

@@ -23,14 +23,23 @@ const deleteStory = async (storyId, userId) => {
     });
     const chapterIds = chapters.map((chapter) => chapter.chapterId);
 
+    if (chapterIds.length === 0) {
+      await story.destroy({ transaction });
+      return { success: true, message: 'Không có chương, chỉ xóa truyện' };
+    }
+
+    const comments = await Comment.findAll({
+      where: { chapterId: { [Op.in]: chapterIds } },
+      attributes: ['commentId'],
+      transaction,
+    });
+
+    const commentIds = comments.map((comment) => comment.commentId);
+
     await LikeComment.destroy({
       where: {
         commentId: {
-          [Op.in]: await Comment.findAll({
-            where: { chapterId: { [Op.in]: chapterIds } },
-            attributes: ['commentId'],
-            transaction,
-          }).map((comment) => comment.commentId),
+          [Op.in]: commentIds,
         },
       },
       transaction,

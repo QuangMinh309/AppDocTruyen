@@ -1,18 +1,25 @@
-import { sequelize } from '../models/index.js'
+import { sequelize } from '../models/index.js';
+import ApiError from '../utils/api_error.util.js';
+import { validateCategory } from '../utils/category.util.js';
 
-const Category = sequelize.models.Category
-const Community = sequelize.models.Community
-const StoryCategory = sequelize.models.storyCategory
-
-import ApiError from '../utils/api_error.util.js'
+const Category = sequelize.models.Category;
+const Community = sequelize.models.Community;
 
 const CategoryService = {
   async createCategory(data) {
     try {
-      const category = await Category.create(data)
-      return category.toJSON()
+      const existing = await Category.findOne({
+        where: { categoryName: data.categoryName },
+      });
+      if (existing) {
+        throw new ApiError('Tên thể loại đã tồn tại', 400);
+      }
+
+      const category = await Category.create(data);
+      return category.toJSON();
     } catch (err) {
-      throw new ApiError('Lỗi khi tạo thể loại', 500)
+      if (err instanceof ApiError) throw err;
+      throw new ApiError('Lỗi khi tạo thể loại', 500);
     }
   },
 
@@ -20,43 +27,63 @@ const CategoryService = {
     try {
       const category = await Category.findByPk(categoryId, {
         include: [
-          { model: Community, attributes: ['communityId', 'communitytName'] },
-          { model: StoryCategory, attributes: ['storyId'] },
+          {
+            model: Community,
+            as: 'communities',
+            attributes: ['communityId', 'communitytName'],
+          },
+          {
+            model: sequelize.models.Story,
+            as: 'stories',
+            attributes: ['storyId', 'storyName'],
+            through: { attributes: [] },
+          },
         ],
-      })
-      if (!category) throw new ApiError('Thể loại không tồn tại', 404)
-      return category.toJSON()
+      });
+
+      if (!category) throw new ApiError('Thể loại không tồn tại', 404);
+      return category.toJSON();
     } catch (err) {
-      throw new ApiError('Lỗi khi lấy thể loại', 500)
+      console.error('Lỗi: ' + err);
+      throw new ApiError('Lỗi khi lấy thể loại', 500);
     }
   },
 
   async getAllCategories(limit = 10) {
-    const categories = await Category.findAll({ limit })
-    return categories.map((category) => category.toJSON())
+    const categories = await Category.findAll({ limit });
+    return categories.map((category) => category.toJSON());
   },
 
   async updateCategory(categoryId, data) {
-    const category = await Category.findByPk(categoryId)
-    if (!category) throw new ApiError('Thể loại không tồn tại', 404)
+    const category = await validateCategory(categoryId);
+
+    if (data.categoryName && data.categoryName !== category.categoryName) {
+      const existing = await Category.findOne({
+        where: { categoryName: data.categoryName },
+      });
+      if (existing) {
+        throw new ApiError('Tên thể loại đã tồn tại', 400);
+      }
+    }
+
     try {
-      await category.update(data)
-      return category.toJSON()
+      await category.update(data);
+      return category.toJSON();
     } catch (err) {
-      throw new ApiError('Lỗi khi cập nhật thể loại', 500)
+      throw new ApiError('Lỗi khi cập nhật thể loại', 500);
     }
   },
 
   async deleteCategory(categoryId) {
-    const category = await Category.findByPk(categoryId)
-    if (!category) throw new ApiError('Thể loại không tồn tại', 404)
+    const category = await Category.findByPk(categoryId);
+    if (!category) throw new ApiError('Thể loại không tồn tại', 404);
     try {
-      await category.destroy()
-      return { message: 'Thể loại xoá thành công' }
+      await category.destroy();
+      return { message: 'Thể loại xoá thành công' };
     } catch (err) {
-      throw new ApiError('Lỗi khi cập nhật thể loại', 500)
+      throw new ApiError('Lỗi khi cập nhật thể loại', 500);
     }
   },
-}
+};
 
-export default CategoryService
+export default CategoryService;
