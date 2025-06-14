@@ -134,13 +134,9 @@ const PasswordResetService = {
     }
   },
 
-  async resetPassword(otp, newPassword, confirmPassword, userId) {
+  async resetPassword(otp, newPassword, userId) { // Loại bỏ confirmPassword khỏi tham số
     const transaction = await sequelize.transaction();
     try {
-      if (newPassword !== confirmPassword) {
-        throw new ApiError('Mật khẩu xác nhận không khớp', 400);
-      }
-
       const passwordReset = await PasswordReset.findOne({
         where: { OTP: otp, userId, isUsed: false },
         include: [{ model: User, as: 'user', attributes: ['userId', 'mail', 'status'] }],
@@ -172,7 +168,7 @@ const PasswordResetService = {
       await transaction.rollback();
       throw error instanceof ApiError ? error : new ApiError('Lỗi khi đặt lại mật khẩu', 500);
     }
-  },
+  }
 };
 
 export default PasswordResetService;
