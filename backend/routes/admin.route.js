@@ -12,11 +12,7 @@ const router = express.Router();
 router.use(authenticate);
 
 // Route quản lý người dùng
-router.get(
-  '/',
-  authorizeRoles('admin'),
-  AdminController.getAllUsers
-);
+router.get('/', authorizeRoles('admin'), AdminController.getAllUsers);
 
 router.post(
   '/lock/:userId',
@@ -32,6 +28,7 @@ router.post(
   AdminController.unlockUser
 );
 
+// Route quản lý truyện
 router.put(
   '/:storyId/approve',
   authorizeRoles('admin'),
