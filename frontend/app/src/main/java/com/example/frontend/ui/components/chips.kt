@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -172,6 +174,57 @@ fun CategorySelectChip(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+fun CategoryList(
+    categories: List<Category>,
+    selectedCategory: Category?,
+    onCategorySelected: (Category) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    )
+    {
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            categories.forEach { category ->
+                CategorySelectChip(
+                    category = category,
+                    isSelected = category == selectedCategory,
+                    onClick = { onCategorySelected(category) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectList(
+    names: List<String>,
+    selectedName: String?,
+    onNameSelected: (String) -> Unit
+)
+{
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+    )
+    {
+        names.forEach { name ->
+            SelectChip(
+                name = name,
+                isSelected = name == selectedName,
+                onClick = { onNameSelected(name) }
+            )
+        }
     }
 }
 

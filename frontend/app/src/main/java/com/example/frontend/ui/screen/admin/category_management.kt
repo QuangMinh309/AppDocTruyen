@@ -1,10 +1,7 @@
 package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -33,16 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.data.model.Category
 import com.example.frontend.presentation.viewmodel.admin.CategoryMgmtViewModel
 import com.example.frontend.ui.components.ScreenFrame
-import com.example.frontend.ui.components.SearchBar
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.ui.components.CategorySelectChip
+import com.example.frontend.ui.components.CategoryList
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 
@@ -255,33 +247,3 @@ private fun PreviewScreenContent() {
     val fakeViewModel = CategoryMgmtViewModel (NavigationManager())
     CategoryManagementScreen(viewModel = fakeViewModel)
 }
-
-@Composable
-fun CategoryList(
-    categories: List<Category>,
-    selectedCategory: Category?,
-    onCategorySelected: (Category) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-    )
-    {
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)
-        ) {
-            categories.forEach { category ->
-                CategorySelectChip(
-                    category = category,
-                    isSelected = category == selectedCategory,
-                    onClick = { onCategorySelected(category) }
-                )
-            }
-        }
-    }
-
-}
-

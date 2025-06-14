@@ -5,22 +5,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -45,12 +40,9 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import com.example.frontend.data.model.Transaction
-import com.example.frontend.ui.components.SelectChip
+import com.example.frontend.ui.components.TransactionCard
+import com.example.frontend.ui.components.SelectList
 
 @Composable
 fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewModel())
@@ -232,13 +224,15 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             modifier = Modifier
                 .padding(top = 20.dp, bottom = 10.dp)
         )
-        Column(
+        FlowColumn (
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         )
         {
-            TransactionCard(transactions[0])
+            transactions.forEach { transaction ->
+                TransactionCard(transaction)
+            }
         }
     }
 }
@@ -249,123 +243,4 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
 private fun PreviewScreenContent() {
     val fakeViewModel = TransactionMgmtViewModel (NavigationManager())
     TransactionManagementScreen(fakeViewModel)
-}
-@Composable
-fun SelectList(
-    names: List<String>,
-    selectedName: String?,
-    onNameSelected: (String) -> Unit
-)
-{
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    )
-    {
-        names.forEach { name ->
-            SelectChip(
-                name = name,
-                isSelected = name == selectedName,
-                onClick = { onNameSelected(name) }
-            )
-        }
-    }
-}
-
-@Composable
-fun TransactionCard(item : Transaction)
-{
-    Box (
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .background(Color.DarkGray, RoundedCornerShape(10.dp)),
-        contentAlignment = Alignment.CenterStart
-    )
-    {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-        )
-        {
-            Row {
-                Text(
-                    text = "ID: " + item.transactionId.toString(),
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Time: " + item.time.toString(),
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.height(IntrinsicSize.Min)
-            )
-            {
-                Image(
-                    painter = painterResource(id = R.drawable.avt_img),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "pfp",
-                    modifier = Modifier
-                        .size(50.dp, 50.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column()
-                {
-                    Row {
-                        Text(
-                            text = "User ID: " + item.userId.toString(),
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "Type: " + item.type,
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column()
-                {
-                    Row {
-                        Text(
-                            text = "Money: ",
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.money.toString() + "đ",
-                            color = if(item.type == "withdraw") Color.Red else Color.Green,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "Status: " + item.status,
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                }
-            }
-        }
-    }
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -72,6 +73,7 @@ import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ReadListItem_
@@ -951,3 +953,100 @@ fun RowSelectItem(
     }
 }
 
+@Composable
+fun TransactionCard(item : Transaction)
+{
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(vertical = 10.dp)
+            .background(Color.DarkGray, RoundedCornerShape(10.dp)),
+        contentAlignment = Alignment.CenterStart
+    )
+    {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        )
+        {
+            Row {
+                Text(
+                    text = "ID: " + item.transactionId.toString(),
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Time: " + item.time.toString(),
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(IntrinsicSize.Min)
+            )
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.avt_img),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "pfp",
+                    modifier = Modifier
+                        .size(50.dp, 50.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Row {
+                        Text(
+                            text = "User ID: " + item.userId.toString(),
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Type: " + item.type,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Row {
+                        Text(
+                            text = "Money: ",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                        Text(
+                            text = item.money.toString() + "đ",
+                            color = if(item.type == "withdraw") Color.Red else Color.Green,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Status: " + item.status,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

@@ -19,6 +19,24 @@ val dummyTransactions: List<Transaction> = listOf(
         time = LocalDate.now(),
         status = "pending",
         finishAt = LocalDate.now()
+    ),
+    Transaction(
+        transactionId = 2,
+        userId = 1,
+        money = 20000,
+        type = "withdraw",
+        time = LocalDate.now(),
+        status = "pending",
+        finishAt = LocalDate.now()
+    ),
+    Transaction(
+        transactionId = 3,
+        userId = 1,
+        money = 10000,
+        type = "purchase",
+        time = LocalDate.now(),
+        status = "pending",
+        finishAt = LocalDate.now()
     )
 )
 
