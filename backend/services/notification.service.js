@@ -1,50 +1,62 @@
-import Notification from '../models/entities/notification.js'
-import ApiError from '../utils/api_error.util.js'
+import { sequelize } from '../models/index.js';
+import ApiError from '../utils/api_error.util.js';
+
+const Notification = sequelize.models.Notification;
 
 const NotificationService = {
-  async createNotification(data) {
+  async createNotification(type, content, refId, userId, transaction) {
     try {
-      const notification = await Notification.create(data)
-      return notification.toJSON()
-    } catch (err) {
-      throw new ApiError('Lỗi khi tạo thông báo', 500)
+      await Notification.create(
+        {
+          type,
+          content,
+          refId,
+          status: 'UNREAD',
+          createAt: new Date(),
+          userId,
+        },
+        { transaction }
+      );
+    } catch (error) {
+      console.error('Lỗi: ' + error);
+      throw new ApiError('Lỗi khi tạo thông báo', 500);
     }
   },
 
   async getNotificationById(notificationId) {
     try {
-      const notification = await Notification.findByPk(notificationId)
-      if (!notification) throw new ApiError('Thông báo không tồn tại', 404)
-      return notification.toJSON()
+      const notification = await Notification.findByPk(notificationId);
+      if (!notification) throw new ApiError('Thông báo không tồn tại', 404);
+      return notification.toJSON();
     } catch (err) {
-      throw new ApiError('Lỗi khi lấy thông báo', 500)
+      throw new ApiError('Lỗi khi lấy thông báo', 500);
     }
   },
 
   async getAllNotifications(limit = 10) {
-    const notifications = await Notification.findAll({ limit })
-    return notifications.map((notification) => notification.toJSON())
+    const notifications = await Notification.findAll({ limit });
+    return notifications.map((notification) => notification.toJSON());
   },
 
   async updateNotification(notificationId, data) {
-    const notification = await Notification.findByPk(notificationId)
-    if (!notification) throw new ApiError('Thông báo không tồn tại', 404)
+    const notification = await Notification.findByPk(notificationId);
+    if (!notification) throw new ApiError('Thông báo không tồn tại', 404);
     try {
-      await notification.update(data)
-      return notification.toJSON()
+      await notification.update(data);
+      return notification.toJSON();
     } catch (err) {
-      throw new ApiError('Lỗi khi cập nhật thông báo', 500)
+      throw new ApiError('Lỗi khi cập nhật thông báo', 500);
     }
   },
 
   async deleteNotification(notificationId) {
-    const notification = await Notification.findByPk(notificationId)
-    if (!notification) throw new ApiError('Thông báo không tồn tại', 404)
+    const notification = await Notification.findByPk(notificationId);
+    if (!notification) throw new ApiError('Thông báo không tồn tại', 404);
     try {
-      await notification.destroy()
-      return { message: 'Xoá thông báo thành công' }
+      await notification.destroy();
+      return { message: 'Xoá thông báo thành công' };
     } catch (err) {
-      throw err
+      throw err;
     }
   },
 
@@ -61,21 +73,21 @@ const NotificationService = {
           },
         ],
         where: { userId },
-      })
+      });
 
       const notifications = followers[0].followers.map((follower) => ({
         userId: follower.userId,
         storyId,
         message,
         createdAt: new Date(),
-      }))
+      }));
 
-      await Notification.bulkCreate(notifications)
+      await Notification.bulkCreate(notifications);
     } catch (err) {
-      console.error('Error in notifyFollowers:', err)
-      throw new ApiError('Lỗi khi gửi thông báo', 500)
+      console.error('Error in notifyFollowers:', err);
+      throw new ApiError('Lỗi khi gửi thông báo', 500);
     }
   },
-}
+};
 
-export default NotificationService
+export default NotificationService;

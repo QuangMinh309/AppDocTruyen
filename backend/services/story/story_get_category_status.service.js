@@ -1,12 +1,13 @@
-import { sequelize } from '../../models/index.js'
-import ApiError from '../../utils/api_error.util.js'
-import { validateSortParams } from '../../utils/story.util.js'
-import { validateCategory } from '../../utils/category.util.js'
-import { Op } from 'sequelize'
+import { sequelize } from '../../models/index.js';
+import ApiError from '../../utils/api_error.util.js';
+import { validateSortParams } from '../../utils/story.util.js';
+import { validateCategory } from '../../utils/category.util.js';
+import { Op } from 'sequelize';
+import { formatDate } from '../../utils/date.util.js';
 
-const Story = sequelize.models.Story
-const User = sequelize.models.User
-const Category = sequelize.models.Category
+const Story = sequelize.models.Story;
+const User = sequelize.models.User;
+const Category = sequelize.models.Category;
 
 const getStoriesByCategoryAndStatus = async (
   categoryId,
@@ -14,18 +15,18 @@ const getStoriesByCategoryAndStatus = async (
   { limit = 20, lastId = null, orderBy = 'createdAt', sort = 'DESC' } = {}
 ) => {
   try {
-    await validateCategory(categoryId)
-    const validStatuses = ['update', 'full']
+    await validateCategory(categoryId);
+    const validStatuses = ['update', 'full'];
     if (!validStatuses.includes(status)) {
-      throw new ApiError('Trạng thái truyện không hợp lệ', 400)
+      throw new ApiError('Trạng thái truyện không hợp lệ', 400);
     }
 
-    const validOrderFields = ['createdAt', 'updatedAt', 'voteNum', 'viewNum']
+    const validOrderFields = ['createdAt', 'updatedAt', 'voteNum', 'viewNum'];
     const { orderBy: finalOrderBy, sort: finalSort } = validateSortParams(
       orderBy,
       sort,
       validOrderFields
-    )
+    );
 
     const where = {
       status,
@@ -36,7 +37,7 @@ const getStoriesByCategoryAndStatus = async (
             },
           }
         : {}),
-    }
+    };
 
     const stories = await Story.findAll({
       where,
@@ -56,20 +57,27 @@ const getStoriesByCategoryAndStatus = async (
         },
       ],
       order: [[finalOrderBy, finalSort]],
-    })
+    });
 
     const nextLastId =
-      stories.length > 0 ? stories[stories.length - 1].storyId : null
+      stories.length > 0 ? stories[stories.length - 1].storyId : null;
+
+    const formattedStories = stories.map((story) => ({
+      ...story.toJSON(),
+      createdAt: formatDate(story.createdAt),
+      updatedAt: formatDate(story.updatedAt),
+    }));
+
     return {
-      stories,
+      stories: formattedStories,
       nextLastId,
       hasMore: stories.length === parseInt(limit),
-    }
+    };
   } catch (error) {
     throw error instanceof ApiError
       ? error
-      : new ApiError('Lỗi khi lọc truyện theo thể loại và trạng thái', 500)
+      : new ApiError('Lỗi khi lọc truyện theo thể loại và trạng thái', 500);
   }
-}
+};
 
-export default getStoriesByCategoryAndStatus
+export default getStoriesByCategoryAndStatus;

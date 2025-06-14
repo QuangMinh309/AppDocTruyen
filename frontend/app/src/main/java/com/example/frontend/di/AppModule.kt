@@ -3,6 +3,7 @@ package com.example.frontend.di
 import android.content.Context
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.repository.AuthRepository
+import com.example.frontend.data.repository.HomeRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences
@@ -31,6 +32,12 @@ object AppModule {
         @ApplicationContext context: Context
     ): AuthRepository {
         return AuthRepository(apiService, tokenManager, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHomeRepository(apiService: ApiService): HomeRepository {
+        return HomeRepository(apiService)
     }
 
     @Provides
