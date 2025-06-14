@@ -61,13 +61,37 @@ const StoryController = {
 
   async updateStory(req, res, next) {
     try {
-      const { storyId } = req.params;
-      const userId = req.user.userId;
+      const storyId = req.params.storyId;
       const storyData = req.body;
-      const updatedStory = await updateStory(storyId, storyData, userId);
-      return res.status(200).json({ success: true, data: updatedStory });
+      const userId = req.user.userId;
+      const file = req.file;
+
+      if (storyData.categories) {
+        if (typeof storyData.categories === 'string') {
+          try {
+            storyData.categories = JSON.parse(storyData.categories);
+          } catch (err) {
+            storyData.categories = storyData.categories
+              ? [Number(storyData.categories.replace(/\[|\]/g, ''))]
+              : [];
+          }
+        }
+
+        if (!Array.isArray(storyData.categories)) {
+          storyData.categories = [Number(storyData.categories)];
+        }
+      } else {
+        storyData.categories = [];
+      }
+
+      const story = await updateStory(storyId, storyData, userId, file);
+      res.status(200).json({
+        success: true,
+        data: story,
+        message: 'Cập nhật truyện thành công',
+      });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   },
 

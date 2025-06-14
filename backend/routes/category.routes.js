@@ -11,19 +11,20 @@ const router = express.Router();
 
 router.use(authenticate);
 
-router.post(
-  '/',
-  validate(CategoryValidation.create, 'body'),
-  authorizeRoles('admin'),
-  CategoryController.createCategory
-);
-
 router.get('/', CategoryController.getAllCategories);
 
 router.get(
   '/:categoryId',
   validate(CategoryValidation.idSchema, 'params'),
   CategoryController.getCategoryById
+);
+
+// Dành cho admin
+router.post(
+  '/',
+  validate(CategoryValidation.create, 'body'),
+  authorizeRoles('admin'),
+  CategoryController.createCategory
 );
 
 router.put(
