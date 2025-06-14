@@ -1,30 +1,28 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('story_categories', {
+    await queryInterface.createTable("story_category", {
       storyId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
-          model: 'stories',
-          key: 'storyId'
-        }
-
+          model: "story",
+          key: "storyId",
+        },
       },
       categoryId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
-        references  : {
-          model: 'categories',
-          key: 'categoryId'
-        }
-      }
+        references: {
+          model: "category",
+          key: "categoryId",
+        },
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('story_categories');
-  }
+    await queryInterface.dropTable("story_category");
+  },
 };

@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.presentation.viewmodel.NotificationViewModel
 import com.example.frontend.ui.components.NotificationCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
@@ -14,7 +16,7 @@ import com.example.frontend.ui.components.TopBar
 
 @Preview
 @Composable
-fun NotificationScreen(){
+fun NotificationScreen(viewModel: NotificationViewModel= hiltViewModel()){
     val historyList = listOf("Bạn đã nạp 300.000₫ vào tài .","Bạn đã chi 300.000₫ để mua “Tempting the divine”.","tác giả @tolapenelope đã đăng tải chapter 3 cuốn tiểu thuyết “Tempting the divine” .")
     ScreenFrame(
         topBar = {
@@ -22,8 +24,8 @@ fun NotificationScreen(){
                 title = "Notification",
                 showBackButton = true,
                 iconType = "Setting",
-                onIconClick = { /*TODO*/ },
-                onBackClick = { /*TODO*/ }
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
     ){

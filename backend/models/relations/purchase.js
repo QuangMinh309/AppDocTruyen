@@ -1,27 +1,48 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class purchase extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+import { Model } from 'sequelize'
+
+export default (sequelize, DataTypes) => {
+  class Purchase extends Model {
     static associate(models) {
-      // define association here
+      // Purchase belongs to User
+      Purchase.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
+
+      // Purchase belongs to Story
+      Purchase.belongsTo(models.Story, {
+        foreignKey: 'storyId',
+        as: 'story',
+      })
+
+      // Purchase belongs to Chapter
+      Purchase.belongsTo(models.Chapter, {
+        foreignKey: 'chapterId',
+        as: 'chapter',
+      })
     }
   }
-  purchase.init({
-    purchasedId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
-    storyId: DataTypes.INTEGER,
-    chapterId: DataTypes.INTEGER,
-    purchasedAt: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'purchase',
-  });
-  return purchase;
-};
+
+  Purchase.init(
+    {
+      purchasedId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: DataTypes.INTEGER,
+      storyId: DataTypes.INTEGER,
+      chapterId: DataTypes.INTEGER,
+      purchasedAt: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: 'Purchase',
+      tableName: 'purchase',
+      timestamps: false,
+    }
+  )
+
+  return Purchase
+}

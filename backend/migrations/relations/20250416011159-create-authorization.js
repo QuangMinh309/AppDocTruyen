@@ -1,31 +1,28 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('authorizations', {
+    await queryInterface.createTable("authorization", {
       roleId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
-        references: 
-        {
-          model: 'roles',
-          key: 'roleId'
-        }
+        references: {
+          model: "role",
+          key: "roleId",
+        },
       },
       funcId: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
-        references: 
-        {
-          model: 'functionalities',
-          key: 'funcId'
-        }
-      }
+        references: {
+          model: "functionality",
+          key: "funcId",
+        },
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('authorizations');
-  }
+    await queryInterface.dropTable("authorization");
+  },
 };

@@ -1,41 +1,40 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('purchases', {
+    await queryInterface.createTable("purchase", {
       purchasedId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
-          key: 'userId'
-        }
+          model: "user",
+          key: "userId",
+        },
       },
       storyId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'stories',
-          key: 'storyId'
-        }
+          model: "story",
+          key: "storyId",
+        },
       },
       chapterId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'chapters',
-          key: 'chapterId'
-        }
+          model: "chapter",
+          key: "chapterId",
+        },
       },
       purchasedAt: {
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('purchases');
-  }
+    await queryInterface.dropTable("purchase");
+  },
 };

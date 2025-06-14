@@ -1,25 +1,34 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
+import { Model } from 'sequelize'
+
+export default (sequelize, DataTypes) => {
   class Premium extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      // Premium belongs to User
+      Premium.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user',
+      })
     }
   }
-  Premium.init({
-    premiumId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER,
-    CreatedAt: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'Premium',
-  });
-  return Premium;
-};
+
+  Premium.init(
+    {
+      premiumId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+      },
+      userId: DataTypes.INTEGER,
+      CreatedAt: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: 'Premium',
+      tableName: 'premium',
+      timestamps: false,
+    }
+  )
+
+  return Premium
+}

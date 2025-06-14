@@ -1,34 +1,30 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('password_resets', {
-      resetId: {
-         allowNull: false,
+    await queryInterface.createTable("password_reset", {
+      OTP: {
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
-          key: 'userId'
-        }
-      },
-      OTP: {
-        type: Sequelize.STRING
+          model: "user",
+          key: "userId",
+        },
       },
       isUsed: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('password_resets');
-  }
+    await queryInterface.dropTable("password_reset");
+  },
 };
