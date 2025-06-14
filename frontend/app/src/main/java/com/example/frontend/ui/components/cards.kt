@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
@@ -44,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -895,6 +897,57 @@ fun ReadListItem(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+@Composable
+fun RowSelectItem(
+    name: String,
+    image: Painter,
+    onClick: () -> Unit = {}
+)
+{
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .clickable { onClick() }
+    )
+    {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 20.dp)
+        )
+        {
+            Image(
+                painter = image,
+                contentDescription = "select button icon",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = name,
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = ">",
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                color = Color.White
+            )
+        }
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        )
     }
 }
 

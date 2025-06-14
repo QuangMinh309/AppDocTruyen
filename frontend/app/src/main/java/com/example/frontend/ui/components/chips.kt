@@ -129,3 +129,50 @@ fun GenreChip(modifier: Modifier = Modifier,genre: String) {
 
 }
 
+@Composable
+fun SelectChip(
+    name: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val background = if (isSelected) Color(0xFFFBAD00) else Color(0xFFEA5C18)
+    Surface(
+        color = background,
+        shape = RoundedCornerShape(50),
+        modifier = Modifier
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = name,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CategorySelectChip(
+    category: Category,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val background = if (isSelected) Color(0xFFFBAD00) else Color(0xFFEA5C18)
+    Surface(
+        color = background,
+        shape = RoundedCornerShape(50),
+        modifier = Modifier
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = category.name,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+
