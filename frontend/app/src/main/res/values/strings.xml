@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="base_url">http://e946-14-187-41-168.ngrok-free.app/</string>
+    <string name="base_url">https://ed36-14-187-41-168.ngrok-free.app/</string>
 </resources>

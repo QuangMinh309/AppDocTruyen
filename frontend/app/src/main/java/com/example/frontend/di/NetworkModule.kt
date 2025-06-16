@@ -2,13 +2,16 @@ package com.example.frontend.di
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.util.TokenManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.runBlocking
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -27,8 +30,7 @@ object NetworkModule {
     @Singleton
     fun provideBaseUrl(@ApplicationContext context: Context): String {
         return context.getString(R.string.base_url)
-        //"http://10.0.2.2:3000/"
-        // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
+        // "http://10.0.2.2:3000/" // Uncomment nếu cần dùng local
     }
 
     private fun isEmulator(): Boolean {
@@ -37,7 +39,10 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
+    fun provideOkHttpClient(
+        @ApplicationContext context: Context,
+        tokenManager: TokenManager
+    ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -46,12 +51,27 @@ object NetworkModule {
         val cache = Cache(context.cacheDir, cacheSize.toLong())
 
         return OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS) // Tăng timeout lên 60 giây
-            .readTimeout(60, TimeUnit.SECONDS) // Tăng timeout lên 60 giây
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val token = runBlocking { tokenManager.getToken() }
+                Log.d("NetworkInterceptor", "Original Request Headers: ${originalRequest.headers}")
+                Log.d("NetworkInterceptor", "Token: $token")
+                val newRequest = if (token != null) {
+                    originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                } else {
+                    originalRequest
+                }
+                Log.d("NetworkInterceptor", "New Request Headers: ${newRequest.headers}")
+                chain.proceed(newRequest)
+            }
             .cache(cache)
-            .retryOnConnectionFailure(true) // Thêm retry khi kết nối thất bại
+            .retryOnConnectionFailure(true)
             .build()
     }
 
@@ -59,7 +79,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(baseUrl) // Sử dụng HTTPS, thay bằng URL thực tế khi cần
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -68,10 +88,10 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
+        Log.d("NetworkModule", "Creating ApiService with Retrofit: $retrofit")
         return retrofit.create(ApiService::class.java)
     }
 
-    // khởi tạo WebSocket connection
     fun createWebSocket(okHttpClient: OkHttpClient, url: String, listener: WebSocketListener): WebSocket {
         val request = Request.Builder()
             .url(url)

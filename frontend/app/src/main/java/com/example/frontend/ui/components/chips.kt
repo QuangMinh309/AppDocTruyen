@@ -98,7 +98,7 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:Ba
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             texts.forEach { genre ->
-                Chip(text = genre.name, onClick = {})
+                Chip(text = genre.name?:"", onClick = {})
             }
         }
     }

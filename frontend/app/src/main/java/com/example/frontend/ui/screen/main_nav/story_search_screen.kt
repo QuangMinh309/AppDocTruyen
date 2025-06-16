@@ -96,7 +96,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                         Tab(
                             selected = selectedGenreTabIndex == index,
                             onClick = { selectedGenreTabIndex = index },
-                            text = { Text(text = genre.name, fontSize = 12.sp) },
+                            text = { Text(text = genre.name?:"", fontSize = 12.sp) },
                             selectedContentColor = Color(0xFFFF9900),
                             unselectedContentColor = Color.LightGray
                         )
@@ -119,28 +119,28 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                     }
                 }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentPadding = PaddingValues(8.dp)
-                ) {
-                    items(
-                        if (selectedStatusTabIndex > 1) {
-                            getSampleStories(
-                                category = categories[selectedGenreTabIndex],
-                                status = "all",
-                                premiumStatus = statuses[selectedStatusTabIndex]
-                            )
-                        } else {
-                            getSampleStories(
-                                category = categories[selectedGenreTabIndex],
-                                status = "all",
-                                premiumStatus = statuses[selectedStatusTabIndex]
-                            )
-                        }
-                    ) { story ->
-                        StoryCard4(story = story, onClick = { viewModel.onGoToStoryScreen(story.id) })
-                    }
-                }
+//                LazyColumn(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    contentPadding = PaddingValues(8.dp)
+//                ) {
+//                    items(
+//                        if (selectedStatusTabIndex > 1) {
+//                            getSampleStories(
+//                                category = categories[selectedGenreTabIndex],
+//                                status = "all",
+//                                premiumStatus = statuses[selectedStatusTabIndex]
+//                            )
+//                        } else {
+//                            getSampleStories(
+//                                category = categories[selectedGenreTabIndex],
+//                                status = "all",
+//                                premiumStatus = statuses[selectedStatusTabIndex]
+//                            )
+//                        }
+//                    ) { story ->
+//                        StoryCard4(story = story, onClick = { viewModel.onGoToStoryScreen(story.id) })
+//                    }
+//                }
             } else {
                 if (searchQuery.value.isEmpty()) {
                     StoryChips(

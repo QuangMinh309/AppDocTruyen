@@ -1,23 +1,27 @@
 package com.example.frontend.data.model
 
+import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class Story (
-    val id: Int,
-    val name: String,
-    val author:User,
-    val description: String?,
-    val ageRange: Int,
-    val categories: List<Category>,
-    val viewNum: Int ,
-    val voteNum: Int,
-    val chapters: List<Chapter>,
-    val chapterNum :Int,
-    val createdAt: LocalDate,
-    val updateAt: LocalDate,
-    val status: String,
-    val price: BigDecimal,
-    val pricePerChapter: BigDecimal,
+data class Story(
+    @SerializedName("storyId") val id: Int,
+    @SerializedName("storyName") val name: String ?,
+    @SerializedName("author") val author: Author,
+    @SerializedName("description") val description: String?,
+    @SerializedName("ageRange") val ageRange: Int?,
+    @SerializedName("categories") val categories: List<Category> ?= emptyList(),
+    @SerializedName("viewNum") val viewNum: Int,
+    @SerializedName("voteNum") val voteNum: Int,
+    @SerializedName("chapterNum") val chapterNum: Int,
+    @SerializedName("createdAt") val createdAt: String,
+    @SerializedName("updatedAt") val updateAt: String,
+    @SerializedName("status") val status: String,
+    @SerializedName("price") val price: BigDecimal,
+    @SerializedName("pricePerChapter") val pricePerChapter: BigDecimal,
+    @SerializedName("coverImgId") val coverImgId: String
+) {
     val coverImgUrl: String
-)
+        get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$coverImgId"
+}
+

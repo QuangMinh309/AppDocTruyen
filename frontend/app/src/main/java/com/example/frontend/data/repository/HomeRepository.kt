@@ -1,10 +1,9 @@
 package com.example.frontend.data.repository
 
 import com.example.frontend.data.api.ApiService
-import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
-import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,26 +11,72 @@ import javax.inject.Singleton
 class HomeRepository @Inject constructor(
     private val apiService: ApiService
 ) {
-    suspend fun getStories(): Result<List<Story>> {
+    suspend fun getAllStories(): Result<List<Story>> {
         return try {
-            val response = apiService.getStories()
+            val response = apiService.getAllStories()
             if (response.isSuccessful) {
-                Result.Success(response.body() ?: emptyList())
+                val storiesResponse = response.body()
+                if (storiesResponse?.success == true) {
+                    Result.Success(storiesResponse.data.stories)
+                } else {
+                    Result.Failure(Exception("API returned success: false"))
+                }
             } else {
-                Result.Failure(Exception("Failed to fetch stories: ${response.message()}"))
+                Result.Failure(Exception("Failed to fetch all stories: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)
         }
     }
 
-    suspend fun getNameLists(): Result<List<NameList>> {
+    suspend fun getStoriesByUpdateDate(): Result<List<Story>> {
         return try {
-            val response = apiService.getNameLists()
+            val response = apiService.getStoriesByUpdateDate()
             if (response.isSuccessful) {
-                Result.Success(response.body() ?: emptyList())
+                val storiesResponse = response.body()
+                if (storiesResponse?.success == true) {
+                    Result.Success(storiesResponse.data.stories)
+                } else {
+                    Result.Failure(Exception("Failed to fetch updated stories: ${response.message()}"))
+                }
             } else {
-                Result.Failure(Exception("Failed to fetch name lists: ${response.message()}"))
+                Result.Failure(Exception("Failed to fetch updated stories: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun getStoriesByVote(): Result<List<Story>> {
+        return try {
+            val response = apiService.getStoriesByVote()
+            if (response.isSuccessful) {
+                val storiesResponse = response.body()
+                if (storiesResponse?.success == true) {
+                    Result.Success(storiesResponse.data.stories)
+                } else {
+                    Result.Failure(Exception("Failed to fetch top voted stories: ${response.message()}"))
+                }
+            } else {
+                Result.Failure(Exception("Failed to fetch top voted stories: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun getCategories(): Result<List<Category>> {
+        return try {
+            val response = apiService.getCategories()
+            if (response.isSuccessful) {
+                val categories = response.body()
+                if (categories != null) {
+                    Result.Success(categories)
+                } else {
+                    Result.Failure(Exception("API returned null categories"))
+                }
+            } else {
+                Result.Failure(Exception("Failed to fetch categories: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

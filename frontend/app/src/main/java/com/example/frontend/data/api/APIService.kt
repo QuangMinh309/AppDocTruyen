@@ -34,7 +34,24 @@ interface ApiService {
     ): Response<ImageUrlResponse>
 
     @GET("api/stories")
-    suspend fun getStories(): Response<List<Story>>
+    suspend fun getAllStories(): Response<StoriesResponse>
+
+    @GET("api/stories/updated")
+    suspend fun getStoriesByUpdateDate(): Response<StoriesResponse>
+
+    @GET("api/stories/vote")
+    suspend fun getStoriesByVote(): Response<StoriesResponse>
+
+    data class StoriesResponse(
+        val success: Boolean,
+        val data: StoriesData
+    )
+
+    data class StoriesData(
+        val stories: List<Story>,
+        val nextLastId: Int,
+        val hasMore: Boolean
+    )
 
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>

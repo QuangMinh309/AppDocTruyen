@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.SendOTPResult
 import com.example.frontend.data.model.Result
+import com.example.frontend.data.model.User
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences
 import org.json.JSONObject
@@ -17,6 +18,7 @@ class AuthRepository @Inject constructor(
     private val tokenManager: TokenManager,
     private val context: Context
 ) {
+    private var currentUser: User? = null
     suspend fun login(mail: String, password: String, rememberLogin: Boolean): Result<String> {
         return try {
             val response = apiService.login(com.example.frontend.data.api.LoginRequest(mail, password))
@@ -29,6 +31,7 @@ class AuthRepository @Inject constructor(
                     } else {
                         UserPreferences.clearUserData(context)
                     }
+                    currentUser = loginResponse.data.user
                     Result.Success("Login successful")
                 } else {
                     Result.Failure(Exception("Invalid email or password"))
@@ -123,4 +126,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun getToken(): String? = tokenManager.getToken()
     suspend fun clearToken() = tokenManager.clearToken()
+
+    fun getCurrentUser(): User? = currentUser
+
 }

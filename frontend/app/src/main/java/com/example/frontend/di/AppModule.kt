@@ -45,4 +45,10 @@ object AppModule {
     fun provideNavigationManager(): NavigationManager {
         return NavigationManager()
     }
+
+    @Provides
+    @Singleton
+    fun provideTokenManager(@ApplicationContext context: Context): TokenManager {
+        return TokenManager(context)
+    }
 }

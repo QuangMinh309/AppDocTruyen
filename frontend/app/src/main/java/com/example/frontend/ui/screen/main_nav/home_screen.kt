@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.main_nav
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -44,10 +45,14 @@ import java.time.LocalDateTime
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // Lấy dữ liệu từ ViewModel
-    val suggestedStories by remember { mutableStateOf(viewModel.suggestedStories) }
-    val newStories by remember { mutableStateOf(viewModel.newStories) }
-    val topRankingStories by remember { mutableStateOf(viewModel.topRankingStories) }
-    val isStoriesLoading by remember { mutableStateOf(viewModel.isStoriesLoading) }
+    val suggestedStories by viewModel.suggestedStories.collectAsState()
+    val newStories by viewModel.newStories.collectAsState()
+    val topRankingStories by viewModel.topRankingStories.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+    val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
+    val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
+    val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
+    val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
 
     ScreenFrame {
         Column(
@@ -95,7 +100,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
 
             Text(
-                text = "Hello penelope !",
+                text = "Hello ${viewModel.userName}",
                 color = Color.White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -105,6 +110,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             // Banner
             AutoScrollBanner(items = bannerItems)
 
+
             // Gợi ý cho bạn
             Column(modifier = Modifier.fillMaxSize()) {
                 SectionTitle(
@@ -112,7 +118,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.dolphins_ic
                 )
-                if (isStoriesLoading) {
+                if (isSuggestedLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -124,6 +130,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 } else {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(suggestedStories) { item ->
+                            Log.d("HomeScreen", "Rendering StoryCard: ${item.name}")
                             StoryCard(item, onClick = { viewModel.onGoToStoryScreen(item.id) })
                         }
                     }
@@ -137,7 +144,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.firework_ic
                 )
-                if (isStoriesLoading) {
+                if (isNewStoriesLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -173,7 +180,6 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
             }
-
             // Top Ranking
             Column(modifier = Modifier.fillMaxSize()) {
                 SectionTitle(
@@ -181,7 +187,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.fire_ic
                 )
-                if (isStoriesLoading) {
+                if (isTopRankingLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -250,15 +256,26 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.flower_ic
                 )
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    categories.forEach { genre ->
-                        Chip(text = genre.name, onClick = {})
+                if (isCategoriesLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        categories.forEach { genre ->
+                            Chip(text = genre.name ?: "", onClick = {})
+                        }
                     }
                 }
             }
@@ -344,19 +361,19 @@ val readlistlist=listOf(
 
 
 
-fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
-    return ExampleList.filter { story ->
-        val matchCategory = story.categories.any { it == category }
-        val matchStatus = if(status == "all") true else story.status == status
-        val matchPrice = when(premiumStatus){
-            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
-            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
-            else -> true
-        }
-
-        matchCategory && matchStatus && matchPrice
-    }
-}
+//fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
+//    return ExampleList.filter { story ->
+//        val matchCategory = story.categories.any { it == category }
+//        val matchStatus = if(status == "all") true else story.status == status
+//        val matchPrice = when(premiumStatus){
+//            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
+//            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
+//            else -> true
+//        }
+//
+//        matchCategory && matchStatus && matchPrice
+//    }
+//}
 
 val demoUser = com.example.frontend.data.model.User(
     id = 1,

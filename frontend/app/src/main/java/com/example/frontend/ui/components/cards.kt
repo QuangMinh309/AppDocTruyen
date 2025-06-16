@@ -1,6 +1,7 @@
 package com.example.frontend.ui.components
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -359,7 +360,7 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                 Spacer(modifier = Modifier.height(11.dp))
 
                 Text(
-                    text = novel.name, // Thay "title" bằng "name"
+                    text = novel.name?:"", // Thay "title" bằng "name"
                     color = Color.White,
                     fontSize = 16.sp,
                     maxLines = 1
@@ -439,19 +440,19 @@ fun StoryCard4(
         Column(modifier = Modifier.weight(1f)) {
             //name
             Text(
-                story.name,
+                story.name?:"",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
             Spacer(modifier = Modifier.height(7.dp))
-            Text("@${story.author.dName}", color = Color.LightGray, fontSize = 14.sp)
+            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(13.dp))
 
             //genre tags
-            SmallGenreTags(story.categories)
+            SmallGenreTags(story.categories?: emptyList())
             Spacer(modifier = Modifier.height(27.dp))
 
             //updated time
@@ -496,6 +497,7 @@ fun StoryCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard", "Rendering story: ${story.name}")
     Column(
         modifier = modifier
             .width(160.dp)
@@ -543,7 +545,7 @@ fun StoryCard(
 
         // Tiêu đề truyện
         Text(
-            text = story.name,
+            text = story.name?:"",
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -578,6 +580,7 @@ fun StoryCard2(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard2", "Rendering story: ${story.name}")
     val isPremium = story.price.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
@@ -604,7 +607,7 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = story.name,
+                text = story.name?:"",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -671,6 +674,7 @@ fun StoryCard3(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard3", "Rendering story: ${story.name}")
     // Hàng 1: Ảnh bìa + Thông tin cơ bản
     Row(
         modifier = modifier
@@ -689,8 +693,6 @@ fun StoryCard3(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-
-
         }
 
         // Thông tin chi tiết
@@ -700,7 +702,7 @@ fun StoryCard3(
         ) {
             // Tiêu đề
             Text(
-                text = story.name,
+                text = story.name?:"",
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -712,7 +714,7 @@ fun StoryCard3(
             // Ngày cập nhật
             Text(
                 buildAnnotatedString {
-                    withStyle (
+                    withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
                             fontSize = 10.sp,
@@ -721,14 +723,14 @@ fun StoryCard3(
                     ) {
                         append("Last Updated: ")
                     }
-                    withStyle (
+                    withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_bold)),
                             fontSize = 10.sp,
                             color = OrangeRed
                         )
                     ) {
-                        append(story.updateAt.toString())
+                        append(story.updateAt?.toString() ?: "N/A")
                     }
                 },
             )
@@ -740,8 +742,10 @@ fun StoryCard3(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                story.categories.forEach { genre ->
-                    Chip(text = genre.name)
+                story.categories?.forEach { genre ->
+                    genre.name?.let { name ->
+                        Chip(text = name)
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -763,7 +767,6 @@ fun StoryCard3(
             }
         }
     }
-
 }
 
 // Định dạng số lượt xem (167800 -> 167.8K)
