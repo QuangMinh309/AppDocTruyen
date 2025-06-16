@@ -70,7 +70,12 @@ router.post(
   StoryController.createStory
 );
 
-router.put('/:storyId', isStoryAuthor, StoryController.updateStory);
+router.put(
+  '/:storyId',
+  isStoryAuthor,
+  uploadSingleImage('coverImgId'),
+  StoryController.updateStory
+);
 
 router.delete(
   '/:storyId',
