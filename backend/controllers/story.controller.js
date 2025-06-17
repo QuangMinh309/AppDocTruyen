@@ -108,12 +108,14 @@ const StoryController = {
 
   async getAllStories(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { limit, lastId, orderBy, sort } = req.query;
       const result = await getAllStories({
         limit,
         lastId,
         orderBy,
         sort,
+        role: roleName,
       });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
@@ -123,6 +125,7 @@ const StoryController = {
 
   async getByCategory(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { categoryId } = req.params;
       const { limit, lastId, orderBy, sort } = req.query;
       const result = await getStoriesByCategory(categoryId, {
@@ -130,6 +133,7 @@ const StoryController = {
         lastId,
         orderBy,
         sort,
+        role: roleName,
       });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
@@ -155,8 +159,9 @@ const StoryController = {
 
   async getStoriesByVote(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { limit, lastId } = req.query;
-      const result = await getStoriesByVote({ limit, lastId });
+      const result = await getStoriesByVote({ limit, lastId, role: roleName });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
@@ -165,8 +170,13 @@ const StoryController = {
 
   async getStoriesByUpdateDate(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { limit, lastId } = req.query;
-      const result = await getStoriesByUpdateDate({ limit, lastId });
+      const result = await getStoriesByUpdateDate({
+        limit,
+        lastId,
+        role: roleName,
+      });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
@@ -176,12 +186,18 @@ const StoryController = {
   async getStoriesByUser(req, res, next) {
     try {
       const { userId } = req.params;
+      const roleName = req.user.role?.roleName || 'user';
+      const currentUserId = req.user.userId;
       const { limit, lastId, includeAll } = req.query;
+
       const result = await getStoriesByUser(userId, {
         limit,
         lastId,
         includeAll,
+        role: roleName,
+        currentUserId,
       });
+
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
@@ -190,10 +206,12 @@ const StoryController = {
 
   async searchStories(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { searchTerm, limit, lastId } = req.query;
       const result = await searchStories(searchTerm, {
         limit,
         lastId,
+        role: roleName,
       });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {

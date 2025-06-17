@@ -8,6 +8,7 @@ import { formatDate } from '../../utils/date.util.js';
 const Story = sequelize.models.Story;
 const User = sequelize.models.User;
 const Category = sequelize.models.Category;
+const StoryCategory = sequelize.models.StoryCategory;
 
 const getStoriesByCategoryAndStatus = async (
   categoryId,
@@ -28,15 +29,27 @@ const getStoriesByCategoryAndStatus = async (
       validOrderFields
     );
 
+    const storyCategoryIds = categoryId
+      ? (
+          await StoryCategory.findAll({
+            attributes: ['storyId'],
+            where: { categoryId },
+          })
+        ).map((item) => item.storyId)
+      : null;
+
     const where = {
+      ...(lastId && {
+        storyId: {
+          [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+        },
+      }),
+      ...(storyCategoryIds && {
+        storyId: {
+          [Op.in]: storyCategoryIds,
+        },
+      }),
       status,
-      ...(lastId
-        ? {
-            storyId: {
-              [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
-            },
-          }
-        : {}),
     };
 
     const stories = await Story.findAll({
@@ -51,12 +64,12 @@ const getStoriesByCategoryAndStatus = async (
         {
           model: Category,
           as: 'categories',
-          where: { categoryId },
           attributes: ['categoryId', 'categoryName'],
           through: { attributes: [] },
         },
       ],
       order: [[finalOrderBy, finalSort]],
+      distinct: true,
     });
 
     const nextLastId =

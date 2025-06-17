@@ -13,7 +13,6 @@ const History = sequelize.models.History;
 const Purchase = sequelize.models.Purchase;
 const Vote = sequelize.models.Vote;
 const ReadList = sequelize.models.ReadList;
-const Story = sequelize.models.Story;
 
 const deleteStory = async (storyId, userId) => {
   return await handleTransaction(async (transaction) => {

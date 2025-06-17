@@ -63,6 +63,30 @@ router.get(
   StoryController.getStoryById
 );
 
+router.get(
+  '/recently-read',
+  validate(validateGetStories),
+  StoryController.getRecentlyReadStories
+);
+
+router.get(
+  '/purchased',
+  validate(validateGetStories),
+  StoryController.getPurchasedStories
+);
+
+router.get(
+  '/:storyId/vote/status',
+  validate(validateStoryId),
+  StoryController.checkVoteStatus
+);
+
+router.get(
+  '/:storyId/chapters/:chapterId/purchase',
+  validate(validatePurchaseChapter),
+  StoryController.checkChapterPurchase
+);
+
 router.post(
   '/',
   uploadSingleImage('coverImgId'),
@@ -70,6 +94,19 @@ router.post(
   StoryController.createStory
 );
 
+router.post(
+  '/:storyId/vote',
+  validate(validateStoryId),
+  StoryController.toggleVote
+);
+
+router.post(
+  '/:storyId/purchase',
+  validate(validateStoryId),
+  StoryController.purchaseEntireStory
+);
+
+// Dành cho tác giả
 router.put(
   '/:storyId',
   isStoryAuthor,
@@ -82,42 +119,6 @@ router.delete(
   validate(validateStoryId),
   isStoryAuthor,
   StoryController.deleteStory
-);
-
-router.post(
-  '/:storyId/vote',
-  validate(validateStoryId),
-  StoryController.toggleVote
-);
-
-router.get(
-  '/:storyId/vote/status',
-  validate(validateStoryId),
-  StoryController.checkVoteStatus
-);
-
-router.post(
-  '/:storyId/purchase',
-  validate(validateStoryId),
-  StoryController.purchaseEntireStory
-);
-
-router.get(
-  '/:storyId/chapters/:chapterId/purchase',
-  validate(validatePurchaseChapter),
-  StoryController.checkChapterPurchase
-);
-
-router.get(
-  '/recently-read',
-  validate(validateGetStories),
-  StoryController.getRecentlyReadStories
-);
-
-router.get(
-  '/purchased',
-  validate(validateGetStories),
-  StoryController.getPurchasedStories
 );
 
 export default router;

@@ -1,6 +1,6 @@
 import { sequelize } from '../../models/index.js';
 import ApiError from '../../utils/api_error.util.js';
-import { validateSortParams } from '../../utils/story.util.js';
+import { publicStory, validateSortParams } from '../../utils/story.util.js';
 import { validateCategory } from '../../utils/category.util.js';
 import { Op } from 'sequelize';
 import { formatDate } from '../../utils/date.util.js';
@@ -8,10 +8,17 @@ import { formatDate } from '../../utils/date.util.js';
 const Story = sequelize.models.Story;
 const User = sequelize.models.User;
 const Category = sequelize.models.Category;
+const StoryCategory = sequelize.models.StoryCategory;
 
 const getStoriesByCategory = async (
   categoryId,
-  { limit = 20, lastId = null, orderBy = 'createdAt', sort = 'DESC' } = {}
+  {
+    limit = 20,
+    lastId = null,
+    orderBy = 'createdAt',
+    sort = 'DESC',
+    role = 'user',
+  } = {}
 ) => {
   try {
     await validateCategory(categoryId);
@@ -23,13 +30,24 @@ const getStoriesByCategory = async (
       validOrderFields
     );
 
-    const where = lastId
-      ? {
-          storyId: {
-            [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
-          },
-        }
-      : {};
+    const statusFilter = publicStory(role);
+
+    const storyCategoryIds = await StoryCategory.findAll({
+      attributes: ['storyId'],
+      where: { categoryId },
+    }).then((items) => items.map((item) => item.storyId));
+
+    const where = {
+      ...statusFilter,
+      ...(lastId && {
+        storyId: {
+          [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+        },
+      }),
+      storyId: {
+        [Op.in]: storyCategoryIds,
+      },
+    };
 
     const stories = await Story.findAll({
       where,
@@ -43,12 +61,12 @@ const getStoriesByCategory = async (
         {
           model: Category,
           as: 'categories',
-          where: { categoryId },
           attributes: ['categoryId', 'categoryName'],
           through: { attributes: [] },
         },
       ],
       order: [[finalOrderBy, finalSort]],
+      distinct: true,
     });
 
     const nextLastId =

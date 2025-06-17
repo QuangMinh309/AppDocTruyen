@@ -135,8 +135,6 @@ const updateUserSchema = Joi.object({
       ...messages,
       'string.max': 'Giới thiệu không được vượt quá {#limit} ký tự',
     }),
-  avatarId: Joi.string().allow(null).messages(messages),
-  backgroundId: Joi.number().integer().min(1).allow(null).messages(messages),
   isPremium: Joi.boolean().messages(messages),
   roleId: Joi.number().integer().min(1).messages(messages),
 }).options({ stripUnknown: true });
@@ -148,48 +146,6 @@ const changePasswordSchema = Joi.object({
     .messages({
       ...messages,
       'any.required': 'Mật khẩu hiện tại là bắt buộc',
-    }),
-  newPassword: Joi.string()
-    .pattern(patterns.password)
-    .required()
-    .messages({
-      ...messages,
-      'string.pattern.base':
-        'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và có thể chứa ký tự đặc biệt',
-    }),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref('newPassword'))
-    .required()
-    .messages({
-      ...messages,
-      'any.only': 'Mật khẩu xác nhận không khớp',
-      'any.required': 'Mật khẩu xác nhận là bắt buộc',
-    }),
-}).options({ stripUnknown: true });
-
-// Schema validation cho forgot password
-const forgotPasswordSchema = Joi.object({
-  mail: Joi.string()
-    .trim()
-    .email()
-    .required()
-    .messages({
-      ...messages,
-      'string.email': 'Email không hợp lệ',
-    }),
-}).options({ stripUnknown: true });
-
-// Schema validation cho reset password
-const resetPasswordSchema = Joi.object({
-  otp: Joi.number()
-    .integer()
-    .min(100000)
-    .max(999999)
-    .required()
-    .messages({
-      ...messages,
-      'number.min': 'OTP phải là số 6 chữ số',
-      'number.max': 'OTP phải là số 6 chữ số',
     }),
   newPassword: Joi.string()
     .pattern(patterns.password)
@@ -251,8 +207,6 @@ export default {
   login: loginSchema,
   updateUser: updateUserSchema,
   changePassword: changePasswordSchema,
-  forgotPassword: forgotPasswordSchema,
-  resetPassword: resetPasswordSchema,
   followUser: followUserSchema,
   refreshToken: refreshTokenSchema,
   userId: userIdSchema,
