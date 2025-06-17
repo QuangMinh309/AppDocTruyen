@@ -1,6 +1,6 @@
 import { sequelize } from '../../models/index.js';
 import ApiError from '../../utils/api_error.util.js';
-import { validateSortParams } from '../../utils/story.util.js';
+import { publicStory, validateSortParams } from '../../utils/story.util.js';
 import { Op } from 'sequelize';
 import { formatDate } from '../../utils/date.util.js';
 
@@ -13,6 +13,7 @@ const getAllStories = async ({
   lastId = null,
   orderBy = 'createdAt',
   sort = 'DESC',
+  role = 'user',
 } = {}) => {
   try {
     const validOrderFields = ['createdAt', 'updatedAt', 'voteNum', 'viewNum'];
@@ -22,13 +23,16 @@ const getAllStories = async ({
       validOrderFields
     );
 
-    const where = lastId
-      ? {
-          storyId: {
-            [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
-          },
-        }
-      : {};
+    const statusFilter = publicStory(role);
+
+    const where = {
+      ...statusFilter,
+      ...(lastId && {
+        storyId: {
+          [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+        },
+      }),
+    };
 
     const storiesRaw = await Story.findAll({
       where,

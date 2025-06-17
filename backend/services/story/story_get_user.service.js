@@ -8,14 +8,32 @@ const Story = sequelize.models.Story;
 const User = sequelize.models.User;
 
 const getStoriesByUser = async (
-  userId,
-  { limit = 20, lastId = null, includeAll = false } = {}
+  targetUserId,
+  {
+    limit = 20,
+    lastId = null,
+    includeAll = false,
+    role,
+    currentUserId,
+  } = {}
 ) => {
   try {
-    await validateUser(userId);
+    await validateUser(targetUserId);
+
+    const isOwnerOrAdmin = role === 'admin' || targetUserId === currentUserId;
+
     const where = {
-      userId,
-      ...(lastId ? { storyId: { [Op.lt]: lastId } } : {}),
+      [Op.and]: [
+        { userId: targetUserId },
+        ...(isOwnerOrAdmin
+          ? []
+          : [
+              {
+                status: { [Op.in]: ['update', 'full'] },
+              },
+            ]),
+        ...(lastId ? [{ storyId: { [Op.lt]: lastId } }] : []),
+      ],
     };
 
     const stories = await Story.findAll({

@@ -99,14 +99,22 @@ const UserController = {
   async updateUser(req, res, next) {
     try {
       const { userId } = req.params;
-      const updatedData = req.body;
+      const data = req.body;
+
+      const avatarFile = req.files?.avatarId?.[0] || null;
+      const backgroundFile = req.files?.backgroundId?.[0] || null;
 
       // Nếu không phải admin, không được cập nhật roleId
       if (req.user.role.roleName !== 'admin') {
-        delete updatedData.roleId;
+        delete data.roleId;
       }
 
-      const user = await updateUser(parseInt(userId), updatedData);
+      const user = await updateUser(
+        parseInt(userId),
+        data,
+        avatarFile,
+        backgroundFile
+      );
 
       res.status(200).json({
         success: true,

@@ -7,6 +7,7 @@ import {
   authenticateRefreshToken,
   isResourceOwner,
 } from '../middlewares/auth.middleware.js'
+import { uploadUserImages } from '../middlewares/uploadImage.middleware.js'
 
 const router = express.Router()
 
@@ -35,6 +36,7 @@ router.get(
 
 router.put(
   '/:userId',
+  uploadUserImages,
   validate(validators.userId, 'params'),
   validate(validators.updateUser),
   isResourceOwner,

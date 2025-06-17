@@ -1,4 +1,5 @@
 import { models, sequelize } from '../models/index.js';
+import { Op } from 'sequelize';
 import ApiError from './api_error.util.js';
 import NotificationService from '../services/notification.service.js';
 
@@ -39,6 +40,16 @@ const validateSortParams = (orderBy, sort, validFields) => {
   const finalOrderBy = validFields.includes(orderBy) ? orderBy : validFields[0];
   const finalSort = ['ASC', 'DESC'].includes(sort) ? sort : 'ASC';
   return { orderBy: finalOrderBy, sort: finalSort };
+};
+
+// Xử lý truyện public
+const publicStory = (roleName) => {
+  if (roleName === 'admin') return {};
+  return {
+    status: {
+      [Op.in]: ['update', 'full'],
+    },
+  };
 };
 
 // Xử lý giao dịch mua truyện
@@ -143,5 +154,6 @@ export {
   validateStory,
   updateStoryViewNum,
   validateSortParams,
+  publicStory,
   handleStoryPurchaseTransaction,
 };
