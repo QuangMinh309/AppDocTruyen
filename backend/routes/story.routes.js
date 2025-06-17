@@ -58,12 +58,6 @@ router.get(
 );
 
 router.get(
-  '/:storyId',
-  validate(validateStoryId),
-  StoryController.getStoryById
-);
-
-router.get(
   '/recently-read',
   validate(validateGetStories),
   StoryController.getRecentlyReadStories
@@ -73,6 +67,12 @@ router.get(
   '/purchased',
   validate(validateGetStories),
   StoryController.getPurchasedStories
+);
+
+router.get(
+  '/:storyId',
+  validate(validateStoryId),
+  StoryController.getStoryById
 );
 
 router.get(
