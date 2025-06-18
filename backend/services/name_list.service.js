@@ -142,7 +142,7 @@ const NameListService = {
             model: Story,
             as: 'stories',
             through: { attributes: [] },
-            attributes: ['storyId', 'storyName', 'coverImgId'],
+            attributes: ['coverImgId'],
           },
         ],
         order: [['nameListId', 'DESC']],
@@ -154,8 +154,6 @@ const NameListService = {
           storyCount: list.stories.length,
           stories: list.stories.slice(0, 3).map((story) => ({
             ...story.toJSON(),
-            createdAt: formatDate(story.createdAt),
-            updatedAt: formatDate(story.updatedAt),
           })),
         })),
         nextLastId:

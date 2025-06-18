@@ -8,7 +8,6 @@ const Role = sequelize.models.Role
 
 //xử lí logic xác thục chung
 export const verifyToken = async (token, secret) => {
-  console.log('Verifying token:', token);
   const decoded = jwt.verify(token, secret)
 
   const user = await User.findByPk(decoded.userId, {
@@ -27,8 +26,8 @@ export const verifyToken = async (token, secret) => {
   }
 
   return user
-
 }
+
 // Xác thực access token webSocket
 export const authenticateWebSocket = async (ws, req) => {
   try {
@@ -45,9 +44,7 @@ export const authenticateWebSocket = async (ws, req) => {
 // Xác thực access token cho http request
 export const authenticate = async (req, res, next) => {
   try {
-    console.log('Received Headers:', req.headers);
     const authHeader = req.headers.authorization;
-    console.log('Authorization Header:', authHeader);
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return next(new ApiError('Không có token xác thực', 401));
@@ -68,6 +65,7 @@ export const authenticate = async (req, res, next) => {
     return next(new ApiError(`Lỗi xác thực: ${error.message}`, 500));
   }
 };
+
 // Xác thực refresh token
 export const authenticateRefreshToken = async (req, res, next) => {
   try {
