@@ -3,15 +3,17 @@ import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { uploadImageToCloudinary } from '../cloudinary.service.js';
 import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
+import NotificationService from '../notification.service.js';
 
 const Story = sequelize.models.Story;
 const StoryCategory = sequelize.models.StoryCategory;
+const User = sequelize.models.User;
+const Role = sequelize.models.Role;
 
 const createStory = async (storyData, userId, file) => {
   return await handleTransaction(async (transaction) => {
     let coverImgId = null;
 
-    // Handle image upload if provided
     if (file) {
       try {
         const uploadResult = await uploadImageToCloudinary(
@@ -53,13 +55,47 @@ const createStory = async (storyData, userId, file) => {
       const categoryAssociations = safeStoryData.categories.map(
         (categoryId) => ({
           storyId: story.storyId,
-          categoryId: Number(categoryId), // Safe type conversion
+          categoryId: Number(categoryId),
         })
       );
       await StoryCategory.bulkCreate(categoryAssociations, { transaction });
     }
 
-    // Format createdAt to YYYY-MM-DD
+    const author = await User.findByPk(userId, {
+      attributes: ['userName'],
+      transaction,
+    });
+
+    const adminRole = await Role.findOne({
+      where: { roleName: 'admin' },
+      transaction,
+    });
+
+    if (adminRole) {
+      const admins = await User.findAll({
+        where: { roleId: adminRole.roleId },
+        attributes: ['userId'],
+        transaction,
+      });
+
+      // Send notification to admin
+      if (admins.length > 0) {
+        const adminNotifications = admins.map((admin) =>
+          NotificationService.createNotification(
+            'STORY_PENDING_APPROVAL',
+            `Truyện mới ${story.storyName} của tác giả ${
+              author?.userName || 'Unknown'
+            } cần được duyệt.`,
+            story.storyId,
+            admin.userId,
+            transaction
+          )
+        );
+
+        await Promise.all(adminNotifications);
+      }
+    }
+
     const formattedStory = {
       ...story.toJSON(),
       createdAt: formatDate(story.createdAt),

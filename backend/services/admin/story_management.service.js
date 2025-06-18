@@ -32,7 +32,7 @@ const StoryManagerService = {
 
       await NotificationService.createNotification(
         'STORY_APPROVAL',
-        `Truyện "${story.storyName}" của bạn ${
+        `Truyện ${story.storyName} của bạn ${
           approvalData.status === 'approved' ? 'được chấp nhận' : 'bị từ chối'
         }.`,
         story.storyId,

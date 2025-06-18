@@ -8,7 +8,6 @@ import {
 import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 
-const Story = sequelize.models.Story;
 const StoryCategory = sequelize.models.StoryCategory;
 
 const updateStory = async (storyId, storyData, userId, file) => {
