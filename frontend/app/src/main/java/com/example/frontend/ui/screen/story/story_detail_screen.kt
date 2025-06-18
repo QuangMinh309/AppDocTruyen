@@ -54,13 +54,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Date
 
-//@Preview
-//@Composable
-//fun PreviewStoryDetailScreen()
-//{
-//    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
-//    StoryDetailScreen(viewModel=fakeviewmodel)
-//}
+@Preview
+@Composable
+fun PreviewStoryDetailScreen()
+{
+    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
+    StoryDetailScreen(viewModel=fakeviewmodel)
+}
 @Composable
 fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()

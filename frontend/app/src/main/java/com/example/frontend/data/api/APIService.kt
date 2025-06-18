@@ -19,6 +19,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -41,6 +42,21 @@ interface ApiService {
 
     @GET("api/stories/vote")
     suspend fun getStoriesByVote(): Response<StoriesResponse>
+
+    @GET("api/stories/search")
+    suspend fun searchStories(
+        @Query("searchTerm") searchTerm: String,
+        @Query("limit") limit: Int = 20,
+        @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
+
+    @GET("api/stories/category/{categoryId}/status/{status}")
+    suspend fun getStoriesByCategoryAndStatus(
+        @Path("categoryId") categoryId: Int,
+        @Path("status") status: String,
+        @Query("limit") limit: Int = 20,
+        @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
 
     data class StoriesResponse(
         val success: Boolean,

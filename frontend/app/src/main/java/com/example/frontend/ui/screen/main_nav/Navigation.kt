@@ -71,10 +71,11 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
         viewModel.commands.collect { command ->
             when (command) {
                 is NavigationCommand.Navigate -> {
-                    navController.navigate(command.route)
+                    navController.navigate(command.route) {
+                        command.builder.invoke(this)// Áp dụng các tùy chọn từ builder
+                    }
                 }
                 is NavigationCommand.Back -> {
-                    Log.e("backk", "Đây là log mức DEBUG")
                     navController.popBackStack()
                 }
             }
