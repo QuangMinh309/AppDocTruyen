@@ -9,6 +9,7 @@ import getStoriesByVote from '../services/story/story_get_vote.service.js';
 import getStoriesByUpdateDate from '../services/story/story_get_update_date.service.js';
 import getStoriesByUser from '../services/story/story_get_user.service.js';
 import searchStories from '../services/story/story_search.service.js';
+import getRecentlyReadStories from '../services/story/story_get_recently_read.service.js';
 
 import StoryPurchaseService from '../services/story/story_interact.service.js';
 
@@ -223,7 +224,7 @@ const StoryController = {
     try {
       const userId = req.user.userId;
       const { limit, lastId } = req.query;
-      const result = await StoryPurchaseService.getRecentlyReadStories(userId, {
+      const result = await getRecentlyReadStories(userId, {
         limit,
         lastId,
       });

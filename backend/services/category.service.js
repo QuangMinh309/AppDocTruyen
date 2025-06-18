@@ -77,11 +77,28 @@ const CategoryService = {
   async deleteCategory(categoryId) {
     const category = await Category.findByPk(categoryId);
     if (!category) throw new ApiError('Thể loại không tồn tại', 404);
+
+    const associatedCommunities = await category.countCommunities();
+    if (associatedCommunities > 0) {
+      throw new ApiError(
+        'Không thể xóa thể loại vì đã có cộng đồng liên kết',
+        400
+      );
+    }
+
+    const associatedStories = await category.countStories();
+    if (associatedStories > 0) {
+      throw new ApiError(
+        'Không thể xóa thể loại vì đã có câu chuyện liên kết',
+        400
+      );
+    }
+
     try {
       await category.destroy();
-      return { message: 'Thể loại xoá thành công' };
+      return { message: 'Thể loại xóa thành công' };
     } catch (err) {
-      throw new ApiError('Lỗi khi cập nhật thể loại', 500);
+      throw new ApiError('Lỗi khi xóa thể loại', 500);
     }
   },
 };
