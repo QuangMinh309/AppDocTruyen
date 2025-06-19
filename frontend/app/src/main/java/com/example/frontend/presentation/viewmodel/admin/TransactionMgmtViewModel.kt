@@ -21,9 +21,9 @@ val dummyTransactions: List<Transaction> = listOf(
         finishAt = LocalDate.now()
     ),
     Transaction(
-        transactionId = 2,
-        userId = 1,
-        money = 20000,
+        transactionId = 23426427,
+        userId = 1547454637,
+        money = 2000000000,
         type = "withdraw",
         time = LocalDate.now(),
         status = "pending",
@@ -65,6 +65,9 @@ class TransactionMgmtViewModel @Inject constructor(navigationManager: Navigation
     private val _selectedStatus = MutableStateFlow("")
     val selectedStatus : StateFlow<String> = _selectedStatus
 
+    private var _selectedTransaction = MutableStateFlow<Transaction?>(null)
+    val selectedTransaction : StateFlow<Transaction?> = _selectedTransaction
+
     private val _transactions = MutableStateFlow<List<Transaction>>(dummyTransactions)
     val transactions : StateFlow<List<Transaction>> = _transactions
 
@@ -96,5 +99,10 @@ class TransactionMgmtViewModel @Inject constructor(navigationManager: Navigation
     fun onSelectStatus(type: String)
     {
         _selectedStatus.value = (if(_selectedStatus.value == type) "" else type).toString()
+    }
+
+    fun onUpdateTransaction(transaction: Transaction)
+    {
+        _selectedTransaction.value = if(_selectedTransaction.value == transaction) null else transaction
     }
 }

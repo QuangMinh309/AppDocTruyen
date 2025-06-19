@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CategoryList
 import com.example.frontend.ui.theme.BurntCoral
+import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
@@ -216,7 +217,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { },
+                onClick = { viewModel.deleteSelectedCategory() },
                 enabled = selectedItem != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedItem != null) BurntCoral else Color(0xAFAF2238)
@@ -226,7 +227,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             {
                 Text(
                     text = "Delete",
-                    color = if (selectedItem != null) Color.White else Color.Gray,
+                    color = if (selectedItem != null) DeepBlue else Color.Gray,
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
             }

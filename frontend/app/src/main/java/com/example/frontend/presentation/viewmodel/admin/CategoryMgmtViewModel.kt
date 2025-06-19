@@ -127,7 +127,7 @@ class CategoryMgmtViewModel @Inject constructor(navigationManager: NavigationMan
 
     fun deleteSelectedCategory()
     {
-        _categories.value = _categories.value.filter { it != _selectedItem.value }
-        _selectedItem.value = null
+//        _categories.value = _categories.value.filter { it != _selectedItem.value }
+//        _selectedItem.value = null
     }
 }

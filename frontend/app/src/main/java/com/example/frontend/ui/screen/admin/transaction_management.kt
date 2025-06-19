@@ -1,9 +1,7 @@
 package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,6 +42,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.text.input.KeyboardType
 import com.example.frontend.ui.components.TransactionCard
 import com.example.frontend.ui.components.SelectList
+import com.example.frontend.ui.theme.DeepBlue
+import com.example.frontend.ui.theme.SalmonRose
 
 @Composable
 fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewModel())
@@ -51,6 +52,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
     val tbTransactionIdValue by viewModel.transactionId.collectAsState()
     val selectedType by viewModel.selectedType.collectAsState()
     val selectedStatus by viewModel.selectedStatus.collectAsState()
+    val selectedTransaction by viewModel.selectedTransaction.collectAsState()
     val listTypes by viewModel.listTypes.collectAsState()
     val statusTypes by viewModel.statusTypes.collectAsState()
     val transactions by viewModel.transactions.collectAsState()
@@ -213,25 +215,69 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 onNameSelected = { viewModel.onSelectStatus(it) }
             )
         }
-        Text(
-            text = "Results",
-            color = Color.White,
-            style = TextStyle(
-                fontSize = 33.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
-            ),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 10.dp)
         )
+        {
+            Text(
+                text = "Results",
+                color = Color.White,
+                style = TextStyle(
+                    fontSize = 33.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                )
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = { },
+                enabled = selectedTransaction != null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedTransaction != null) Color.LightGray else Color(0xAFAF2238)
+                ),
+                modifier = Modifier.width(100.dp)
+            )
+            {
+                Text(
+                    text = "Update",
+                    color = if (selectedTransaction != null) DeepBlue else Color.Gray,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(
+                onClick = { },
+                enabled = selectedTransaction != null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedTransaction != null) BurntCoral else Color(0xAFAF2238)
+                ),
+                modifier = Modifier.width(100.dp)
+            )
+            {
+                Text(
+                    text = "Delete",
+                    color = if (selectedTransaction != null) DeepBlue else Color.Gray,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                )
+            }
+        }
+
         FlowColumn (
             modifier = Modifier
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.Center
         )
         {
             transactions.forEach { transaction ->
-                TransactionCard(transaction)
+                TransactionCard(
+                    item = transaction,
+                    isSelected = transaction == selectedTransaction,
+                    onClick = {viewModel.onUpdateTransaction(transaction)}
+                )
             }
         }
     }

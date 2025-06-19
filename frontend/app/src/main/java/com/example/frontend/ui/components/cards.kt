@@ -954,14 +954,19 @@ fun RowSelectItem(
 }
 
 @Composable
-fun TransactionCard(item : Transaction)
+fun TransactionCard(
+    item : Transaction,
+    isSelected : Boolean,
+    onClick: () -> Unit = {}
+)
 {
     Box (
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
             .padding(vertical = 10.dp)
-            .background(Color.DarkGray, RoundedCornerShape(10.dp)),
+            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
+            .clickable{ onClick() },
         contentAlignment = Alignment.CenterStart
     )
     {
@@ -1001,20 +1006,16 @@ fun TransactionCard(item : Transaction)
                 Spacer(modifier = Modifier.width(10.dp))
                 Column()
                 {
-                    Row {
-                        Text(
-                            text = "User ID: " + item.userId.toString(),
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                    Row {
-                        Text(
-                            text = "Type: " + item.type,
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
+                    Text(
+                        text = "User ID: " + item.userId.toString(),
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
+                    Text(
+                        text = "Type: " + item.type,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Divider(
@@ -1038,13 +1039,11 @@ fun TransactionCard(item : Transaction)
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
                         )
                     }
-                    Row {
-                        Text(
-                            text = "Status: " + item.status,
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
+                    Text(
+                        text = "Status: " + item.status,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
                 }
             }
         }
