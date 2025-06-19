@@ -27,17 +27,15 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.NameListStory
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
 import com.example.frontend.ui.components.*
 import com.example.frontend.ui.screen.story.ExamplStory
-import com.example.frontend.ui.screen.story.Examplechapters
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
-import com.google.firebase.firestore.auth.User
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -49,10 +47,12 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val newStories by viewModel.newStories.collectAsState()
     val topRankingStories by viewModel.topRankingStories.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val readLists by viewModel.readLists.collectAsState()
     val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
     val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
     val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
+    val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
 
     ScreenFrame {
         Column(
@@ -281,14 +281,33 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
 
             // Danh sách truyện (Read Lists)
-            Column(modifier = Modifier.fillMaxWidth()) {
-                SectionTitle(
-                    title = "Danh sách truyện",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.book_ic
-                )
-                readlistlist.forEach { list ->
-                    ReadListItem(item = list)
+            if (readLists.isNotEmpty() || isReadListsLoading) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    SectionTitle(
+                        title = "Danh sách truyện",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.book_ic
+                    )
+                    if (isReadListsLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                                .heightIn(max = 200.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(readLists) { list ->
+                                ReadListItem(item = list) {  }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -340,13 +359,20 @@ val ExampleList: List<Story> = listOf(
 
 )
 
+var ExampleNameListStory= NameListStory(
+    coverImgId = "02"
+)
 
 var  ReadListItem_= NameList(
-    id=1,
-    name="Yêu thích ",
+    id =1,
+    name ="Yêu thích ",
     description = "Như tiêu đề thì em mới tập tành xem phim điện ảnh. Em không thích phim chính kịch cho lắm, mọi người giới thiệu cho em vài phim điện ảnh Âu Mĩ, Trung Quốc mà mọi người ấn tượng với ạ. Em cảm ơn.",
     userId = 2,
-    stories = ExampleList
+    stories = listOf(
+        ExampleNameListStory,
+        ExampleNameListStory
+    ),
+    storyCount = 2
 )
 
 val readlistlist=listOf(

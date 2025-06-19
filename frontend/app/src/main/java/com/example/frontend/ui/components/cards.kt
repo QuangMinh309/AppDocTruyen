@@ -832,11 +832,12 @@ fun ReadListItem(
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        // Phần avatar xếp chồng (lấy từ 3 truyện đầu tiên)
-        Box(modifier = Modifier.size(110.dp,140.dp)) {
-            item.stories.take(3).forEachIndexed { index, story ->
+        // Phần avatar xếp chồng (lấy từ 1 đến 3 truyện đầu tiên)
+        Box(modifier = Modifier.size(110.dp, 140.dp)) {
+            val storiesToShow = item.stories.take(3)
+            storiesToShow.forEachIndexed { index, story ->
                 AsyncImage(
-                    model = story.coverImgUrl, // Lấy avatar từ coverImage của truyện
+                    model = story.coverImgUrl,
                     contentDescription = "Story cover ${index + 1}",
                     placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,
@@ -851,19 +852,35 @@ fun ReadListItem(
                         .padding(2.dp)
                 )
             }
+            // Điền khoảng trống nếu ít hơn 3 truyện
+            if (storiesToShow.size < 3) {
+                for (i in storiesToShow.size until 3) {
+                    Spacer(
+                        modifier = Modifier
+                            .size(90.dp, 120.dp)
+                            .align(Alignment.TopStart)
+                            .offset(
+                                x = (i * 10).dp,
+                                y = (i * 10).dp
+                            )
+                            .background(Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+                    )
+                }
+            }
         }
 
         // Phần thông tin
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(
-                    LocalContext.current)
+                    LocalContext.current
+                )
                 val halfWidth = with(LocalDensity.current) {
                     windowMetrics.bounds.width().toDp() * 0.3f
                 }
@@ -876,13 +893,10 @@ fun ReadListItem(
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
                     modifier = modifier
-                        .widthIn(max = halfWidth) // Giới hạn chiều rộng tối đa
+                        .widthIn(max = halfWidth)
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    OrangeRed,
-                                    BurntCoral
-                                )
+                                colors = listOf(OrangeRed, BurntCoral)
                             ),
                             shape = RoundedCornerShape(30.dp)
                         )
@@ -900,4 +914,3 @@ fun ReadListItem(
         }
     }
 }
-

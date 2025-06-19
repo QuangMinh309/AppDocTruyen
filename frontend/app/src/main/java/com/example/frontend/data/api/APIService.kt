@@ -43,6 +43,20 @@ interface ApiService {
     @GET("api/stories/vote")
     suspend fun getStoriesByVote(): Response<StoriesResponse>
 
+    @GET("api/nameLists/user")
+    suspend fun getUserReadingLists(): Response<NameListData>
+
+    data class NameListResponse(
+        val success: Boolean,
+        val data: NameListData
+    )
+
+    data class NameListData(
+        val readingLists: List<NameList>,
+        val nextLastId: Int?,
+        val hasMore: Boolean
+    )
+
     @GET("api/stories/search")
     suspend fun searchStories(
         @Query("searchTerm") searchTerm: String,

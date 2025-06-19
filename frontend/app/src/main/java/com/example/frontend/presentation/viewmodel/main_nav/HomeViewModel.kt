@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.data.repository.HomeRepository
@@ -35,6 +36,9 @@ class HomeViewModel @Inject constructor(
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 
+    private val _readLists = MutableStateFlow<List<NameList>>(emptyList())
+    val readLists: StateFlow<List<NameList>> = _readLists.asStateFlow()
+
     private val _isSuggestedLoading = MutableStateFlow(false)
     val isSuggestedLoading: StateFlow<Boolean> = _isSuggestedLoading.asStateFlow()
 
@@ -47,12 +51,16 @@ class HomeViewModel @Inject constructor(
     private val _isCategoriesLoading = MutableStateFlow(false)
     val isCategoriesLoading: StateFlow<Boolean> = _isCategoriesLoading.asStateFlow()
 
+    private val _isReadListsLoading = MutableStateFlow(false)
+    val isReadListsLoading: StateFlow<Boolean> = _isReadListsLoading.asStateFlow()
+
     val userName: String
         get() = authRepository.getCurrentUser()?.dName ?: "User"
 
     init {
         loadStories()
         loadCategories()
+        loadReadLists()
     }
 
     private fun loadStories() {
@@ -138,6 +146,30 @@ class HomeViewModel @Inject constructor(
                 Log.e("HomeViewModel", "Exception during loadCategories", e)
             } finally {
                 _isCategoriesLoading.value = false
+            }
+        }
+    }
+
+    private fun loadReadLists() {
+        viewModelScope.launch {
+            _isReadListsLoading.value = true
+            try {
+                val response = homeRepository.getUserReadingLists()
+                _readLists.value = when (response) {
+                    is Result.Success -> {
+                        Log.d("HomeViewModel", "Read lists: ${response.data.size}")
+                        response.data
+                    }
+                    is Result.Failure -> {
+                        Log.e("HomeViewModel", "Error loading read lists", response.exception)
+                        emptyList()
+                    }
+                }
+            } catch (e: Exception) {
+                _readLists.value = emptyList()
+                Log.e("HomeViewModel", "Exception during loadReadLists", e)
+            } finally {
+                _isReadListsLoading.value = false
             }
         }
     }
