@@ -36,6 +36,10 @@ import com.example.frontend.ui.components.*
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
+<<<<<<< HEAD
+=======
+//import com.google.firebase.firestore.auth.User
+>>>>>>> 3855669fe417f0f45db18fda25e675f2642d4a3a
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime

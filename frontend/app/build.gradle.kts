@@ -80,7 +80,7 @@ dependencies {
     implementation(libs.accompanist.flowlayout)
     implementation(libs.core)
     implementation(libs.gson)
-    implementation(libs.firebase.firestore.ktx)
+    //implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.paging.runtime)
 
     testImplementation(libs.junit)
