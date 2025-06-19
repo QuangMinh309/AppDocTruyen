@@ -1,6 +1,7 @@
     package com.example.frontend.ui.screen.community
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.main_nav.demoAppUser
 import com.example.frontend.ui.screen.main_nav.demoChatList
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview(showBackground = true)
 @Composable
 fun PreviewScreenContent() {
@@ -46,7 +48,6 @@ fun PreviewScreenContent() {
     ChattingScreen(viewModel = fakeViewModel)
 }
 
-@Preview
 @Composable
 fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
 {
