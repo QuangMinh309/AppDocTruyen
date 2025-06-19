@@ -273,9 +273,9 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                             FlowRow {
                                 categories.forEach { category ->
                                     SelectChip(
-                                        name = category.name,
+                                        name = category.name?:"",
                                         isSelected = category.name in selectedCategories,
-                                        onClick = { viewModel.onSelectCategory(category.name) }
+                                        onClick = { viewModel.onSelectCategory(category.name?:"") }
                                     )
                                 }
                             }

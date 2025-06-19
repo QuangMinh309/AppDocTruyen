@@ -173,7 +173,7 @@ fun CategoryList(
         ) {
             categories.forEach { category ->
                 SelectChip(
-                    name = category.name,
+                    name = category.name?:"",
                     isSelected = category == selectedCategory,
                     onClick = { onCategorySelected(category) }
                 )

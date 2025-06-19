@@ -39,78 +39,78 @@ val Examplechapters: List<Chapter> = listOf(
     ExampleChapter
 )
 
-val ExamplStory=Story(
-    id=1,
-    name ="Alibaba",
-    coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-    description = "fgfssdf",
-    price = BigDecimal(10000),
-    author = User(id = 1,
-        name = "peneloped",
-        avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        dName = "tolapenee"
-    ),
-    voteNum = 100,
-    chapterNum = 10,
-    viewNum = 100,
-    categories = genreDemoList,
-    createdAt = LocalDate.parse("2024-12-12"),
-    updateAt = LocalDate.parse("2024-12-12"),
-    status = "Full",
-    ageRange = 13,
-    pricePerChapter = BigDecimal(200),
-    chapters = Examplechapters
-)
+//val ExamplStory=Story(
+//    id=1,
+//    name ="Alibaba",
+//    coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//    description = "fgfssdf",
+//    price = BigDecimal(10000),
+//    author = User(id = 1,
+//        name = "peneloped",
+//        avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//        dName = "tolapenee"
+//    ),
+//    voteNum = 100,
+//    chapterNum = 10,
+//    viewNum = 100,
+//    categories = genreDemoList,
+//    createdAt = LocalDate.parse("2024-12-12"),
+//    updateAt = LocalDate.parse("2024-12-12"),
+//    status = "Full",
+//    ageRange = 13,
+//    pricePerChapter = BigDecimal(200),
+//    chapters = Examplechapters
+//)
 
 val ExampleCategories = listOf(
     Category(1, "Fantasy"),
     Category(2, "Adventure")
 )
 
-val Examplestories = listOf(
-    Story(
-        id=1,
-        name ="Alibaba",
-        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        description = "fgfssdf",
-        price = BigDecimal(10000),
-        author = User(id = 1,
-            name = "peneloped",
-            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-            dName = "tolapenee"
-        ),
-        voteNum = 100,
-        chapterNum = 10,
-        viewNum = 100,
-        categories = genreDemoList,
-        createdAt = LocalDate.parse("2024-12-12"),
-        updateAt = LocalDate.parse("2024-12-12"),
-        status = "Full",
-        ageRange = 13,
-        pricePerChapter = BigDecimal(200),
-        chapters = Examplechapters
-
-    ),
-    Story(
-        id=2,
-        name ="Alibaba",
-        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        description = "fgfssdf",
-        price = BigDecimal(10000),
-        author = User(id = 1,
-            name = "peneloped",
-            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-            dName = "tolapenee"
-        ),
-        voteNum = 100,
-        chapterNum = 10,
-        viewNum = 100,
-        categories = genreDemoList,
-        createdAt = LocalDate.parse("2024-12-12"),
-        updateAt = LocalDate.parse("2024-12-12"),
-        status = "Full",
-        ageRange = 13,
-        pricePerChapter = BigDecimal(200),
-        chapters = Examplechapters
-    )
-)
+//val Examplestories = listOf(
+//    Story(
+//        id=1,
+//        name ="Alibaba",
+//        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//        description = "fgfssdf",
+//        price = BigDecimal(10000),
+//        author = User(id = 1,
+//            name = "peneloped",
+//            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//            dName = "tolapenee"
+//        ),
+//        voteNum = 100,
+//        chapterNum = 10,
+//        viewNum = 100,
+//        categories = genreDemoList,
+//        createdAt = LocalDate.parse("2024-12-12"),
+//        updateAt = LocalDate.parse("2024-12-12"),
+//        status = "Full",
+//        ageRange = 13,
+//        pricePerChapter = BigDecimal(200),
+//        chapters = Examplechapters
+//
+//    ),
+//    Story(
+//        id=2,
+//        name ="Alibaba",
+//        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//        description = "fgfssdf",
+//        price = BigDecimal(10000),
+//        author = User(id = 1,
+//            name = "peneloped",
+//            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
+//            dName = "tolapenee"
+//        ),
+//        voteNum = 100,
+//        chapterNum = 10,
+//        viewNum = 100,
+//        categories = genreDemoList,
+//        createdAt = LocalDate.parse("2024-12-12"),
+//        updateAt = LocalDate.parse("2024-12-12"),
+//        status = "Full",
+//        ageRange = 13,
+//        pricePerChapter = BigDecimal(200),
+//        chapters = Examplechapters
+//    )
+//)

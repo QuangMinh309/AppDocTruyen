@@ -71,7 +71,7 @@ fun StoryViewManagementScreen(viewModel : StoryViewMgmtViewModel = hiltViewModel
     ScreenFrame(
         topBar = {
             TopBar(
-                title = ExamplStory.name,
+                title = ExamplStory.name?:"",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -103,10 +103,10 @@ fun StoryViewManagementScreen(viewModel : StoryViewMgmtViewModel = hiltViewModel
                             )
                             Spacer(Modifier.height(29.dp))
 
-                            LargeGenreTags(ExamplStory.categories)
+                            LargeGenreTags(ExamplStory.categories?:listOf())
 
                             Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (model = ExamplStory.author, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
+                        //    AuthorInfoCard (model = ExamplStory.author?:, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
 //                            val rawComments = listOf(
