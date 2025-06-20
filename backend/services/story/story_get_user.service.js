@@ -6,6 +6,7 @@ import { formatDate } from '../../utils/date.util.js';
 
 const Story = sequelize.models.Story;
 const User = sequelize.models.User;
+const Category = sequelize.models.Category;
 
 const getStoriesByUser = async (
   targetUserId,
@@ -44,6 +45,12 @@ const getStoriesByUser = async (
           model: User,
           as: 'author',
           attributes: ['userId', 'userName', 'dUserName'],
+        },
+        {
+          model: Category,
+          as: 'categories',
+          attributes: ['categoryId', 'categoryName'],
+          through: { attributes: [] },
         },
       ],
       order: [
