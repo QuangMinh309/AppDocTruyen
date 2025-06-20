@@ -115,7 +115,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                             LargeGenreTags(ExamplStory.categories?: emptyList())
 
                             Spacer(Modifier.height(37.dp))
-                        //    AuthorInfoCard (model = ExamplStory.author, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
+                            AuthorInfoCard (model = ExamplStory.author, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
                             Spacer(Modifier.height(37.dp))
                             SectionTitle(title = "Top Comments")
 //                            val rawComments = listOf(
@@ -129,11 +129,11 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                             SimilarNovelsCard(Examplestories,viewModel)
                         },
                         chapterContent = {
-//                            val chapters = listOf(
-//                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
-//                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
-//                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
-//                            )
+                            val chapters = listOf(
+                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
+                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
+                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
+                            )
                             Spacer(Modifier.height(29.dp))
                             Examplechapters.forEachIndexed { index, chapter ->
                                 ChapterItemCard(
@@ -207,7 +207,7 @@ val ExamplStory=Story(
     author = Author(id = 1,
         name = "peneloped",
         avatarId ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-
+        dName = null,
     ),
     voteNum = 100,
     chapterNum = 10,

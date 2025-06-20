@@ -14,7 +14,7 @@ data class User(
     val about: String? = null,
    @SerializedName("DOB") val dob: String? = null,
     var followerNum: Int? = null,
-    val novelsNum: Int? = null,
+   @SerializedName("storyCount") val novelsNum: Int? = null,
     val readListNum: Int? = null,
     val avatarId: String? = null,
     val backgroundId: String? = null,

@@ -69,6 +69,13 @@ interface ApiService {
         @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 
+    @GET("api/stories/user/{userId}")
+    suspend fun getStoriesByUser(
+        @Path("userId") userId: Int,
+        @Query("limit") limit: Int = 20,
+        @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
+
     data class StoriesResponse(
         val success: Boolean,
         val data: StoriesData

@@ -41,8 +41,8 @@ class ProfileViewModel @Inject constructor(
             val currentUser = authRepository.getCurrentUser()
             if (currentUser != null) {
                 // Cập nhật novelsNum với dữ liệu mẫu (ví dụ: 5)
-                val updatedUser = currentUser.copy(novelsNum = 5)
-                _user.value = updatedUser
+
+                _user.value = currentUser
             }
             _isLoading.value = false
         }
