@@ -6,9 +6,11 @@ sealed class Screen(var route: String) {
         data object Search : MainNav("Search")
         data object YourStory : MainNav("YourStory")
         data object Community : MainNav("Community")
-        data object Profile : MainNav("Profile/{id}") {
-            fun createRoute(id: String) = "Profile/$id"
-        }
+        data object Profile : MainNav("Profile")
+
+//        data object Profile : MainNav("Profile/{id}") {
+//            fun createRoute(id: String) = "Profile/$id"
+//        }
     }
 
     data object Intro : Screen("Intro")

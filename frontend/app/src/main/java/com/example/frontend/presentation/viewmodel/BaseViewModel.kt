@@ -21,7 +21,7 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
 
     fun onGoToProfileScreen() {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Profile.createRoute("1"))
+            navigationManager.navigate(Screen.MainNav.Profile.route)
         }
     }
     fun onGoToHomeScreen() {

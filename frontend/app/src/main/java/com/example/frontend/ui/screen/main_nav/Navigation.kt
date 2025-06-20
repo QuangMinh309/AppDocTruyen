@@ -157,12 +157,13 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
             composable(Screen.MainNav.Search.route) { StorySearchScreen() }
             composable(Screen.MainNav.Community.route) { CommunityScreen() }
-            composable(
-                route = Screen.MainNav.Profile.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
-                )
-            ) { ProfileScreen() }
+            composable(Screen.MainNav.Profile.route) { ProfileScreen() }
+//            composable(
+//                route = Screen.MainNav.Profile.route,
+//                arguments = listOf(
+//                    navArgument("id") { type = NavType.StringType },
+//                )
+//            ) { ProfileScreen() }
 
             composable(Screen.Intro.route) { IntroScreen() }
 

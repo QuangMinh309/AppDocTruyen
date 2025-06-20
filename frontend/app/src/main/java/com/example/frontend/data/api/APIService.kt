@@ -46,10 +46,7 @@ interface ApiService {
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
 
-    data class NameListResponse(
-        val success: Boolean,
-        val data: NameListData
-    )
+
 
     data class NameListData(
         val readingLists: List<NameList>,

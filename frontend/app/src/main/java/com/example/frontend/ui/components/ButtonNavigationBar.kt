@@ -47,7 +47,7 @@ fun BottomNavigationBar(navController: NavController) {
                 "Home" -> Screen.MainNav.Home.route
                 "Search" -> Screen.MainNav.Search.route
                 "Community" -> Screen.MainNav.Community.route
-                "Profile" -> Screen.MainNav.Profile.createRoute("1")
+                "Profile" -> Screen.MainNav.Profile.route
                 else -> Screen.MainNav.Home.route
             }
 

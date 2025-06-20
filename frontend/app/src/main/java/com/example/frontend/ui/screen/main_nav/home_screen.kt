@@ -407,7 +407,7 @@ val demoUser = com.example.frontend.data.model.User(
     name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -418,7 +418,7 @@ val demoUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(500.00),
-    dob = LocalDate.parse("2020-03-12"),
+    dob = "2020-03-12",
     isPremium = true
 
 )
@@ -427,7 +427,7 @@ val demoAppUser = com.example.frontend.data.model.User(
     id = 2, name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -438,7 +438,7 @@ val demoAppUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(0),
-    dob = LocalDate.parse("2020-03-12")
+    dob = "2020-03-12",
 )
 
 val demoChatList  = listOf(
