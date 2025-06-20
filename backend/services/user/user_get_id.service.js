@@ -18,6 +18,8 @@ const getUserById = async (userId) => {
         'DOB',
         'about',
         'followerNum',
+        'avatarId',
+        'backgroundId',
       ],
       include: [
         { model: Role, as: 'role', attributes: ['roleId', 'roleName'] },
