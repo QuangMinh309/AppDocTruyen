@@ -26,11 +26,13 @@ class SearchStoryRepository @Inject constructor(private val apiService: ApiServi
     suspend fun getStoriesByCategoryAndStatus(
         categoryId: Int,
         status: String,
-        limit: Int = 20,
-        lastId: Int? = null
+//        limit: Int = 20,
+//        lastId: Int? = null
     ): Result<List<Story>> {
         return try {
-            val response = apiService.getStoriesByCategoryAndStatus(categoryId, status, limit, lastId)
+            val response = apiService.getStoriesByCategoryAndStatus(categoryId, status
+            //    , limit, lastId
+            )
             if (response.isSuccessful && response.body()?.success == true) {
                 Result.Success(response.body()?.data?.stories ?: emptyList())
             } else {

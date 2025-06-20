@@ -42,6 +42,7 @@ sealed class Screen(var route: String) {
             data object Read : Chapter("Chapter/Read/{chapterId}")
             data object Write : Chapter("chapter/Write/{chapterId}")
         }
+        data object TopRanking : Story("Story/TopRanking")
     }
 
     data object YourStoryDetail : Screen("YourStoryDetail/{id}") {

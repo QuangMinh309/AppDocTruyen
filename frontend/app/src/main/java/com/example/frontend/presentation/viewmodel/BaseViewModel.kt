@@ -132,4 +132,10 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Authentication.NewPassword.createRoute(otp, userId.toString()))
         }
     }
+
+    fun onGoToTopRankingStoryListScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.TopRanking.route)
+        }
+    }
 }

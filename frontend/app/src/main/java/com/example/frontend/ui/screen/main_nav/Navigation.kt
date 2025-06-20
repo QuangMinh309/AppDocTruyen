@@ -50,6 +50,7 @@ import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -202,6 +203,8 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                     navArgument("chapterId") { type = NavType.StringType },
                 )
             ) { WriteScreen() }
+
+            composable(Screen.Story.TopRanking.route) { TopRankingStoryListScreen()  }
 
             composable(
                 route = Screen.Community.Chat.route,

@@ -64,16 +64,16 @@ interface ApiService {
     @GET("api/stories/category/{categoryId}/status/{status}")
     suspend fun getStoriesByCategoryAndStatus(
         @Path("categoryId") categoryId: Int,
-        @Path("status") status: String,
-        @Query("limit") limit: Int = 20,
-        @Query("lastId") lastId: Int? = null
+        @Path("status") status: String
+//        @Query("limit") limit: Int = 20,
+//        @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 
     @GET("api/stories/user/{userId}")
     suspend fun getStoriesByUser(
         @Path("userId") userId: Int,
         @Query("limit") limit: Int = 20,
-        @Query("lastId") lastId: Int? = null
+       @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 
     data class StoriesResponse(

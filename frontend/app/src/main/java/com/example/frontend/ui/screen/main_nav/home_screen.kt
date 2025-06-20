@@ -247,6 +247,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             shape = RoundedCornerShape(30.dp)
                         )
                         .padding(horizontal = 10.dp)
+                        .clickable { viewModel.onGoToTopRankingStoryListScreen() }
                 )
             }
 
