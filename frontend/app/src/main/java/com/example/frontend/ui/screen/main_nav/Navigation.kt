@@ -48,6 +48,7 @@ import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
 import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
 //import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
+import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
@@ -203,6 +204,20 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                     navArgument("chapterId") { type = NavType.StringType },
                 )
             ) { WriteScreen() }
+
+            composable(
+                route = Screen.Story.Category.route,
+                arguments = listOf(
+                    navArgument("categoryId") {type= NavType.IntType},
+                    navArgument("categoryName") {type=NavType.StringType}
+                )
+            ) {
+                    backStackEntry ->
+                val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
+                val categoryName = backStackEntry.arguments?.getString("categoryName") ?: "Unknown"
+                Log.d("AppNavigation", "Navigating to CategoryStoryListScreen: categoryId=$categoryId, categoryName=$categoryName")
+                CategoryStoryListScreen(categoryId = categoryId, categoryName = categoryName)
+            }
 
             composable(Screen.Story.TopRanking.route) { TopRankingStoryListScreen()  }
 

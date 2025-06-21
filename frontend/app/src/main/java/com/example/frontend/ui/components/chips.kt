@@ -1,5 +1,6 @@
 package com.example.frontend.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,23 +37,32 @@ import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
-fun Chip(text: String, onClick:()->Unit={}) {
+fun Chip(
+    text: String,
+    onClick: () -> Unit = {}
+) {
     Surface(
         color = Color.Unspecified,
         shape = RoundedCornerShape(30.dp),
         modifier = Modifier
-            .clickable { onClick }
+            .clickable(
+                onClick = {
+                    Log.d("ChipDebug", "Chip clicked: $text")
+                    onClick()
+                }
+            )
             .padding(2.dp)
             .border(
                 width = 2.dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
                         Color(0xFF00FF99),
-                        Color(0xFF004099)  //
+                        Color(0xFF004099)
                     )
                 ),
                 shape = RoundedCornerShape(30.dp)
             )
+            .minimumInteractiveComponentSize() // Đảm bảo kích thước tối thiểu để nhận sự kiện
     ) {
         Text(
             text = text,

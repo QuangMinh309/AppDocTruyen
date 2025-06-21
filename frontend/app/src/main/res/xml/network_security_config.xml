@@ -3,6 +3,6 @@
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">172.20.10.3</domain>
-        <domain includeSubdomains="true">6ebc-116-110-41-76.ngrok-free.app</domain>
+        <domain includeSubdomains="true">0114-125-235-238-24.ngrok-free.app</domain>
     </domain-config>
 </network-security-config>

@@ -1,4 +1,70 @@
 package com.example.frontend.presentation.viewmodel.story
 
-class CategoryStoryListViewModel {
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.model.Result
+import com.example.frontend.data.model.Story
+import com.example.frontend.data.repository.CategoryStoryListRepository
+import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.services.navigation.NavigationManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class CategoryStoryListViewModel @Inject constructor(
+    private val categoryStoryListRepository: CategoryStoryListRepository,
+    navigationManager: NavigationManager
+) : BaseViewModel(navigationManager) {
+
+    private val _categoryStories = MutableStateFlow<List<Story>>(emptyList())
+    val categoryStories: StateFlow<List<Story>> = _categoryStories.asStateFlow()
+
+    private val _isCategoryStoriesLoading = MutableStateFlow(false)
+    val isCategoryStoriesLoading: StateFlow<Boolean> = _isCategoryStoriesLoading.asStateFlow()
+
+    private val _categoryId = MutableStateFlow(0)
+    val categoryId: StateFlow<Int> = _categoryId.asStateFlow()
+
+    fun setCategoryId(categoryId: Int) {
+        if (_categoryId.value != categoryId) {
+            _categoryId.value = categoryId
+            loadStories()
+        }
+    }
+
+    init {
+        loadStories()
+    }
+
+    private fun loadStories() {
+        viewModelScope.launch {
+            _isCategoryStoriesLoading.value = true
+            try {
+                val categoryStoryListResult = categoryStoryListRepository.getStoriesByCategory(categoryId.value)
+                _categoryStories.value = when (categoryStoryListResult) {
+                    is Result.Success -> {
+                        categoryStoryListResult.data.forEach { story ->
+                            if (story.name == null) Log.w("CategoryStoryListViewModel", "Story with id ${story.id} has null name")
+                        }
+                        Log.d("CategoryStoryListViewModel", "Suggested stories: ${categoryStoryListResult.data.size}")
+                        categoryStoryListResult.data
+                    }
+                    is Result.Failure -> {
+                        Log.e("CategoryStoryListViewModel", "Error loading top ranking stories", categoryStoryListResult.exception)
+                        emptyList()
+                    }
+                }
+            } catch (e: Exception) {
+                _categoryStories.value = emptyList()
+                Log.e("CategoryStoryListViewModel", "Exception during loadStories", e)
+            } finally {
+                _isCategoryStoriesLoading.value = false
+            }
+        }
+    }
 }

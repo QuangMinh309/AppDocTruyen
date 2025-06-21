@@ -76,6 +76,22 @@ interface ApiService {
        @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 
+    @GET("api/stories/category/{categoryId}")
+    suspend fun getStoriesByCategory(
+        @Path("categoryId") categoryId: Int
+    ) : Response<CategoryStoriesResponse>
+
+    data class CategoryStoriesResponse(
+        val success: Boolean,
+        val data: CategoryStoriesData
+    )
+
+    data class CategoryStoriesData(
+        val formattedStories: List<Story>,
+        val nextLastId: Int?,
+        val hasMore: Boolean
+    )
+
     data class StoriesResponse(
         val success: Boolean,
         val data: StoriesData

@@ -62,6 +62,14 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
 
         }
     }
+
+    fun onGoToCategoryStoryList(categoryId:Int,categoryName:String){
+        Log.d("HomeViewModel", "Navigating to CategoryStoryList: categoryId=$categoryId, categoryName=$categoryName")
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.Category.createRoute(categoryId,categoryName))
+        }
+    }
+
     fun onGoBack() {
         viewModelScope.launch {
             navigationManager.back()

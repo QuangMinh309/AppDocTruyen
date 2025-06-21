@@ -276,7 +276,10 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         categories.forEach { genre ->
-                            Chip(text = genre.name ?: "", onClick = {})
+                            Chip(text = genre.name ?: "", onClick = {
+                                Log.d("HomeScreen", "Chip clicked: categoryId=${genre.id}, categoryName=${genre.name}")
+                                viewModel.onGoToCategoryStoryList(genre.id, genre.name.toString())
+                            })
                         }
                     }
                 }
