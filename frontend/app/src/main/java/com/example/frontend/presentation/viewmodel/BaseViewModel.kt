@@ -70,6 +70,12 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         }
     }
 
+    fun onGoToNameListStoryScreen(nameListsId: Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.NameLists.createRoute(nameListsId))
+        }
+    }
+
     fun onGoBack() {
         viewModelScope.launch {
             navigationManager.back()

@@ -11,6 +11,7 @@ import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -102,6 +103,26 @@ interface ApiService {
         val nextLastId: Int,
         val hasMore: Boolean
     )
+
+    @GET("api/nameLists/{nameListsId}")
+    suspend fun getNameListById (
+        @Path("nameListsId") nameListsId:Int
+    ): Response<NameListResponse>
+
+    data class NameListResponse(
+       val nameList: NameListStory,
+       val stories: List<Story>,
+       val nextLastId: Int,
+       val hasMore: Boolean
+    )
+    data class NameListStory(
+        @SerializedName("nameListId") val id: Int,
+        @SerializedName("nameList") val name: String,
+        @SerializedName("userId") val userId: Int,
+        @SerializedName("description") val description: String
+    )
+
+
 
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>

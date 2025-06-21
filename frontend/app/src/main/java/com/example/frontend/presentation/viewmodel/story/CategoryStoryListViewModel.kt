@@ -18,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryStoryListViewModel @Inject constructor(
     private val categoryStoryListRepository: CategoryStoryListRepository,
+    savedStateHandle: SavedStateHandle,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -27,17 +28,30 @@ class CategoryStoryListViewModel @Inject constructor(
     private val _isCategoryStoriesLoading = MutableStateFlow(false)
     val isCategoryStoriesLoading: StateFlow<Boolean> = _isCategoryStoriesLoading.asStateFlow()
 
-    private val _categoryId = MutableStateFlow(0)
+    private val _categoryId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("categoryId")))
     val categoryId: StateFlow<Int> = _categoryId.asStateFlow()
 
-    fun setCategoryId(categoryId: Int) {
-        if (_categoryId.value != categoryId) {
-            _categoryId.value = categoryId
-            loadStories()
-        }
-    }
+    private val _categoryName = MutableStateFlow(checkNotNull(savedStateHandle.get<String>("categoryName")))
+    val categoryName: StateFlow<String> = _categoryName.asStateFlow()
 
     init {
+        // Khởi tạo coroutine để thu thập thay đổi từ savedStateHandle
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow("categoryId", 0).collect { newCategoryId ->
+                if (_categoryId.value != newCategoryId) {
+                    _categoryId.value = newCategoryId
+                    loadStories()
+                }
+            }
+        }
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow("categoryName", "").collect { newCategoryName ->
+                if (_categoryName.value != newCategoryName) {
+                    _categoryName.value = newCategoryName
+                }
+            }
+        }
+        // Gọi loadStories lần đầu
         loadStories()
     }
 
@@ -45,17 +59,17 @@ class CategoryStoryListViewModel @Inject constructor(
         viewModelScope.launch {
             _isCategoryStoriesLoading.value = true
             try {
-                val categoryStoryListResult = categoryStoryListRepository.getStoriesByCategory(categoryId.value)
+                val categoryStoryListResult = categoryStoryListRepository.getStoriesByCategory(_categoryId.value)
                 _categoryStories.value = when (categoryStoryListResult) {
                     is Result.Success -> {
                         categoryStoryListResult.data.forEach { story ->
                             if (story.name == null) Log.w("CategoryStoryListViewModel", "Story with id ${story.id} has null name")
                         }
-                        Log.d("CategoryStoryListViewModel", "Suggested stories: ${categoryStoryListResult.data.size}")
+                        Log.d("CategoryStoryListViewModel", "Stories loaded: ${categoryStoryListResult.data.size}")
                         categoryStoryListResult.data
                     }
                     is Result.Failure -> {
-                        Log.e("CategoryStoryListViewModel", "Error loading top ranking stories", categoryStoryListResult.exception)
+                        Log.e("CategoryStoryListViewModel", "Error loading stories", categoryStoryListResult.exception)
                         emptyList()
                     }
                 }

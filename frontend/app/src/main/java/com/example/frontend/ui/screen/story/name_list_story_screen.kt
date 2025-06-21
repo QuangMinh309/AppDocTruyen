@@ -20,23 +20,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.presentation.viewmodel.story.CategoryStoryListViewModel
+import com.example.frontend.presentation.viewmodel.story.NameListStoryViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.components.TopBar
 
 @Composable
-fun CategoryStoryListScreen(
-    viewModel: CategoryStoryListViewModel = hiltViewModel()
+fun NameListStoryScreen(
+    viewModel: NameListStoryViewModel = hiltViewModel()
 ) {
-    val categoryName by viewModel.categoryName.collectAsState()
-    val categoryStories by viewModel.categoryStories.collectAsState()
-    val isLoading by viewModel.isCategoryStoriesLoading.collectAsState()
+    val stories by viewModel.stories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val nameListName by viewModel.nameListName.collectAsState()
 
     ScreenFrame(
         topBar = {
             TopBar(
-                title = categoryName,
+                title = nameListName, // Sử dụng tên từ nameList
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -63,8 +63,10 @@ fun CategoryStoryListScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    items(categoryStories) { story ->
-                        StoryCard3(story = story, onClick = { viewModel.onGoToStoryScreen(story.id) })
+                    items(stories) { story ->
+                        StoryCard3(story = story, onClick = {
+                         //   viewModel.onGoToStoryScreen(story.storyId)
+                        })
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
