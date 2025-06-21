@@ -1,27 +1,26 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Premia', {
+    await queryInterface.createTable("premium", {
       premiumId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       userId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'users',
-          key: 'userId'
-        } 
+          model: "user",
+          key: "userId",
+        },
       },
       CreatedAt: {
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Premia');
-  }
+    await queryInterface.dropTable("premium");
+  },
 };

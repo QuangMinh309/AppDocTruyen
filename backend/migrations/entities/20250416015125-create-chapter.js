@@ -1,40 +1,42 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('chapters', {
+    await queryInterface.createTable("chapter", {
       chapterId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       chapterName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+      },
+      ordinalNumber: {
+        type: Sequelize.INTEGER,
       },
       storyId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'stories',
-          key: 'storyId'
-        }
+          model: "story",
+          key: "storyId",
+        },
       },
       content: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.TEXT("long"),
       },
       viewNum: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       lockedStatus: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('chapters');
-  }
+    await queryInterface.dropTable("chapter");
+  },
 };

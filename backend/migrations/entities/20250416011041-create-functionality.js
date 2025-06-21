@@ -1,23 +1,22 @@
-'use strict';
 /** @type {import('sequelize-cli').Migration} */
-module.exports = {
+export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('functionalities', {
+    await queryInterface.createTable("functionality", {
       funcId: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       funcName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       funcViewId: {
-        type: Sequelize.STRING
-      }
+        type: Sequelize.STRING,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('functionalities');
-  }
+    await queryInterface.dropTable("functionality");
+  },
 };

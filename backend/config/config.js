@@ -1,21 +1,38 @@
 import dotenv from 'dotenv';
-import path from 'path';
-dotenv.config({ path: path.resolve('../.env') });
+dotenv.config();
+
+const commonConfig = {
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  dialect: process.env.DB_DIALECT,
+  logging: false,
+  timezone: '+07:00',
+  dialectOptions:
+    process.env.DB_HOST === 'localhost'
+      ? {}
+      : {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        },
+};
 
 const config = {
   development: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
+    ...commonConfig,
     database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
   },
+  test: {
+    ...commonConfig,
+    database: process.env.DB_NAME + '_test',
+  },
+  // production: {
+  //   ...commonConfig,
+  //   database: process.env.DB_NAME,
+  // },
 };
-export default config; 
+
+export default config;
