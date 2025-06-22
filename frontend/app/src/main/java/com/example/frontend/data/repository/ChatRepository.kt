@@ -1,11 +1,10 @@
 
 import android.util.Log
+import com.example.frontend.R
+import com.example.frontend.data.local.dao.ChatDao
 import com.example.frontend.data.local.entities.ChatEntity
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.User
-import com.example.frontend.data.model.onFailure
-import com.example.frontend.data.model.onSuccess
-import com.example.frontend.data.repository.ImageRepository
 import com.example.frontend.data.repository.ImageUrlProvider
 import com.example.frontend.services.websocket.WebSocketManager
 import com.google.gson.Gson
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
@@ -50,9 +48,10 @@ class ChatRepository @Inject constructor(
     private val okHttpClient: OkHttpClient,
     private val webSocketManager:WebSocketManager,
     private val imageUrlProvider: ImageUrlProvider,
-    private val gson: Gson
+    private val gson: Gson,
+    private val dao: ChatDao
 ) {
-
+    val roomName = "Chat"
     private val _chatState = MutableStateFlow<List<Chat>>(emptyList())
     val chatState: StateFlow<List<Chat>> = _chatState
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -75,9 +74,9 @@ class ChatRepository @Inject constructor(
 
     init {
         // Gán listener cho WebSocketManager
-        webSocketManager. addListener(listener)
+        webSocketManager. addListener(room = roomName,listener=listener)
     }
-    fun connect() = webSocketManager.connect()
+    suspend fun connect(communityId: String) = webSocketManager.connect(  room = roomName, bonusQueryString = "community=$communityId" )
 
 
     // Xử lý tin nhắn từ WebSocket
@@ -141,11 +140,11 @@ class ChatRepository @Inject constructor(
                     }
                     "BRC_DELETE_CHAT" -> {
                         val deletedChat = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
-                        _chatState.emit(_chatState.value.filter { it.chatId != deletedChat.chatId })
+                        _chatState.emit(_chatState.value.filter { it.id != deletedChat.id})
                     }
                     else -> {
-                        if (wsMessage.error != null) {
-                            println("Error from server: ${wsMessage.error}, status: ${wsMessage.status}")
+                        if (wsMessage.type == "ERROR") {
+                            println("Error from server: ${wsMessage.message}, status: ${wsMessage.statusCode}")
                         }
                     }
                 }
@@ -156,20 +155,22 @@ class ChatRepository @Inject constructor(
     }
 
     // Gửi tin nhắn tạo chat
-    fun createChat(content: String, communityId: String, senderId: String) {
+    fun createChat(content: String?, commentPicId: String?, communityId: String, senderId: String) {
         val payload = mapOf(
             "content" to content,
             "communityId" to communityId,
-            "senderId" to senderId
+            "senderId" to senderId,
+            "commentPicId" to commentPicId
         )
         sendMessage("CREATE_CHAT", payload)
     }
 
     // Gửi tin nhắn cập nhật chat
-    fun updateChat(chatId: String, content: String) {
+    fun updateChat(chatId: String, content: String?, commentPicId: String?) {
         val payload = mapOf(
             "chatId" to chatId,
-            "content" to content
+            "content" to content,
+            "commentPicId" to commentPicId
         )
         sendMessage("UPDATE_CHAT", payload)
     }
@@ -188,14 +189,13 @@ class ChatRepository @Inject constructor(
 
     // Gửi tin nhắn tới server
     private fun sendMessage(action: String, payload: Any) {
-        val message = WebSocketMessage(action, payload)
+        val message = WebSocketMessage(action = action, payload = payload)
         val json = gson.toJson(message)
-        webSocket?.send(json)
+        webSocketManager.sendMessage(room = "Chat", message = json)
     }
 
     // Ngắt kết nối WebSocket
     fun disconnect() {
-        webSocket?.close(1000, "Client disconnected")
-        webSocket = null
+        webSocketManager.disconnect(room = "Chat")
     }
 }

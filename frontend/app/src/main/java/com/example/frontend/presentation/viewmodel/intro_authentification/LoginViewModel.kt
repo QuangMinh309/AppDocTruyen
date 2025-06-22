@@ -1,19 +1,17 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.LoginRequest
-import com.example.frontend.navigation.NavigationManager
-import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.services.navigation.Screen
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import android.util.Log
 import javax.inject.Inject
 
 @HiltViewModel

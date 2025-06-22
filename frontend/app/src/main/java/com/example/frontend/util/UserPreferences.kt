@@ -8,7 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-object UserPreferences {
+    object UserPreferences {
     private val Context.dataStore by preferencesDataStore("user_prefs")
 
     private val MAIL_KEY = stringPreferencesKey("mail") // Thay EMAIL_KEY thành MAIL_KEY

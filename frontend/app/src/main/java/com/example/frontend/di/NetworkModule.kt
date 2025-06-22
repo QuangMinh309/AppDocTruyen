@@ -18,6 +18,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -25,10 +26,17 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
+    @Named("BaseUrl")
     fun provideBaseUrl(@ApplicationContext context: Context): String {
         return context.getString(R.string.base_url)
         //"http://10.0.2.2:3000/"
         // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
+    }
+    @Provides
+    @Singleton
+    @Named("WebSocketUrl")
+    fun provideWsBaseUrl(@ApplicationContext context: Context): String {
+        return context.getString(R.string.ws_base_url)
     }
 
     private fun isEmulator(): Boolean {
@@ -57,7 +65,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
+    fun provideRetrofit(okHttpClient: OkHttpClient,  @Named("BaseUrl") baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl) // Sử dụng HTTPS, thay bằng URL thực tế khi cần
             .client(okHttpClient)
