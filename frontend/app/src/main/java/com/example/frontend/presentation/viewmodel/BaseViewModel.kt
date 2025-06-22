@@ -146,4 +146,40 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.TopRanking.route)
         }
     }
+
+    fun onGoToAdminScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.AdminScreen.route)
+        }
+    }
+
+    fun onGoToCategoryMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Category.route)
+        }
+    }
+
+    fun onGoToTransactionMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Transaction.route)
+        }
+    }
+
+    fun onGoToUserMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.User.route)
+        }
+    }
+
+    fun onGoToStoryMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Story.route)
+        }
+    }
+
+    fun onGoToStoryDetailMgmtScreen(id : Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.StoryDetail.createRoute(id.toString()))
+        }
+    }
 }

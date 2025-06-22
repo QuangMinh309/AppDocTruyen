@@ -96,20 +96,23 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
         {
             RowSelectItem(
                 "User",
-                painterResource(R.drawable.user_icon)
-//                ,viewModel.onGoBack()
+                painterResource(R.drawable.user_icon),
+                { viewModel.onGoToUserMgmtScreen() }
             )
             RowSelectItem(
                 "Category",
-                painterResource(R.drawable.category_icon)
+                painterResource(R.drawable.category_icon),
+                { viewModel.onGoToCategoryMgmtScreen() }
             )
             RowSelectItem(
                 "Story",
-                painterResource(R.drawable.book_icon)
+                painterResource(R.drawable.book_icon),
+                { viewModel.onGoToStoryMgmtScreen() }
             )
             RowSelectItem(
                 "Transaction",
-                painterResource(R.drawable.creditcard_icon)
+                painterResource(R.drawable.creditcard_icon),
+                { viewModel.onGoToTransactionMgmtScreen() }
             )
         }
     }

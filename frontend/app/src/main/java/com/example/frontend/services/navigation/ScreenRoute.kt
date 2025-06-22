@@ -68,4 +68,15 @@ sealed class Screen(var route: String) {
     data object StoryList : Screen("List/{id}") {
         fun createRoute(id: String) = "List/$id"
     }
+
+    data object AdminScreen : Screen("Admin")
+    sealed class Admin(route: String) : Screen(route) {
+        data object Category : Admin("Admin/Category")
+        data object Transaction : Admin("Admin/Transaction")
+        data object User : Admin("Admin/UserMgmt")
+        data object Story : Admin("Admin/Story")
+        data object StoryDetail : Admin("Admin/StoryDetail/{id}") {
+            fun createRoute(id: String) = "Admin/StoryDetail/$id"
+        }
+    }
 }

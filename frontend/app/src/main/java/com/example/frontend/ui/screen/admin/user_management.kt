@@ -70,8 +70,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Button(
-//                    viewModel.onGoBack()
-                    onClick = {},
+                    onClick = {viewModel.onGoBack()},
                     colors =  ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                     ),
