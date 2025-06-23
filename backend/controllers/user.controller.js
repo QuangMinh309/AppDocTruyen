@@ -4,19 +4,16 @@ import updateUser from '../services/user/user_update.service.js';
 import getUserById from '../services/user/user_get_id.service.js';
 import getCurrentUser from '../services/user/user_get_current.service.js';
 import deleteUser from '../services/user/user_delete.service.js';
-import forgotPassword from '../services/user/user_forgot_password.service.js';
-import resetPassword from '../services/user/user_reset_password.service.js';
 import changePassword from '../services/user/user_change_password.service.js';
 import followUser from '../services/user/user_follow.service.js';
 import unfollowUser from '../services/user/user_unfollow.service.js';
 import purchasePremium from '../services/user/user_purchase_premium.service.js';
-import AdminService from '../services/admin/admin.service.js';
 import refreshTokenUser from '../services/user/user_refresh_token.service.js';
 
 const UserController = {
   async register(req, res, next) {
     try {
-      const { password, confirmPassword } = req.body;
+      const { userName, mail, password, confirmPassword, DOB } = req.body;
 
       // Kiểm tra xác nhận mật khẩu
       if (password !== confirmPassword) {
@@ -102,14 +99,22 @@ const UserController = {
   async updateUser(req, res, next) {
     try {
       const { userId } = req.params;
-      const updatedData = req.body;
+      const data = req.body;
+
+      const avatarFile = req.files?.avatarId?.[0] || null;
+      const backgroundFile = req.files?.backgroundId?.[0] || null;
 
       // Nếu không phải admin, không được cập nhật roleId
       if (req.user.role.roleName !== 'admin') {
-        delete updatedData.roleId;
+        delete data.roleId;
       }
 
-      const user = await updateUser(parseInt(userId), updatedData);
+      const user = await updateUser(
+        parseInt(userId),
+        data,
+        avatarFile,
+        backgroundFile
+      );
 
       res.status(200).json({
         success: true,
@@ -146,36 +151,6 @@ const UserController = {
         currentPassword,
         newPassword
       );
-
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async forgotPassword(req, res, next) {
-    try {
-      const { mail } = req.body;
-
-      const result = await forgotPassword(mail);
-
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async resetPassword(req, res, next) {
-    try {
-      const { otp, newPassword, confirmPassword } = req.body;
-
-      const result = await resetPassword(otp, newPassword, confirmPassword);
 
       res.status(200).json({
         success: true,
@@ -223,52 +198,6 @@ const UserController = {
       const userId = req.user.userId;
 
       const result = await purchasePremium(userId);
-
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async getAllUsers(req, res, next) {
-    try {
-      const offset = parseInt(req.query.offset) || 0;
-      const limit = 15;
-
-      const result = await AdminService.getAllUsers(offset, limit);
-
-      res.status(200).json({
-        success: true,
-        data: result,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async lockUser(req, res, next) {
-    try {
-      const { userId } = req.params;
-
-      const result = await AdminService.lockUser(parseInt(userId));
-
-      res.status(200).json({
-        success: true,
-        message: result.message,
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  async unlockUser(req, res, next) {
-    try {
-      const { userId } = req.params;
-
-      const result = await AdminService.unlockUser(parseInt(userId));
 
       res.status(200).json({
         success: true,

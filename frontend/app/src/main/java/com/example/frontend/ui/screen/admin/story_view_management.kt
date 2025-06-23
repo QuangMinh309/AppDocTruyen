@@ -1,0 +1,171 @@
+package com.example.frontend.ui.screen.story
+
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.frontend.presentation.viewmodel.admin.StoryViewMgmtViewModel
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.ui.components.AuthorInfoCard
+import com.example.frontend.ui.components.ChapterItemCard
+import com.example.frontend.ui.components.DescriptionStory
+import com.example.frontend.ui.components.LargeGenreTags
+import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.SectionTitle
+import com.example.frontend.ui.components.SimilarNovelsCard
+import com.example.frontend.ui.components.StoryInfo2
+import com.example.frontend.ui.components.StoryStatusActionAdmin
+import com.example.frontend.ui.components.TopBar
+import com.example.frontend.ui.theme.OrangeRed
+import kotlinx.coroutines.launch
+
+@SuppressLint("ViewModelConstructorInComposable")
+@Preview(showBackground = true)
+@Composable
+private fun PreviewStoryViewMgmtScreen()
+{
+    val fakeviewmodel= StoryViewMgmtViewModel( NavigationManager())
+    StoryViewManagementScreen(viewModel=fakeviewmodel)
+}
+
+@Composable
+fun StoryViewManagementScreen(viewModel : StoryViewMgmtViewModel = hiltViewModel()) {
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val isFabVisible by remember {
+        derivedStateOf {
+            // Show FAB if scroll down to the 3rd item onwards or scroll far enough in the first item
+            listState.firstVisibleItemIndex > 2 || listState.firstVisibleItemScrollOffset > 300
+        }
+    }
+
+    //   val StoryId=viewModel.storyId
+
+    val storyStatus = remember { mutableStateOf("Full") }
+    val btnVote = remember { mutableStateOf("Vote") }
+
+    ScreenFrame(
+        topBar = {
+            TopBar(
+                title = ExamplStory.name?:"",
+                showBackButton = true,
+                iconType = "Setting",
+                onLeftClick = { viewModel.onGoBack() },
+                onRightClick = { viewModel.onGoToSetting()}
+            )
+        }
+    ){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item { Spacer(Modifier.height(8.dp)) }
+                item { StoryInfo2(viewModel) }
+                item { Spacer(Modifier.height(19.dp)) }
+                item { StoryStatusActionAdmin( isAuthor = true,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(ExamplStory.id)}) }
+                item { Spacer(Modifier.height(29.dp)) }
+                item {
+                    DescriptionStory(
+                        aboutContent = {
+                            Text(
+                                text = ExamplStory.description.toString(),
+                                color = Color.White,
+                                fontSize = 16.sp,
+                            )
+                            Spacer(Modifier.height(29.dp))
+
+                            LargeGenreTags(ExamplStory.categories?:listOf())
+
+                            Spacer(Modifier.height(37.dp))
+                        //    AuthorInfoCard (model = ExamplStory.author?:, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
+                            Spacer(Modifier.height(37.dp))
+                            SectionTitle(title = "Top Comments")
+//                            val rawComments = listOf(
+//                                listOf("linh", null, R.drawable.story_detail_page1, "Chap 2", "2025-05-07", "10:10", "10", "0"),
+//                                listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
+//                                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
+//                            )
+                            //    TopComments(comments, viewModel)
+                            Spacer(Modifier.height(37.dp))
+                            SectionTitle(title = "Novel Similar")
+                            SimilarNovelsCard(Examplestories,viewModel)
+                        },
+                        chapterContent = {
+//                            val chapters = listOf(
+//                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
+//                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
+//                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
+//                            )
+                            Spacer(Modifier.height(29.dp))
+                            Examplechapters.forEachIndexed { index, chapter ->
+                                ChapterItemCard(
+                                    chapter = chapter,
+                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
+                                )
+
+                                if (index < Examplechapters.lastIndex) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        thickness = 1.2.dp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+                item { Spacer(Modifier.height(80.dp)) }
+            }
+
+            if (isFabVisible) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = OrangeRed,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(15.dp),
+                    shape = RoundedCornerShape(50.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowUp,
+                        contentDescription = "Scroll to top",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+}

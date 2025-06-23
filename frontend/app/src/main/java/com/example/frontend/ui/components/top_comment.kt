@@ -57,10 +57,10 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(0.5f)
-                                .clickable { viewModel.onGoToUserProfileScreen(comment.user.id) }
+                                .clickable {  }
                         ) {
                             AsyncImage(
-                                model = comment.user.avatarUrl, // URL của hình ảnh avatar
+                                model = comment.user?.avatarUrl, // URL của hình ảnh avatar
                                 contentDescription = "avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
@@ -75,7 +75,7 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                             )
                             Spacer(modifier = Modifier.width(13.dp))
                             Text(
-                                text = "@${comment.user.dName}",
+                                text = "@${comment.user?.dName}",
                                 color = Color.White,
                                 fontSize = 16.sp,
                                 maxLines = 1,
@@ -154,7 +154,7 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp)
                             )
-                            Text(text = comment.disLikeNumber.toString(), color = Color.White, fontSize = 15.sp)
+                        //    Text(text = comment.disLikeNumber.toString(), color = Color.White, fontSize = 15.sp)
                         }
                     }
                 }

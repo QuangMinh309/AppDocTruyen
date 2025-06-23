@@ -1,24 +1,23 @@
 package com.example.frontend.presentation.viewmodel.intro_authentification
 
-
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.api.ApiService
-import com.example.frontend.data.api.RegisterRequest
-import com.example.frontend.navigation.NavigationManager
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
+import com.example.frontend.data.repository.AuthRepository
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val apiService: ApiService,
+    private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -40,7 +39,6 @@ class RegisterViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    // Thêm trạng thái lỗi cho từng field
     private val _userNameError = MutableStateFlow<String?>(null)
     val userNameError: StateFlow<String?> = _userNameError
 
@@ -58,7 +56,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onEmailChange(email: String) {
         _email.value = email
-        _emailError.value = null // Xóa lỗi khi người dùng chỉnh sửa
+        _emailError.value = null
     }
 
     fun onPasswordChange(password: String) {
@@ -83,7 +81,6 @@ class RegisterViewModel @Inject constructor(
 
     fun checkRegister() {
         viewModelScope.launch {
-            // Reset tất cả lỗi trước khi gửi request
             _userNameError.value = null
             _emailError.value = null
             _passwordError.value = null
@@ -110,55 +107,32 @@ class RegisterViewModel @Inject constructor(
 
             _isLoading.value = true
             try {
-                Log.d("RegisterViewModel", "Sending register request: userName=${_userName.value}, mail=${_email.value}")
-                val response = apiService.register(
-                    RegisterRequest(
-                        userName = _userName.value,
-                        mail = _email.value,
-                        DOB = _dob.value.format(DateTimeFormatter.ISO_LOCAL_DATE),
-                        password = _password.value,
-                        confirmPassword = _confirmPassword.value
-                    )
+                val result = authRepository.register(
+                    _userName.value,
+                    _email.value,
+                    _dob.value.format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    _password.value,
+                    _confirmPassword.value
                 )
-                Log.d("RegisterViewModel", "Response received: code=${response.code()}, body=${response.body()}")
-
-                if (response.isSuccessful) {
-                    val registerResponse = response.body()
-                    if (registerResponse?.success == true) {
-                        _toast.value = "Sign Up success!"
-                        Log.d("RegisterViewModel", "Registration successful")
-                        onGoToLoginScreen()
-                    } else {
-                        _toast.value = "Registration failed: ${registerResponse?.message ?: "Unknown error"}"
-                        Log.d("RegisterViewModel", "Registration failed: ${registerResponse?.message}")
+                result.onSuccess {
+                    _toast.value = it
+                    onGoToLoginScreen()
+                }.onFailure {
+                    _toast.value = "Registration failed: ${it.message}"
+                    if (it.message?.contains("Mật khẩu") == true) {
+                        _passwordError.value = "Password must be at least 8 characters with uppercase, lowercase, and numbers"
                     }
-                } else {
-                    // Phân tích lỗi từ response body
-                    val errorBody = response.errorBody()?.string()
-                    if (!errorBody.isNullOrEmpty()) {
-                        val jsonError = JSONObject(errorBody)
-                        val message = jsonError.getString("message")
-                        _toast.value = "Registration failed: $message"
-
-                        // Phân tích chi tiết lỗi
-                        if (message.contains("Mật khẩu")) {
-                            _passwordError.value = "Password must be at least 8 characters with uppercase, lowercase, and numbers"
-                        }
-                        if (message.contains("Ngày sinh")) {
-                            _dobError.value = "Date of birth cannot be in the future"
-                        }
-                        // Thêm các điều kiện khác nếu cần
-                    } else {
-                        _toast.value = "Registration failed: ${response.message()}"
+                    if (it.message?.contains("Ngày sinh") == true) {
+                        _dobError.value = "Date of birth cannot be in the future"
                     }
-                    Log.d("RegisterViewModel", "Registration failed: $errorBody")
                 }
             } catch (e: Exception) {
                 _toast.value = "Error: ${e.message}"
-                Log.e("RegisterViewModel", "Network error: ${e.message}", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
+
+
 }

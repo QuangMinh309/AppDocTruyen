@@ -1,10 +1,11 @@
 import { sequelize } from '../../models/index.js';
+import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 
 const User = sequelize.models.User;
 const Role = sequelize.models.Role;
 
-const AdminService = {
+const UserManagerService = {
   async lockUser(userId) {
     try {
       const user = await User.findByPk(userId);
@@ -49,9 +50,7 @@ const AdminService = {
 
       const userData = users.map((user) => {
         const userObj = user.toJSON();
-        const formattedDOB = userObj.DOB
-          ? new Date(userObj.DOB).toISOString().split('T')[0]
-          : null;
+        const formattedDOB = userObj.DOB ? formatDate(userObj.DOB) : null;
 
         return {
           ...userObj,
@@ -67,4 +66,4 @@ const AdminService = {
   },
 };
 
-export default AdminService;
+export default UserManagerService;

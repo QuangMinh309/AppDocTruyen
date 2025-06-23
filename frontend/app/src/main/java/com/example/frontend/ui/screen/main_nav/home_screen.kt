@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.main_nav
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -26,17 +27,16 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.NameListStory
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
 import com.example.frontend.ui.components.*
 import com.example.frontend.ui.screen.story.ExamplStory
-import com.example.frontend.ui.screen.story.Examplechapters
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
-import com.google.firebase.firestore.auth.User
+
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -44,10 +44,16 @@ import java.time.LocalDateTime
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // Lấy dữ liệu từ ViewModel
-    val suggestedStories by remember { mutableStateOf(viewModel.suggestedStories) }
-    val newStories by remember { mutableStateOf(viewModel.newStories) }
-    val topRankingStories by remember { mutableStateOf(viewModel.topRankingStories) }
-    val isStoriesLoading by remember { mutableStateOf(viewModel.isStoriesLoading) }
+    val suggestedStories by viewModel.suggestedStories.collectAsState()
+    val newStories by viewModel.newStories.collectAsState()
+    val topRankingStories by viewModel.topRankingStories.collectAsState()
+    val categories by viewModel.categories.collectAsState()
+    val readLists by viewModel.readLists.collectAsState()
+    val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
+    val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
+    val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
+    val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
+    val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
 
     ScreenFrame {
         Column(
@@ -95,7 +101,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             }
 
             Text(
-                text = "Hello penelope !",
+                text = "Hello ${viewModel.userName}",
                 color = Color.White,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -105,6 +111,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             // Banner
             AutoScrollBanner(items = bannerItems)
 
+
             // Gợi ý cho bạn
             Column(modifier = Modifier.fillMaxSize()) {
                 SectionTitle(
@@ -112,7 +119,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.dolphins_ic
                 )
-                if (isStoriesLoading) {
+                if (isSuggestedLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -124,6 +131,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 } else {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(suggestedStories) { item ->
+                            Log.d("HomeScreen", "Rendering StoryCard: ${item.name}")
                             StoryCard(item, onClick = { viewModel.onGoToStoryScreen(item.id) })
                         }
                     }
@@ -137,7 +145,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.firework_ic
                 )
-                if (isStoriesLoading) {
+                if (isNewStoriesLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -173,7 +181,6 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
             }
-
             // Top Ranking
             Column(modifier = Modifier.fillMaxSize()) {
                 SectionTitle(
@@ -181,7 +188,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.fire_ic
                 )
-                if (isStoriesLoading) {
+                if (isTopRankingLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -240,6 +247,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             shape = RoundedCornerShape(30.dp)
                         )
                         .padding(horizontal = 10.dp)
+                        .clickable { viewModel.onGoToTopRankingStoryListScreen() }
                 )
             }
 
@@ -250,28 +258,61 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     modifier = Modifier.padding(start = 20.dp),
                     iconResId = R.drawable.flower_ic
                 )
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 20.dp, end = 20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    categories.forEach { genre ->
-                        Chip(text = genre.name, onClick = {})
+                if (isCategoriesLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        categories.forEach { genre ->
+                            Chip(text = genre.name ?: "", onClick = {
+                                Log.d("HomeScreen", "Chip clicked: categoryId=${genre.id}, categoryName=${genre.name}")
+                                viewModel.onGoToCategoryStoryList(genre.id, genre.name.toString())
+                            })
+                        }
                     }
                 }
             }
 
             // Danh sách truyện (Read Lists)
-            Column(modifier = Modifier.fillMaxWidth()) {
-                SectionTitle(
-                    title = "Danh sách truyện",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.book_ic
-                )
-                readlistlist.forEach { list ->
-                    ReadListItem(item = list)
+            if (readLists.isNotEmpty() || isReadListsLoading) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    SectionTitle(
+                        title = "Danh sách truyện",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.book_ic
+                    )
+                    if (isReadListsLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxWidth()
+                                .heightIn(max = 200.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(readLists) { list ->
+                                ReadListItem(item = list, onClick = {viewModel.onGoToNameListStoryScreen(list.id)})
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -314,28 +355,7 @@ val genreDemoList: List<Category> = listOf(Category(id =1,name ="Adventure"),Cat
     Category(id =3,name ="Mystery"),Category(id =4,name ="Romantic"))
 
 val ExampleList: List<Story> = listOf(
-    Story(
-        id=1,
-        name ="Alibaba",
-        coverImgUrl = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        description = "fgfssdf",
-        price = BigDecimal(10000),
-        author = User(id = 1,
-            name = "peneloped",
-            avatarUrl ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-            dName = "tolapenee"
-        ),
-        voteNum = 100,
-        chapterNum = 10,
-        viewNum = 100,
-        categories = genreDemoList,
-        createdAt = LocalDate.parse("2024-12-12"),
-        updateAt = LocalDate.parse("2024-12-12"),
-        status = "Full",
-        ageRange = 13,
-        pricePerChapter = BigDecimal(200),
-        chapters = Examplechapters
-    ),
+
     ExamplStory,
     ExamplStory,
     ExamplStory,
@@ -344,13 +364,20 @@ val ExampleList: List<Story> = listOf(
 
 )
 
+var ExampleNameListStory= NameListStory(
+    coverImgId = "02"
+)
 
 var  ReadListItem_= NameList(
-    id=1,
-    name="Yêu thích ",
+    id =1,
+    name ="Yêu thích ",
     description = "Như tiêu đề thì em mới tập tành xem phim điện ảnh. Em không thích phim chính kịch cho lắm, mọi người giới thiệu cho em vài phim điện ảnh Âu Mĩ, Trung Quốc mà mọi người ấn tượng với ạ. Em cảm ơn.",
     userId = 2,
-    stories = ExampleList
+    stories = listOf(
+        ExampleNameListStory,
+        ExampleNameListStory
+    ),
+    storyCount = 2
 )
 
 val readlistlist=listOf(
@@ -365,26 +392,26 @@ val readlistlist=listOf(
 
 
 
-fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
-    return ExampleList.filter { story ->
-        val matchCategory = story.categories.any { it == category }
-        val matchStatus = if(status == "all") true else story.status == status
-        val matchPrice = when(premiumStatus){
-            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
-            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
-            else -> true
-        }
-
-        matchCategory && matchStatus && matchPrice
-    }
-}
+//fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
+//    return ExampleList.filter { story ->
+//        val matchCategory = story.categories.any { it == category }
+//        val matchStatus = if(status == "all") true else story.status == status
+//        val matchPrice = when(premiumStatus){
+//            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
+//            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
+//            else -> true
+//        }
+//
+//        matchCategory && matchStatus && matchPrice
+//    }
+//}
 
 val demoUser = com.example.frontend.data.model.User(
     id = 1,
     name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -395,7 +422,7 @@ val demoUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(500.00),
-    dob = LocalDate.parse("2020-03-12"),
+    dob = "2020-03-12",
     isPremium = true
 
 )
@@ -404,7 +431,7 @@ val demoAppUser = com.example.frontend.data.model.User(
     id = 2, name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -415,7 +442,7 @@ val demoAppUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(0),
-    dob = LocalDate.parse("2020-03-12")
+    dob = "2020-03-12",
 )
 
 val demoChatList  = listOf(

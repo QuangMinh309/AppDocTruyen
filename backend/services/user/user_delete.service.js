@@ -1,6 +1,7 @@
 import { sequelize } from '../../models/index.js'
 import ApiError from '../../utils/api_error.util.js'
 import { validateUser } from '../../utils/user.util.js'
+import { deleteImageOnCloudinary } from '../cloudinary.service.js'
 import deleteStory from '../story/story_delete.service.js'
 
 const Follow = sequelize.models.Follow
@@ -13,6 +14,22 @@ const Purchase = sequelize.models.Purchase
 const deleteUser = async (userId) => {
   try {
     const user = await validateUser(userId)
+
+    if (user.avatarId) {
+      try {
+        await deleteImageOnCloudinary(user.avatarId)
+      } catch (error) {
+        throw new ApiError('Xóa ảnh đại diện thất bại', 500)
+      }
+    }
+
+    if (user.backgroundId) {
+      try {
+        await deleteImageOnCloudinary(user.backgroundId);
+      } catch (error) {
+        throw new ApiError('Xóa ảnh bìa thất bại', 500)
+      }
+    }
 
     await Follow.destroy({ where: { followId: userId } })
     await Follow.destroy({ where: { followedId: userId } })

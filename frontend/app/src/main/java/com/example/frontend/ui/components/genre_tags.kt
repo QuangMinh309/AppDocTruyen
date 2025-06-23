@@ -41,7 +41,7 @@ fun GenreTags(
 
             ) {
                 Text(
-                    text = tag.name,
+                    text = tag.name?: "",
                     color = Color.Black,
                     fontSize = fontSize.sp,
                     fontWeight = FontWeight.SemiBold

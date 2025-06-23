@@ -21,7 +21,7 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
 
     fun onGoToProfileScreen() {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Profile.createRoute("1"))
+            navigationManager.navigate(Screen.MainNav.Profile.route)
         }
     }
     fun onGoToHomeScreen() {
@@ -62,6 +62,20 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
 
         }
     }
+
+    fun onGoToCategoryStoryList(categoryId:Int,categoryName:String){
+        Log.d("HomeViewModel", "Navigating to CategoryStoryList: categoryId=$categoryId, categoryName=$categoryName")
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.Category.createRoute(categoryId,categoryName))
+        }
+    }
+
+    fun onGoToNameListStoryScreen(nameListsId: Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.NameLists.createRoute(nameListsId))
+        }
+    }
+
     fun onGoBack() {
         viewModelScope.launch {
             navigationManager.back()
@@ -130,6 +144,48 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     fun onGoToSetUpPassWordScreen(otp: String, userId: Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Authentication.NewPassword.createRoute(otp, userId.toString()))
+        }
+    }
+
+    fun onGoToTopRankingStoryListScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.TopRanking.route)
+        }
+    }
+
+    fun onGoToAdminScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.AdminScreen.route)
+        }
+    }
+
+    fun onGoToCategoryMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Category.route)
+        }
+    }
+
+    fun onGoToTransactionMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Transaction.route)
+        }
+    }
+
+    fun onGoToUserMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.User.route)
+        }
+    }
+
+    fun onGoToStoryMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Story.route)
+        }
+    }
+
+    fun onGoToStoryDetailMgmtScreen(id : Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.StoryDetail.createRoute(id.toString()))
         }
     }
 }

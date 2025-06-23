@@ -32,7 +32,6 @@ fun PreviewScreenContent() {
     CommunityScreen(viewModel = fakeViewModel)
 }
 
-@Preview
 @Composable
 fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
     val hotCommunityList = viewModel.hotCommunityList

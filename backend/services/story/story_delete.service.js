@@ -2,6 +2,8 @@ import { sequelize } from '../../models/index.js';
 import { validateStory } from '../../utils/story.util.js';
 import { Op } from 'sequelize';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
+import { deleteImageOnCloudinary } from '../cloudinary.service.js';
+import ApiError from '../../utils/api_error.util.js';
 
 const Chapter = sequelize.models.Chapter;
 const StoryCategory = sequelize.models.StoryCategory;
@@ -16,6 +18,15 @@ const deleteStory = async (storyId, userId) => {
   return await handleTransaction(async (transaction) => {
     const story = await validateStory(storyId, userId);
 
+    if (story.coverImgId) {
+      try {
+        await deleteImageOnCloudinary(story.coverImgId);
+      } catch (error) {
+        throw new ApiError('Xóa ảnh bìa thất bại', 500);
+      }
+    }
+
+    // Lấy danh sách chương
     const chapters = await Chapter.findAll({
       where: { storyId },
       attributes: ['chapterId'],
@@ -23,35 +34,42 @@ const deleteStory = async (storyId, userId) => {
     });
     const chapterIds = chapters.map((chapter) => chapter.chapterId);
 
-    await LikeComment.destroy({
-      where: {
-        commentId: {
-          [Op.in]: await Comment.findAll({
-            where: { chapterId: { [Op.in]: chapterIds } },
-            attributes: ['commentId'],
-            transaction,
-          }).map((comment) => comment.commentId),
-        },
-      },
-      transaction,
-    });
+    // Lấy danh sách comment
+    let commentIds = [];
+    if (chapterIds.length > 0) {
+      const comments = await Comment.findAll({
+        where: { chapterId: { [Op.in]: chapterIds } },
+        attributes: ['commentId'],
+        transaction,
+      });
+      commentIds = comments.map((comment) => comment.commentId);
+    }
 
-    await Comment.destroy({
-      where: { chapterId: { [Op.in]: chapterIds } },
-      transaction,
-    });
+    if (commentIds.length > 0) {
+      await LikeComment.destroy({
+        where: { commentId: { [Op.in]: commentIds } },
+        transaction,
+      });
+    }
 
-    await History.destroy({
-      where: { chapterId: { [Op.in]: chapterIds } },
-      transaction,
-    });
+    if (chapterIds.length > 0) {
+      await Comment.destroy({
+        where: { chapterId: { [Op.in]: chapterIds } },
+        transaction,
+      });
+
+      await History.destroy({
+        where: { chapterId: { [Op.in]: chapterIds } },
+        transaction,
+      });
+
+      await Chapter.destroy({
+        where: { storyId },
+        transaction,
+      });
+    }
 
     await Purchase.destroy({
-      where: { storyId },
-      transaction,
-    });
-
-    await Chapter.destroy({
       where: { storyId },
       transaction,
     });
@@ -73,7 +91,10 @@ const deleteStory = async (storyId, userId) => {
 
     await story.destroy({ transaction });
 
-    return { success: true, message: 'Xóa truyện thành công' };
+    return {
+      success: true,
+      message: 'Xóa truyện thành công',
+    };
   });
 };
 

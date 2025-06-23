@@ -6,9 +6,11 @@ sealed class Screen(var route: String) {
         data object Search : MainNav("Search")
         data object YourStory : MainNav("YourStory")
         data object Community : MainNav("Community")
-        data object Profile : MainNav("Profile/{id}") {
-            fun createRoute(id: String) = "Profile/$id"
-        }
+        data object Profile : MainNav("Profile")
+
+//        data object Profile : MainNav("Profile/{id}") {
+//            fun createRoute(id: String) = "Profile/$id"
+//        }
     }
 
     data object Intro : Screen("Intro")
@@ -40,6 +42,14 @@ sealed class Screen(var route: String) {
             data object Read : Chapter("Chapter/Read/{chapterId}")
             data object Write : Chapter("chapter/Write/{chapterId}")
         }
+        data object TopRanking : Story("Story/TopRanking")
+        data object Category : Story("Story/Category/{categoryId}/{categoryName}"){
+            fun createRoute(categoryId:Int, categoryName:String)="Story/Category/$categoryId/$categoryName"
+        }
+        data object NameLists:Story("Story/NameLists/{nameListsId}"){
+            fun createRoute(nameListsId:Int)="Story/NameLists/$nameListsId"
+        }
+
     }
 
     data object YourStoryDetail : Screen("YourStoryDetail/{id}") {
@@ -61,5 +71,16 @@ sealed class Screen(var route: String) {
     data object Setting : Screen("Setting")
     data object StoryList : Screen("List/{id}") {
         fun createRoute(id: String) = "List/$id"
+    }
+
+    data object AdminScreen : Screen("Admin")
+    sealed class Admin(route: String) : Screen(route) {
+        data object Category : Admin("Admin/Category")
+        data object Transaction : Admin("Admin/Transaction")
+        data object User : Admin("Admin/UserMgmt")
+        data object Story : Admin("Admin/Story")
+        data object StoryDetail : Admin("Admin/StoryDetail/{id}") {
+            fun createRoute(id: String) = "Admin/StoryDetail/$id"
+        }
     }
 }

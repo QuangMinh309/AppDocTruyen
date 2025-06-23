@@ -1,5 +1,6 @@
 package com.example.frontend.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,10 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,23 +37,32 @@ import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
-fun Chip(text: String, onClick:()->Unit={}) {
+fun Chip(
+    text: String,
+    onClick: () -> Unit = {}
+) {
     Surface(
         color = Color.Unspecified,
         shape = RoundedCornerShape(30.dp),
         modifier = Modifier
-            .clickable { onClick }
+            .clickable(
+                onClick = {
+                    Log.d("ChipDebug", "Chip clicked: $text")
+                    onClick()
+                }
+            )
             .padding(2.dp)
             .border(
                 width = 2.dp,
                 brush = Brush.linearGradient(
                     colors = listOf(
                         Color(0xFF00FF99),
-                        Color(0xFF004099)  //
+                        Color(0xFF004099)
                     )
                 ),
                 shape = RoundedCornerShape(30.dp)
             )
+            .minimumInteractiveComponentSize() // Đảm bảo kích thước tối thiểu để nhận sự kiện
     ) {
         Text(
             text = text,
@@ -98,7 +111,7 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:Ba
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             texts.forEach { genre ->
-                Chip(text = genre.name, onClick = {})
+                Chip(text = genre.name?:"", onClick = {viewModel.onGoToCategoryStoryList(genre.id,genre.name.toString())})
             }
         }
     }
@@ -128,4 +141,79 @@ fun GenreChip(modifier: Modifier = Modifier,genre: String) {
     }
 
 }
+
+@Composable
+fun SelectChip(
+    name: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val background = if (isSelected) Color(0xFFFBAD00) else Color(0xFFEA5C18)
+    Surface(
+        color = background,
+        shape = RoundedCornerShape(50),
+        modifier = Modifier
+            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .clickable { onClick() }
+    ) {
+        Text(
+            text = name,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun CategoryList(
+    categories: List<Category>,
+    selectedCategory: Category?,
+    onCategorySelected: (Category) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    )
+    {
+        FlowRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            categories.forEach { category ->
+                SelectChip(
+                    name = category.name?:"",
+                    isSelected = category == selectedCategory,
+                    onClick = { onCategorySelected(category) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectList(
+    names: List<String>,
+    selectedName: String?,
+    onNameSelected: (String) -> Unit
+)
+{
+    Row (
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+    )
+    {
+        names.forEach { name ->
+            SelectChip(
+                name = name,
+                isSelected = name == selectedName,
+                onClick = { onNameSelected(name) }
+            )
+        }
+    }
+}
+
 

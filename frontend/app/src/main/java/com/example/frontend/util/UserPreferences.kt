@@ -8,15 +8,16 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-    object UserPreferences {
-    private val Context.dataStore by preferencesDataStore("user_prefs")
+// Sử dụng tên khác cho dataStore
+val Context.userDataStore by preferencesDataStore("user_prefs")
 
-    private val MAIL_KEY = stringPreferencesKey("mail") // Thay EMAIL_KEY thành MAIL_KEY
+object UserPreferences {
+    private val MAIL_KEY = stringPreferencesKey("mail")
     private val PASSWORD_KEY = stringPreferencesKey("password")
     private val REMEMBER_KEY = booleanPreferencesKey("remember")
 
     suspend fun saveUserData(context: Context, mail: String, password: String, remember: Boolean) {
-        context.dataStore.edit { prefs ->
+        context.userDataStore.edit { prefs ->
             prefs[MAIL_KEY] = mail
             prefs[PASSWORD_KEY] = password
             prefs[REMEMBER_KEY] = remember
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.map
     }
 
     fun getUserData(context: Context): Flow<Triple<String, String, Boolean>> =
-        context.dataStore.data.map { prefs ->
+        context.userDataStore.data.map { prefs ->
             Triple(
                 prefs[MAIL_KEY] ?: "",
                 prefs[PASSWORD_KEY] ?: "",
@@ -33,7 +34,7 @@ import kotlinx.coroutines.flow.map
         }
 
     suspend fun clearUserData(context: Context) {
-        context.dataStore.edit { prefs ->
+        context.userDataStore.edit { prefs ->
             prefs.clear()
         }
     }

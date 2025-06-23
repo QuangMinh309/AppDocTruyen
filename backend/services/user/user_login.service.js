@@ -8,6 +8,8 @@ import {
 
 const User = sequelize.models.User
 const Role = sequelize.models.Role
+const Story = sequelize.models.Story
+const NameList = sequelize.models.NameList
 
 const loginUser = async (email, password) => {
   try {
@@ -31,6 +33,9 @@ const loginUser = async (email, password) => {
       throw new ApiError('Email hoặc mật khẩu không chính xác', 401)
     }
 
+    const storyCount = await Story.count({ where: { userId: user.userId } })
+    const nameListCount = await NameList.count({ where: { userId: user.userId } })
+
     const accessToken = generateAccessToken(user)
     const refreshToken = generateRefreshToken(user)
 
@@ -41,6 +46,8 @@ const loginUser = async (email, password) => {
     const userDataWithoutPassword = {
       ...rest,
       DOB: formattedDob,
+      storyCount,
+      nameListCount,
     }
 
     return {

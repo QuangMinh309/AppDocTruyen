@@ -66,12 +66,12 @@ async function getPasswordResetById(req, res, next) {
 async function resetPassword(req, res, next) {
   try {
     const { otp, newPassword, confirmPassword, userId } = req.body;
+    console.log('Received newPassword:', newPassword);
+    console.log('Received confirmPassword:', confirmPassword);
     if (newPassword !== confirmPassword) {
       return next(new ApiError('Mật khẩu mới và mật khẩu xác nhận không khớp', 400));
     }
-    if (!userId) {
-      return next(new ApiError('userId là bắt buộc', 400));
-    }
+
     const result = await PasswordResetService.resetPassword(otp, newPassword, userId);
     res.status(200).json({
       success: true,

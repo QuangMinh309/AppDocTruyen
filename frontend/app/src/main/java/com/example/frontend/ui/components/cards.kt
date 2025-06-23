@@ -1,6 +1,7 @@
 package com.example.frontend.ui.components
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +27,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
@@ -44,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -66,10 +70,12 @@ import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ReadListItem_
@@ -118,7 +124,7 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
                     .padding( vertical = 4.dp,horizontal = 10.dp)
             )
             //genre chip
-            GenreChip(genre = model.category.name)
+         //   GenreChip(genre = model.category.name)
 
             //member number
             Text(
@@ -359,7 +365,7 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                 Spacer(modifier = Modifier.height(11.dp))
 
                 Text(
-                    text = novel.name, // Thay "title" bằng "name"
+                    text = novel.name?:"", // Thay "title" bằng "name"
                     color = Color.White,
                     fontSize = 16.sp,
                     maxLines = 1
@@ -439,19 +445,19 @@ fun StoryCard4(
         Column(modifier = Modifier.weight(1f)) {
             //name
             Text(
-                story.name,
+                story.name?:"",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
             Spacer(modifier = Modifier.height(7.dp))
-            Text("@${story.author.dName}", color = Color.LightGray, fontSize = 14.sp)
+            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(13.dp))
 
             //genre tags
-            SmallGenreTags(story.categories)
+            SmallGenreTags(story.categories?: emptyList())
             Spacer(modifier = Modifier.height(27.dp))
 
             //updated time
@@ -496,6 +502,7 @@ fun StoryCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard", "Rendering story: ${story.name}")
     Column(
         modifier = modifier
             .width(160.dp)
@@ -543,7 +550,7 @@ fun StoryCard(
 
         // Tiêu đề truyện
         Text(
-            text = story.name,
+            text = story.name?:"",
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -578,6 +585,7 @@ fun StoryCard2(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard2", "Rendering story: ${story.name}")
     val isPremium = story.price.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
@@ -604,7 +612,7 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = story.name,
+                text = story.name?:"",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -671,6 +679,7 @@ fun StoryCard3(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
+    Log.d("StoryCard3", "Rendering story: ${story.name}")
     // Hàng 1: Ảnh bìa + Thông tin cơ bản
     Row(
         modifier = modifier
@@ -689,8 +698,6 @@ fun StoryCard3(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-
-
         }
 
         // Thông tin chi tiết
@@ -700,7 +707,7 @@ fun StoryCard3(
         ) {
             // Tiêu đề
             Text(
-                text = story.name,
+                text = story.name?:"",
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -712,7 +719,7 @@ fun StoryCard3(
             // Ngày cập nhật
             Text(
                 buildAnnotatedString {
-                    withStyle (
+                    withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
                             fontSize = 10.sp,
@@ -721,14 +728,14 @@ fun StoryCard3(
                     ) {
                         append("Last Updated: ")
                     }
-                    withStyle (
+                    withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_bold)),
                             fontSize = 10.sp,
                             color = OrangeRed
                         )
                     ) {
-                        append(story.updateAt.toString())
+                        append(story.updateAt?.toString() ?: "N/A")
                     }
                 },
             )
@@ -740,8 +747,10 @@ fun StoryCard3(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                story.categories.forEach { genre ->
-                    Chip(text = genre.name)
+                story.categories?.forEach { genre ->
+                    genre.name?.let { name ->
+                        Chip(text = name)
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -763,7 +772,6 @@ fun StoryCard3(
             }
         }
     }
-
 }
 
 // Định dạng số lượt xem (167800 -> 167.8K)
@@ -778,7 +786,7 @@ internal fun formatViews(views: Long): String {
 //endregion
 
 @Composable
-fun AuthorInfoCard(model: User, onClick: () -> Unit) {
+fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
@@ -829,11 +837,12 @@ fun ReadListItem(
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        // Phần avatar xếp chồng (lấy từ 3 truyện đầu tiên)
-        Box(modifier = Modifier.size(110.dp,140.dp)) {
-            item.stories.take(3).forEachIndexed { index, story ->
+        // Phần avatar xếp chồng (lấy từ 1 đến 3 truyện đầu tiên)
+        Box(modifier = Modifier.size(110.dp, 140.dp)) {
+            val storiesToShow = item.stories.take(3)
+            storiesToShow.forEachIndexed { index, story ->
                 AsyncImage(
-                    model = story.coverImgUrl, // Lấy avatar từ coverImage của truyện
+                    model = story.coverImgUrl,
                     contentDescription = "Story cover ${index + 1}",
                     placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,
@@ -848,19 +857,35 @@ fun ReadListItem(
                         .padding(2.dp)
                 )
             }
+            // Điền khoảng trống nếu ít hơn 3 truyện
+            if (storiesToShow.size < 3) {
+                for (i in storiesToShow.size until 3) {
+                    Spacer(
+                        modifier = Modifier
+                            .size(90.dp, 120.dp)
+                            .align(Alignment.TopStart)
+                            .offset(
+                                x = (i * 10).dp,
+                                y = (i * 10).dp
+                            )
+                            .background(Color.Gray.copy(alpha = 0.3f), RoundedCornerShape(4.dp))
+                    )
+                }
+            }
         }
 
         // Phần thông tin
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Row (
+            Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 val windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(
-                    LocalContext.current)
+                    LocalContext.current
+                )
                 val halfWidth = with(LocalDensity.current) {
                     windowMetrics.bounds.width().toDp() * 0.3f
                 }
@@ -873,13 +898,10 @@ fun ReadListItem(
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
                     modifier = modifier
-                        .widthIn(max = halfWidth) // Giới hạn chiều rộng tối đa
+                        .widthIn(max = halfWidth)
                         .background(
                             brush = Brush.horizontalGradient(
-                                colors = listOf(
-                                    OrangeRed,
-                                    BurntCoral
-                                )
+                                colors = listOf(OrangeRed, BurntCoral)
                             ),
                             shape = RoundedCornerShape(30.dp)
                         )
@@ -896,5 +918,154 @@ fun ReadListItem(
             )
         }
     }
+
 }
 
+@Composable
+fun RowSelectItem(
+    name: String,
+    image: Painter,
+    onClick: () -> Unit = {}
+)
+{
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .clickable { onClick() }
+    )
+    {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 20.dp)
+        )
+        {
+            Image(
+                painter = image,
+                contentDescription = "select button icon",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = name,
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                color = Color.White
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = ">",
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                color = Color.White
+            )
+        }
+        Divider(
+            color = Color.Gray,
+            thickness = 1.dp,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun TransactionCard(
+    item : Transaction,
+    isSelected : Boolean,
+    onClick: () -> Unit = {}
+)
+{
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(vertical = 10.dp)
+            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
+            .clickable{ onClick() },
+        contentAlignment = Alignment.CenterStart
+    )
+    {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        )
+        {
+            Row {
+                Text(
+                    text = "ID: " + item.transactionId.toString(),
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Time: " + item.time.toString(),
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(IntrinsicSize.Min)
+            )
+            {
+                Image(
+                    painter = painterResource(id = R.drawable.avt_img),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "pfp",
+                    modifier = Modifier
+                        .size(50.dp, 50.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Text(
+                        text = "User ID: " + item.userId.toString(),
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
+                    Text(
+                        text = "Type: " + item.type,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Row {
+                        Text(
+                            text = "Money: ",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                        Text(
+                            text = item.money.toString() + "đ",
+                            color = if(item.type == "withdraw") Color.Red else Color.Green,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        )
+                    }
+                    Text(
+                        text = "Status: " + item.status,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
+                }
+            }
+        }
+    }
+
+}

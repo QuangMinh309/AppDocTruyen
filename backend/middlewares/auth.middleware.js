@@ -26,8 +26,8 @@ export const verifyToken = async (token, secret) => {
   }
 
   return user
-
 }
+
 // Xác thực access token webSocket
 export const authenticateWebSocket = async (ws, req) => {
   try {
@@ -44,27 +44,27 @@ export const authenticateWebSocket = async (ws, req) => {
 // Xác thực access token cho http request
 export const authenticate = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization
+    const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return next(new ApiError('Không có token xác thực', 401))
+      return next(new ApiError('Không có token xác thực', 401));
     }
 
-    const token = authHeader.split(' ')[1]
-    const user = await verifyToken(token, process.env.JWT_SECRET)
-    req.user = user
-    next()
+    const token = authHeader.split(' ')[1];
+    const user = await verifyToken(token, process.env.JWT_SECRET);
+    req.user = user;
+    next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return next(new ApiError('Token không hợp lệ', 401))
+      return next(new ApiError('Token không hợp lệ', 401));
     }
     if (error instanceof jwt.TokenExpiredError) {
-      return next(new ApiError('Token đã hết hạn', 401))
+      return next(new ApiError('Token đã hết hạn', 401));
     }
-    console.error('Lỗi xác thực:', error)
-    return next(new ApiError(`Lỗi xác thực: ${error.message}`, 500))
+    console.error('Lỗi xác thực:', error);
+    return next(new ApiError(`Lỗi xác thực: ${error.message}`, 500));
   }
-}
+};
 
 // Xác thực refresh token
 export const authenticateRefreshToken = async (req, res, next) => {
@@ -112,6 +112,7 @@ export const authenticateRefreshToken = async (req, res, next) => {
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
+      console.log("User info in middleware:", req.user);
       return next(new ApiError('Không có quyền truy cập', 403))
     }
 

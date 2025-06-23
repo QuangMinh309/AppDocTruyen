@@ -5,7 +5,7 @@ import {
   handleStoryPurchaseTransaction,
 } from '../../utils/story.util.js'
 import { handleTransaction } from '../../utils/handle_transaction.util.js'
-import { createNotification } from '../../utils/notification.util.js'
+import NotificationService from '../notification.service.js'
 import {
   validateChapter,
   handlePurchaseTransaction,
@@ -14,91 +14,6 @@ import {
 import { validateUser } from '../../utils/user.util.js'
 
 const StoryInteractionService = {
-  async getRecentlyReadStories(userId, { limit = 20, lastId = null } = {}) {
-    try {
-      await validateUser(userId)
-
-      const whereClause = {
-        userId,
-      }
-
-      if (lastId) {
-        whereClause.chapterId = {
-          [models.Sequelize.Op.lt]: lastId,
-        }
-      }
-
-      const histories = await models.History.findAll({
-        where: whereClause,
-        include: [
-          {
-            model: models.Chapter,
-            as: 'chapter',
-            attributes: ['chapterId', 'chapterName', 'storyId'],
-            required: true,
-            include: [
-              {
-                model: models.Story,
-                as: 'story',
-                attributes: ['storyId', 'storyName', 'coverImgId', 'status'],
-                include: [
-                  {
-                    model: models.User,
-                    as: 'author',
-                    attributes: ['userId', 'userName', 'avatarId', 'dUserName'],
-                  },
-                  {
-                    model: models.Category,
-                    as: 'categories',
-                    attributes: ['categoryId', 'categoryName'],
-                    through: { attributes: [] },
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        order: [
-          ['lastReadAt', 'DESC'],
-          ['chapterId', 'DESC'],
-        ],
-        limit: parseInt(limit),
-      })
-
-      // Lọc trùng truyện
-      const uniqueStories = []
-      const seenStoryIds = new Set()
-
-      for (const history of histories) {
-        const story = history.chapter?.story
-        if (!story) continue
-
-        const storyId = story.storyId
-        if (!seenStoryIds.has(storyId)) {
-          seenStoryIds.add(storyId)
-          uniqueStories.push({
-            ...story.toJSON(),
-            lastReadChapter: history.chapter.chapterName,
-            lastReadAt: history.lastReadAt,
-          })
-        }
-      }
-
-      const nextLastId =
-        histories.length > 0 ? histories[histories.length - 1].chapterId : null
-
-      return {
-        stories: uniqueStories,
-        nextLastId,
-        hasMore: histories.length === parseInt(limit),
-      }
-    } catch (error) {
-      throw error instanceof ApiError
-        ? error
-        : new ApiError('Lỗi khi lấy truyện đã đọc gần đây', 500)
-    }
-  },
-
   async getPurchasedStories(userId, { limit = 20, lastId = null } = {}) {
     try {
       await validateUser(userId)
@@ -280,7 +195,7 @@ const StoryInteractionService = {
 
         // Tạo notification nếu không phải tác giả vote cho truyện của mình
         if (story.userId !== userId) {
-          await createNotification({
+          await NotificationService.createNotification({
             type: 'VOTE',
             content: `Một người dùng đã vote cho truyện "${story.storyName}" của bạn`,
             refId: story.storyId,
