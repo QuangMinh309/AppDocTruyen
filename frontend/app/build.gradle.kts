@@ -120,7 +120,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
 
     implementation (libs.androidx.core.ktx)
@@ -139,7 +139,7 @@ dependencies {
     implementation (libs.androidx.paging.runtime)
     implementation (libs.androidx.material.icons.extended)
 
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
     // Optional - nếu dùng ViewModel với Hilt
     implementation(libs.androidx.hilt.navigation.compose)
 

@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.RegisterRequest
-import com.example.frontend.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

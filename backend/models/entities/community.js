@@ -33,10 +33,10 @@ export default (sequelize, DataTypes) => {
         autoIncrement: true,
         allowNull: false,
       },
-      communitytName: DataTypes.STRING,
+      communityName: DataTypes.STRING,
       categoryId: DataTypes.INTEGER,
       avatarId: DataTypes.STRING,
-      menberNum: DataTypes.INTEGER,
+      memberNum: DataTypes.INTEGER,
       description: DataTypes.STRING(1500),
     },
     {

@@ -1,15 +1,9 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
-import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.Functionality
 import com.example.frontend.data.model.NameList
-import com.example.frontend.data.model.Notification
-import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
-import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -33,6 +27,8 @@ interface ApiService {
         @Path("id") id: String
     ): Response<ImageUrlResponse>
 
+
+
     @GET("api/stories")
     suspend fun getStories(): Response<List<Story>>
 
@@ -41,6 +37,9 @@ interface ApiService {
 
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>
+
+
+
 
     @POST("api/users/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
@@ -56,7 +55,14 @@ interface ApiService {
 
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
+
+
+
+
+
+
 }
+
 
 // Data classes cho password reset
 data class EmailRequest(
@@ -169,11 +175,11 @@ data class Role(
 
 data class UploadResponse(
     val url: String,
-    val id: String
+    val publicId: String
 )
 
 data class ImageUrlResponse(
-    val url: String
+    val url: String,
 )
 
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)

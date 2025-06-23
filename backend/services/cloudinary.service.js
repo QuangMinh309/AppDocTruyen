@@ -6,6 +6,7 @@ import streamifier from 'streamifier';
 const getImageUrlFromCloudinary = async (imageId) => {
   try {
     // Kiểm tra tồn tại của publicId
+    if (!imageId) return ""
     const result = await cloudinary.api.resource(imageId, { resource_type: 'image' });
     return cloudinary.url(imageId, {
       fetch_format: 'auto',

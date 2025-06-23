@@ -4,8 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.EmailRequest // Thêm import này
 import com.example.frontend.data.api.VerifyOTPRequest // Thêm import này
-import com.example.frontend.navigation.Screen
-import android.util.Log
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

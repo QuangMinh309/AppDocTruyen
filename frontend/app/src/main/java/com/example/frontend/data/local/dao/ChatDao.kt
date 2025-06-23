@@ -13,6 +13,10 @@ interface ChatDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(message: ChatEntity)
 
+    // ✅ Hàm mới: chèn nhiều tin nhắn cùng lúc
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(messages: List<ChatEntity>)
+
     @Query("SELECT * FROM chats ORDER BY time ASC")
     fun getAllMessages(): Flow<List<ChatEntity>>
 }

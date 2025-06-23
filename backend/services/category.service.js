@@ -20,7 +20,7 @@ const CategoryService = {
     try {
       const category = await Category.findByPk(categoryId, {
         include: [
-          { model: Community, attributes: ['communityId', 'communitytName'] },
+          { model: Community, attributes: ['communityId', 'communityName'] },
           { model: StoryCategory, attributes: ['storyId'] },
         ],
       })
