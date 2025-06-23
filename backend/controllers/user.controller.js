@@ -10,6 +10,7 @@ import unfollowUser from '../services/user/user_unfollow.service.js';
 import purchasePremium from '../services/user/user_purchase_premium.service.js';
 import refreshTokenUser from '../services/user/user_refresh_token.service.js';
 import reportUser from '../services/user/user_report.service.js';
+import checkFollowStatus from '../services/user/user_check_follow.service.js';
 
 const UserController = {
   async register(req, res, next) {
@@ -189,6 +190,19 @@ const UserController = {
         success: true,
         message: result.message,
       });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async getFollowStatus(req, res, next) {
+    try {
+      const { followedId } = req.params;
+      const followerId = req.user.userId;
+
+      const result = await checkFollowStatus(followerId, Number(followedId));
+
+      return res.status(200).json(result);
     } catch (error) {
       next(error);
     }
