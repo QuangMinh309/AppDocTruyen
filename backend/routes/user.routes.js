@@ -72,4 +72,6 @@ router.post(
 
 router.post('/purchase-premium', UserController.purchasePremium)
 
+router.post('/report', UserController.reportUser)
+
 export default router

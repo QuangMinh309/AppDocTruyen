@@ -9,6 +9,7 @@ import followUser from '../services/user/user_follow.service.js';
 import unfollowUser from '../services/user/user_unfollow.service.js';
 import purchasePremium from '../services/user/user_purchase_premium.service.js';
 import refreshTokenUser from '../services/user/user_refresh_token.service.js';
+import reportUser from '../services/user/user_report.service.js';
 
 const UserController = {
   async register(req, res, next) {
@@ -202,6 +203,30 @@ const UserController = {
       res.status(200).json({
         success: true,
         message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async reportUser(req, res, next) {
+    try {
+      const { reportedUserId, reason } = req.body;
+      const reporterId = req.user.userId;
+
+      if (!reportedUserId || !reason) {
+        throw new ApiError('Vui lòng điền đầy đủ thông tin', 400);
+      }
+
+      const result = await reportUser(reason, reporterId, reportedUserId);
+
+      return res.status(201).json({
+        success: true,
+        message: result.message,
+        data: {
+          reportedUserId: result.reportedUserId,
+          reason: result.reason,
+        },
       });
     } catch (error) {
       next(error);
