@@ -17,20 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.GerneChipButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewScreenContent() {
-    val fakeViewModel = CommunityViewModel(NavigationManager())
-    CommunityScreen(viewModel = fakeViewModel)
-}
+
 
 @Composable
 fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
