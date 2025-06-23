@@ -1,6 +1,7 @@
 package com.example.frontend.data.repository
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.SendOTPResult
@@ -8,9 +9,15 @@ import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 @Singleton
 class AuthRepository @Inject constructor(
@@ -19,6 +26,7 @@ class AuthRepository @Inject constructor(
     private val context: Context
 ) {
     private var currentUser: User? = null
+
     suspend fun login(mail: String, password: String, rememberLogin: Boolean): Result<String> {
         return try {
             val response = apiService.login(com.example.frontend.data.api.LoginRequest(mail, password))
@@ -31,7 +39,7 @@ class AuthRepository @Inject constructor(
                     } else {
                         UserPreferences.clearUserData(context)
                     }
-                    currentUser = loginResponse.data.user
+                    currentUser = loginResponse.data.user // Cập nhật currentUser từ JSON trả về
                     Result.Success("Login successful")
                 } else {
                     Result.Failure(Exception("Invalid email or password"))
@@ -129,4 +137,83 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUser(): User? = currentUser
 
+    suspend fun updateUser(
+        userId: Int,
+        data: ApiService.UpdateUserRequest,
+        avatarFile: MultipartBody.Part? = null,
+        backgroundFile: MultipartBody.Part? = null
+    ): Result<User> {
+        return try {
+            val dUserName: RequestBody? = data.dUserName?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val dob: RequestBody? = data.DOB?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val userName: RequestBody? = data.userName?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val mail: RequestBody? = data.mail?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val password: RequestBody? = data.password?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val response = apiService.updateUser(
+                userId,
+                dUserName,
+                dob,
+                userName,
+                mail,
+                password,
+                avatarFile,
+                backgroundFile
+            )
+            if (response.isSuccessful) {
+                val updatedUser = response.body()?.data
+                if (updatedUser != null) {
+                    // Gọi getUserById để đồng bộ dữ liệu mới
+                    val refreshedUserResult = getUserById(userId)
+                    if (refreshedUserResult is Result.Success) {
+                        currentUser = refreshedUserResult.data
+                        Result.Success(refreshedUserResult.data)
+                    } else {
+                        currentUser = updatedUser
+                        Result.Success(updatedUser)
+                    }
+                } else {
+                    Result.Failure(Exception("No user data in response"))
+                }
+            } else {
+                Result.Failure(Exception("Failed to update user: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+    fun prepareImageFile(uri: Uri, partName: String): MultipartBody.Part? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            val file = File(context.cacheDir, "upload_${System.currentTimeMillis()}.jpg")
+            inputStream?.use { input ->
+                file.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData(partName, file.name, requestFile)
+        } catch (e: Exception) {
+            Log.e("AuthRepository", "Error preparing image file: ${e.message}", e)
+            null
+        }
+    }
+    suspend fun getUserById(userId: Int): Result<User> {
+        return try {
+            val response = apiService.getUserById(userId)
+            if (response.isSuccessful) {
+                val user = response.body()?.data
+                if (user != null) {
+                    currentUser = user
+                    Result.Success(user)
+                } else {
+                    Result.Failure(Exception("No user data in response"))
+                }
+            } else {
+                Result.Failure(Exception("Failed to get user: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
 }

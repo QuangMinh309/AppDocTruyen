@@ -13,11 +13,13 @@ import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -122,13 +124,48 @@ interface ApiService {
         @SerializedName("description") val description: String
     )
 
+    @Multipart
+    @PUT("api/users/{userId}")
+    suspend fun updateUser(
+        @Path("userId") userId: Int,
+        @Part("dUserName") dUserName: RequestBody? = null,
+        @Part("DOB") dob: RequestBody? = null,
+        @Part("userName") userName: RequestBody? = null,
+        @Part("mail") mail: RequestBody? = null,
+        @Part("password") password: RequestBody? = null,
+        @Part avatarFile: MultipartBody.Part? = null,
+        @Part backgroundFile: MultipartBody.Part? = null
+    ): Response<UpdateUserResponse>
+
+    data class UpdateUserRequest(
+        val dUserName: String? = null,
+        val DOB: String? = null,
+        val userName: String? = null,
+        val mail: String? = null,
+        val password: String? = null
+    )
+
+    data class UpdateUserResponse(
+        val success: Boolean,
+        val message: String,
+        val data: User
+    )
+
+    @GET("api/users/{userId}")
+    suspend fun getUserById(
+        @Path("userId") userId: Int
+    ): Response<UserResponse>
+
+    data class UserResponse(
+        val success: Boolean,
+        val data: User
+    )
 
 
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>
 
-    @GET("api/nameLists")
-    suspend fun getNameLists(): Response<List<NameList>>
+
 
     @POST("api/users/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>

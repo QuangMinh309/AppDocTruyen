@@ -273,7 +273,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(readLists) { list ->
-                                        ReadListItem(item = list) { }
+                                        ReadListItem(item = list, onClick = {viewModel.onGoToNameListStoryScreen(list.id)})
                                     }
                                 }
                             }
