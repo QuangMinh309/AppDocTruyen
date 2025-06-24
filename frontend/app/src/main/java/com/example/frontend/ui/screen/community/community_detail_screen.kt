@@ -29,6 +29,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +68,7 @@ import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
 fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel()){
-
+    val community by remember { mutableStateOf(viewModel.community) }
     val scrollState = rememberScrollState()
     ScreenFrame(
         topBar = {
@@ -158,15 +161,15 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                             .verticalScroll(scrollState) // scroll ability
 
                     ){
-//                        Text(
-//                            text = viewModel.community.description,
-//                            color = Color.White,
-//                            style = TextStyle(
-//                                fontSize = 14.sp
-//                            ),
-//                            modifier = Modifier.fillMaxWidth()
-//
-//                        )
+                        Text(
+                            text = community.description?:"",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 14.sp
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+
+                        )
                     }
                     Box(
                         modifier = Modifier

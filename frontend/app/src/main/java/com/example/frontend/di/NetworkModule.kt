@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.CommunityApiService
 import com.example.frontend.util.TokenManager
 import dagger.Module
 import dagger.Provides
@@ -31,8 +32,9 @@ object NetworkModule {
     @Singleton
     @Named("BaseUrl")
     fun provideBaseUrl(@ApplicationContext context: Context): String {
-        return context.getString(R.string.base_url)
-        // "http://10.0.2.2:3000/" // Uncomment nếu cần dùng local
+        return "http://10.0.2.2:20268/" //context.getString(R.string.base_url)
+        //"http://10.0.2.2:3000/"
+        // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
     }
     @Provides
     @Singleton
@@ -98,6 +100,11 @@ object NetworkModule {
     fun provideApiService(retrofit: Retrofit): ApiService {
         Log.d("NetworkModule", "Creating ApiService with Retrofit: $retrofit")
         return retrofit.create(ApiService::class.java)
+    }
+    @Provides
+    @Singleton
+    fun provideCommunityApiService(retrofit: Retrofit): CommunityApiService {
+        return retrofit.create(CommunityApiService::class.java)
     }
 
     fun createWebSocket(okHttpClient: OkHttpClient, url: String, listener: WebSocketListener): WebSocket {

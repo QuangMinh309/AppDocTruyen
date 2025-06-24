@@ -1,5 +1,8 @@
+
+package com.example.frontend.di
 import android.content.Context
 import androidx.room.Room
+import com.example.frontend.data.local.LocalAppDatabase
 import com.example.frontend.data.local.dao.ChatDao
 import dagger.Module
 import dagger.Provides
@@ -10,7 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object LocalDatabaseModule {
 
     @Provides
     @Singleton
@@ -25,6 +28,6 @@ object DatabaseModule {
     @Provides
     fun provideChatDao(db: LocalAppDatabase): ChatDao = db.chatDao()
 
-    @Provides
-    fun provideUserDao(db: LocalAppDatabase): UserDao = db.userDao()
+//    @Provides
+//    fun provideUserDao(db: LocalAppDatabase): UserDao = db.userDao()
 }

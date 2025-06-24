@@ -25,21 +25,7 @@ const CategoryService = {
 
   async getCategoryById(categoryId) {
     try {
-      const category = await Category.findByPk(categoryId, {
-        include: [
-          {
-            model: Community,
-            as: 'communities',
-            attributes: ['communityId', 'communitytName'],
-          },
-          {
-            model: sequelize.models.Story,
-            as: 'stories',
-            attributes: ['storyId', 'storyName'],
-            through: { attributes: [] },
-          },
-        ],
-      });
+      const category = await Category.findByPk(categoryId);
 
       if (!category) throw new ApiError('Thể loại không tồn tại', 404);
       return category.toJSON();
