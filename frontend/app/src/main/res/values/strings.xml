@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="base_url">https://e880-125-235-238-69.ngrok-free.app/</string>
+    <string name="base_url">https://0254-14-169-18-157.ngrok-free.app/</string>
     <string name="ws_base_url">ws://10.0.2.2:3000/api/chat</string>
 </resources>

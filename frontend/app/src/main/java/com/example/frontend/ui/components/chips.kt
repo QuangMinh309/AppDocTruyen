@@ -1,4 +1,4 @@
-package com.example.frontend.ui.components
+ package com.example.frontend.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.background

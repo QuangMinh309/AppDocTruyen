@@ -103,7 +103,7 @@ class ChatRepository @Inject constructor(
                                 var sender = User(
                                     id = chatMessage.sender.id,
                                     dName = chatMessage.sender.name ,
-                                    avatarUrl = chatMessage.sender.avatarUrl
+                               //     avatarUrl = chatMessage.sender.avatarUrl
                                 )
                                 Chat(
                                     id = chatMessage.chatId,
