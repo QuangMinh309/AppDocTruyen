@@ -68,7 +68,7 @@ fun GerneChipButton (genre:Category,
             .height(30.dp)
     ) {
         Text(
-            text = genre.name,
+            text = genre.name?:"",
             color = Color.Black,
             style = TextStyle(
                 fontSize = 12.sp,

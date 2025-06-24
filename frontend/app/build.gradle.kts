@@ -92,14 +92,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 //Gson
 
-//     implementation(libs.gson)
-//     implementation(libs.coil.compose)     // Để hiển thị ảnh từ URL
-//     implementation(libs.okhttp) // Để gửi file lên backend
-//     implementation(libs.androidx.lifecycle.viewmodel.compose)
+     implementation(libs.gson)
+     implementation(libs.coil.compose)     // Để hiển thị ảnh từ URL
+     implementation(libs.okhttp) // Để gửi file lên backend
+     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-//     implementation(libs.retrofit)
-//     implementation(libs.converter.gson)
-//     implementation(libs.logging.interceptor)
+     implementation(libs.retrofit)
+     implementation(libs.converter.gson)
+     implementation(libs.logging.interceptor)
 //     ksp(libs.hilt.compiler)
 
 

@@ -7,7 +7,6 @@ import com.example.frontend.data.model.onSuccess
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
