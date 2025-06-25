@@ -63,13 +63,13 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
 
-
 //@Preview(showBackground = true)
 //@Composable
 //fun PreviewScreenContent2() {
 //    val fakeViewModel = ProfileViewModel(NavigationManager())
 //    ProfileScreen(viewModel = fakeViewModel)
 //}
+
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
@@ -273,7 +273,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                     verticalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
                                     items(readLists) { list ->
-                                        ReadListItem(item = list, onClick = {viewModel.onGoToNameListStoryScreen(list.id)})
+                                        ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
                                     }
                                 }
                             }

@@ -7,6 +7,7 @@ import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.data.repository.HomeRepository
 import com.example.frontend.services.navigation.NavigationManager
@@ -39,6 +40,9 @@ class HomeViewModel @Inject constructor(
     private val _readLists = MutableStateFlow<List<NameList>>(emptyList())
     val readLists: StateFlow<List<NameList>> = _readLists.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = _currentUser.asStateFlow()
+
     private val _isSuggestedLoading = MutableStateFlow(false)
     val isSuggestedLoading: StateFlow<Boolean> = _isSuggestedLoading.asStateFlow()
 
@@ -54,13 +58,40 @@ class HomeViewModel @Inject constructor(
     private val _isReadListsLoading = MutableStateFlow(false)
     val isReadListsLoading: StateFlow<Boolean> = _isReadListsLoading.asStateFlow()
 
-    val userName: String
-        get() = authRepository.getCurrentUser()?.dName ?: "User"
+    private val _isUserLoading = MutableStateFlow(false)
+    val isUserLoading: StateFlow<Boolean> = _isUserLoading.asStateFlow()
 
     init {
+        loadUser()
         loadStories()
         loadCategories()
         loadReadLists()
+    }
+
+    private fun loadUser() {
+        viewModelScope.launch {
+            _isUserLoading.value = true
+            try {
+                val currentUser = authRepository.getCurrentUser()
+                if (currentUser != null) {
+                    val result = authRepository.getUserById(currentUser.id)
+                    _currentUser.value = when (result) {
+                        is Result.Success -> result.data
+                        is Result.Failure -> {
+                            Log.e("HomeViewModel", "Error loading user", result.exception)
+                            null
+                        }
+                    }
+                } else {
+                    _currentUser.value = null
+                }
+            } catch (e: Exception) {
+                _currentUser.value = null
+                Log.e("HomeViewModel", "Exception during loadUser", e)
+            } finally {
+                _isUserLoading.value = false
+            }
+        }
     }
 
     private fun loadStories() {
@@ -90,7 +121,7 @@ class HomeViewModel @Inject constructor(
                         newStoriesResult.data.forEach { story ->
                             if (story.name == null) Log.w("HomeViewModel", "Story with id ${story.id} has null name")
                         }
-                        Log.d("HomeViewModel", "Suggested stories: ${newStoriesResult.data.size}")
+                        Log.d("HomeViewModel", "New stories: ${newStoriesResult.data.size}")
                         newStoriesResult.data
                     }
                     is Result.Failure -> {
@@ -105,7 +136,7 @@ class HomeViewModel @Inject constructor(
                         topRankingResult.data.forEach { story ->
                             if (story.name == null) Log.w("HomeViewModel", "Story with id ${story.id} has null name")
                         }
-                        Log.d("HomeViewModel", "Suggested stories: ${topRankingResult.data.size}")
+                        Log.d("HomeViewModel", "Top ranking stories: ${topRankingResult.data.size}")
                         topRankingResult.data
                     }
                     is Result.Failure -> {
