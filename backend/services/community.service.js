@@ -9,6 +9,7 @@ const Community = sequelize.models.Community
 const Chat = sequelize.models.Chat
 const Category = sequelize.models.Category
 const History = sequelize.models.History
+const User = sequelize.models.User
 
 
 
@@ -29,6 +30,7 @@ const CommunityService = {
             });
             return await Promise.all(communities.map(async (community) => {
                 const communityData = community.toJSON();
+
                 communityData.avatarUrl = await getImageUrlFromCloudinary(communityData.avatarId);
                 delete communityData.avatarId;
                 delete communityData.categoryId;
@@ -92,17 +94,30 @@ const CommunityService = {
                         as: 'category',
                         attributes: ['categoryId', 'categoryName'],
                     },
+                    {
+                        model: User,
+                        as: 'members', // Tên alias từ association
+                        through: { attributes: [] }, // Loại bỏ các cột từ JoinCommunity nếu không cần
+                        attributes: ['userId', 'dUserName', "avatarId"], // Chọn các trường cần từ User
+                    },
                 ],
             });
-
-            if (!community) {
+            // Tạo đối tượng mới để lưu kết quả
+            const result = community.toJSON();
+            if (!result) {
                 throw new ApiError('Cộng đồng không tồn tại', 404);
             }
-            communityData.avatarUrl = await getImageUrlFromCloudinary(communityData.avatarId);
-            delete communityData.avatarId;
-            delete communityData.categoryId;
-
-            return community.toJSON()
+            result.avatarUrl = await getImageUrlFromCloudinary(community.avatarId);
+            await Promise.all(result.members.map(async (data) => {
+                console.log("id: ", data.avatarId)
+                data.avatarUrl = await getImageUrlFromCloudinary(data.avatarId);
+                delete data.avatarId;
+                return data;
+            }));
+            delete result.avatarId;
+            delete result.categoryId;
+            console.log(result)
+            return result;
         } catch (err) {
             console.error('Lỗi khi lấy cộng đồng:', err)
             throw new ApiError('Lỗi khi lấy cộng đồng', 500)

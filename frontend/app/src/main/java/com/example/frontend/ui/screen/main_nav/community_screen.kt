@@ -15,21 +15,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.presentation.viewmodel.main_nav.CommunityViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.GerneChipButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.TopBar
-
+import com.example.frontend.ui.theme.OrangeRed
 
 
 @Composable
@@ -77,9 +78,28 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                         .height(50.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = OrangeRed)
                 }
-            } else {
+
+            }
+            else if(communitiesFollowCategory.value.isEmpty()){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                ){
+                    Text(
+                        text = "No community found",
+                        modifier = Modifier.align(Alignment.Center),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+
+                    )
+                }
+            }
+            else {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -107,7 +127,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                         .height(50.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = OrangeRed)
                 }
             } else {
                 LazyRow(

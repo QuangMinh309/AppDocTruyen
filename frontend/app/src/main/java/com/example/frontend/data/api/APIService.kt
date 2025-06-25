@@ -162,7 +162,8 @@ interface ApiService {
     suspend fun getCategories(): Response<List<Category>>
 
 
-
+    @PUT("api/users/login")
+    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
 
 
@@ -308,7 +309,10 @@ data class UploadResponse(
 data class ImageUrlResponse(
     val url: String,
 )
-
+data class NoDataResponse(
+    val success: Boolean,
+    val message: String
+)
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)
 //data class Story(val id: String) // Placeholder
 //data class Category(val id: String) // Placeholder

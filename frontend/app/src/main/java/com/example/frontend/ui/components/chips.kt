@@ -118,7 +118,7 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:Ba
 }
 
 @Composable
-fun GenreChip(modifier: Modifier = Modifier,genre: String) {
+fun GenreChip(modifier: Modifier = Modifier,genre: Category) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -128,7 +128,7 @@ fun GenreChip(modifier: Modifier = Modifier,genre: String) {
             .then(modifier)
     ) {
         Text(
-            text =genre,
+            text =genre.name?:"...",
             color = Color.Black,
             style = TextStyle(
                 fontSize = 10.sp,

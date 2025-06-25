@@ -1,6 +1,6 @@
 package com.example.frontend.ui.screen.main_nav
 
-import android.util.Log
+//import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -32,9 +32,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewModel
 import com.example.frontend.services.navigation.NavigationCommand
 import com.example.frontend.services.navigation.Screen
-import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewModel
 import com.example.frontend.ui.components.BottomNavigationBar
 import com.example.frontend.ui.screen.DiscoverDetailScreen
 import com.example.frontend.ui.screen.NotificationScreen
@@ -51,7 +51,6 @@ import com.example.frontend.ui.screen.intro_authentication.IntroScreen
 import com.example.frontend.ui.screen.intro_authentication.LoginScreen
 import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
 import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
-//import com.example.frontend.ui.screen.intro_authentication.SetUpPasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
@@ -218,7 +217,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                     navArgument("categoryName") {type=NavType.StringType}
                 )
             ) {
-                    backStackEntry -> CategoryStoryListScreen()
+            CategoryStoryListScreen()
             }
 
             composable(
@@ -226,7 +225,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 arguments = listOf(
                     navArgument("nameListsId") { type = NavType.IntType }
                 )
-            ) { backStackEntry ->
+            ) {
                 NameListStoryScreen()
             }
 

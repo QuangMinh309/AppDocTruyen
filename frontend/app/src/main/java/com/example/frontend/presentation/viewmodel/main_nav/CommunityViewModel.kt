@@ -32,14 +32,17 @@ class CommunityViewModel @Inject constructor(
     val category: StateFlow<List<Category>> = _category
 
     init {
-        _isLoading.value=true
         viewModelScope.launch {
-            _category.value = categoryProvider.fetchAllCategory()
+           try {
+               _isLoading.value=true
+               _category.value = categoryProvider.fetchAllCategory()
+               fetchCommunitiesFollowCategory(_category.value[0].id)
+               fetchHotCommunities()
+           }
+           finally {
+               _isLoading.value=false
+           }
         }
-        fetchCommunitiesFollowCategory(_category.value[0].id)
-        fetchHotCommunities()
-
-        _isLoading.value=false
     }
 
     private fun fetchHotCommunities() {

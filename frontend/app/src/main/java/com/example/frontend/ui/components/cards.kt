@@ -124,7 +124,7 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
                     .padding( vertical = 4.dp,horizontal = 10.dp)
             )
             //genre chip
-         //   GenreChip(genre = model.category.name)
+            GenreChip(genre = model.category)
 
             //member number
             Text(
@@ -150,9 +150,9 @@ fun MemberCard(model : User){
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = model.avatarUrl ,
+            model = model.avatarUrls ,
             placeholder = painterResource(id = R.drawable.intro_page1_bg),
-            contentDescription = "community avatar",
+            contentDescription = "member avatar",
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
@@ -180,6 +180,7 @@ fun MemberCard(model : User){
                 )
             )
         }
+        //follow button
         Button(
             onClick = { model.plusFollowerNum()},
             colors = ButtonDefaults.buttonColors(

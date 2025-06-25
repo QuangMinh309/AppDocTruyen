@@ -8,7 +8,8 @@ data class Community(
     @SerializedName("category") val category: Category,
     var avatarUrl: String? = null,
     @SerializedName("memberNum") val memberNum: Int,
-    val description: String? = null
+    val description: String? = null,
+    val members: List<User>? = null
 ){
     public fun copy():Community{
         return Community(
@@ -16,7 +17,8 @@ data class Community(
             name =  this.name,
             category =  this.category,
             avatarUrl =  this.avatarUrl,
-            memberNum =  this.memberNum
+            memberNum =  this.memberNum,
+            members =  this.members,
         )
     }
 }

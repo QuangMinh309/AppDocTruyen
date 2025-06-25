@@ -148,7 +148,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -174,7 +174,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     val pairedStories = newStories.chunked(2)
@@ -217,7 +217,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     val top5Stories = topRankingStories.take(5)
@@ -287,7 +287,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     FlowRow(
@@ -322,7 +322,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                 .height(50.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(color = OrangeRed)
                         }
                     } else {
                         LazyColumn(

@@ -1,8 +1,11 @@
 import express from 'express';
+import { authenticate } from '../middlewares/auth.middleware.js';
 import * as communityController from '../controllers/community.controller.js';
 
 const router = express.Router();
 
+
+router.use(authenticate);
 // Lấy tất cả cộng đồng
 router.get('/', communityController.getAllCommunities);
 

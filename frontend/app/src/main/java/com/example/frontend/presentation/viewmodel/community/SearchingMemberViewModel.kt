@@ -3,11 +3,10 @@ package com.example.frontend.presentation.viewmodel.community
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.CommunityProvider
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.services.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,9 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CommunityDetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class SearchingMemberViewModel @Inject constructor(
     navigationManager: NavigationManager,
+    savedStateHandle: SavedStateHandle,
     communityProvider: CommunityProvider
 ) : BaseViewModel(navigationManager) {
     private val _id = savedStateHandle.getStateFlow("communityId", "")
@@ -25,8 +24,8 @@ class CommunityDetailViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false) // Thêm trạng thái loading
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _community = MutableStateFlow<Community?>(null)
-    val community: StateFlow<Community?> = _community
+    private val _memberList  = MutableStateFlow<List<User>>(emptyList())
+    val memberList : StateFlow<List<User>> = _memberList
 
     init {
         viewModelScope.launch {
@@ -34,11 +33,10 @@ class CommunityDetailViewModel @Inject constructor(
                 if (id.isNotEmpty()) {
                     try {
                         _isLoading.value = true
-                        _community.value = communityProvider.getCommunityById(id.toInt())
+                        _memberList .value = communityProvider.getCommunityById(id.toInt())?.members?: emptyList()
                         _isLoading.value = false
                     }
                     catch (err:Exception){
-                        _community.value = null
                         Log.e("From VM Error","Error: ${err.message}")
                     }
                 }
@@ -46,9 +44,10 @@ class CommunityDetailViewModel @Inject constructor(
         }
     }
 
-    fun onGoToChattingScreen(id: Int) {
+
+    fun follow(id:Int){
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Community.Chat.createRoute(id.toString()))
+
         }
     }
 }

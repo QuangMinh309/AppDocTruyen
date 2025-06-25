@@ -13,10 +13,8 @@ const getImageUrlFromCloudinary = async (imageId) => {
       quality: 'auto',
     });
   } catch (error) {
-    if (error.http_code === 404) {
-      throw new ApiError('Public ID không tồn tại!', 404);
-    }
-    throw new ApiError('Lỗi lấy ảnh từ cloudinary', 500)
+    console.log(`không thể lấy ảnh từ cloudinary!`, 500)
+    return ""
   }
 };
 
