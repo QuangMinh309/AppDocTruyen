@@ -8,7 +8,6 @@ import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.AuthRepository
-//import com.example.frontend.data.repository.UserRepository
 import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -24,25 +23,33 @@ class SettingViewModel @Inject constructor(
 ) : BaseViewModel(navigationManager) {
 
     val isEditMode = mutableStateOf(false)
-    val user = mutableStateOf(authRepository.getCurrentUser())
+    val user = mutableStateOf<User?>(null) // Khởi tạo null, sẽ tải từ API
     val selectedAvatarUri = mutableStateOf<Uri?>(null)
     val selectedBackgroundUri = mutableStateOf<Uri?>(null)
-    val displayName = mutableStateOf(user.value?.dName ?: "")
-    val dateOfBirth = mutableStateOf(user.value?.dob ?: "")
-    val username = mutableStateOf(user.value?.name ?: "")
-    val mail = mutableStateOf(user.value?.mail)
+    val displayName = mutableStateOf("")
+    val dateOfBirth = mutableStateOf("")
+    val username = mutableStateOf("")
+    val mail = mutableStateOf<String?>(null)
     val password = mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
 
     init {
-        // Đảm bảo currentUser được tải khi ViewModel khởi tạo (nếu chưa có)
+        loadUserData() // Tải dữ liệu người dùng từ API khi khởi tạo
+    }
+
+    private fun loadUserData() {
         viewModelScope.launch {
-            val currentUserId = user.value?.id ?: 0
-            if (currentUserId != 0) {
-                val result = authRepository.getUserById(currentUserId)
-                if (result is Result.Success) {
-                    user.value = result.data
-                    updateFieldsFromUser()
+            val currentUser = authRepository.getCurrentUser()
+            if (currentUser != null) {
+                val result = authRepository.getUserById(currentUser.id)
+                when (result) {
+                    is Result.Success -> {
+                        user.value = result.data
+                        updateFieldsFromUser()
+                    }
+                    is Result.Failure -> {
+                        Log.e("SettingViewModel", "Failed to load user: ${result.exception.message}")
+                    }
                 }
             }
         }
@@ -91,13 +98,16 @@ class SettingViewModel @Inject constructor(
             Log.d("SettingViewModel", "Avatar file: $avatarFile, Background file: $backgroundFile")
 
             val result = authRepository.updateUser(user.value?.id ?: 0, updateRequest, avatarFile, backgroundFile)
-            if (result is Result.Success) {
-                user.value = result.data
-                updateFieldsFromUser() // Cập nhật lại các trường
-                isEditMode.value = false
-                Log.d("SettingViewModel", "Update successful: ${result.data}")
-            } else if (result is Result.Failure) {
-                Log.e("SettingViewModel", "Update failed: ${result.exception.message}")
+            when (result) {
+                is Result.Success -> {
+                    user.value = result.data // Cập nhật user với dữ liệu mới từ API
+                    updateFieldsFromUser() // Đồng bộ các trường
+                    isEditMode.value = false
+                    Log.d("SettingViewModel", "Update successful: ${result.data}")
+                }
+                is Result.Failure -> {
+                    Log.e("SettingViewModel", "Update failed: ${result.exception.message}")
+                }
             }
         }
     }

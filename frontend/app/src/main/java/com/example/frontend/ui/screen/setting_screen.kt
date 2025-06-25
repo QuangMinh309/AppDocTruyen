@@ -6,6 +6,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -128,236 +130,245 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 .padding(vertical = 40.dp)
                 .verticalScroll(scrollState)
         ) {
-            Text(
-                text = "Profile",
-                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp, color = Color.White)
-            )
-
-            // Avatar
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 25.dp)
-                    .clickable {
-                        if (viewModel.isEditMode.value) {
-                            isAvatarPicker = true
-                            showImagePicker = true
-                        }
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = viewModel.selectedAvatarUri.value ?: viewModel.user.value?.avatarUrl ?: R.drawable.intro_page1_bg
-                    ),
-                    contentDescription = "Avatar",
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
+            if (viewModel.user.value == null) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                Text(
+                    text = "Profile",
+                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 24.sp, color = Color.White)
                 )
-                Column(
+
+                // Avatar
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text(
-                        text = "Avatar",
-                        color = Color.White,
-                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                    )
-                    if (viewModel.isEditMode.value) {
-                        Text(
-                            text = "Tap to change",
-                            color = Color.White,
-                            style = TextStyle(fontSize = 16.sp)
-                        )
-                    }
-                }
-            }
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-                thickness = 1.dp,
-                color = Color(0xff202430)
-            )
-
-            // Background
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        if (viewModel.isEditMode.value) {
-                            isAvatarPicker = false
-                            showImagePicker = true
-                        }
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = viewModel.selectedBackgroundUri.value ?: viewModel.user.value?.backgroundUrl ?: R.drawable.intro_page1_bg
-                    ),
-                    contentDescription = "Background",
-                    modifier = Modifier.size(60.dp),
-                    contentScale = ContentScale.Crop
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text("Background", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                    if (viewModel.isEditMode.value) {
-                        Text(
-                            text = "Tap to change",
-                            color = Color.White,
-                            style = TextStyle(fontSize = 16.sp)
-                        )
-                    }
-                }
-            }
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-                thickness = 1.dp,
-                color = Color(0xff202430)
-            )
-
-            // Display Name
-            EditableField(
-                label = "Display Name",
-                value = viewModel.displayName.value,
-                isEditable = viewModel.isEditMode.value,
-                onValueChange = { viewModel.displayName.value = it }
-            )
-
-            // Date of Birth
-            EditableField(
-                label = "Date of Birth",
-                value = viewModel.dateOfBirth.value ?: "",
-                isEditable = viewModel.isEditMode.value,
-                onValueChange = { viewModel.dateOfBirth.value = it },
-                onClick = { if (viewModel.isEditMode.value) viewModel.showDatePicker() }
-            )
-
-            // DatePicker Dialog
-            if (viewModel.showDatePicker.value) {
-                val datePickerState = androidx.compose.material3.rememberDatePickerState(
-                    initialSelectedDateMillis = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                        .parse(viewModel.dateOfBirth.value) ?.time ?: System.currentTimeMillis()
-                )
-                DatePickerDialog(
-                    onDismissRequest = { viewModel.showDatePicker.value = false },
-                    confirmButton = {
-                        TextButton(onClick = { viewModel.showDatePicker.value = false }) {
-                            Text("Cancel")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = {
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val calendar = Calendar.getInstance().apply { timeInMillis = millis }
-                                val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
-                                viewModel.dateOfBirth.value = formattedDate
-                            } ?: run {
-                                val calendar = Calendar.getInstance().apply {
-                                    time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(viewModel.dateOfBirth.value) ?: Date()
-                                }
-                                viewModel.dateOfBirth.value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+                        .padding(top = 25.dp)
+                        .clickable {
+                            if (viewModel.isEditMode.value) {
+                                isAvatarPicker = true
+                                showImagePicker = true
                             }
-                            viewModel.showDatePicker.value = false
-                        }) {
-                            Text("OK")
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = viewModel.selectedAvatarUri.value ?: viewModel.user.value?.avatarUrl ?: R.drawable.intro_page1_bg
+                        ),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Avatar",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        )
+                        if (viewModel.isEditMode.value) {
+                            Text(
+                                text = "Tap to change",
+                                color = Color.White,
+                                style = TextStyle(fontSize = 16.sp)
+                            )
                         }
                     }
-                ) {
-                    DatePicker(state = datePickerState)
                 }
-            }
-
-            // Username
-            EditableField(
-                label = "UserName",
-                value = viewModel.username.value,
-                isEditable = viewModel.isEditMode.value,
-                onValueChange = { viewModel.username.value = it }
-            )
-
-            // Mail
-            EditableField(
-                label = "Mail",
-                value = viewModel.mail.value ?: "",
-                isEditable = viewModel.isEditMode.value,
-                onValueChange = { viewModel.mail.value = it }
-            )
-
-            // Password
-            EditableField(
-                label = "Password",
-                value = viewModel.password.value,
-                isEditable = viewModel.isEditMode.value,
-                onValueChange = { viewModel.password.value = it },
-                isPassword = true
-            )
-
-            // Wallet (chỉ đọc)
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text("Wallet", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                Text(
-                    text = "${viewModel.user.value?.wallet?.toString() ?: "0.00"}đ",
-                    color = Color.White,
-                    style = TextStyle(fontSize = 16.sp)
-                )
-            }
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-                thickness = 1.dp,
-                color = Color(0xff202430)
-            )
-
-            // Premium section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp)
-            ) {
-                Text(
-                    text = "Premium",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp,
-                        brush = Brush.linearGradient(
-                            colors = listOf(BurntCoral, OrangeRed),
-                            start = Offset(0f, 0f),
-                            end = Offset.Infinite
-                        )
-                    )
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
                 )
 
-                // Registration Date (sử dụng DOB thay vì createdAt)
-                Column(
+                // Background
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 25.dp),
+                        .clickable {
+                            if (viewModel.isEditMode.value) {
+                                isAvatarPicker = false
+                                showImagePicker = true
+                            }
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = viewModel.selectedBackgroundUri.value ?: viewModel.user.value?.backgroundUrl ?: R.drawable.intro_page1_bg
+                        ),
+                        contentDescription = "Background",
+                        modifier = Modifier.size(60.dp),
+                        contentScale = ContentScale.Crop
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text("Background", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                        if (viewModel.isEditMode.value) {
+                            Text(
+                                text = "Tap to change",
+                                color = Color.White,
+                                style = TextStyle(fontSize = 16.sp)
+                            )
+                        }
+                    }
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
+                )
+
+                // Display Name
+                EditableField(
+                    label = "Display Name",
+                    value = viewModel.displayName.value,
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.displayName.value = it }
+                )
+
+                // Date of Birth
+                EditableField(
+                    label = "Date of Birth",
+                    value = viewModel.dateOfBirth.value,
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.dateOfBirth.value = it },
+                    onClick = { if (viewModel.isEditMode.value) viewModel.showDatePicker() }
+                )
+
+                // DatePicker Dialog
+                if (viewModel.showDatePicker.value) {
+                    val datePickerState = androidx.compose.material3.rememberDatePickerState(
+                        initialSelectedDateMillis = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            .parse(viewModel.dateOfBirth.value) ?.time ?: System.currentTimeMillis()
+                    )
+                    DatePickerDialog(
+                        onDismissRequest = { viewModel.showDatePicker.value = false },
+                        confirmButton = {
+                            TextButton(onClick = { viewModel.showDatePicker.value = false }) {
+                                Text("Cancel")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val calendar = Calendar.getInstance().apply { timeInMillis = millis }
+                                    val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+                                    viewModel.dateOfBirth.value = formattedDate
+                                } ?: run {
+                                    val calendar = Calendar.getInstance().apply {
+                                        time = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(viewModel.dateOfBirth.value) ?: Date()
+                                    }
+                                    viewModel.dateOfBirth.value = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+                                }
+                                viewModel.showDatePicker.value = false
+                            }) {
+                                Text("OK")
+                            }
+                        }
+                    ) {
+                        DatePicker(state = datePickerState)
+                    }
+                }
+
+                // Username
+                EditableField(
+                    label = "UserName",
+                    value = viewModel.username.value,
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.username.value = it }
+                )
+
+                // Mail
+                EditableField(
+                    label = "Mail",
+                    value = viewModel.mail.value ?: "",
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.mail.value = it }
+                )
+
+                // Password
+                EditableField(
+                    label = "Password",
+                    value = viewModel.password.value,
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.password.value = it },
+                    isPassword = true
+                )
+
+                // Wallet (chỉ đọc)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("Registration Date", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                    Text("Wallet", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
                     Text(
-                        text = viewModel.user.value?.dob ?: "N/A",
+                        text = "${viewModel.user.value?.wallet?.toString() ?: "0.00"}đ",
                         color = Color.White,
                         style = TextStyle(fontSize = 16.sp)
                     )
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
+                )
+
+                // Premium section
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                ) {
+                    Text(
+                        text = "Premium",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 24.sp,
+                            brush = Brush.linearGradient(
+                                colors = listOf(BurntCoral, OrangeRed),
+                                start = Offset(0f, 0f),
+                                end = Offset.Infinite
+                            )
+                        )
+                    )
+
+                    // Registration Date (sử dụng DOB thay vì createdAt)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 25.dp),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text("Registration Date", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                        Text(
+                            text = viewModel.user.value?.dob ?: "N/A",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 16.sp)
+                        )
+                    }
                 }
             }
         }

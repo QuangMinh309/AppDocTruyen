@@ -76,11 +76,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val topRankingStories by viewModel.topRankingStories.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val readLists by viewModel.readLists.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
     val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
     val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
     val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
+    val isUserLoading by viewModel.isUserLoading.collectAsState()
 
     ScreenFrame {
         Column(
@@ -127,13 +129,25 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 )
             }
 
-            Text(
-                text = "Hello ${viewModel.userName}",
-                color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 20.dp)
-            )
+            // Chào người dùng
+            if (isUserLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                Text(
+                    text = "Hello ${currentUser?.dName ?: "User"}",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+            }
 
             // Banner
             AutoScrollBanner(items = bannerItems)
