@@ -8,11 +8,21 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 interface CommunityApiService {
     @GET("api/communities/")
     suspend fun getAllCommunity(): Response<List<Community>>
+
+    @GET("api/communities/{id}")
+    suspend fun getCommunityById(@Path("id") id: Int): Response<Community>
+
+    @GET("api/communities/search/{id}")
+    suspend fun searchCommunityMembersByName(
+        @Path("id") id: Int,
+        @Query("searchTerm") searchTerm: String,
+    ): Response<List<com.example.frontend.data.model.User>>
 
     @PUT("api/communities/{id}")
     suspend fun updateCommunity(
@@ -25,9 +35,6 @@ interface CommunityApiService {
 
     @POST("api/communities/")
     suspend fun createCommunity(@Body registerRequest: CommunityRequest): Response<Community>
-
-    @GET("api/communities/{id}")
-    suspend fun getCommunityById(@Path("id") id: Int): Response<Community>
 
     @DELETE("api/communities/{id}")
     suspend fun deleteCommunity(@Path("id") id: Int): Response<Community>

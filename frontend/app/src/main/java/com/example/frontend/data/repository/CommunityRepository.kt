@@ -4,6 +4,7 @@ import com.example.frontend.data.api.CommunityApiService
 import com.example.frontend.data.api.CommunityRequest
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.Result
+import com.example.frontend.data.model.User
 import javax.inject.Inject
 
 class CommunityRepository @Inject constructor(
@@ -45,6 +46,19 @@ class CommunityRepository @Inject constructor(
             val response = apiService.getCommunityById(id)
             if (response.isSuccessful) {
                 Result.Success(response.body() ?: throw Exception("Community not found"))
+            } else {
+                Result.Failure(Exception("Get community failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+    suspend fun searchMembers(id: Int,name:String=""): Result<List<User>> {
+        return try {
+            val response = apiService.searchCommunityMembersByName(id,name)
+
+            if (response.isSuccessful) {
+                Result.Success(response.body() ?: emptyList())
             } else {
                 Result.Failure(Exception("Get community failed with code: ${response.code()}"))
             }

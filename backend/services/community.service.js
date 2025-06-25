@@ -10,7 +10,17 @@ const Chat = sequelize.models.Chat
 const Category = sequelize.models.Category
 const History = sequelize.models.History
 const User = sequelize.models.User
+const Follow = sequelize.models.Follow
 
+
+export function normalizeString(str) {
+    return str
+        .normalize("NFD") // tách dấu
+        .replace(/[\u0300-\u036f]/g, "") // xóa dấu
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'D')
+        .toLowerCase();
+}
 
 
 const CommunityService = {
@@ -85,7 +95,7 @@ const CommunityService = {
             throw new ApiError('Lỗi khi lọc cộng đồng', 500);
         }
     },
-    getCommunityById: async (communityId) => {
+    getCommunityById: async (communityId, userId) => {
         try {
             const community = await Community.findByPk(communityId, {
                 include: [
@@ -98,7 +108,7 @@ const CommunityService = {
                         model: User,
                         as: 'members', // Tên alias từ association
                         through: { attributes: [] }, // Loại bỏ các cột từ JoinCommunity nếu không cần
-                        attributes: ['userId', 'dUserName', "avatarId"], // Chọn các trường cần từ User
+                        attributes: ['userId', 'userName', 'dUserName', "avatarId"], // Chọn các trường cần từ User
                     },
                 ],
             });
@@ -111,6 +121,13 @@ const CommunityService = {
             await Promise.all(result.members.map(async (data) => {
                 console.log("id: ", data.avatarId)
                 data.avatarUrl = await getImageUrlFromCloudinary(data.avatarId);
+
+                const existingFollow = await Follow.findOne({
+                    where: { followId: userId, followedId: data.userId },
+                })
+
+                data.isFollowed = existingFollow ? true : false
+
                 delete data.avatarId;
                 return data;
             }));
@@ -123,6 +140,57 @@ const CommunityService = {
             throw new ApiError('Lỗi khi lấy cộng đồng', 500)
         }
     },
+
+    searchCommunityMembersByName: async (communityId, searchTerm, userId) => {
+        try {
+            const normalizedSearch = normalizeString(searchTerm);
+
+            const community = await Community.findByPk(communityId, {
+                include: [
+                    {
+                        model: User,
+                        as: 'members',
+                        through: { attributes: [] },
+                        attributes: ['userId', 'userName', 'dUserName', 'avatarId'],
+                        where: {
+                            [Op.and]: [
+                                sequelize.where(sequelize.fn('LOWER', sequelize.col('userName')), {
+                                    [Op.like]: `%${normalizedSearch}%`,
+                                }),
+
+                            ],
+                        },
+                    },
+                ],
+            });
+
+            if (!community) {
+                throw new ApiError('Cộng đồng không tồn tại', 404);
+            }
+
+            const result = await Promise.all(
+                community.members.map(async (user) => {
+                    const userData = user.toJSON();
+                    userData.avatarUrl = await getImageUrlFromCloudinary(userData.avatarId);
+
+                    const existingFollow = await Follow.findOne({
+                        where: { followId: userId, followedId: userData.userId },
+                    });
+
+                    userData.isFollowed = !!existingFollow;
+                    delete userData.avatarId;
+
+                    return userData;
+                })
+            );
+            console.log(result)
+            return result;
+        } catch (err) {
+            console.error('Lỗi khi tìm kiếm thành viên cộng đồng:', err);
+            throw new ApiError('Lỗi khi tìm kiếm thành viên cộng đồng', 500);
+        }
+    },
+
 
     createCommunity: async (data) => {
         try {

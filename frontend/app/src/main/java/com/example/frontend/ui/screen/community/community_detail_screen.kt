@@ -183,6 +183,23 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                             .height(100.dp)
                             .background(Color.Transparent)
                     ){
+                        if(community.value?.members?.isEmpty() == true){
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                            ){
+                                Text(
+                                    text = "No community found.",
+                                    modifier = Modifier.align(Alignment.Center),
+                                    style = TextStyle(
+                                        fontSize = 16.sp,
+                                        color = Color.White
+                                    )
+
+                                )
+                            }
+                        }else{
                             LazyRow (
                                 horizontalArrangement = Arrangement.spacedBy(15.dp),
                             ){
@@ -195,7 +212,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                                         Spacer( modifier = Modifier.height(4.dp))
                                         AsyncImage(
                                             model = item.avatarUrls.takeIf { it?.isNotEmpty() == true }?: R.drawable.avt_img,
-                                                placeholder = painterResource(id = R.drawable.avt_img),
+                                            placeholder = painterResource(id = R.drawable.avt_img),
                                             contentDescription = "avatar",
                                             modifier = Modifier
                                                 .size(60.dp)
@@ -209,12 +226,13 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                                             color = Color.White,
                                             style = TextStyle(
                                                 fontSize = 14.sp,
-                                                ),
+                                            ),
 
-                                        )
+                                            )
                                     }
                                 }
                             }
+                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxHeight()

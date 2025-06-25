@@ -11,8 +11,7 @@ import {
 
 // Broadcast đến tất cả client trong community
 const broadcastToClients = (ws, action, data, clients) => {
-    clients.forEach((clientWs, userId) => {
-        if (ws.userId === userId) return; // Không gửi lại cho chính mình
+    clients.forEach((clientWs) => {
         if (!clientWs || clientWs.readyState !== clientWs.OPEN) return; // Kiểm tra kết nối
         if (!clientWs.userId) return; // Kiểm tra userId
         if (clientWs.communityId !== ws.communityId) return; // Chỉ gửi đến những client trong cùng community
@@ -58,6 +57,7 @@ async function onMessage(ws, message, clients) {
     const { action, payload } = data;
 
     try {
+
         switch (action) {
             case 'CREATE_CHAT':
                 validateMessage(createChatSchema, data); // Validate trước khi xử lý
@@ -88,7 +88,8 @@ async function onMessage(ws, message, clients) {
 
             case 'FETCH_CHAT_BY_COMMUNITY':
                 validateMessage(fetchChatByCommunitySchema, data); // Validate trước khi xử lý
-                const allChats = await ChatService.getAllChatsOfCommunity(payload.communityId);
+                const allChats = await ChatService.getAllChatsOfCommunity(ws.communityId, ws.userId);
+                console.log(allChats)
                 ws.send(JSON.stringify({ success: true, action: action, payload: allChats }));
                 break;
 

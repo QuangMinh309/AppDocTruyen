@@ -20,8 +20,12 @@ class CommunityViewModel @Inject constructor(
     private val communityProvider: CommunityProvider,
     private val categoryProvider: CategoryProvider
 ) : BaseViewModel(navigationManager) {
-    private val _isLoading = MutableStateFlow(false) // Thêm trạng thái loading
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _isLoadingCommunitiesFollowCategory = MutableStateFlow(false) // Thêm trạng thái loading cho CommunitiesFollowCategory
+    val isLoadingCommunitiesFollowCategory: StateFlow<Boolean> = _isLoadingCommunitiesFollowCategory
+
+    private val _isLoadingHotCommunities = MutableStateFlow(false) // Thêm trạng thái loading cho HotCommunities
+    val isLoadingHotCommunities: StateFlow<Boolean> = _isLoadingHotCommunities
+
     private val _communitiesFollowCategory = MutableStateFlow<List<Community>>(emptyList())
     val communitiesFollowCategory: StateFlow<List<Community>> = _communitiesFollowCategory
 
@@ -33,15 +37,18 @@ class CommunityViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-           try {
-               _isLoading.value=true
-               _category.value = categoryProvider.fetchAllCategory()
-               fetchCommunitiesFollowCategory(_category.value[0].id)
-               fetchHotCommunities()
-           }
-           finally {
-               _isLoading.value=false
-           }
+           _category.value = categoryProvider.fetchAllCategory()
+            _isLoadingCommunitiesFollowCategory.value=true
+           fetchCommunitiesFollowCategory(_category.value[0].id)
+           _isLoadingCommunitiesFollowCategory.value=false
+
+        }
+    }
+    init {
+        viewModelScope.launch {
+            _isLoadingHotCommunities.value = true
+            fetchHotCommunities()
+            _isLoadingHotCommunities.value = false
         }
     }
 
@@ -55,7 +62,9 @@ class CommunityViewModel @Inject constructor(
 
     fun fetchCommunitiesFollowCategory(id : Int) {
         viewModelScope.launch {
+            _isLoadingCommunitiesFollowCategory.value=true
             _communitiesFollowCategory.value = communityProvider.filterCommunity(id)
+            _isLoadingCommunitiesFollowCategory.value=false
         }
     }
 

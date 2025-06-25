@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProfileRepository @Inject constructor(
+class   ProfileRepository @Inject constructor(
     private val apiService: ApiService
 ) {
     suspend fun getReadLists(): Result<List<NameList>> {

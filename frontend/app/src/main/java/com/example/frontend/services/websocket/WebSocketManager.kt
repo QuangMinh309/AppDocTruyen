@@ -1,5 +1,6 @@
 package com.example.frontend.services.websocket
 
+import android.util.Log
 import com.example.frontend.util.TokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,15 @@ import javax.inject.Singleton
     }
 
     fun sendMessage(room: String, message: String): Boolean {
-        return webSockets[room]?.send(message) ?: false
+        val webSocket = webSockets[room]
+        return if (webSocket != null && isConnected[room] == true) {
+            val success = webSocket.send(message)
+            Log.d("WebSocketManager", "Sent message to $room: $message, Success: $success")
+            success
+        } else {
+            Log.e("WebSocketManager", "Failed to send message to $room: WebSocket not connected")
+            false
+        }
     }
 
     fun addListener(room: String, listener: WebSocketListener) {

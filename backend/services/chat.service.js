@@ -4,20 +4,18 @@ import { getImageUrlFromCloudinary, uploadBase64ToCloudinary, deleteImageOnCloud
 
 const getChatImageData = async (chatJson) => {
     try {
-        if (chatJson.sender && chatJson.sender.avatarId) {
+        if (chatJson.sender) {
             chatJson.sender.avatarUrl = await getImageUrlFromCloudinary(chatJson.sender.avatarId);
             delete chatJson.sender.avatarId;
         }
     } catch (cloudinaryErr) {
-        chatJson.sender.avatarUrl = null;
+        chatJson.sender.avatarUrl = "";
         console.error(`Lỗi khi lấy dữ liệu hình ảnh từ Cloudinary: ${cloudinaryErr.message}`);
     }
 
     try {
-        if (chatJson.commentPicId) {
-            chatJson.commentPicUrl = await getImageUrlFromCloudinary(chatJson.commentPicId);
-            delete chatJson.commentPicId;
-        }
+        chatJson.commentPicUrl = await getImageUrlFromCloudinary(chatJson.commentPicId);
+        delete chatJson.commentPicId;
     } catch (cloudinaryErr) {
         chatJson.commentPicUrl = null;
         console.error(`Lỗi khi lấy dữ liệu hình ảnh từ Cloudinary: ${cloudinaryErr.message}`);
@@ -47,7 +45,7 @@ const ChatService = {
         }
     },
 
-    async getAllChatsOfCommunity(id) {
+    async getAllChatsOfCommunity(id, userId) {
         try {
             const chats = await sequelize.models.Chat.findAll({
                 where: { communityId: id },
@@ -58,6 +56,7 @@ const ChatService = {
             });
             const chatPromises = chats.map(chat => {
                 const chatJson = chat.toJSON();
+                chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
                 return getChatImageData(chatJson);
             });
             return await Promise.all(chatPromises);

@@ -19,7 +19,8 @@ data class User(
     val backgroundId: String? = null,
     val wallet: BigDecimal? = null,
     val isPremium: Boolean? = null,
-    @SerializedName("avatarUrl") val avatarUrls: String?=null
+    @SerializedName("avatarUrl") val avatarUrls: String?=null,
+    var isFollowed : Boolean = false
 ){
     val avatarUrl: String
         get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$avatarId"
@@ -27,7 +28,7 @@ data class User(
     val backgroundUrl: String
         get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$backgroundId"
 
-     suspend plusFollowerNum(){
+    fun plusFollowerNum(){
         followerNum.let{it->
             followerNum = it?.plus(1)
         }

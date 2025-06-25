@@ -38,7 +38,8 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
     val hotCommunityList = viewModel.hotCommunities.collectAsState()
     val communitiesFollowCategory= viewModel.communitiesFollowCategory.collectAsState()
     val category = viewModel.category.collectAsState()
-    val isLoading= viewModel.isLoading.collectAsState()
+    val isLoadingHotCommunities= viewModel .isLoadingHotCommunities.collectAsState()
+    val isLoadingCommunitiesFollowCategory= viewModel .isLoadingCommunitiesFollowCategory.collectAsState()
 
     ScreenFrame(
         topBar = {
@@ -71,11 +72,11 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
             }
 
             //community follow category
-            if (isLoading.value) {
+            if (isLoadingCommunitiesFollowCategory.value) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp),
+                        .height(192.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = OrangeRed)
@@ -86,10 +87,10 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(192.dp)
                 ){
                     Text(
-                        text = "No community found",
+                        text = "No community found.",
                         modifier = Modifier.align(Alignment.Center),
                         style = TextStyle(
                             fontSize = 16.sp,
@@ -120,7 +121,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
             Spacer(modifier = Modifier.height(20.dp))
             SectionTitle(title = "Hot Community", modifier = Modifier.padding(start = 20.dp))
 
-            if (isLoading.value) {
+            if (isLoadingHotCommunities.value) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

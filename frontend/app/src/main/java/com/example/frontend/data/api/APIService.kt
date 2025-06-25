@@ -118,7 +118,7 @@ interface ApiService {
         @SerializedName("nameList") val name: String,
         @SerializedName("userId") val userId: Int,
         @SerializedName("description") val description: String
-    )
+    )   
 
     @Multipart
     @PUT("api/users/{userId}")
@@ -162,8 +162,10 @@ interface ApiService {
     suspend fun getCategories(): Response<List<Category>>
 
 
-    @PUT("api/users/login")
-    suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
+    @POST("api/users/follow")
+    suspend fun follow(@Body followRequest: UserFollowRequest): Response<NoDataResponse>
+    @POST("api/users/unfollow")
+    suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
 
 
 
@@ -189,6 +191,9 @@ interface ApiService {
 
 }
 
+data class UserFollowRequest (
+    val followedId: Int
+)
 
 // Data classes cho password reset
 data class SendOTPResult(val message: String, val userId: Int?)
@@ -310,7 +315,7 @@ data class ImageUrlResponse(
     val url: String,
 )
 data class NoDataResponse(
-    val success: Boolean,
+    val status: Int,
     val message: String
 )
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)

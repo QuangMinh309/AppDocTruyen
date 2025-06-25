@@ -1,3 +1,4 @@
+import user from '../models/entities/user.js';
 import CommunityService from '../services/community.service.js';
 import ApiError from '../utils/api_error.util.js';
 
@@ -27,13 +28,25 @@ export const filterCommunities = async (req, res, next) => {
 // Lấy cộng đồng theo ID
 export const getCommunityById = async (req, res, next) => {
     try {
-        const community = await CommunityService.getCommunityById(req.params.communityId);
+        const userId = req.user.userId;
+        const community = await CommunityService.getCommunityById(req.params.communityId, userId);
         res.status(200).json(community);
     } catch (error) {
         next(error);
     }
 };
 
+// Tìm kiếm thành viên theo tên
+export const searchCommunityMembersByName = async (req, res, next) => {
+    try {
+        const userId = req.user.userId;
+        const { searchTerm } = req.query;
+        const community = await CommunityService.searchCommunityMembersByName(req.params.communityId, searchTerm, userId);
+        res.status(201).json(community);
+    } catch (error) {
+        next(error);
+    }
+};
 // Tạo cộng đồng mới
 export const createCommunity = async (req, res, next) => {
     try {

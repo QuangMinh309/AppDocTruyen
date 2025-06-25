@@ -1,6 +1,7 @@
 package com.example.frontend.data.repository
 import android.util.Log
 import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.User
 import com.example.frontend.data.model.onFailure
 import com.example.frontend.data.model.onSuccess
 import java.io.File
@@ -49,6 +50,17 @@ class CommunityProvider @Inject constructor(
         }
         return community
     }
+    suspend fun searchMembers(id: Int,name:String=""): List<User> {
+        val result = repository.searchMembers(id,name)
+        var memList:List<User> = emptyList()
+
+        result.onSuccess { list ->
+            memList=list
+        }.onFailure { error ->
+            Log.e("apiError","Error: ${error.message}")
+        }
+        return memList
+    }
 
     suspend fun createCommunity(community: Community, file: File?): Community? {
             val imageInfo = imageUrlProvider.uploadImage(file)
@@ -64,7 +76,7 @@ class CommunityProvider @Inject constructor(
 
     }
 
-    suspend fun updateCommunity(id: Int, community: Community, file:File?): Community? {
+    suspend fun updateCommunity( community: Community, file:File?): Community? {
         val imageInfo = imageUrlProvider.uploadImage(file)
         val result = repository.updateCommunity(community, imageInfo)
         var updateCommunity:Community? = null

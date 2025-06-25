@@ -72,7 +72,7 @@ fun ChatBubble(message: Chat) {
         ){
             //avatar
             AsyncImage(
-                model = message.sender.avatarUrl,
+                model = message.sender.avatarUrls,
                 contentDescription = "sender avatar",
                 placeholder = painterResource(id = R.drawable.avt_img),
                 modifier = Modifier
@@ -185,7 +185,7 @@ fun MyChatBubble(message: Chat) {
             Spacer(Modifier.width(10.dp))
             //avatar
             AsyncImage(
-                model = message.sender.avatarUrl,
+                model = message.sender.avatarUrls,
                 contentDescription = "sender avatar",
                 placeholder = painterResource(id = R.drawable.avt_img),
                 modifier = Modifier

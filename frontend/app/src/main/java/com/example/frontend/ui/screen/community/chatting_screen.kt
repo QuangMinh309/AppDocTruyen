@@ -1,12 +1,14 @@
     package com.example.frontend.ui.screen.community
 
 
-import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -25,35 +28,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.community.ChattingViewModel
 import com.example.frontend.ui.components.ChatBubble
 import com.example.frontend.ui.components.MyChatBubble
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import com.example.frontend.ui.screen.main_nav.demoAppUser
-import com.example.frontend.ui.screen.main_nav.demoChatList
+import com.example.frontend.ui.theme.OrangeRed
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun PreviewScreenContent() {
-    val fakeViewModel =ChattingViewModel (NavigationManager())
-    ChattingScreen(viewModel = fakeViewModel)
-}
 
-@Composable
+    @Composable
 fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
 {
+    val communityId = viewModel.id.collectAsState()
     val yourChat by viewModel.yourChat.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val messages = viewModel.messages.collectAsState()
+    val toast by viewModel.toast.collectAsState()
+    val context = LocalContext.current
 
-    val messages = demoChatList
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
 
     ScreenFrame(
         topBar = {
@@ -61,8 +65,13 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                 title = "Food in anime",
                 showBackButton = true,
                 iconType = "Searching",
-                onLeftClick = { viewModel.onGoBack() },
-                onRightClick = { viewModel.onGoToSearchingMemberScreen(viewModel.communityId) }
+                onLeftClick = {
+                    viewModel.disconnect()
+                    viewModel.onGoBack() },
+                onRightClick = {
+                    viewModel.disconnect()
+                    viewModel.onGoToSearchingMemberScreen(communityId.value.toInt())
+                }
             )
         }
     ){
@@ -70,19 +79,30 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
         Column (Modifier.fillMaxWidth(),
                  horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 60.dp),
-                verticalArrangement = Arrangement.spacedBy(45.dp)
-            ) {
-                items(messages.size) { index ->
-                    if (demoChatList[index].sender.id == demoAppUser.id) {
-                        MyChatBubble(message = demoChatList[index])
-                    } else {
-                        ChatBubble(message = demoChatList[index])
-                    }
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = OrangeRed)
+                }
+            }
+            else{
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 60.dp),
+                    verticalArrangement = Arrangement.spacedBy(45.dp)
+                ) {
+                    items(messages.value.size) { index ->
+                        if (messages.value[index].isUser) {
+                            MyChatBubble(message = messages.value[index])
+                        } else {
+                            ChatBubble(message = messages.value[index])
+                        }
 
+                    }
                 }
             }
             Spacer(Modifier.weight(1f))
@@ -118,7 +138,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                 )
 
                 IconButton(
-                    onClick = {}
+                    onClick = {viewModel.createChat()}
                 ) {
                     Icon(
                         painter = if(yourChat == "") painterResource(id = R.drawable.icon_add_img) else painterResource(id = R.drawable.popular_icon),
