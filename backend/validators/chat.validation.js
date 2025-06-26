@@ -8,11 +8,6 @@ const createChatSchema = Joi.object({
         'any.only': 'action chỉ được phép là CREATE_CHAT',
     }),
     payload: Joi.object({
-        communityId: Joi.number().integer().required().messages({
-            'number.base': 'communityId phải là số',
-            'number.integer': 'communityId phải là số nguyên',
-            'any.required': 'communityId là bắt buộc',
-        }),
         content: Joi.string().allow(null).optional().messages({
             'string.base': 'content phải là chuỗi',
         }),

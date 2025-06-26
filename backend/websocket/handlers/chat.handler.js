@@ -17,7 +17,7 @@ const broadcastToClients = (ws, action, data, clients) => {
         if (clientWs.communityId !== ws.communityId) return; // Chỉ gửi đến những client trong cùng community
         clientWs.send(JSON.stringify({
             action: `BRC_${action}`,
-            payload: [data],
+            payload: data,
         }));
     });
 };
@@ -39,6 +39,7 @@ async function init(ws, request, clients) {
 
         console.log(`User ${ws.userId} connected.`);
         ws.send(JSON.stringify({ type: 'CONNECTION_SUCCESS', message: 'kết nối thành công tới /ws/chat!' }));
+        console.log(`send connected message.`);
     } catch (error) {
         if (error instanceof ApiError) throw error;
         throw new ApiError(`Lỗi khởi tạo kết nối: ${error.message}`, 500);
@@ -61,14 +62,15 @@ async function onMessage(ws, message, clients) {
         switch (action) {
             case 'CREATE_CHAT':
                 validateMessage(createChatSchema, data); // Validate trước khi xử lý
-                const newChat = await ChatService.createChat({ ...payload, senderId: ws.userId });
+                const newChat = await ChatService.createChat({ ...payload, senderId: ws.userId, communityId: ws.communityId }, ws.userId);
+                console.log(' chat data:', newChat);
                 ws.send(JSON.stringify({ success: true, action, payload: newChat }));
                 broadcastToClients(ws, action, newChat, clients);
                 break;
 
             case 'UPDATE_CHAT':
                 validateMessage(updateChatSchema, data); // Validate trước khi xử lý
-                const updatedChat = await ChatService.updateChat(payload.chatId, payload);
+                const updatedChat = await ChatService.updateChat(payload.chatId, payload, ws.userId);
                 if (!updatedChat) {
                     throw new ApiError('không tìm thấy chat để cập nhật!', 404);
                 }

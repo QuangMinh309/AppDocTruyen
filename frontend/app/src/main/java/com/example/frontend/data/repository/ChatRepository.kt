@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,7 +34,6 @@ data class WebSocketMessage(
 @Singleton
 class ChatRepository @Inject constructor(
     private val webSocketManager:WebSocketManager,
-    private val imageUrlProvider: ImageUrlProvider,
     private val gson: Gson,
     private val dao: ChatDao
 ) {
@@ -43,6 +41,8 @@ class ChatRepository @Inject constructor(
 
     private val _chatList = MutableStateFlow<List<Chat>>(emptyList())
     val chatList : StateFlow<List<Chat>> = _chatList
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected  : StateFlow<Boolean> = _isConnected
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -84,16 +84,18 @@ class ChatRepository @Inject constructor(
         scope.launch {
             try {
                 val wsMessage = gson.fromJson(message, WebSocketMessage::class.java)
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
                 if (wsMessage.type == "ERROR") {
                     Log.e("ChatRepository", "Server error: ${wsMessage.message}, code: ${wsMessage.statusCode}")
                     return@launch
                 }
-                when (wsMessage.action) {
-                    "CONNECTION_SUCCESS" -> {
-                        Log.i("ChatRepository", "Connection success: ${wsMessage.payload}")
+                if(wsMessage.type == "CONNECTION_SUCCESS" ){
+                    scope.launch(Dispatchers.Main) {
+                        _isConnected.emit(true)
                     }
-
+                    Log.i("ChatRepository", "Connection success: ${wsMessage.payload}")
+                    return@launch
+                }
+                when (wsMessage.action) {
                     "FETCH_CHAT_BY_COMMUNITY" -> {
                         if (wsMessage.success == true) {
                             val chatMessages = gson.fromJson(
@@ -120,18 +122,53 @@ class ChatRepository @Inject constructor(
                             }
                         }
                     }
-                    "BRC_CREATE_CHAT", "BRC_UPDATE_CHAT" -> {
+                    "BRC_CREATE_CHAT"-> {
                         val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
 
-                        scope.launch(Dispatchers.Main) { _chatList .emit(_chatList .value + chatMessage) }
+                        // Lưu vào Room
+                        val entities = ChatEntity(
+                                chatId = chatMessage.id,
+                                communityId = chatMessage.communityId,
+                                senderId = chatMessage.sender.id,
+                                content = chatMessage.content,
+                                messagePicUrl = chatMessage.messagePicUrl,
+                                time = chatMessage.time.toString(),
+                                senderName = chatMessage.sender.dName,
+                                senderAvatarUrl = chatMessage.sender.avatarUrl
+                            )
+
+                        scope.launch(Dispatchers.Main) {
+                            dao.insert(entities)
+                            _chatList .emit(_chatList .value + chatMessage)
+                        }
+                    }
+                    "BRC_UPDATE_CHAT" -> {
+                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
+
+                        // Lưu vào Room
+                        val entities = ChatEntity(
+                            chatId = chatMessage.id,
+                            communityId = chatMessage.communityId,
+                            senderId = chatMessage.sender.id,
+                            content = chatMessage.content,
+                            messagePicUrl = chatMessage.messagePicUrl,
+                            time = chatMessage.time.toString(),
+                            senderName = chatMessage.sender.dName,
+                            senderAvatarUrl = chatMessage.sender.avatarUrl
+                        )
+
+                        scope.launch(Dispatchers.Main) {
+                            dao.delete(chatMessage.id)
+                            dao.insert(entities)
+                            _chatList .emit(_chatList.value.map {chat->
+                                if(chat.id == chatMessage.id) chatMessage else chat })
+                        }
                     }
                     "BRC_DELETE_CHAT" -> {
                         val deletedChat = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
-                        scope.launch(Dispatchers.Main) { _chatList .emit(_chatList .value.filter { it.id != deletedChat.id }) }
-                    }
-                    else -> {
-                        if (wsMessage.type == "ERROR") {
-                            Log.e("ChatRepository", "Error from server: ${wsMessage.message}, status: ${wsMessage.statusCode}")
+                        scope.launch(Dispatchers.Main) {
+                            dao.delete(deletedChat.id)
+                            _chatList.emit(_chatList .value.filter { it.id != deletedChat.id })
                         }
                     }
                 }
@@ -142,21 +179,24 @@ class ChatRepository @Inject constructor(
     }
 
     // Gửi tin nhắn tạo chat
-    fun createChat(content: String?, commentPicId: String?, communityId: Int) {
+    fun createChat(content: String?, commentPicData: String?) {
+        var newCommentPicData = commentPicData
+        if(commentPicData?.isEmpty()==true) newCommentPicData = null
         val payload = mapOf(
             "content" to content,
-            "communityId" to communityId,
-            "commentPicId" to commentPicId
+            "commentPicData" to newCommentPicData
         )
         sendMessage("CREATE_CHAT", payload)
     }
 
     // Gửi tin nhắn cập nhật chat
-    fun updateChat(chatId: String, content: String?, commentPicId: String?) {
+    fun updateChat(chatId: String, content: String?, commentPicData: String?) {
+        var newCommentPicData = commentPicData
+        if(commentPicData?.isEmpty()==true) newCommentPicData = null
         val payload = mapOf(
             "chatId" to chatId,
             "content" to content,
-            "commentPicId" to commentPicId
+            "commentPicId" to newCommentPicData
         )
         sendMessage("UPDATE_CHAT", payload)
     }
@@ -168,7 +208,7 @@ class ChatRepository @Inject constructor(
     }
 
     // Gửi yêu cầu lấy danh sách chat
-    fun  fetchChats(communityId: Int) {
+    fun  fetchChats() {
         val payload = {}
         sendMessage("FETCH_CHAT_BY_COMMUNITY", payload)
     }
@@ -183,5 +223,7 @@ class ChatRepository @Inject constructor(
     // Ngắt kết nối WebSocket
     fun disconnect() {
         webSocketManager.disconnect(room = roomName)
+        webSocketManager.removeListener(room = roomName, listener = listener)
+
     }
 }
