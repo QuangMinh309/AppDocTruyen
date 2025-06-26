@@ -20,6 +20,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,15 +43,16 @@ import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 
 
-@Preview
-@Composable
-fun PreViewSeetingScreen(){
-    val fakeviewmodel=SettingViewModel(NavigationManager())
-    SettingScreen(fakeviewmodel)
-}
+//@Preview
+//@Composable
+//fun PreViewSeetingScreen(){
+//    val fakeviewmodel=SettingViewModel(NavigationManager())
+//    SettingScreen(fakeviewmodel)
+//}
 @Composable
 fun SettingScreen( viewModel: SettingViewModel= hiltViewModel()){
     val scrollState = rememberScrollState()
+    val isVisible = viewModel.isVisible.collectAsState()
     ScreenFrame(
         topBar = {
             Row(
@@ -91,26 +93,29 @@ fun SettingScreen( viewModel: SettingViewModel= hiltViewModel()){
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .align(Alignment.CenterVertically)
                 )
-                Spacer(modifier = Modifier.weight(0.33f))
-                Button(
-                    onClick = {viewModel.onGoToAdminScreen()},
-                    colors =  ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .height(25.dp)
-                        .weight(0.33f)
-                        .wrapContentWidth(Alignment.Start)
-                ) {
-                    Text(
-                        text = "Admin",
-                        color = Color.White,
-                        style = TextStyle(
-                            fontSize = 16.sp
+                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.16f else 0.33f))
+                if(isVisible.value)
+                {
+                    Button(
+                        onClick = {viewModel.onGoToAdminScreen()},
+                        colors =  ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                        ),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier
+                            .height(25.dp)
+                            .wrapContentWidth(Alignment.Start)
+                    ) {
+                        Text(
+                            text = "Admin",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 16.sp
+                            )
                         )
-                    )
+                    }
                 }
+
             }
         }
     ){

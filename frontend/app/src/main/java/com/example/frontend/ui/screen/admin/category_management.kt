@@ -190,7 +190,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
                     )
                 )
                 Button(
-                    onClick = { viewModel.createOrUpdateCategory(context) },
+                    onClick = { viewModel.createOrUpdateCategory() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = OrangeRed
                     ),

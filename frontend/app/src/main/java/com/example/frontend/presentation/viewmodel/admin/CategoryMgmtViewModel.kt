@@ -1,8 +1,6 @@
 package com.example.frontend.presentation.viewmodel.admin
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Category
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -10,7 +8,6 @@ import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.forEach
 import javax.inject.Inject
 import com.example.frontend.data.repository.CategoryRepository
 import kotlinx.coroutines.launch
@@ -71,7 +68,7 @@ class CategoryMgmtViewModel @Inject constructor(
     private val _selectedItem = MutableStateFlow<Category?>(null)
     val selectedItem : StateFlow<Category?> = _selectedItem
 
-    private val _categories = MutableStateFlow<List<Category>>(dummyCategories) //
+    private val _categories = MutableStateFlow<List<Category>>(dummyCategories)
     val categories : StateFlow<List<Category>> = _categories
 
     private val _isCategoriesLoading = MutableStateFlow(false)
@@ -94,11 +91,12 @@ class CategoryMgmtViewModel @Inject constructor(
                 }
             }
             catch (e: Exception){
+                _toast.value = "Error: ${e.message}"
                 _categories.value = emptyList()
             }
             finally {
-                _toast.value = "Loaded ${_categories.value.size} categories"
                 _isCategoriesLoading.value = false
+                _toast.value = "Loaded ${_categories.value.size} categories"
             }
         }
     }
@@ -128,7 +126,7 @@ class CategoryMgmtViewModel @Inject constructor(
         _name.value = (if (_name.value == category.name) "" else category.name).toString()
     }
 
-    fun createOrUpdateCategory(context: Context)
+    fun createOrUpdateCategory()
     {
         if(_name.value.isBlank() && _newName.value.isBlank())
             _toast.value = "Please fill in the fields!"
@@ -154,7 +152,7 @@ class CategoryMgmtViewModel @Inject constructor(
                             _newName.value = ""
                         }
                         is Result.Failure -> {
-                            _toast.value = "Failed to create category!"
+                            _toast.value = "Failed to create category: ${result.exception.message}"
                         }
                     }
                 }
@@ -182,7 +180,7 @@ class CategoryMgmtViewModel @Inject constructor(
                             _newName.value = ""
                         }
                         is Result.Failure -> {
-                            _toast.value = "Failed to update category!"
+                            _toast.value = "Failed to update category: ${result.exception.message}"
                         }
                     }
                 }
@@ -212,7 +210,7 @@ class CategoryMgmtViewModel @Inject constructor(
                         _selectedItem.value = null
                     }
                     is Result.Failure -> {
-                        _toast.value = "Failed to delete category!"
+                        _toast.value = "Failed to delete category: ${result.exception.message}"
                     }
                 }
             }
