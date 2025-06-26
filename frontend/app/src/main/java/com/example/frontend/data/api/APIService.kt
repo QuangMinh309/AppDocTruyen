@@ -13,6 +13,7 @@ import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -124,6 +125,42 @@ interface ApiService {
         @SerializedName("description") val description: String
     )
 
+    @Multipart
+    @PUT("api/users/{userId}")
+    suspend fun updateUser(
+        @Path("userId") userId: Int,
+        @Part("dUserName") dUserName: RequestBody? = null,
+        @Part("DOB") dob: RequestBody? = null,
+        @Part("userName") userName: RequestBody? = null,
+        @Part("mail") mail: RequestBody? = null,
+        @Part("password") password: RequestBody? = null,
+        @Part avatarFile: MultipartBody.Part? = null,
+        @Part backgroundFile: MultipartBody.Part? = null
+    ): Response<UpdateUserResponse>
+
+    data class UpdateUserRequest(
+        val dUserName: String? = null,
+        val DOB: String? = null,
+        val userName: String? = null,
+        val mail: String? = null,
+        val password: String? = null
+    )
+
+    data class UpdateUserResponse(
+        val success: Boolean,
+        val message: String,
+        val data: User
+    )
+
+    @GET("api/users/{userId}")
+    suspend fun getUserById(
+        @Path("userId") userId: Int
+    ): Response<UserResponse>
+
+    data class UserResponse(
+        val success: Boolean,
+        val data: User
+    )
 
 
     @GET("api/categories")
@@ -141,6 +178,13 @@ interface ApiService {
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>
 
+    @POST("api/users/follow")
+    suspend fun follow(@Body followRequest: UserFollowRequest): Response<NoDataResponse>
+    @POST("api/users/unfollow")
+    suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
+
+
+
     @POST("api/users/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
@@ -156,6 +200,10 @@ interface ApiService {
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
 }
+
+data class UserFollowRequest (
+    val followedId: Int
+)
 
 data class CategoryRequest(
     val categoryName: String
@@ -274,13 +322,16 @@ data class Role(
 
 data class UploadResponse(
     val url: String,
-    val id: String
+    val publicId: String
 )
 
 data class ImageUrlResponse(
-    val url: String
+    val url: String,
 )
-
+data class NoDataResponse(
+    val status: Int,
+    val message: String
+)
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)
 //data class Story(val id: String) // Placeholder
 //data class Category(val id: String) // Placeholder

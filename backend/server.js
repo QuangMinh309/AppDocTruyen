@@ -65,7 +65,7 @@ process.on('unhandledRejection', (reason, promise) => {
 WebSocket(wss)
 
 const PORT = process.env.DB_PORT || 3000
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${PORT}`)
 })
 

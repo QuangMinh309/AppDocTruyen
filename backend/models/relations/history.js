@@ -9,10 +9,10 @@ export default (sequelize, DataTypes) => {
         as: 'user',
       })
 
-      // History belongs to Chapter
-      History.belongsTo(models.Chapter, {
-        foreignKey: 'chapterId',
-        as: 'chapter',
+      // History belongs to story
+      History.belongsTo(models.Story, {
+        foreignKey: 'storyId',
+        as: 'story',
       })
     }
   }
@@ -26,7 +26,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
       userId: DataTypes.INTEGER,
-      chapterId: DataTypes.INTEGER,
+      storyId: DataTypes.INTEGER,
       lastReadAt: DataTypes.DATE,
     },
     {

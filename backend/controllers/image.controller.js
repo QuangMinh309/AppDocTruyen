@@ -27,7 +27,7 @@ export const uploadImage = async (req, res) => {
       throw new ApiError(400, 'Không có file được upload'); //  destination : "/user/abcd"
     }
     const result = await uploadImageToCloudinary(req.file.buffer, req.body.destination || '');
-    res.json({ message: 'Upload thành công', url: result.secure_url, publicId: result.public_id });
+    res.json({ url: result.secure_url, publicId: result.public_id });
   } catch (error) {
     if (error instanceof ApiError) {
       res.status(error.statusCode).json({ message: error.message, errors: error.errors });

@@ -2,7 +2,6 @@ package com.example.frontend.data.model
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
-import java.time.LocalDate
 
 data class User(
     @SerializedName("userId") val id: Int,
@@ -19,7 +18,9 @@ data class User(
     val avatarId: String? = null,
     val backgroundId: String? = null,
     val wallet: BigDecimal? = null,
-    val isPremium: Boolean? = null
+    val isPremium: Boolean? = null,
+    @SerializedName("avatarUrl") val avatarUrls: String?=null,
+    var isFollowed : Boolean = false
 ){
     val avatarUrl: String
         get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$avatarId"

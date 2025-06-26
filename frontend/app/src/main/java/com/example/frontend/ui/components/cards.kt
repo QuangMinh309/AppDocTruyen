@@ -124,7 +124,7 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
                     .padding( vertical = 4.dp,horizontal = 10.dp)
             )
             //genre chip
-         //   GenreChip(genre = model.category.name)
+            GenreChip(genre = model.category)
 
             //member number
             Text(
@@ -143,16 +143,16 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
 }
 
 @Composable
-fun MemberCard(model : User){
+fun MemberCard(model : User, onClick: () -> Unit = {}){
     Row(
         modifier = Modifier
             .padding(vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = model.avatarUrl ,
+            model = model.avatarUrls ,
             placeholder = painterResource(id = R.drawable.intro_page1_bg),
-            contentDescription = "community avatar",
+            contentDescription = "member avatar",
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
@@ -180,8 +180,9 @@ fun MemberCard(model : User){
                 )
             )
         }
+        //follow button
         Button(
-            onClick = { model.plusFollowerNum()},
+            onClick = { onClick()},
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
             ),
@@ -195,11 +196,14 @@ fun MemberCard(model : User){
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(100.dp)
-                    .background(color = OrangeRed, shape = RoundedCornerShape(30.dp)),
+                    .background(
+                        color = if (model.isFollowed) OrangeRed else Color.LightGray,
+                        shape = RoundedCornerShape(30.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Follow",
+                    text = if (model.isFollowed) "UnFollow" else "Follow",
                     color = Color.Black,
                     style = TextStyle(
                         fontSize = 12.sp,

@@ -100,7 +100,7 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
                 item { Spacer(Modifier.height(8.dp)) }
                 item { StoryInfo(viewModel) }
                 item { Spacer(Modifier.height(19.dp)) }
-                item { StoryStatusAction( isAuthor = true,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(ExamplStory.id)}) }
+                item { StoryStatusAction( isAuthor = false,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(ExamplStory.id)}) }
                 item { Spacer(Modifier.height(29.dp)) }
                 item {
                     DescriptionStory(

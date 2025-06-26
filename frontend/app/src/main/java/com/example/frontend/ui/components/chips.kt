@@ -1,4 +1,4 @@
-package com.example.frontend.ui.components
+ package com.example.frontend.ui.components
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -111,14 +111,14 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:Ba
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             texts.forEach { genre ->
-                Chip(text = genre.name?:"", onClick = {})
+                Chip(text = genre.name?:"", onClick = {viewModel.onGoToCategoryStoryList(genre.id,genre.name.toString())})
             }
         }
     }
 }
 
 @Composable
-fun GenreChip(modifier: Modifier = Modifier,genre: String) {
+fun GenreChip(modifier: Modifier = Modifier,genre: Category) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -128,7 +128,7 @@ fun GenreChip(modifier: Modifier = Modifier,genre: String) {
             .then(modifier)
     ) {
         Text(
-            text =genre,
+            text =genre.name?:"...",
             color = Color.Black,
             style = TextStyle(
                 fontSize = 10.sp,

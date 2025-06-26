@@ -14,7 +14,7 @@ import javax.inject.Singleton
 class ImageRepository @Inject constructor(
     private val apiService: ApiService
 ) {
-    suspend fun uploadImageToServer(file: File): Result<String> {
+    suspend fun uploadImageToServer(file: File): Result<Pair<String,String>> {
         return try {
             val mediaType = "image/*".toMediaTypeOrNull()
             val requestBody = file.asRequestBody(mediaType)
@@ -22,7 +22,8 @@ class ImageRepository @Inject constructor(
 
             val response = apiService.uploadImage(imagePart)
             if (response.isSuccessful) {
-                Result.Success(response.body()?.url ?: "")
+                val res = Pair(response.body()?.url ?: "",response.body()?.publicId ?: "")
+                Result.Success(res)
             } else {
                 Result.Failure(Exception("Upload failed with code: ${response.code()}"))
             }

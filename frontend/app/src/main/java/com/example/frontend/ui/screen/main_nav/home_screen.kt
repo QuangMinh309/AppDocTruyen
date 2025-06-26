@@ -3,15 +3,32 @@ package com.example.frontend.ui.screen.main_nav
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,15 +47,20 @@ import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.NameListStory
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
-
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
-import com.example.frontend.ui.components.*
+import com.example.frontend.ui.components.AutoScrollBanner
+import com.example.frontend.ui.components.BannerItem
+import com.example.frontend.ui.components.Chip
+import com.example.frontend.ui.components.ReadListItem
+import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.SectionTitle
+import com.example.frontend.ui.components.StoryCard
+import com.example.frontend.ui.components.StoryCard2
+import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
-
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Composable
@@ -49,11 +71,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val topRankingStories by viewModel.topRankingStories.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val readLists by viewModel.readLists.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
     val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
     val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
     val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
+    val isUserLoading by viewModel.isUserLoading.collectAsState()
 
     ScreenFrame {
         Column(
@@ -100,13 +124,25 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 )
             }
 
-            Text(
-                text = "Hello ${viewModel.userName}",
-                color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 20.dp)
-            )
+            // Chào người dùng
+            if (isUserLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                Text(
+                    text = "Hello ${currentUser?.dName ?: "User"}",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 20.dp)
+                )
+            }
 
             // Banner
             AutoScrollBanner(items = bannerItems)
@@ -126,7 +162,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -152,7 +188,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     val pairedStories = newStories.chunked(2)
@@ -195,7 +231,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     val top5Stories = topRankingStories.take(5)
@@ -265,7 +301,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
                     FlowRow(
@@ -300,7 +336,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                 .height(50.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(color = OrangeRed)
                         }
                     } else {
                         LazyColumn(

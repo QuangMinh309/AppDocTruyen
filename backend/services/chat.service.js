@@ -1,23 +1,22 @@
 import { sequelize } from '../models/index.js';
 import ApiError from '../utils/api_error.util.js';
 import { getImageUrlFromCloudinary, uploadBase64ToCloudinary, deleteImageOnCloudinary } from './cloudinary.service.js';
+import moment from 'moment-timezone'; // Use moment-timezone for timezone support
 
 const getChatImageData = async (chatJson) => {
     try {
-        if (chatJson.sender && chatJson.sender.avatarId) {
+        if (chatJson.sender) {
             chatJson.sender.avatarUrl = await getImageUrlFromCloudinary(chatJson.sender.avatarId);
             delete chatJson.sender.avatarId;
         }
     } catch (cloudinaryErr) {
-        chatJson.sender.avatarUrl = null;
+        chatJson.sender.avatarUrl = "";
         console.error(`Lỗi khi lấy dữ liệu hình ảnh từ Cloudinary: ${cloudinaryErr.message}`);
     }
 
     try {
-        if (chatJson.commentPicId) {
-            chatJson.commentPicUrl = await getImageUrlFromCloudinary(chatJson.commentPicId);
-            delete chatJson.commentPicId;
-        }
+        chatJson.commentPicUrl = await getImageUrlFromCloudinary(chatJson.commentPicId);
+        delete chatJson.commentPicId;
     } catch (cloudinaryErr) {
         chatJson.commentPicUrl = null;
         console.error(`Lỗi khi lấy dữ liệu hình ảnh từ Cloudinary: ${cloudinaryErr.message}`);
@@ -47,7 +46,7 @@ const ChatService = {
         }
     },
 
-    async getAllChatsOfCommunity(id) {
+    async getAllChatsOfCommunity(id, userId) {
         try {
             const chats = await sequelize.models.Chat.findAll({
                 where: { communityId: id },
@@ -58,6 +57,11 @@ const ChatService = {
             });
             const chatPromises = chats.map(chat => {
                 const chatJson = chat.toJSON();
+                chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
+
+                // Convert time to UTC+7 instead of UTC
+                chatJson.time = moment(chatJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
+
                 return getChatImageData(chatJson);
             });
             return await Promise.all(chatPromises);
@@ -67,7 +71,7 @@ const ChatService = {
         }
     },
 
-    async createChat(data) {
+    async createChat(data, userId) {
         try {
             if (!data.content && !data.commentPicData) {
                 throw new ApiError('Không được để trống nội dung!', 400);
@@ -80,6 +84,7 @@ const ChatService = {
                 commentPicUrl = result.secure_url;
 
             }
+            data.time = new Date()
             const chatData = await sequelize.models.Chat.create({ ...data, commentPicId: publicId });
             const fullChat = await sequelize.models.Chat.findByPk(chatData.chatId, {
                 include: [
@@ -87,8 +92,11 @@ const ChatService = {
                     { model: sequelize.models.User, as: 'sender', attributes: ['userId', 'dUserName', 'avatarId'] },
                 ],
             });
-            console.log('Full chat data:', fullChat);
             const chatJson = fullChat.toJSON();
+            chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
+            // Convert time to UTC+7 instead of UTC
+            chatJson.time = moment(chatJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
+            console.log('Full chat data:', chatJson);
             return getChatImageData(chatJson);
         } catch (err) {
             if (err instanceof ApiError) throw err;
@@ -96,7 +104,7 @@ const ChatService = {
         }
     },
 
-    async updateChat(chatId, data) {
+    async updateChat(chatId, data, userId) {
         try {
             if (!data.content && !data.commentPicData) {
                 throw new ApiError('Không có nội dng cần cập nhật!', 400);
@@ -120,7 +128,11 @@ const ChatService = {
                 ],
             });
 
-            const chatJson = updatedChat.toJSON();
+            const chatJson = fullChat.toJSON();
+            chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
+            // Convert time to UTC+7 instead of UTC
+            chatJson.time = moment(chatJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
+            console.log('Full chat data:', chatJson);
             return getChatImageData(chatJson);
         } catch (err) {
             if (err instanceof ApiError) throw err;

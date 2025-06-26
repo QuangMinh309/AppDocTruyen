@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -59,7 +57,7 @@ fun ChatBubble(message: Chat) {
 
         //main content
         androidx.compose.material3.Text(
-            text = "@${message.sender.name}",
+            text = "@${message.sender.dName}",
             style = TextStyle(
                 fontSize = 12.sp,
                 color = Color.White,
@@ -72,7 +70,7 @@ fun ChatBubble(message: Chat) {
         ){
             //avatar
             AsyncImage(
-                model = message.sender.avatarUrl,
+                model = message.sender.avatarUrls.takeIf { !it.isNullOrEmpty()  }?:R.drawable.avt_img,
                 contentDescription = "sender avatar",
                 placeholder = painterResource(id = R.drawable.avt_img),
                 modifier = Modifier
@@ -84,7 +82,7 @@ fun ChatBubble(message: Chat) {
                 if(message.content != null){
                     Box(
                         modifier = Modifier.run {
-                            background(Color(0x41485ACC), RoundedCornerShape(30.dp))
+                            background(Color(0x41485ACC), RoundedCornerShape(20.dp))
                                 .padding(vertical = 10.dp, horizontal = 25.dp)
                                 .widthIn(max = 150.dp)
                         }
@@ -104,7 +102,7 @@ fun ChatBubble(message: Chat) {
                         contentDescription = "message pic",
                         placeholder = painterResource(id = R.drawable.broken_image),
                         modifier = Modifier
-                            .width(150.dp)
+                            .widthIn(max = 150.dp)
                             .clip(RoundedCornerShape(20.dp)),
                         contentScale = ContentScale.FillWidth
                     )
@@ -132,7 +130,7 @@ fun MyChatBubble(message: Chat) {
         androidx.compose.material3.Text(
             text =  if (daysDifference>1)
                 "$dayOfWeek ${message.time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}"
-            else message.time.format(DateTimeFormatter.ofPattern("hh:MM:ss")),
+            else message.time.format(DateTimeFormatter.ofPattern("hh:MM a")),
 
             style = TextStyle(
                 fontSize = 12.sp,
@@ -151,11 +149,13 @@ fun MyChatBubble(message: Chat) {
 
         ){
             //message
-            Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
+            Column (
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End){
                 if(message.content != null){
                     Box(
                         modifier = Modifier.run {
-                            background(OrangeRed, RoundedCornerShape(30.dp))
+                            background(OrangeRed, RoundedCornerShape(20.dp))
                                 .padding(vertical = 10.dp, horizontal = 25.dp)
                                 .widthIn(max = 150.dp)
                         }
@@ -175,24 +175,13 @@ fun MyChatBubble(message: Chat) {
                         contentDescription = "message pic",
                         placeholder = painterResource(id = R.drawable.broken_image),
                         modifier = Modifier
-                            .width(150.dp)
+                            .widthIn(max = 150.dp)
                             .clip(RoundedCornerShape(20.dp)),
                         contentScale = ContentScale.FillWidth
                     )
                 }
 
             }
-            Spacer(Modifier.width(10.dp))
-            //avatar
-            AsyncImage(
-                model = message.sender.avatarUrl,
-                contentDescription = "sender avatar",
-                placeholder = painterResource(id = R.drawable.avt_img),
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop // fill mode
-            )
         }
     }
 }
