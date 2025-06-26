@@ -1,6 +1,8 @@
 package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,12 +12,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,12 +37,13 @@ import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.admin.CategoryMgmtViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CategoryList
 import com.example.frontend.ui.theme.BurntCoral
-import com.example.frontend.ui.theme.DeepBlue
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
@@ -47,6 +54,15 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
     val tbNewName by viewModel.newName.collectAsState()
     val categoryList by viewModel.categories.collectAsState()
     val selectedItem by viewModel.selectedItem.collectAsState()
+    val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
+    val showDialog = remember { mutableStateOf(false) }
+    val toast by viewModel.toast.collectAsState()
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
     ScreenFrame(
         topBar = {
             Row(
@@ -190,16 +206,6 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             }
 
         }
-//        Text(
-//            text = "Find categories",
-//            color = Color.White,
-//            style = TextStyle(
-//                fontSize = 30.sp,
-//                fontWeight = FontWeight.Bold
-//            ),
-//            modifier = Modifier
-//                .padding(top = 30.dp)
-//        )
 //        SearchBar()
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -217,7 +223,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { viewModel.deleteSelectedCategory() },
+                onClick = { showDialog.value = true },
                 enabled = selectedItem != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedItem != null) BurntCoral else Color(0xAFAF2238)
@@ -227,24 +233,64 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             {
                 Text(
                     text = "Delete",
-                    color = if (selectedItem != null) DeepBlue else Color.Gray,
+                    color = if (selectedItem != null) Color.White else Color.Gray,
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
             }
-
         }
-        CategoryList(
-            categories = categoryList,
-            selectedCategory = selectedItem,
-            onCategorySelected = { viewModel.selectCategory(it) }
-        )
+        if(showDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDialog.value = false
+                            viewModel.deleteSelectedCategory()
+                        }
+                    ) {
+                        Text("Yes", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Warning", color = Color.White)
+                },
+                text = {
+                    Text("Are you sure you want to delete this category?", color = Color.LightGray)
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
+        }
+        if (isCategoriesLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        else
+        {
+            CategoryList(
+                categories = categoryList,
+                selectedCategory = selectedItem,
+                onCategorySelected = { viewModel.selectCategory(it) }
+            )
+        }
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-private fun PreviewScreenContent() {
-    val fakeViewModel = CategoryMgmtViewModel (NavigationManager())
-    CategoryManagementScreen(viewModel = fakeViewModel)
-}
+//@SuppressLint("ViewModelConstructorInComposable")
+//@Preview(showBackground = true)
+//@Composable
+//private fun PreviewScreenContent() {
+//    val fakeViewModel = CategoryMgmtViewModel (NavigationManager())
+//    CategoryManagementScreen(viewModel = fakeViewModel)
+//}

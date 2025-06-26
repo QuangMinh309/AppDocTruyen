@@ -15,9 +15,11 @@ import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -127,6 +129,15 @@ interface ApiService {
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>
 
+    @POST("api/categories/")
+    suspend fun createCategory(@Body categoryName: CategoryRequest): Response<Category>
+
+    @PUT("api/categories/{id}")
+    suspend fun updateCategory(@Path("id") id: Int, @Body categoryName: CategoryRequest): Response<Category>
+
+    @DELETE("api/categories/{id}")
+    suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
+
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>
 
@@ -145,6 +156,10 @@ interface ApiService {
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
 }
+
+data class CategoryRequest(
+    val categoryName: String
+)
 
 // Data classes cho password reset
 data class SendOTPResult(val message: String, val userId: Int?)

@@ -92,6 +92,25 @@ fun SettingScreen( viewModel: SettingViewModel= hiltViewModel()){
                         .align(Alignment.CenterVertically)
                 )
                 Spacer(modifier = Modifier.weight(0.33f))
+                Button(
+                    onClick = {viewModel.onGoToAdminScreen()},
+                    colors =  ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent,
+                    ),
+                    contentPadding = PaddingValues(0.dp),
+                    modifier = Modifier
+                        .height(25.dp)
+                        .weight(0.33f)
+                        .wrapContentWidth(Alignment.Start)
+                ) {
+                    Text(
+                        text = "Admin",
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 16.sp
+                        )
+                    )
+                }
             }
         }
     ){

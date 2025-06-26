@@ -30,7 +30,6 @@ object NetworkModule {
     @Singleton
     fun provideBaseUrl(@ApplicationContext context: Context): String {
         return context.getString(R.string.base_url)
-        // "http://10.0.2.2:3000/" // Uncomment nếu cần dùng local
     }
 
     private fun isEmulator(): Boolean {

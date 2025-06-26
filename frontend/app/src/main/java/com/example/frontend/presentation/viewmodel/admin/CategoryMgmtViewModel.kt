@@ -1,7 +1,9 @@
 package com.example.frontend.presentation.viewmodel.admin
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
+import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Category
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
@@ -10,6 +12,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.forEach
 import javax.inject.Inject
+import com.example.frontend.data.repository.CategoryRepository
+import kotlinx.coroutines.launch
+import com.example.frontend.data.model.Result
 
 val dummyCategories: List<Category> = listOf(
     Category(
@@ -51,7 +56,12 @@ val dummyCategories: List<Category> = listOf(
 )
 
 @HiltViewModel
-class CategoryMgmtViewModel @Inject constructor(navigationManager: NavigationManager) : BaseViewModel(navigationManager) {
+class CategoryMgmtViewModel @Inject constructor(
+    navigationManager: NavigationManager,
+    private val categoryRepository : CategoryRepository,
+
+) : BaseViewModel(navigationManager) {
+
     private val _name = MutableStateFlow("")
     val name: StateFlow<String> = _name
 
@@ -61,8 +71,37 @@ class CategoryMgmtViewModel @Inject constructor(navigationManager: NavigationMan
     private val _selectedItem = MutableStateFlow<Category?>(null)
     val selectedItem : StateFlow<Category?> = _selectedItem
 
-    private val _categories = MutableStateFlow<List<Category>>(dummyCategories) //apiservice.getCategories()
+    private val _categories = MutableStateFlow<List<Category>>(dummyCategories) //
     val categories : StateFlow<List<Category>> = _categories
+
+    private val _isCategoriesLoading = MutableStateFlow(false)
+    val isCategoriesLoading : StateFlow<Boolean> = _isCategoriesLoading
+
+    init {
+        loadCategories()
+    }
+
+    private fun loadCategories()
+    {
+        viewModelScope.launch {
+            _isCategoriesLoading.value = true
+            try {
+                val result = categoryRepository.getCategories()
+                _categories.value = when (result)
+                {
+                    is Result.Success -> result.data
+                    is Result.Failure -> emptyList()
+                }
+            }
+            catch (e: Exception){
+                _categories.value = emptyList()
+            }
+            finally {
+                _toast.value = "Loaded ${_categories.value.size} categories"
+                _isCategoriesLoading.value = false
+            }
+        }
+    }
 
     fun onNameChange(name: String)
     {
@@ -92,24 +131,37 @@ class CategoryMgmtViewModel @Inject constructor(navigationManager: NavigationMan
     fun createOrUpdateCategory(context: Context)
     {
         if(_name.value.isBlank() && _newName.value.isBlank())
-            Toast.makeText(context, "Please fill in the fields!", Toast.LENGTH_SHORT).show()
+            _toast.value = "Please fill in the fields!"
         else if(_newName.value.isBlank())
-            Toast.makeText(context, "Please fill in the new name!", Toast.LENGTH_SHORT).show()
-        else if(_name.value.isBlank())
+            _toast.value = "Please fill in the new name!"
+        else if(_name.value.isBlank() || _selectedItem.value == null)
         {
             for(item in _categories.value)
             {
                 if(item.name == _newName.value)
                 {
-                    Toast.makeText(context, "Category already exists!", Toast.LENGTH_SHORT).show()
+                    _toast.value = "Category already exists!"
                     return
                 }
             }
-//            _categories.value = _categories.value + Category(
-//                id = _categories.value.size + 1,
-//                name = _newName.value
-//            )
-//            _newName.value = ""
+            viewModelScope.launch {
+                try{
+                    val result = categoryRepository.createCategory(_newName.value)
+                    when(result)
+                    {
+                        is Result.Success -> {
+                            loadCategories()
+                            _newName.value = ""
+                        }
+                        is Result.Failure -> {
+                            _toast.value = "Failed to create category!"
+                        }
+                    }
+                }
+                catch(exception: Exception) {
+                    _toast.value = "Error: ${exception.message}"
+                }
+            }
         }
         else
         {
@@ -117,17 +169,59 @@ class CategoryMgmtViewModel @Inject constructor(navigationManager: NavigationMan
             {
                 if(item.name == _newName.value)
                 {
-                    Toast.makeText(context, "Category already exists!", Toast.LENGTH_SHORT).show()
+                    _toast.value = "Category already exists!"
                     return
                 }
             }
-
+            viewModelScope.launch {
+                try{
+                    val result = categoryRepository.updateCategory(selectedItem.value!!.id, _newName.value)
+                    when(result)
+                    {
+                        is Result.Success -> {
+                            _newName.value = ""
+                        }
+                        is Result.Failure -> {
+                            _toast.value = "Failed to update category!"
+                        }
+                    }
+                }
+                catch(exception: Exception) {
+                    _toast.value = "Error: ${exception.message}"
+                }
+                finally {
+                    loadCategories()
+                }
+            }
         }
     }
 
     fun deleteSelectedCategory()
     {
-//        _categories.value = _categories.value.filter { it != _selectedItem.value }
-//        _selectedItem.value = null
+        if(_selectedItem.value == null)
+        {
+            _toast.value = "Please select a category!"
+            return
+        }
+        viewModelScope.launch {
+            try{
+                val result = categoryRepository.deleteCategory(selectedItem.value!!.id)
+                when(result)
+                {
+                    is Result.Success -> {
+                        _selectedItem.value = null
+                    }
+                    is Result.Failure -> {
+                        _toast.value = "Failed to delete category!"
+                    }
+                }
+            }
+            catch(exception: Exception) {
+                _toast.value = "Error: ${exception.message}"
+            }
+            finally {
+                loadCategories()
+            }
+        }
     }
 }

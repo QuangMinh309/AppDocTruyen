@@ -57,6 +57,7 @@ import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
@@ -293,7 +294,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType },
                 )
-            ) { CategoryManagementScreen() }
+            ) { StoryViewManagementScreen() }
         }
     }
 }
