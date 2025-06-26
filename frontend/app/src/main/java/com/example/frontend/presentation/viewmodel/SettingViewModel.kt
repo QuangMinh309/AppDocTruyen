@@ -17,7 +17,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
-import com.example.frontend.data.repository.AuthRepository
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -46,7 +45,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = authRepository.getCurrentUser()
             if (currentUser != null) {
-                if(user.role!!.roleId == 1)
+                if(currentUser.role!!.roleId == 1)
                     _isVisible.value = true
                 val result = authRepository.getUserById(currentUser.id)
                 when (result) {

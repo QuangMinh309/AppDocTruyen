@@ -149,6 +149,7 @@ class CategoryMgmtViewModel @Inject constructor(
                     {
                         is Result.Success -> {
                             loadCategories()
+                            _name.value = ""
                             _newName.value = ""
                         }
                         is Result.Failure -> {
