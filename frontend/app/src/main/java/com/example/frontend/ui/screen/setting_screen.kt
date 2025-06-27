@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -390,9 +391,87 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                             style = TextStyle(fontSize = 16.sp)
                         )
                     }
+                    // Logout Button
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.onGoToLoginScreen()
+                               // viewModel.logout()
+                                       },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 25.dp)
+                                .weight(1f),
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text("Logout", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                            Text(
+                                text = "Sign out of your account",
+                                color = Color.White,
+                                style = TextStyle(fontSize = 16.sp)
+                            )
+                        }
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                        thickness = 1.dp,
+                        color = Color(0xff202430)
+                    )
+
+                    // Delete Account Button
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.showDeleteConfirmation()
+                                       },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(top = 25.dp)
+                                .weight(1f),
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text("Delete Account", color = Color.Red, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                            Text(
+                                text = "Permanently delete your account",
+                                color = Color.Red,
+                                style = TextStyle(fontSize = 16.sp)
+                            )
+                        }
+                    }
                 }
             }
         }
+    }
+    // Dialog xác nhận xóa tài khoản
+    if (viewModel.showDeleteDialog.value) {
+        AlertDialog(
+            onDismissRequest = { viewModel.hideDeleteConfirmation() },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete your account? This action cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteUser()
+                    viewModel.hideDeleteConfirmation()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.hideDeleteConfirmation() }) {
+                    Text("No")
+                }
+            }
+        )
     }
 
     // Mở picker khi showImagePicker = true

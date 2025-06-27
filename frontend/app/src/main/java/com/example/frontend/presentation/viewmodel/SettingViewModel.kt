@@ -32,6 +32,7 @@ class SettingViewModel @Inject constructor(
     val mail = mutableStateOf<String?>(null)
     val password = mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
+    val showDeleteDialog = mutableStateOf(false)
 
     init {
         loadUserData() // Tải dữ liệu người dùng từ API khi khởi tạo
@@ -118,5 +119,28 @@ class SettingViewModel @Inject constructor(
 
     fun setBackgroundUri(uri: Uri?) {
         selectedBackgroundUri.value = uri
+    }
+
+    fun hideDeleteConfirmation() {
+        showDeleteDialog.value = false
+    }
+    fun showDeleteConfirmation() {
+        showDeleteDialog.value = true
+    }
+    fun deleteUser() {
+        viewModelScope.launch {
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            val result = authRepository.deleteUser()
+            when (result) {
+                is Result.Success -> {
+                    authRepository.clearToken()
+                    onGoToLoginScreen()
+                //    navigateTo("login") // Chuyển về LoginScreen sau khi xóa thành công
+                }
+                is Result.Failure -> {
+                    _toast.value = "Xóa người dùng thất bại: ${result.exception.message}"
+                }
+            }
+        }
     }
 }

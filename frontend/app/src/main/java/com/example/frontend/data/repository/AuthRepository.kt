@@ -233,4 +233,17 @@ class AuthRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+    suspend fun deleteUser(): Result<String> {
+        return try {
+            val userId = currentUser?.id ?: throw Exception("No current user found")
+            val response = apiService.deleteUser(userId)
+            if (response.isSuccessful) {
+                Result.Success(response.body()?.message ?: "Xóa người dùng thành công")
+            } else {
+                Result.Failure(Exception("Failed to delete user: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
 }
