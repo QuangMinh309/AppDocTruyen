@@ -13,8 +13,10 @@ const NameList = sequelize.models.NameList
 
 const loginUser = async (email, password) => {
   try {
+    const normalizedEmail = email.toLowerCase()
+
     const user = await User.findOne({
-      where: { mail: email },
+      where: { mail: normalizedEmail },
       include: [
         { model: Role, as: 'role', attributes: ['roleId', 'roleName'] },
       ],

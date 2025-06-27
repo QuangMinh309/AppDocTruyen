@@ -79,82 +79,6 @@ const StoryInteractionService = {
     }
   },
 
-  async getStoriesFromReadList(
-    userId,
-    nameListId,
-    { limit = 20, lastId = null } = {}
-  ) {
-    try {
-      await validateUser(userId)
-
-      // Kiểm tra nameList có thuộc về user không
-      const nameList = await models.NameList.findOne({
-        where: { nameListId, userId },
-      })
-
-      if (!nameList) {
-        throw new ApiError(
-          'Danh sách đọc không tồn tại hoặc không thuộc về bạn',
-          404
-        )
-      }
-
-      const where = lastId
-        ? { storyId: { [models.Sequelize.Op.lt]: lastId } }
-        : {}
-
-      const readListEntries = await models.ReadList.findAll({
-        where: {
-          nameListId,
-          ...where,
-        },
-        limit: parseInt(limit),
-        include: [
-          {
-            model: models.Story,
-            as: 'story', // Cần định nghĩa association này trong model ReadList
-            attributes: ['storyId', 'storyName', 'coverImgId', 'status'],
-            include: [
-              {
-                model: models.User,
-                as: 'author',
-                attributes: ['userId', 'userName', 'avatarId', 'dUserName'],
-              },
-              {
-                model: models.Category,
-                as: 'categories',
-                attributes: ['categoryId', 'categoryName'],
-                through: { attributes: [] },
-              },
-            ],
-          },
-        ],
-        order: [['storyId', 'DESC']],
-      })
-
-      const stories = readListEntries.map((entry) => entry.story)
-      const nextLastId =
-        readListEntries.length > 0
-          ? readListEntries[readListEntries.length - 1].storyId
-          : null
-
-      return {
-        stories,
-        nextLastId,
-        hasMore: readListEntries.length === parseInt(limit),
-        readListInfo: {
-          nameListId: nameList.nameListId,
-          nameList: nameList.nameList,
-          description: nameList.description,
-        },
-      }
-    } catch (error) {
-      throw error instanceof ApiError
-        ? error
-        : new ApiError('Lỗi khi lấy truyện từ danh sách đọc', 500)
-    }
-  },
-
   async toggleVote(userId, storyId) {
     return await handleTransaction(async (transaction) => {
       await validateUser(userId)
@@ -176,8 +100,8 @@ const StoryInteractionService = {
         const updatedStory = await models.Story.findByPk(storyId, {
           transaction,
         })
+
         result = {
-          action: 'removed',
           message: 'Đã bỏ vote truyện',
           voteCount: updatedStory.voteNum,
           hasVoted: false,
@@ -205,7 +129,6 @@ const StoryInteractionService = {
         }
 
         result = {
-          action: 'added',
           message: 'Đã vote cho truyện',
           voteCount: updatedStory.voteNum,
           hasVoted: true,
@@ -238,77 +161,6 @@ const StoryInteractionService = {
         ? error
         : new ApiError('Lỗi khi kiểm tra trạng thái vote', 500)
     }
-  },
-
-  async addToReadList(userId, storyId, nameListId) {
-    return await handleTransaction(async (transaction) => {
-      await validateUser(userId)
-      await validateStory(storyId)
-
-      // Kiểm tra nameList có thuộc về user không
-      const nameList = await models.NameList.findOne({
-        where: { nameListId, userId },
-        transaction,
-      })
-
-      if (!nameList) {
-        throw new ApiError(
-          'Danh sách đọc không tồn tại hoặc không thuộc về bạn',
-          404
-        )
-      }
-
-      // Kiểm tra đã có trong danh sách chưa
-      const existingEntry = await models.ReadList.findOne({
-        where: { storyId, nameListId },
-        transaction,
-      })
-
-      if (existingEntry) {
-        throw new ApiError('Truyện đã có trong danh sách đọc', 409)
-      }
-
-      await models.ReadList.create({ storyId, nameListId }, { transaction })
-
-      return {
-        success: true,
-        message: 'Đã thêm truyện vào danh sách đọc',
-      }
-    })
-  },
-
-  async removeFromReadList(userId, storyId, nameListId) {
-    return await handleTransaction(async (transaction) => {
-      await validateUser(userId)
-      await validateStory(storyId)
-
-      // Kiểm tra nameList có thuộc về user không
-      const nameList = await models.NameList.findOne({
-        where: { nameListId, userId },
-        transaction,
-      })
-
-      if (!nameList) {
-        throw new ApiError(
-          'Danh sách đọc không tồn tại hoặc không thuộc về bạn',
-          404
-        )
-      }
-
-      const deleted = await models.ReadList.destroy({
-        where: { storyId, nameListId },
-        transaction,
-      })
-
-      if (!deleted) {
-        throw new ApiError('Truyện không có trong danh sách đọc', 404)
-      }
-
-      return {
-        success: true,
-        message: 'Đã xóa truyện khỏi danh sách đọc',
-      }
-    })
   },
 
   async purchaseChapter(userId, storyId, chapterId) {
