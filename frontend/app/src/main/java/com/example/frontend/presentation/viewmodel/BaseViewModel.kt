@@ -188,4 +188,10 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Admin.StoryDetail.createRoute(id.toString()))
         }
     }
+
+    fun onGoToChangePasswordScreen(){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Authentication.ChangePassword.route)
+        }
+    }
 }

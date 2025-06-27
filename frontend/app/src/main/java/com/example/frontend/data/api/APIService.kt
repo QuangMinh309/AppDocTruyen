@@ -157,6 +157,20 @@ interface ApiService {
         val data: User
     )
 
+    // Thêm data class trong ApiService.kt
+    data class ChangePasswordRequest(
+        val currentPassword: String,
+        val newPassword: String,
+        val confirmPassword: String
+    )
+
+    // Thêm endpoint trong ApiService.kt
+    @POST("api/users/change-password/{userId}")
+    suspend fun changePassword(
+        @Path("userId") userId: Int,
+        @Body request: ChangePasswordRequest
+    ): Response<NoDataResponse>
+
 
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>

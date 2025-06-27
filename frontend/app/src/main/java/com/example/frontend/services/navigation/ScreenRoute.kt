@@ -21,6 +21,7 @@ sealed class Screen(var route: String) {
         data object NewPassword : Authentication("Authentication/NewPassword/{otp}/{userId}") {
             fun createRoute(otp: String, userId: String) = "Authentication/NewPassword/$otp/$userId"
         }
+        data object ChangePassword : Authentication("Authentication/ChangePassword")
     }
 
     sealed class Community(route: String) : Screen(route) {

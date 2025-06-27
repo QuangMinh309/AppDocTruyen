@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.SettingViewModel
@@ -259,7 +260,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 if (viewModel.showDatePicker.value) {
                     val datePickerState = androidx.compose.material3.rememberDatePickerState(
                         initialSelectedDateMillis = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            .parse(viewModel.dateOfBirth.value) ?.time ?: System.currentTimeMillis()
+                            .parse(viewModel.dateOfBirth.value)?.time ?: System.currentTimeMillis()
                     )
                     DatePickerDialog(
                         onDismissRequest = { viewModel.showDatePicker.value = false },
@@ -307,12 +308,32 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 )
 
                 // Password
-                EditableField(
-                    label = "Password",
-                    value = viewModel.password.value,
-                    isEditable = viewModel.isEditMode.value,
-                    onValueChange = { viewModel.password.value = it },
-                    isPassword = true
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { viewModel.onGoToChangePasswordScreen()  },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(top = if ("Password" == "Display Name") 25.dp else 0.dp)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text("Password", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                        Text(
+                            text = "Change Password",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 16.sp)
+                        )
+                    }
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
                 )
 
                 // Wallet (chỉ đọc)

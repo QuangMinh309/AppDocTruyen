@@ -51,6 +51,7 @@ import com.example.frontend.ui.screen.intro_authentication.IntroScreen
 import com.example.frontend.ui.screen.intro_authentication.LoginScreen
 import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
 import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
+import com.example.frontend.ui.screen.intro_authentification.ChangePasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
@@ -182,6 +183,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 val userId = backStackEntry.arguments?.getString("userId") ?: "0"
                 SetUpPasswordScreen(navController = navController, otp = otp, userId = userId)
             }
+            composable(Screen.Authentication.ChangePassword.route) { ChangePasswordScreen()  }
 
             composable(
                 route = Screen.Story.Detail.route,
