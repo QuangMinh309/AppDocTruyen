@@ -1,24 +1,23 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
-import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.Functionality
 import com.example.frontend.data.model.NameList
-import com.example.frontend.data.model.Notification
-import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
-import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -33,6 +32,8 @@ interface ApiService {
         @Path("id") id: String
     ): Response<ImageUrlResponse>
 
+
+
     @GET("api/stories")
     suspend fun getAllStories(): Response<StoriesResponse>
 
@@ -41,6 +42,55 @@ interface ApiService {
 
     @GET("api/stories/vote")
     suspend fun getStoriesByVote(): Response<StoriesResponse>
+
+    @GET("api/nameLists/user")
+    suspend fun getUserReadingLists(): Response<NameListData>
+
+
+
+    data class NameListData(
+        val readingLists: List<NameList>,
+        val nextLastId: Int?,
+        val hasMore: Boolean
+    )
+
+    @GET("api/stories/search")
+    suspend fun searchStories(
+        @Query("searchTerm") searchTerm: String,
+        @Query("limit") limit: Int = 20,
+        @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
+
+    @GET("api/stories/category/{categoryId}/status/{status}")
+    suspend fun getStoriesByCategoryAndStatus(
+        @Path("categoryId") categoryId: Int,
+        @Path("status") status: String
+//        @Query("limit") limit: Int = 20,
+//        @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
+
+    @GET("api/stories/user/{userId}")
+    suspend fun getStoriesByUser(
+        @Path("userId") userId: Int,
+        @Query("limit") limit: Int = 20,
+       @Query("lastId") lastId: Int? = null
+    ): Response<StoriesResponse>
+
+    @GET("api/stories/category/{categoryId}")
+    suspend fun getStoriesByCategory(
+        @Path("categoryId") categoryId: Int
+    ) : Response<CategoryStoriesResponse>
+
+    data class CategoryStoriesResponse(
+        val success: Boolean,
+        val data: CategoryStoriesData
+    )
+
+    data class CategoryStoriesData(
+        val formattedStories: List<Story>,
+        val nextLastId: Int?,
+        val hasMore: Boolean
+    )
 
     data class StoriesResponse(
         val success: Boolean,
@@ -53,11 +103,89 @@ interface ApiService {
         val hasMore: Boolean
     )
 
+    @GET("api/nameLists/{nameListsId}")
+    suspend fun getNameListById (
+        @Path("nameListsId") nameListsId:Int
+    ): Response<NameListResponse>
+
+    data class NameListResponse(
+       val nameList: NameListStory,
+       val stories: List<Story>,
+       val nextLastId: Int,
+       val hasMore: Boolean
+    )
+    data class NameListStory(
+        @SerializedName("nameListId") val id: Int,
+        @SerializedName("nameList") val name: String,
+        @SerializedName("userId") val userId: Int,
+        @SerializedName("description") val description: String
+    )   
+
+    @Multipart
+    @PUT("api/users/{userId}")
+    suspend fun updateUser(
+        @Path("userId") userId: Int,
+        @Part("dUserName") dUserName: RequestBody? = null,
+        @Part("DOB") dob: RequestBody? = null,
+        @Part("userName") userName: RequestBody? = null,
+        @Part("mail") mail: RequestBody? = null,
+        @Part("password") password: RequestBody? = null,
+        @Part avatarFile: MultipartBody.Part? = null,
+        @Part backgroundFile: MultipartBody.Part? = null
+    ): Response<UpdateUserResponse>
+
+    data class UpdateUserRequest(
+        val dUserName: String? = null,
+        val DOB: String? = null,
+        val userName: String? = null,
+        val mail: String? = null,
+        val password: String? = null
+    )
+
+    data class UpdateUserResponse(
+        val success: Boolean,
+        val message: String,
+        val data: User
+    )
+
+    @GET("api/users/{userId}")
+    suspend fun getUserById(
+        @Path("userId") userId: Int
+    ): Response<UserResponse>
+
+    data class UserResponse(
+        val success: Boolean,
+        val data: User
+    )
+
+    // Thêm data class trong ApiService.kt
+    data class ChangePasswordRequest(
+        val currentPassword: String,
+        val newPassword: String,
+        val confirmPassword: String
+    )
+
+    // Thêm endpoint trong ApiService.kt
+    @POST("api/users/change-password/{userId}")
+    suspend fun changePassword(
+        @Path("userId") userId: Int,
+        @Body request: ChangePasswordRequest
+    ): Response<NoDataResponse>
+
+    @DELETE("api/users/{userId}")
+    suspend fun deleteUser(@Path("userId") userId: Int): Response<NoDataResponse>
+
+
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>
 
-    @GET("api/nameLists")
-    suspend fun getNameLists(): Response<List<NameList>>
+
+    @POST("api/users/follow")
+    suspend fun follow(@Body followRequest: UserFollowRequest): Response<NoDataResponse>
+    @POST("api/users/unfollow")
+    suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
+
+
 
     @POST("api/users/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
@@ -73,7 +201,17 @@ interface ApiService {
 
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
+
+
+
+
+
+
 }
+
+data class UserFollowRequest (
+    val followedId: Int
+)
 
 // Data classes cho password reset
 data class SendOTPResult(val message: String, val userId: Int?)
@@ -188,13 +326,16 @@ data class Role(
 
 data class UploadResponse(
     val url: String,
-    val id: String
+    val publicId: String
 )
 
 data class ImageUrlResponse(
-    val url: String
+    val url: String,
 )
-
+data class NoDataResponse(
+    val status: Int,
+    val message: String
+)
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)
 //data class Story(val id: String) // Placeholder
 //data class Category(val id: String) // Placeholder

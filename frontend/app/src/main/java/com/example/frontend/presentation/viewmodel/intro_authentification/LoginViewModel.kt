@@ -54,7 +54,10 @@ class LoginViewModel @Inject constructor(
                         _toast.value = it
                         val token = authRepository.getToken() // Gọi getToken trong coroutine
                         Log.d("LoginViewModel", "Token retrieved: $token")
-                        onGoToHomeScreen()
+                        navigationManager.navigate(Screen.MainNav.Home.route) {
+                            popUpTo(Screen.Intro.route) { inclusive = true } // Xóa Intro và Login
+                            launchSingleTop = true // Tránh tạo mới HomeScreen
+                        }
                     }
                 }.onFailure {
                     viewModelScope.launch {

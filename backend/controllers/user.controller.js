@@ -171,7 +171,7 @@ const UserController = {
       const result = await followUser(followerId, parseInt(followedId));
 
       res.status(200).json({
-        success: true,
+        status: 200,
         message: result.message,
       });
     } catch (error) {
@@ -187,7 +187,7 @@ const UserController = {
       const result = await unfollowUser(followerId, parseInt(followedId));
 
       res.status(200).json({
-        success: true,
+        status: 200,
         message: result.message,
       });
     } catch (error) {

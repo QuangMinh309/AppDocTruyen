@@ -29,7 +29,10 @@ export default (sequelize, DataTypes) => {
       senderId: DataTypes.INTEGER,
       content: DataTypes.TEXT,
       commentPicId: DataTypes.STRING,
-      time: DataTypes.DATE,
+      time: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      }
     },
     {
       sequelize,

@@ -8,6 +8,7 @@ const validate = (schema, property = 'body') => {
 
     const { error } = schema.validate(req[property], { abortEarly: false })
     if (error) {
+      console.log(req[property])
       return next(
         new ApiError(
           `Dữ liệu không hợp lệ: ${error.details

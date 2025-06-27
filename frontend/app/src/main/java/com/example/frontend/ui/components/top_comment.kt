@@ -154,7 +154,6 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                                 tint = Color.White,
                                 modifier = Modifier.size(25.dp)
                             )
-                        //    Text(text = comment.disLikeNumber.toString(), color = Color.White, fontSize = 15.sp)
                         }
                     }
                 }

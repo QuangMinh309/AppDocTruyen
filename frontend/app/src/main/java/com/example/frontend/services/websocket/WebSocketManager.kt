@@ -1,65 +1,100 @@
 package com.example.frontend.services.websocket
 
+import android.util.Log
+import com.example.frontend.util.TokenManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
+
 @Singleton
-class WebSocketManager @Inject constructor(private val okHttpClient: OkHttpClient,
-                                           private val baseUrl: String){
+    class WebSocketManager @Inject constructor(
+    private val okHttpClient: OkHttpClient,
+    @Named("WebSocketUrl") private val wsBaseUrl: String,
+    private val tokenManager: TokenManager)
+{
 
-    private var webSocket: WebSocket? = null
-    private val listeners = mutableSetOf<WebSocketListener>()
-    private var isConnected = false
+    private val webSockets = mutableMapOf<String, WebSocket>() // Lưu trữ các WebSocket theo room
+    private val listeners = mutableMapOf<String, MutableSet<WebSocketListener>>() // Lưu trữ listener cho từng room
+    private val isConnected = mutableMapOf<String, Boolean>() // Trạng thái kết nối cho từng room
 
-    fun connect() {
-        if (isConnected) return
-        val request = Request.Builder().url(baseUrl).build()
-        webSocket = okHttpClient.newWebSocket(request, internalListener)
+    suspend fun connect(room: String,bonusQueryString: String) {
+        if (isConnected[room] == true) return
+
+        val token = withContext(Dispatchers.IO) {
+            tokenManager.getToken()
+        }
+
+        val fullUrl = "$wsBaseUrl/$room?token=${token}&$bonusQueryString"
+        val request = Request.Builder().url(fullUrl).build()
+        val webSocket = okHttpClient.newWebSocket(request, createInternalListener(room))
+        webSockets[room] = webSocket
+        isConnected[room] = false // Đặt trạng thái ban đầu là false, sẽ cập nhật trong onOpen
+        listeners[room] = listeners[room] ?: mutableSetOf()
     }
 
-    fun disconnect() {
-        webSocket?.close(1000, "Client closed")
-        webSocket = null
-        isConnected = false
+    fun disconnect(room: String) {
+        webSockets[room]?.close(1000, "Client closed")
+        webSockets.remove(room)
+        isConnected.remove(room)
+        listeners.remove(room)
     }
 
-    fun sendMessage(message: String): Boolean {
-        return webSocket?.send(message) ?: false
+    fun sendMessage(room: String, message: String): Boolean {
+        val webSocket = webSockets[room]
+        return if (webSocket != null && isConnected[room] == true) {
+            val success = webSocket.send(message)
+            Log.d("WebSocketManager", "Sent message to $room: $message, Success: $success")
+            success
+        } else {
+            Log.e("WebSocketManager", "Failed to send message to $room: WebSocket not connected")
+            false
+        }
     }
 
-    fun addListener(listener: WebSocketListener) {
-        listeners.add(listener)
+    fun addListener(room: String, listener: WebSocketListener) {
+        listeners[room]?.add(listener) ?: run {
+            listeners[room] = mutableSetOf(listener)
+        }
     }
 
-    fun removeListener(listener: WebSocketListener) {
-        listeners.remove(listener)
+    fun removeListener(room: String, listener: WebSocketListener) {
+        listeners[room]?.remove(listener)
     }
 
-    private val internalListener = object : WebSocketListener() {
+    private fun createInternalListener(room: String) = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
-            isConnected = true
-            listeners.forEach { it.onOpen(webSocket, response) }
+            isConnected[room] = true
+            listeners[room]?.forEach { it.onOpen(webSocket, response) }
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            listeners.forEach { it.onMessage(webSocket, text) }
+            listeners[room]?.forEach { it.onMessage(webSocket, text) }
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            isConnected = false
-            listeners.forEach { it.onClosed(webSocket, code, reason) }
+            isConnected[room] = false
+            listeners[room]?.forEach { it.onClosed(webSocket, code, reason) }
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            isConnected = false
-            listeners.forEach { it.onFailure(webSocket, t, response) }
-            // Bạn có thể thêm logic reconnect ở đây nếu muốn
+            isConnected[room] = false
+            listeners[room]?.forEach { it.onFailure(webSocket, t, response) }
+            // Thử reconnect nếu cần
+            if (isConnected[room] == false){
+                CoroutineScope(Dispatchers.IO).launch {
+                    connect(room, webSockets[room]?.request()?.url?.toString()?.substringAfter("&") ?: "")
+                }
+            }
         }
     }
 }
-

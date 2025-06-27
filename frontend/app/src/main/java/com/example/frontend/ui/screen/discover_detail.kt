@@ -18,13 +18,7 @@ import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.StoryChips
 import com.example.frontend.ui.screen.story.ExampleCategories
 
-@Preview
-@Composable
-fun PreViewDiscoverDetailScreen()
-{
-    val fakeviewmodel= DiscoverDetailViewModel(NavigationManager())
-    DiscoverDetailScreen(fakeviewmodel)
-}
+
 @Composable
 fun DiscoverDetailScreen(viewModel: DiscoverDetailViewModel= hiltViewModel())
 {

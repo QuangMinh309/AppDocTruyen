@@ -156,3 +156,138 @@ fun StoryStatusAction(
         }
     }
 }
+
+@Composable
+fun StoryStatusActionAdmin(
+    isAuthor: Boolean,
+    storyStatus: MutableState<String>, // "Full" or "Updating"
+    hasVoted: MutableState<String>,    // "Vote" or "Voted"
+    onActionClick: () -> Unit = {}
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(13.dp),
+        modifier = Modifier.padding(horizontal = 9.dp)
+    ) {
+        // Button: story status
+        Button(
+            onClick = {
+                if (isAuthor) {
+                    storyStatus.value = when (storyStatus.value) {
+                        "Full" -> "Updating"
+                        "Updating" -> "Full"
+                        else -> storyStatus.value
+                    }
+                }
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = if (storyStatus.value == "Full") Green else OrangeRed
+            ),
+            shape = RoundedCornerShape(30.dp),
+            modifier = Modifier
+                .height(35.dp)
+                .widthIn(min = 95.dp)
+        ) {
+            Text(
+                text = storyStatus.value,
+                color = Color.Black,
+                fontSize = 14.sp
+            )
+        }
+
+        if (isAuthor) {
+            Button(
+                onClick = onActionClick,
+                colors = ButtonDefaults.buttonColors(Color.White),
+                shape = RoundedCornerShape(30.dp),
+                modifier = Modifier
+                    .height(35.dp)
+                    .widthIn(min = 95.dp)
+            ) {
+                Text(
+                    text = "Edit status",
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                )
+            }
+            Button(
+                onClick = onActionClick,
+                colors = ButtonDefaults.buttonColors(Color.Red),
+                shape = RoundedCornerShape(30.dp),
+                modifier = Modifier
+                    .height(35.dp)
+                    .widthIn(min = 95.dp)
+            ) {
+                Text(
+                    text = "Delete",
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                )
+            }
+        } else {
+            val gradientButton = Brush.verticalGradient(
+                colors = listOf(Color(0xFFDF4258), Color(0xFF792430))
+            )
+            val gradientText = Brush.verticalGradient(
+                colors = listOf(Color(0xFF792430), Color(0xFFDF4258))
+            )
+
+            val isVoted = hasVoted.value == "Voted"
+            val background = if (isVoted) Color(0xFFBA3749) else Color.Transparent
+
+            Button(
+                onClick = {
+                    hasVoted.value = if (isVoted) "Vote" else "Voted"
+                    onActionClick()
+                },
+                modifier = Modifier
+                    .height(35.dp)
+                    .widthIn(min = 115.dp)
+                    .then(
+                        if (!isVoted) Modifier.drawBehind {
+                            val strokeWidth = 3.5.dp.toPx()
+                            val halfStroke = strokeWidth / 2
+
+                            drawRoundRect(
+                                brush = gradientButton,
+                                topLeft = Offset(halfStroke, halfStroke),
+                                size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                                cornerRadius = CornerRadius(30.dp.toPx(), 30.dp.toPx()),
+                                style = Stroke(width = strokeWidth)
+                            )
+                        } else Modifier
+                    )
+                    .clip(RoundedCornerShape(30.dp)),
+                shape = RoundedCornerShape(30.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = background,
+                    contentColor = if (isVoted) Color.Black else Color.Unspecified
+                ),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(35.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                        contentDescription = "Vote",
+                        modifier = Modifier.size(16.dp),
+                        tint = if (isVoted) Color.Black else Color(0xFFBA3749)
+                    )
+                    Spacer(modifier = Modifier.width(5.dp))
+                    Text(
+                        text = hasVoted.value,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = if (!isVoted) {
+                            TextStyle(brush = gradientText)
+                        } else {
+                            TextStyle(color = Color.Black)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}

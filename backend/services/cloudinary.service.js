@@ -6,16 +6,15 @@ import streamifier from 'streamifier';
 const getImageUrlFromCloudinary = async (imageId) => {
   try {
     // Kiểm tra tồn tại của publicId
+    if (!imageId) return ""
     const result = await cloudinary.api.resource(imageId, { resource_type: 'image' });
     return cloudinary.url(imageId, {
       fetch_format: 'auto',
       quality: 'auto',
     });
   } catch (error) {
-    if (error.http_code === 404) {
-      throw new ApiError('Public ID không tồn tại!', 404);
-    }
-    throw new ApiError('Lỗi lấy ảnh từ cloudinary', 500)
+    console.log(`không thể lấy ảnh từ cloudinary!`, 500)
+    return ""
   }
 };
 

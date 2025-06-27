@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ fun ScreenFrame(
         modifier = Modifier
             .fillMaxSize()
             .background(DeepSpace)
+            .imePadding()
             .padding(top = 27.dp),
         contentAlignment = Alignment.TopCenter
     ) {

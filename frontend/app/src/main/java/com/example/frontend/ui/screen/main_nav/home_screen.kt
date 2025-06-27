@@ -3,15 +3,38 @@ package com.example.frontend.ui.screen.main_nav
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -27,21 +50,28 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.NameListStory
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
-
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.HomeViewModel
-import com.example.frontend.ui.components.*
+import com.example.frontend.ui.components.AutoScrollBanner
+import com.example.frontend.ui.components.BannerItem
+import com.example.frontend.ui.components.Chip
+import com.example.frontend.ui.components.ReadListItem
+import com.example.frontend.ui.components.ScreenFrame
+import com.example.frontend.ui.components.SectionTitle
+import com.example.frontend.ui.components.StoryCard
+import com.example.frontend.ui.components.StoryCard2
+import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.screen.story.ExamplStory
-import com.example.frontend.ui.screen.story.Examplechapters
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
-import com.google.firebase.firestore.auth.User
 import java.math.BigDecimal
-import java.time.LocalDate
 import java.time.LocalDateTime
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // Lấy dữ liệu từ ViewModel
@@ -49,252 +79,319 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val newStories by viewModel.newStories.collectAsState()
     val topRankingStories by viewModel.topRankingStories.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val readLists by viewModel.readLists.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val isSuggestedLoading by viewModel.isSuggestedLoading.collectAsState()
     val isNewStoriesLoading by viewModel.isNewStoriesLoading.collectAsState()
     val isTopRankingLoading by viewModel.isTopRankingLoading.collectAsState()
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
+    val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
+    val isUserLoading by viewModel.isUserLoading.collectAsState()
+
+    // State để kiểm soát làm mới
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            viewModel.loadUser()
+            viewModel.loadStories()
+            viewModel.loadCategories()
+            viewModel.loadReadLists()
+            isRefreshing = false
+        }
+    )
+
+    // Reload dữ liệu khi cần
+    LaunchedEffect(Unit) {
+        viewModel.loadUser()
+        viewModel.loadStories()
+        viewModel.loadCategories()
+        viewModel.loadReadLists()
+    }
 
     ScreenFrame {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 30.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            // Top Bar
-            Row(
+        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 30.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.notification_ic),
-                    contentDescription = "Notification",
-                    tint = Color.White,
+                // Top Bar
+                Row(
                     modifier = Modifier
-                        .size(50.dp)
-                        .clickable { viewModel.onGoToNotificationScreen() }
-                )
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.notification_ic),
+                        contentDescription = "Notification",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clickable { viewModel.onGoToNotificationScreen() }
+                    )
 
-                Text(
-                    text = "Home",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .weight(1f)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
+                    Text(
+                        text = "Home",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .weight(1f)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
 
-                Icon(
-                    painter = painterResource(id = R.drawable.setting_ic),
-                    contentDescription = "Settings",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { viewModel.onGoToSetting() }
-                )
-            }
+                    Icon(
+                        painter = painterResource(id = R.drawable.setting_ic),
+                        contentDescription = "Settings",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { viewModel.onGoToSetting() }
+                    )
+                }
 
-            Text(
-                text = "Hello ${viewModel.userName}",
-                color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 20.dp)
-            )
-
-            // Banner
-            AutoScrollBanner(items = bannerItems)
-
-
-            // Gợi ý cho bạn
-            Column(modifier = Modifier.fillMaxSize()) {
-                SectionTitle(
-                    title = "Gợi ý cho bạn",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.dolphins_ic
-                )
-                if (isSuggestedLoading) {
+                // Chào người dùng
+                if (isUserLoading) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = OrangeRed)
                     }
                 } else {
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(suggestedStories) { item ->
-                            Log.d("HomeScreen", "Rendering StoryCard: ${item.name}")
-                            StoryCard(item, onClick = { viewModel.onGoToStoryScreen(item.id) })
+                    Text(
+                        text = "Hello ${currentUser?.dName ?: "User"}",
+                        color = Color.White,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 20.dp)
+                    )
+                }
+
+                // Banner
+                AutoScrollBanner(items = bannerItems)
+
+                // Gợi ý cho bạn
+                Column(modifier = Modifier.fillMaxSize()) {
+                    SectionTitle(
+                        title = "Gợi ý cho bạn",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.dolphins_ic
+                    )
+                    if (isSuggestedLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = OrangeRed)
+                        }
+                    } else {
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(suggestedStories) { item ->
+                                Log.d("HomeScreen", "Rendering StoryCard: ${item.name}")
+                                StoryCard(item, onClick = { viewModel.onGoToStoryScreen(item.id) })
+                            }
                         }
                     }
                 }
-            }
 
-            // Truyện mới
-            Column(modifier = Modifier.fillMaxSize()) {
-                SectionTitle(
-                    title = "Truyện mới",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.firework_ic
-                )
-                if (isNewStoriesLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+                // Truyện mới
+                Column(modifier = Modifier.fillMaxSize()) {
+                    SectionTitle(
+                        title = "Truyện mới",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.firework_ic
+                    )
+                    if (isNewStoriesLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = OrangeRed)
+                        }
+                    } else {
+                        val pairedStories = newStories.chunked(2)
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            items(pairedStories) { pair ->
+                                Column(
+                                    modifier = Modifier.wrapContentSize(),
+                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    StoryCard2(
+                                        story = pair[0],
+                                        modifier = Modifier.wrapContentSize(),
+                                        onClick = { viewModel.onGoToStoryScreen(pair[0].id) }
+                                    )
+                                    if (pair.size > 1) {
+                                        StoryCard2(
+                                            story = pair[1],
+                                            modifier = Modifier.wrapContentSize(),
+                                            onClick = { viewModel.onGoToStoryScreen(pair[1].id) }
+                                        )
+                                    } else {
+                                        Spacer(modifier = Modifier.height(132.dp))
+                                    }
+                                }
+                            }
+                        }
                     }
-                } else {
-                    val pairedStories = newStories.chunked(2)
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(pairedStories) { pair ->
-                            Column(
-                                modifier = Modifier.wrapContentSize(),
+                }
+
+                // Top Ranking
+                Column(modifier = Modifier.fillMaxSize()) {
+                    SectionTitle(
+                        title = "Top Ranking",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.fire_ic
+                    )
+                    if (isTopRankingLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = OrangeRed)
+                        }
+                    } else {
+                        val top5Stories = topRankingStories.take(5)
+                        LazyColumn(
+                            modifier = Modifier
+                                .height(1000.dp)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(top5Stories.size) { index ->
+                                val story = top5Stories[index]
+                                Box(modifier = Modifier.fillMaxWidth()) {
+                                    StoryCard3(
+                                        story = story,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 14.dp, top = 16.dp)
+                                    )
+                                    if (index < 3) {
+                                        val iconColor = when (index) {
+                                            0 -> Color(0xFFFFD700) // Vàng
+                                            1 -> Color(0xFF969191) // Bạc
+                                            else -> Color(0xFFCE7320) // Đồng
+                                        }
+                                        Icon(
+                                            painter = painterResource(R.drawable.crown_icon),
+                                            contentDescription = "Rank ${index + 1}",
+                                            tint = iconColor,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Text(
+                        text = "Show Top Ranking list >>",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 20.dp)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(OrangeRed, BurntCoral)
+                                ),
+                                shape = RoundedCornerShape(30.dp)
+                            )
+                            .padding(horizontal = 10.dp)
+                            .clickable { viewModel.onGoToTopRankingStoryListScreen() }
+                    )
+                }
+
+                // Chủ đề (Categories)
+                Column(modifier = Modifier.fillMaxSize()) {
+                    SectionTitle(
+                        title = "Chủ đề",
+                        modifier = Modifier.padding(start = 20.dp),
+                        iconResId = R.drawable.flower_ic
+                    )
+                    if (isCategoriesLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = OrangeRed)
+                        }
+                    } else {
+                        FlowRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            categories.forEach { genre ->
+                                Chip(text = genre.name ?: "", onClick = {
+                                    Log.d("HomeScreen", "Chip clicked: categoryId=${genre.id}, categoryName=${genre.name}")
+                                    viewModel.onGoToCategoryStoryList(genre.id, genre.name.toString())
+                                })
+                            }
+                        }
+                    }
+                }
+
+                // Danh sách truyện (Read Lists)
+                if (readLists.isNotEmpty() || isReadListsLoading) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        SectionTitle(
+                            title = "Danh sách truyện",
+                            modifier = Modifier.padding(start = 20.dp),
+                            iconResId = R.drawable.book_ic
+                        )
+                        if (isReadListsLoading) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = OrangeRed)
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxWidth()
+                                    .heightIn(max = 200.dp),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                StoryCard2(
-                                    story = pair[0],
-                                    modifier = Modifier.wrapContentSize(),
-                                    onClick = { viewModel.onGoToStoryScreen(pair[0].id) }
-                                )
-                                if (pair.size > 1) {
-                                    StoryCard2(
-                                        story = pair[1],
-                                        modifier = Modifier.wrapContentSize(),
-                                        onClick = { viewModel.onGoToStoryScreen(pair[1].id) }
-                                    )
-                                } else {
-                                    Spacer(modifier = Modifier.height(132.dp))
+                                items(readLists) { list ->
+                                    ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
                                 }
                             }
                         }
                     }
                 }
             }
-            // Top Ranking
-            Column(modifier = Modifier.fillMaxSize()) {
-                SectionTitle(
-                    title = "Top Ranking",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.fire_ic
-                )
-                if (isTopRankingLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    val top5Stories = topRankingStories.take(5)
-                    LazyColumn(
-                        modifier = Modifier
-                            .height(1000.dp)
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(top5Stories.size) { index ->
-                            val story = top5Stories[index]
-                            Box(modifier = Modifier.fillMaxWidth()) {
-                                StoryCard3(
-                                    story = story,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 14.dp, top = 16.dp)
-                                )
-                                if (index < 3) {
-                                    val iconColor = when (index) {
-                                        0 -> Color(0xFFFFD700) // Vàng
-                                        1 -> Color(0xFF969191) // Bạc
-                                        else -> Color(0xFFCE7320) // Đồng
-                                    }
-                                    Icon(
-                                        painter = painterResource(R.drawable.crown_icon),
-                                        contentDescription = "Rank ${index + 1}",
-                                        tint = iconColor,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                Text(
-                    text = "Show Top Ranking list >>",
-                    color = Color.Black,
-                    fontSize = 10.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 20.dp)
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(OrangeRed, BurntCoral)
-                            ),
-                            shape = RoundedCornerShape(30.dp)
-                        )
-                        .padding(horizontal = 10.dp)
-                )
-            }
-
-            // Chủ đề (Categories)
-            Column(modifier = Modifier.fillMaxSize()) {
-                SectionTitle(
-                    title = "Chủ đề",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.flower_ic
-                )
-                if (isCategoriesLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    FlowRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, end = 20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        categories.forEach { genre ->
-                            Chip(text = genre.name ?: "", onClick = {})
-                        }
-                    }
-                }
-            }
-
-            // Danh sách truyện (Read Lists)
-            Column(modifier = Modifier.fillMaxWidth()) {
-                SectionTitle(
-                    title = "Danh sách truyện",
-                    modifier = Modifier.padding(start = 20.dp),
-                    iconResId = R.drawable.book_ic
-                )
-                readlistlist.forEach { list ->
-                    ReadListItem(item = list)
-                }
-            }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
-
 
 val categories: List<Category> = listOf(
     Category(
@@ -340,13 +437,20 @@ val ExampleList: List<Story> = listOf(
 
 )
 
+var ExampleNameListStory= NameListStory(
+    coverImgId = "02"
+)
 
 var  ReadListItem_= NameList(
-    id=1,
-    name="Yêu thích ",
+    id =1,
+    name ="Yêu thích ",
     description = "Như tiêu đề thì em mới tập tành xem phim điện ảnh. Em không thích phim chính kịch cho lắm, mọi người giới thiệu cho em vài phim điện ảnh Âu Mĩ, Trung Quốc mà mọi người ấn tượng với ạ. Em cảm ơn.",
     userId = 2,
-    stories = ExampleList
+    stories = listOf(
+        ExampleNameListStory,
+        ExampleNameListStory
+    ),
+    storyCount = 2
 )
 
 val readlistlist=listOf(
@@ -380,7 +484,7 @@ val demoUser = com.example.frontend.data.model.User(
     name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -391,7 +495,7 @@ val demoUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(500.00),
-    dob = LocalDate.parse("2020-03-12"),
+    dob = "2020-03-12",
     isPremium = true
 
 )
@@ -400,7 +504,7 @@ val demoAppUser = com.example.frontend.data.model.User(
     id = 2, name = "Peneloped Lyne",
     role = Role(1, "User"),
     dName = "tolapenelopee",
-    backgroundUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
+    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
     mail = "peneloped@gmail.com",
     followerNum = 200,
     novelsNum = 50,
@@ -411,7 +515,7 @@ val demoAppUser = com.example.frontend.data.model.User(
             "auto-renewal under accounts setting.\n" +
             "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
     wallet = BigDecimal(0),
-    dob = LocalDate.parse("2020-03-12")
+    dob = "2020-03-12",
 )
 
 val demoChatList  = listOf(

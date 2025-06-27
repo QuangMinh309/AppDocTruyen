@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.admin.StoryViewMgmtViewModel
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.screen.story.ExampleChapter
@@ -49,6 +50,169 @@ fun Text(text: String, color: Color, fontSize: TextUnit, fontWeight: FontWeight,
 
 @Composable
 fun StoryInfo(viewModel:StoryDetailViewModel) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+    ) {
+        // Background + gradient
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+        ) {
+            AsyncImage(
+                model = ExamplStory.coverImgUrl, // URL của hình ảnh
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        alpha = 0.5f // Giữ nguyên độ mờ
+                    )
+            )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .height(100.dp)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                OrangeRed.copy(alpha = 0.3f)
+                            )
+                        )
+                    )
+            )
+        }
+
+        // Title of story
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(y = (-9).dp)
+                .padding(start = 16.dp)
+                .background(
+                    color = Color.Black,
+                    shape = RoundedCornerShape(30.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(
+                text = "${ExamplStory.name}",
+                color = Color.White,
+                fontSize = 21.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght)))
+        }
+    }
+
+    Spacer(modifier = Modifier.height(5.dp))
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Row(
+            modifier = Modifier.weight(0.6f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            // Icon 1: Sum of vote
+            Row(
+                modifier = Modifier.weight(0.3f).wrapContentWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = formatViews(ExamplStory.voteNum.toLong()),
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                )
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                    contentDescription = "Vote Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.then(
+                        Modifier
+                            .padding(start = 1.2.dp)
+                            .size(with(LocalDensity.current) { 17.sp.toDp() })
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+
+            // Icon 2: Sum of view
+            Row(
+                modifier = Modifier.weight(0.3f).wrapContentWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = formatViews(ExamplStory.viewNum.toLong()),
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                )
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
+                    contentDescription = "View Icon",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.then(
+                        Modifier
+                            .padding(start = 1.2.dp)
+                            .size(with(LocalDensity.current) { 17.sp.toDp() })
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+
+            // Icon 3: Chapter number
+            Row(
+                modifier = Modifier.weight(0.3f).wrapContentWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = formatViews(ExamplStory.chapterNum.toLong()),
+                    color = Color.White,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
+                    contentDescription = "Number Chapter Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.then(
+                        Modifier
+                            .padding(start = 1.2.dp)
+                            .size(with(LocalDensity.current) { 17.sp.toDp() })
+                    )
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+        }
+        // Button start read
+        LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
+            onClick = {viewModel.onGoToChapterScreen(Examplechapters[0].chapterId.toString()) }){
+            Text(
+                text = "Start  read",
+                color = Color.Black,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+            )
+        }
+    }
+}
+
+@Composable
+fun StoryInfo2(viewModel: StoryViewMgmtViewModel) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
