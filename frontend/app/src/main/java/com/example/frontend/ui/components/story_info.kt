@@ -62,7 +62,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .height(250.dp)
         ) {
             AsyncImage(
-                model = ExamplStory.coverImgUrl, // URL của hình ảnh
+                model = viewModel.story.value?.coverImgUrl, // URL của hình ảnh
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -101,7 +101,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             Text(
-                text = "${ExamplStory.name}",
+                text = "${viewModel.story.value?.name}",
                 color = Color.White,
                 fontSize = 21.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -128,7 +128,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = formatViews(ExamplStory.voteNum.toLong()),
+                    text = formatViews((viewModel.story.value?.voteNum?:0).toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -153,7 +153,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(ExamplStory.viewNum.toLong()),
+                    text = formatViews((viewModel.story.value?.viewNum?:0).toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,
@@ -178,7 +178,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = formatViews(ExamplStory.chapterNum.toLong()),
+                    text = formatViews((viewModel.story.value?.chapterNum?:0).toLong()),
                     color = Color.White,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.Bold,

@@ -46,6 +46,16 @@ interface ApiService {
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
 
+    @GET("api/stories/{storyId}")
+    suspend fun getStoryById(
+        @Path("storyId") storyId:Int
+    ): Response<StoryResponse>
+
+    data class StoryResponse(
+        val success: Boolean,
+        val data: Story
+    )
+
 
 
     data class NameListData(

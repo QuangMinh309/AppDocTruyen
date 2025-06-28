@@ -54,13 +54,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Date
 
-@Preview
-@Composable
-fun PreviewStoryDetailScreen()
-{
-    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
-    StoryDetailScreen(viewModel=fakeviewmodel)
-}
+//@Preview
+//@Composable
+//fun PreviewStoryDetailScreen()
+//{
+//    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
+//    StoryDetailScreen(viewModel=fakeviewmodel)
+//}
 @Composable
 fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
@@ -76,11 +76,12 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
 
     val storyStatus = remember { mutableStateOf("Full") }
     val btnVote = remember { mutableStateOf("Vote") }
+    val isLoading by viewModel.isLoading
 
     ScreenFrame(
         topBar = {
             TopBar(
-                title = ExamplStory.name?:"",
+                title = viewModel.story.value?.name?:"",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -88,91 +89,106 @@ fun StoryDetailScreen(viewModel : StoryDetailViewModel = hiltViewModel()) {
             )
         }
     ){
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            LazyColumn(
-                state = listState,
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                androidx.compose.material3.CircularProgressIndicator()
+            }
+        } else {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                item { Spacer(Modifier.height(8.dp)) }
-                item { StoryInfo(viewModel) }
-                item { Spacer(Modifier.height(19.dp)) }
-                item { StoryStatusAction( isAuthor = false,storyStatus = storyStatus, hasVoted =  btnVote, onActionClick = {viewModel.onGoToWriteScreen(ExamplStory.id)}) }
-                item { Spacer(Modifier.height(29.dp)) }
-                item {
-                    DescriptionStory(
-                        aboutContent = {
-                            Text(
-                                text = ExamplStory.description.toString(),
-                                color = Color.White,
-                                fontSize = 16.sp,
-                            )
-                            Spacer(Modifier.height(29.dp))
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    item { Spacer(Modifier.height(8.dp)) }
+                    item { StoryInfo(viewModel) }
+                    item { Spacer(Modifier.height(19.dp)) }
+//                    item {
+//                        StoryStatusAction(
+//                            isAuthor = viewModel.isAuthor.value,
+//                         //   storyStatus = viewModel.story.value?.status,
+//                            hasVoted = btnVote,
+//                   //         onActionClick = { viewModel.onGoToWriteScreen(ExamplStory.id) })
+//                    }
+                    item { Spacer(Modifier.height(29.dp)) }
+                    item {
+                        DescriptionStory(
+                            aboutContent = {
+                                Text(
+                                    text = (viewModel.story.value?.description).toString(),
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                )
+                                Spacer(Modifier.height(29.dp))
 
-                            LargeGenreTags(ExamplStory.categories?: emptyList())
+                                LargeGenreTags(viewModel.story.value?.categories ?: emptyList())
 
-                            Spacer(Modifier.height(37.dp))
-                            AuthorInfoCard (model = ExamplStory.author, onClick = {viewModel.onGoToUserProfileScreen(ExamplStory.author.id)})
-                            Spacer(Modifier.height(37.dp))
-                            SectionTitle(title = "Top Comments")
+                                Spacer(Modifier.height(37.dp))
+                                if (!viewModel.isAuthor.value) {
+                                    viewModel.story.value?.author?.let { author ->
+                                        AuthorInfoCard(
+                                            model = author,
+                                            onClick = { viewModel.onGoToUserProfileScreen(author.id) })
+                                    }
+                                    Spacer(Modifier.height(37.dp))
+                                }
+                                Spacer(Modifier.height(37.dp))
+                                SectionTitle(title = "Top Comments")
 //                            val rawComments = listOf(
 //                                listOf("linh", null, R.drawable.story_detail_page1, "Chap 2", "2025-05-07", "10:10", "10", "0"),
 //                                listOf("huy", "Cảnh này chất!", R.drawable.intro_page3_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
 //                                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
 //                            )
-                        //    TopComments(comments, viewModel)
-                            Spacer(Modifier.height(37.dp))
-                            SectionTitle(title = "Novel Similar")
-                            SimilarNovelsCard(Examplestories,viewModel)
-                        },
-                        chapterContent = {
-                            val chapters = listOf(
-                                listOf("Chapter1", "2025-05-01", "10:00 AM", "120", "500", true, false),
-                                listOf("Chapter2", "2025-05-02", "12:30 PM", "80", "350", true, false),
-                                listOf("Chapter3", "2025-05-03", "03:00 PM", "200", "1000", false, false)
-                            )
-                            Spacer(Modifier.height(29.dp))
-                            Examplechapters.forEachIndexed { index, chapter ->
-                                ChapterItemCard(
-                                    chapter = chapter,
-                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
-                                )
-
-                                if (index < Examplechapters.lastIndex) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(vertical = 8.dp),
-                                        thickness = 1.2.dp,
-                                        color = Color.Gray
+                                //    TopComments(comments, viewModel)
+                                Spacer(Modifier.height(37.dp))
+                                SectionTitle(title = "Novel Similar")
+                                SimilarNovelsCard(viewModel.similarStories.value, viewModel)
+                            },
+                            chapterContent = {
+                                Spacer(Modifier.height(29.dp))
+                                viewModel.story.value?.chapters?.forEachIndexed { index, chapter ->
+                                    ChapterItemCard(
+                                        chapter = chapter,
+                                        onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
                                     )
+                                    if (index < (viewModel.story.value?.chapters?.lastIndex
+                                            ?: -1)
+                                    ) {
+                                        HorizontalDivider(
+                                            modifier = Modifier.padding(vertical = 8.dp),
+                                            thickness = 1.2.dp,
+                                            color = Color.Gray
+                                        )
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
+                    item { Spacer(Modifier.height(80.dp)) }
                 }
-                item { Spacer(Modifier.height(80.dp)) }
-            }
 
-            if (isFabVisible) {
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            listState.animateScrollToItem(0)
-                        }
-                    },
-                    containerColor = OrangeRed,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(15.dp),
-                    shape = RoundedCornerShape(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Scroll to top",
-                        tint = Color.White
-                    )
+                if (isFabVisible) {
+                    FloatingActionButton(
+                        onClick = {
+                            scope.launch {
+                                listState.animateScrollToItem(0)
+                            }
+                        },
+                        containerColor = OrangeRed,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(15.dp),
+                        shape = RoundedCornerShape(50.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.KeyboardArrowUp,
+                            contentDescription = "Scroll to top",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
@@ -218,6 +234,7 @@ val ExamplStory=Story(
     status = "Full",
     ageRange = 13,
     pricePerChapter = BigDecimal(200),
+    chapters = null
 
 )
 
