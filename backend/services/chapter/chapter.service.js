@@ -11,6 +11,7 @@ import { formatDate } from '../../utils/date.util.js';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
+const History = sequelize.models.History;
 
 const ChapterService = {
   async createChapter(chapterData, userId) {
@@ -90,7 +91,7 @@ const ChapterService = {
 
       await Promise.all([
         sequelize.models.History.upsert(
-          { userId, chapterId, lastReadAt: new Date() },
+          { userId, storyId: chapter.storyId, lastReadAt: new Date() },
           { transaction }
         ),
         chapter.increment('viewNum', { transaction }),
@@ -100,7 +101,10 @@ const ChapterService = {
         }),
       ]);
 
-      return chapter;
+      const chapterResult = chapter.toJSON();
+      chapterResult.updatedAt = formatDate(chapter.updatedAt);
+
+      return chapterResult;
     });
   },
 
