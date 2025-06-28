@@ -1,6 +1,5 @@
 package com.example.frontend.presentation.viewmodel.admin
 
-import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Category
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -55,8 +54,7 @@ val dummyCategories: List<Category> = listOf(
 @HiltViewModel
 class CategoryMgmtViewModel @Inject constructor(
     navigationManager: NavigationManager,
-    private val categoryRepository : CategoryRepository,
-
+    private val categoryRepository : CategoryRepository
 ) : BaseViewModel(navigationManager) {
 
     private val _name = MutableStateFlow("")
@@ -68,7 +66,7 @@ class CategoryMgmtViewModel @Inject constructor(
     private val _selectedItem = MutableStateFlow<Category?>(null)
     val selectedItem : StateFlow<Category?> = _selectedItem
 
-    private val _categories = MutableStateFlow<List<Category>>(dummyCategories)
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories : StateFlow<List<Category>> = _categories
 
     private val _isCategoriesLoading = MutableStateFlow(false)
@@ -87,12 +85,14 @@ class CategoryMgmtViewModel @Inject constructor(
                 _categories.value = when (result)
                 {
                     is Result.Success -> result.data
-                    is Result.Failure -> emptyList()
+                    is Result.Failure -> {
+                        _toast.value = "Failed to load categories: ${result.exception.message}"
+                        emptyList()
+                    }
                 }
             }
             catch (e: Exception){
                 _toast.value = "Error: ${e.message}"
-                _categories.value = emptyList()
             }
             finally {
                 _isCategoriesLoading.value = false
@@ -148,7 +148,7 @@ class CategoryMgmtViewModel @Inject constructor(
                     when(result)
                     {
                         is Result.Success -> {
-                            loadCategories()
+                            _toast.value = "Successfully created category"
                             _name.value = ""
                             _newName.value = ""
                         }
@@ -159,6 +159,9 @@ class CategoryMgmtViewModel @Inject constructor(
                 }
                 catch(exception: Exception) {
                     _toast.value = "Error: ${exception.message}"
+                }
+                finally {
+                    loadCategories()
                 }
             }
         }
@@ -178,6 +181,7 @@ class CategoryMgmtViewModel @Inject constructor(
                     when(result)
                     {
                         is Result.Success -> {
+                            _toast.value = "Successfully updated category"
                             _newName.value = ""
                         }
                         is Result.Failure -> {
@@ -208,6 +212,7 @@ class CategoryMgmtViewModel @Inject constructor(
                 when(result)
                 {
                     is Result.Success -> {
+                        _toast.value = "Successfully deleted category"
                         _selectedItem.value = null
                     }
                     is Result.Failure -> {

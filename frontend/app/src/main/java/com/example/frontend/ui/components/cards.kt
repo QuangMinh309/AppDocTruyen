@@ -76,6 +76,7 @@ import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
+import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ReadListItem_
@@ -83,6 +84,8 @@ import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 //region community Card
@@ -976,9 +979,16 @@ fun RowSelectItem(
     }
 }
 
+fun formatDate(raw: String): String {
+    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss") // Change this as needed
+    val date = LocalDateTime.parse(raw.substring(0, 19), inputFormatter)
+    return date.format(outputFormatter)
+}
+
 @Composable
 fun TransactionCard(
-    item : Transaction,
+    item : Transaction2,
     isSelected : Boolean,
     onClick: () -> Unit = {}
 )
@@ -1002,13 +1012,20 @@ fun TransactionCard(
                 Text(
                     text = "ID: " + item.transactionId.toString(),
                     color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Time: " + item.time.toString(),
+                    text = "Time: " + formatDate(item.time),
                     color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
                 )
             }
 
@@ -1018,10 +1035,11 @@ fun TransactionCard(
                 modifier = Modifier.height(IntrinsicSize.Min)
             )
             {
-                Image(
-                    painter = painterResource(id = R.drawable.avt_img),
-                    contentScale = ContentScale.Crop,
+                AsyncImage(
+                    model = item.user.avatarId,
                     contentDescription = "pfp",
+                    placeholder = painterResource(R.drawable.broken_image),
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(50.dp, 50.dp)
                         .clip(RoundedCornerShape(50.dp))
@@ -1030,15 +1048,31 @@ fun TransactionCard(
                 Column()
                 {
                     Text(
-                        text = "User ID: " + item.userId.toString(),
+                        text = "User ID: " + item.user.userId,
                         color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        ),
                     )
-                    Text(
-                        text = "Type: " + item.type,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold))
-                    )
+                    Row {
+                        Text(
+                            text = "Type: ",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            ),
+                        )
+                        Text(
+                            text = item.type,
+                            color = if(item.type == "withdraw") Color.Red else Color.Green,
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            ),
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Divider(
@@ -1050,26 +1084,24 @@ fun TransactionCard(
                 Spacer(modifier = Modifier.width(10.dp))
                 Column()
                 {
-                    Row {
-                        Text(
-                            text = "Money: ",
-                            color = Color.White,
+                    Text(
+                        text = "Money: " + item.money.toString() + "đ",
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 13.sp,
                             fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.money.toString() + "đ",
-                            color = if(item.type == "withdraw") Color.Red else Color.Green,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
+                        ),
+                    )
                     Text(
                         text = "Status: " + item.status,
                         color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        ),
                     )
                 }
             }
         }
     }
-
 }

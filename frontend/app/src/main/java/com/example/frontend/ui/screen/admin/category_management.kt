@@ -276,8 +276,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
                 CircularProgressIndicator()
             }
         }
-        else
-        {
+        else {
             CategoryList(
                 categories = categoryList,
                 selectedCategory = selectedItem,

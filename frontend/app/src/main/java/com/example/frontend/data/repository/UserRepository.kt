@@ -40,4 +40,16 @@ class UserRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+    suspend fun getUserById(id: Int): Result<User> {
+        return try {
+            val response = apiService.getUserById(id)
+            if (response.isSuccessful) {
+                Result.Success(response.body()?.data ?: throw Exception("User not found"))
+            } else {
+                Result.Failure(Exception("Failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
 }

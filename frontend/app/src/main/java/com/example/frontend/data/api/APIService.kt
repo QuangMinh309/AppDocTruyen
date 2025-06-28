@@ -10,6 +10,7 @@ import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
+import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -175,6 +176,19 @@ interface ApiService {
     @DELETE("api/categories/{id}")
     suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
 
+    @GET("api/transactions/{transactionId}")
+    suspend fun getTransactionById(@Path("transactionId") transactionId: Int): Response<Transaction2>
+
+    @GET("api/transactions/user/{userId}")
+    suspend fun getUserTransactions(@Path("userId") userId: Int): Response<UserTransactionResponse>
+
+    @PUT("api/transactions/{transactionId}")
+    suspend fun updateTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionUpdateRequest): Response<Transaction>
+
+    @DELETE("api/transactions/{transactionId}")
+    suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
+
+
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>
 
@@ -332,6 +346,20 @@ data class NoDataResponse(
     val status: Int,
     val message: String
 )
+
+data class UserTransactionResponse(
+    val transactions: List<Transaction2>,
+    val nextLastId: Int?,
+    val hasMore: Boolean
+)
+
+data class TransactionUpdateRequest(
+    val userId : Int,
+    val money : Int,
+    val type : String,
+    val status : String
+)
+
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)
 //data class Story(val id: String) // Placeholder
 //data class Category(val id: String) // Placeholder
