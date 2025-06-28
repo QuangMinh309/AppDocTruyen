@@ -5,7 +5,6 @@ import {
   handleStoryPurchaseTransaction,
 } from '../../utils/story.util.js'
 import { handleTransaction } from '../../utils/handle_transaction.util.js'
-import NotificationService from '../notification.service.js'
 import {
   validateChapter,
   handlePurchaseTransaction,
@@ -14,30 +13,6 @@ import {
 import { validateUser } from '../../utils/user.util.js'
 
 const StoryInteractionService = {
-  async checkVoteStatus(userId, storyId) {
-    try {
-      await validateUser(userId)
-      await validateStory(storyId)
-
-      const vote = await models.Vote.findOne({
-        where: { userId, storyId },
-      })
-
-      const story = await models.Story.findByPk(storyId, {
-        attributes: ['voteNum'],
-      })
-
-      return {
-        hasVoted: !!vote,
-        voteCount: story.voteNum,
-      }
-    } catch (error) {
-      throw error instanceof ApiError
-        ? error
-        : new ApiError('Lỗi khi kiểm tra trạng thái vote', 500)
-    }
-  },
-
   async purchaseChapter(userId, storyId, chapterId) {
     return await handleTransaction(async (transaction) => {
       const chapter = await validateChapter(chapterId, true)

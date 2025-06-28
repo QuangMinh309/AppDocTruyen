@@ -12,6 +12,7 @@ import searchStories from '../services/story/story_search.service.js';
 import getRecentlyReadStories from '../services/story/story_get_recently_read.service.js';
 import getPurchasedStories from '../services/story/story_get_purchase.service.js';
 import toggleVote from '../services/story/story_toggle_vote.service.js';
+import checkVoteStatus from '../services/story/story_check_vote.service.js';
 
 import StoryPurchaseService from '../services/story/story_interact.service.js';
 
@@ -266,11 +267,8 @@ const StoryController = {
     try {
       const userId = req.user.userId;
       const { storyId } = req.params;
-      const result = await StoryPurchaseService.checkVoteStatus(
-        userId,
-        storyId
-      );
-      return res.status(200).json({ success: true, data: result });
+      const result = await checkVoteStatus(userId, storyId);
+      return res.status(200).json(result);
     } catch (error) {
       return next(error);
     }
