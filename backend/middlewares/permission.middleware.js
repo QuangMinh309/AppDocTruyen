@@ -33,9 +33,10 @@ export const canAccessChapter = async (req, res, next) => {
     }
 
     const chapterId = req.params.chapterId;
+    const parsedChapterId = parseInt(chapterId);
     const userId = req.user.userId;
 
-    const chapter = await models.Chapter.findByPk(chapterId, {
+    const chapter = await models.Chapter.findByPk(parsedChapterId, {
       include: [{ model: models.Story, as: 'story' }],
     });
 
@@ -43,8 +44,9 @@ export const canAccessChapter = async (req, res, next) => {
       return next(new ApiError('Chương không tồn tại', 404));
     }
 
-    // Tác giả của truyện luôn được truy cập
-    if (chapter.story.userId === userId) return next();
+    // Tác giả của truyện hoặc admin luôn được truy cập
+    if (chapter.story.userId === userId || req.user.role.roleName === 'admin')
+      return next();
 
     // Người dùng premium được truy cập tất cả các chương
     if (req.user.isPremium) return next();
@@ -59,20 +61,6 @@ export const canAccessChapter = async (req, res, next) => {
     }
 
     const now = new Date();
-
-    // Kiểm tra nếu người dùng đã mua toàn bộ truyện
-    const storyPurchase = await models.Purchase.findOne({
-      where: { userId, storyId: chapter.storyId, chapterId: null },
-    });
-    if (storyPurchase) {
-      const purchaseDate = new Date(storyPurchase.createdAt);
-      const expiryDate = new Date(
-        purchaseDate.getTime() +
-          parameters.Story_Access_Duration * 24 * 60 * 60 * 1000
-      );
-      if (now <= expiryDate) return next();
-      return next(new ApiError('Thời hạn truy cập truyện đã hết', 403));
-    }
 
     // Kiểm tra nếu người dùng đã mua chương này
     const chapterPurchase = await models.Purchase.findOne({
