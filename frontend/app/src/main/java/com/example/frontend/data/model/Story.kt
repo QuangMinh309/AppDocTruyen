@@ -17,7 +17,6 @@ data class Story(
     @SerializedName("createdAt") val createdAt: String,
     @SerializedName("updatedAt") val updateAt: String,
     @SerializedName("status") val status: String,
-    @SerializedName("price") val price: BigDecimal,
     @SerializedName("pricePerChapter") val pricePerChapter: BigDecimal,
     @SerializedName("coverImgId") val coverImgId: String
 ) {

@@ -23,7 +23,7 @@ const getPurchasedStories = async (
         {
           model: models.Story,
           as: 'story',
-          attributes: ['storyId', 'storyName', 'coverImgId', 'status', 'price'],
+          attributes: ['storyId', 'storyName', 'coverImgId', 'status'],
           include: [
             {
               model: models.User,

@@ -65,9 +65,6 @@ const handleStoryPurchaseTransaction = async (userId, storyId, transaction) => {
       throw new ApiError('Bạn là tác giả, không cần mua truyện', 400);
     }
 
-    if (!story.price || story.price <= 0) {
-      throw new ApiError('Truyện này không có giá bán', 400);
-    }
 
     const existingPurchase = await models.Purchase.findOne({
       where: { userId, storyId, chapterId: null },
@@ -75,10 +72,6 @@ const handleStoryPurchaseTransaction = async (userId, storyId, transaction) => {
     });
     if (existingPurchase) {
       throw new ApiError('Bạn đã mua truyện này rồi', 400);
-    }
-
-    if (user.wallet < story.price) {
-      throw new ApiError('Số dư không đủ', 400);
     }
 
     await models.Purchase.create(
@@ -96,17 +89,17 @@ const handleStoryPurchaseTransaction = async (userId, storyId, transaction) => {
       { transaction }
     );
 
-    await models.Transaction.create(
-      {
-        userId,
-        money: story.price,
-        type: 'STORY_PURCHASE',
-        time: new Date(),
-        status: 'COMPLETED',
-        finishAt: new Date(),
-      },
-      { transaction }
-    );
+    // await models.Transaction.create(
+    //   {
+    //     userId,
+    //     money: story.price,
+    //     type: 'STORY_PURCHASE',
+    //     time: new Date(),
+    //     status: 'COMPLETED',
+    //     finishAt: new Date(),
+    //   },
+    //   { transaction }
+    // );
 
     const author = await models.User.findByPk(story.userId, { transaction });
     const authorPayment = story.price * 0.8;
@@ -130,9 +123,8 @@ const handleStoryPurchaseTransaction = async (userId, storyId, transaction) => {
 
     await NotificationService.createNotification({
       type: 'SALE',
-      content: `Truyện "${
-        story.storyName
-      }" đã được bán với giá ${authorPayment.toFixed(2)}`,
+      content: `Truyện "${story.storyName
+        }" đã được bán với giá ${authorPayment.toFixed(2)}`,
       refId: story.storyId,
       userId: story.userId,
       transaction,
