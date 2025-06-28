@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.transaction.TransactionAcceptViewModel
+import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
@@ -85,7 +85,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                     Column (
                         verticalArrangement = Arrangement.spacedBy(20.dp),
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(0.9f)
                             .padding(20.dp),
                     ){
                         //transaction info

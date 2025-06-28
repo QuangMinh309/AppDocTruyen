@@ -17,6 +17,8 @@ import androidx.compose.material.icons.filled.Wallet
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,31 +26,28 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.User
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.transaction.WalletDetailViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.NotificationCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import java.math.BigDecimal
-import java.time.LocalDate
+import java.text.DecimalFormat
 
-@Preview
-@Composable
-fun PreViewWalletDetailScreen() {
-    val fakeviewmodel=WalletDetailViewModel(NavigationManager())
-    WalletDetailScreen((fakeviewmodel))
-}
 @Composable
 fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
-    val historyList = listOf("Bạn đã nạp 300.000₫ vào tài .","Bạn đã chi 300.000₫ để mua “Tempting the divine”.")
+   val transactionList by viewModel.transactionList.collectAsState()
+   val user = viewModel.user.collectAsState()
+    fun formatMoney(money: Long): String {
+        val formatter = DecimalFormat("#,###"+"đ")
+        return formatter.format(money)
+    }
     ScreenFrame(
         topBar = {
             TopBar(
@@ -80,7 +79,7 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "${demoUser_wallet.wallet}",
+                    text = "${user.value?.wallet?.toString() ?: "0.00"}đ",
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
@@ -98,7 +97,7 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                     modifier = Modifier
                         .weight(0.4f)
                         .height(35.dp),
-                    onClick = {viewModel.onGoToWithDraw()  }
+                    onClick = {viewModel.onGoToWithDraw() }
 
                 ){
                     Row(horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -170,12 +169,24 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                     modifier = Modifier
                         .padding(vertical = 20.dp)
                 ){
-                    items(historyList.size) { index ->
+                    items(transactionList.size) { index ->
+
                         NotificationCard(
-                            cardType = "transactionNotification",
-                            transactionContent = historyList[index],
-                            transactionType = if(index==0) "Recharge" else "Transfer",
-                            time = "2 day ago"
+                            content = when(transactionList[index].type){
+                                "deposit" -> {
+                                     "You successfully deposited ${formatMoney(transactionList[index].money.toLong())} into your wallet."
+                                }
+                                "withdraw" ->{
+                                     "You successfully withdrawn ${formatMoney(transactionList[index].money.toLong())} from your wallet."
+                                }
+                                "purchase" ->{
+                                    "You successfully purchased a chapter with ${formatMoney(transactionList[index].money.toLong())}. "
+                                }
+                                else -> "Unknown transaction."
+
+                            },
+                            type = transactionList[index].type,
+                            time = transactionList[index].time
                         )
                     }
 

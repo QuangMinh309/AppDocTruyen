@@ -1,6 +1,5 @@
 package com.example.frontend.ui.screen
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +30,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,17 +42,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.SettingViewModel
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
@@ -67,6 +66,8 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
     var showImagePicker by remember { mutableStateOf(false) }
     var isAvatarPicker by remember { mutableStateOf(true) }
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
+    val dialogContent by viewModel.dialogContent.collectAsState()
 
     // Launcher để chọn ảnh từ gallery
     val launcher = rememberLauncherForActivityResult(
@@ -77,6 +78,24 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 else viewModel.setBackgroundUri(uri)
             }
             showImagePicker = false
+        }
+    )
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title=if (viewModel.showDeleteDialog.value) "Confirm Logout" else "Confirm Deletion",
+        text = dialogContent,
+        onConfirm = {
+            if (viewModel.showDeleteDialog.value){
+                viewModel.deleteUser()
+                viewModel.hideDeleteConfirmation()
+            }
+            else { viewModel.onGoToLoginScreen() }
+
+            viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+            if (viewModel.showDeleteDialog.value) viewModel.hideDeleteConfirmation()
         }
     )
 
@@ -128,16 +147,16 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(vertical = 40.dp)
                 .verticalScroll(scrollState)
         ) {
             if (viewModel.user.value == null) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = OrangeRed)
                 }
             } else {
                 Text(
@@ -340,16 +359,12 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 // Wallet (chỉ đọc)
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable { viewModel.onGoToWalletDetailScreen() },
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text("Wallet", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                    Text(
-                        text = "${viewModel.user.value?.wallet?.toString() ?: "0.00"}đ",
-                        color = Color.White,
-                        style = TextStyle(fontSize = 16.sp)
-                    )
                 }
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
@@ -361,15 +376,16 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .clickable { if(viewModel.user.value?.isPremium==false) viewModel.onGoToPremiumScreen()  }
                         .padding(vertical = 10.dp)
                 ) {
                     Text(
-                        text = "Premium",
+                        text = if(viewModel.user.value?.isPremium == true)"Premium" else "Upgrade to Premium",
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp,
                             brush = Brush.linearGradient(
-                                colors = listOf(BurntCoral, OrangeRed),
+                                colors =  if(viewModel.user.value?.isPremium == true) listOf(BurntCoral, OrangeRed) else listOf(Color.White, Color.White),
                                 start = Offset(0f, 0f),
                                 end = Offset.Infinite
                             )
@@ -386,17 +402,23 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                     ) {
                         Text("Registration Date", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
                         Text(
-                            text = viewModel.user.value?.dob ?: "N/A",
+                            text = viewModel.user.value?.dob ?: "No Registration Date.",
                             color = Color.White,
                             style = TextStyle(fontSize = 16.sp)
                         )
                     }
+
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                        thickness = 1.dp,
+                        color = Color(0xff202430)
+                    )
                     // Logout Button
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.onGoToLoginScreen()
+                                viewModel.setShowDialogState(true,"Are you sure to logout?")
                                // viewModel.logout()
                                        },
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -429,6 +451,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                             .fillMaxWidth()
                             .clickable {
                                 viewModel.showDeleteConfirmation()
+                                viewModel.setShowDialogState(true,"Are you sure to delete your account?This action cannot be undone.")
                                        },
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
@@ -451,27 +474,6 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 }
             }
         }
-    }
-    // Dialog xác nhận xóa tài khoản
-    if (viewModel.showDeleteDialog.value) {
-        AlertDialog(
-            onDismissRequest = { viewModel.hideDeleteConfirmation() },
-            title = { Text("Confirm Deletion") },
-            text = { Text("Are you sure you want to delete your account? This action cannot be undone.") },
-            confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteUser()
-                    viewModel.hideDeleteConfirmation()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { viewModel.hideDeleteConfirmation() }) {
-                    Text("No")
-                }
-            }
-        )
     }
 
     // Mở picker khi showImagePicker = true

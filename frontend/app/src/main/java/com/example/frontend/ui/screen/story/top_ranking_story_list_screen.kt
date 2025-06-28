@@ -28,13 +28,6 @@ import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.main_nav.ExampleList
 
 
-//@Composable
-//@Preview
-//fun PreTopRankingStoryListViewStoryList(){
-//    val fakeviewmodel= TopRankingStoryListViewModel(NavigationManager())
-//    TopRankingStoryListScreen(fakeviewmodel)
-//}
-
 @Composable
 fun TopRankingStoryListScreen(viewModel:TopRankingStoryListViewModel= hiltViewModel()) {
     val listName="Top Ranking"

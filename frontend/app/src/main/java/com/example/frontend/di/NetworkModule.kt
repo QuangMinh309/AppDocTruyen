@@ -7,6 +7,7 @@ import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.CommunityApiService
 import com.example.frontend.util.TokenManager
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,11 +88,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient,  @Named("BaseUrl") baseUrl: String): Retrofit {
+    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient, @Named("BaseUrl") baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

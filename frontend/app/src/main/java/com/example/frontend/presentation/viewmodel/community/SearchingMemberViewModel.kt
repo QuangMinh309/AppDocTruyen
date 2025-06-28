@@ -61,37 +61,37 @@ class SearchingMemberViewModel @Inject constructor(
      }
     }
 
-    fun changeFollowState(id:Int){
+    fun  changeFollowState(id:Int){
         viewModelScope.launch {
-          try {
-              if (_memberList.value.any { it.id==id }){
-                  val user = _memberList.value.find { it.id==id }
-                  if(user == null) return@launch
+            try {
+                if (_memberList.value.any { it.id==id }){
+                    val user = _memberList.value.find { it.id==id }
+                    if(user == null) return@launch
 
-                  val result = if (user.isFollowed) {
-                      userRepository.unFollow(user)
-                  } else {
-                      userRepository.follow(user)
-                  }
-                  result.onSuccess {
-                      val updatedList = _memberList.value.map { member ->
-                          if (member.id == user.id) {
-                              member.copy(isFollowed = !user.isFollowed)
-                          } else {
-                              member
-                          }
-                      }
-                      _memberList.value=updatedList
-                  }.onFailure { error ->
-                      Log.e("apiError","Error: ${error.message}")
-                  }
-              }
-              else
+                    val result = if (user.isFollowed) {
+                        userRepository.unFollow(user)
+                    } else {
+                        userRepository.follow(user)
+                    }
+                    result.onSuccess {
+                         val updatedList = _memberList.value.map { member ->
+                             if (member.id == user.id) {
+                                 member.copy(isFollowed = !user.isFollowed)
+                             } else {
+                                member
+                            }
+                        }
+                        _memberList.value=updatedList
+                    }.onFailure { error ->
+                         Log.e("apiError","Error: ${error.message}")
+                    }
+                }
+                else
                   throw Exception("User not found")
-          }catch (err:Exception){
+            }catch (err:Exception){
               _toast.value = "Can not follow/unfollow this user!"
               Log.e("From VM Error","Error: ${err.message}")
-          }
+            }
         }
     }
 }

@@ -21,12 +21,16 @@ export default (sequelize, DataTypes) => {
       },
       userId: DataTypes.INTEGER,
       CreatedAt: DataTypes.DATE,
+      expirateAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+      }
     },
     {
       sequelize,
       modelName: 'Premium',
       tableName: 'premium',
-      timestamps: false,
+      timestamps: true,
     }
   )
 
