@@ -33,7 +33,7 @@ const purchasePremium = async (userId) => {
       wallet: user.wallet - premiumCost,
       isPremium: true,
     });
-    const premium = await Premium.Create({ userId, expirateAt })
+    const premium = await Premium.Create({ userId, expirateAt, createAt: new Date(), })
 
     await TransactionService.createTransaction({
       userId,

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="base_url">https://0c54-14-169-18-157.ngrok-free.app/</string>
-    <string name="ws_base_url">ws://0c54-14-169-18-157.ngrok-free.app/ws</string>
+    <string name="base_url">https://46a5-125-235-239-39.ngrok-free.app/</string>
+    <string name="ws_base_url">ws://46a5-125-235-239-39.ngrok-free.app/ws</string>
 </resources>
