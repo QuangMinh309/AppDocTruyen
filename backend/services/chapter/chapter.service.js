@@ -76,7 +76,10 @@ const ChapterService = {
         chapter
       );
     }
-    return chapter;
+    const chapterResult = chapter.toJSON();
+    chapterResult.updatedAt = formatDate(chapter.updatedAt);
+
+    return chapterResult;
   },
 
   async readChapter(chapterId, userId) {
