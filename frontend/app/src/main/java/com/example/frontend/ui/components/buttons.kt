@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.data.model.Category
@@ -54,7 +55,16 @@ fun LinearButton(modifier: Modifier = Modifier,
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewGerneChipButton() {
+    val fakeGenre = Category(id=2,name = "Action") // Tạo giả lập đối tượng
 
+    GerneChipButton(
+        genre = fakeGenre,
+        onClick = {}
+    )
+}
 @Composable
 fun GerneChipButton (genre:Category,
                      onClick: () -> Unit={}) {
@@ -63,15 +73,15 @@ fun GerneChipButton (genre:Category,
         colors = ButtonDefaults.buttonColors(
             containerColor = OrangeRed
         ),
-        contentPadding = PaddingValues(0.dp),
+        contentPadding = PaddingValues(horizontal = 10.dp),
         modifier = Modifier
-            .height(30.dp)
+            .height(35.dp)
     ) {
         Text(
             text = genre.name?:"",
             color = Color.Black,
             style = TextStyle(
-                fontSize = 12.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier

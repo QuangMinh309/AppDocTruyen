@@ -17,17 +17,18 @@ import com.example.frontend.ui.theme.Green
 @Composable
 fun BuyConfirmationDialog(
     showDialog: Boolean,
-    price: Int,
+    title:String,
+    text: String,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("Buy Story / Chapter", color = Color.White) },
+           title = { Text(title, color = Color.White) },
             text = {
                 Text(
-                    "Are you sure to buy this Story / Chapter with $price$ ?",
+                    text = text,//"Are you sure to buy this Story / Chapter with $price$ ?",
                     color = Color.White
                 )
             },
@@ -38,7 +39,7 @@ fun BuyConfirmationDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = Green),
                         modifier = Modifier.weight(0.5f)
                     ) {
-                        Text("Yes")
+                        Text("Yes",color = Color.Black)
                     }
                     Spacer(modifier = Modifier.width(43.dp))
                     Button(
@@ -46,7 +47,7 @@ fun BuyConfirmationDialog(
                         colors = ButtonDefaults.buttonColors(containerColor = BurntCoral),
                         modifier = Modifier.weight(0.5f)
                     ) {
-                        Text("No")
+                        Text("No",color = Color.Black)
                     }
                 }
             },

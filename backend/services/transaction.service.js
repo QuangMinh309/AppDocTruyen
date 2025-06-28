@@ -8,6 +8,9 @@ const User = sequelize.models.User;
 const TransactionService = {
   async createTransaction(transactionData) {
     try {
+      const user = await User.findByPk(transactionData.userId)
+      if (!user) throw new ApiError("người dùng không tồn tại!", 404)
+
       const transaction = await Transaction.create({
         ...transactionData,
         status: 'pending',
@@ -16,6 +19,7 @@ const TransactionService = {
       });
       return transaction;
     } catch (error) {
+      console.log(error)
       throw error instanceof ApiError
         ? error
         : new ApiError('Lỗi khi tạo giao dịch', 500);
@@ -52,10 +56,10 @@ const TransactionService = {
         userId,
         ...(lastId
           ? {
-              transactionId: {
-                [Op.lt]: lastId,
-              },
-            }
+            transactionId: {
+              [Op.lt]: lastId,
+            },
+          }
           : {}),
       };
 
@@ -77,21 +81,22 @@ const TransactionService = {
             attributes: ['userId', 'userName', 'dUserName'],
           },
         ],
-        time: [['time', ASC]],
+        time: [['time', 'ASC']],
         order: [['transactionId', 'DESC']],
       });
 
       const nextLastId =
         transactions.length > 0
-          ? transactions[transactions.length - 1].transactionId
+          ? transactions[0].transactionId
           : null;
-
       return {
         transactions,
         nextLastId,
         hasMore: transactions.length === parseInt(limit),
       };
+
     } catch (error) {
+
       throw error instanceof ApiError
         ? error
         : new ApiError('Lỗi khi lấy danh sách giao dịch', 500);

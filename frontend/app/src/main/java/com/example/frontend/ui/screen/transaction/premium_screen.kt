@@ -3,16 +3,24 @@ package com.example.frontend.ui.screen.transaction
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -28,23 +36,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.presentation.viewmodel.transaction.PremiumViewModel
+import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.ui.components.BuyConfirmationDialog
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.SalmonRose
 
-@Preview
-@Composable
-fun PreViewPremiumScreen()
-{
-    val fakeviewmodel= PremiumViewModel(NavigationManager())
-    PremiumScreen(fakeviewmodel)
-}
 @Composable
 fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
 {
-//    val imageBitmap = ImageBitmap.imageResource(id = R.drawable.intro_page2_bg)
-//    val ratio = imageBitmap.width.toFloat() / imageBitmap.height
+    val isShowDialog by viewmodel.isShowDialog.collectAsState()
+
+    BuyConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Purchase Premium",
+        text = "Are you sure to join Premium with 50.000 đ?",
+        onConfirm = {
+            viewmodel.joinPremium()
+            viewmodel.setShowDialogState(false)
+                    },
+        onDismiss = {viewmodel.setShowDialogState(false)}
+        )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,6 +72,23 @@ fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
             )
     )
     {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = { viewmodel.onGoBack() },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier
+                    .height(25.dp)
+                    .weight(0.33f)
+                    .wrapContentWidth(Alignment.Start)
+            ) {
+                Text("< Back", color = Color.White, style = TextStyle(fontSize = 16.sp))
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -82,7 +113,7 @@ fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
             Spacer(modifier = Modifier.height(350.dp))
             ElevatedButton(
                 onClick = {
-                    viewmodel.onGoToWalletDetailScreen()
+                    viewmodel.onGoToPremiumScreen()
                 },
                 modifier = Modifier
                     .height(50.dp)

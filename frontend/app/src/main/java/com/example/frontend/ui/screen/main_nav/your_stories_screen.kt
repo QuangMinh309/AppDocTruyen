@@ -38,14 +38,6 @@ import com.example.frontend.ui.components.StoryCard4
 import com.example.frontend.ui.components.TopBar
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewScreenContent4() {
-//    val fakeViewModel =YourStoryViewModel(NavigationManager())
-//    YourStoryScreen(viewModel = fakeViewModel)
-//}
-
-
 @Composable
 fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
     val stories by viewModel.stories.collectAsState()

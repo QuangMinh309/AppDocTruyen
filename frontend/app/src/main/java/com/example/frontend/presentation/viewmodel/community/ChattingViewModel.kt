@@ -23,6 +23,8 @@ class ChattingViewModel @Inject constructor(
     navigationManager: NavigationManager,
     private val chatRepository: ChatRepository
 ) : BaseViewModel(navigationManager) {
+    //val communityName = savedStateHandle.getStateFlow("name", "")
+
     private val _id = savedStateHandle.getStateFlow("communityId", "")
     val id: StateFlow<String> = _id
 

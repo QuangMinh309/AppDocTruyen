@@ -33,6 +33,7 @@ import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
+import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.Lock
@@ -83,7 +84,10 @@ import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 //region community Card
 @Composable
@@ -197,7 +201,7 @@ fun MemberCard(model : User, onClick: () -> Unit = {}){
                     .fillMaxHeight()
                     .width(100.dp)
                     .background(
-                        color = if (model.isFollowed) OrangeRed else Color.LightGray,
+                        color = if (model.isFollowed)  Color.LightGray else OrangeRed,
                         shape = RoundedCornerShape(30.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -216,28 +220,29 @@ fun MemberCard(model : User, onClick: () -> Unit = {}){
 }
 
 @Composable
-fun NotificationCard(cardType :String ,
-                     transactionContent:String = "",
-                     transactionType: String = "",
-                     time: String = ""
+fun
+        NotificationCard(content:String = "",
+                     type: String = "notification",
+                     time: LocalDateTime
 ){
+    val typeList = listOf("purchase","withdraw","deposit")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 15.dp)
     ){
-        if(cardType == "transactionNotification")
+        if(type in typeList)
             Icon(
-                imageVector = when (transactionType) {
-                    "Withdraw" -> Icons.Filled.LocalAtm
-                    "Recharge" -> Icons.Filled.AccountBalance
-                    "Transfer" -> Icons.Filled.Payments
+                imageVector = when (type) {
+                    "withdraw" -> Icons.Filled.LocalAtm
+                    "deposit"-> Icons.Filled.AccountBalance
+                    "purchase" -> Icons.Filled.Payments
                     else -> Icons.Filled.QuestionMark
                 },
                 contentDescription = "transaction icon" ,
                 tint = Color.White,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(50.dp)
                     .padding(horizontal = 5.dp)
             )
         else{
@@ -245,7 +250,7 @@ fun NotificationCard(cardType :String ,
                 painter = painterResource(id = R.drawable.intro_page1_bg),
                 contentDescription =null,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(50.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop // fill mode
             )
@@ -258,17 +263,25 @@ fun NotificationCard(cardType :String ,
         ){
 
             Text(
-                text = transactionContent,
+                text = content,
                 color = Color.White,
                 style = TextStyle(
-                    fontSize = 14.sp
+                    fontSize = 16.sp
                 )
             )
+            //Time
+            val formatter = DateTimeFormatter.ofPattern("E", Locale.ENGLISH)
+            val daysDifference = ChronoUnit.DAYS.between(time, LocalDateTime.now())
+            val dayOfWeek = time.format(formatter)
             Text(
-                text = time,
+                text =  if (daysDifference>7)
+                            "$dayOfWeek ${time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}"
+                        else if(daysDifference>1)
+                            "$daysDifference ago."
+                        else time.format(DateTimeFormatter.ofPattern("hh:MM a")),
                 color = Color.LightGray,
                 style = TextStyle(
-                    fontSize = 12.sp
+                    fontSize = 14.sp
                 )
             )
         }
@@ -1030,7 +1043,7 @@ fun TransactionCard(
                 Column()
                 {
                     Text(
-                        text = "User ID: " + item.userId.toString(),
+                        text = "User ID: " + item.user?.id.toString(),
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.poppins_bold))
                     )

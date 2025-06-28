@@ -82,7 +82,7 @@ class SettingViewModel @Inject constructor(
         showDatePicker.value = false
     }
 
-    fun saveChanges() {
+    private fun saveChanges() {
         viewModelScope.launch {
             val updateRequest = ApiService.UpdateUserRequest(
                 dUserName = displayName.value.takeIf { it.isNotEmpty() },
