@@ -124,7 +124,7 @@ interface ApiService {
         @SerializedName("nameList") val name: String,
         @SerializedName("userId") val userId: Int,
         @SerializedName("description") val description: String
-    )
+    )   
 
     @Multipart
     @PUT("api/users/{userId}")
@@ -163,6 +163,23 @@ interface ApiService {
         val data: User
     )
 
+    // Thêm data class trong ApiService.kt
+    data class ChangePasswordRequest(
+        val currentPassword: String,
+        val newPassword: String,
+        val confirmPassword: String
+    )
+
+    // Thêm endpoint trong ApiService.kt
+    @POST("api/users/change-password/{userId}")
+    suspend fun changePassword(
+        @Path("userId") userId: Int,
+        @Body request: ChangePasswordRequest
+    ): Response<NoDataResponse>
+
+    @DELETE("api/users/{userId}")
+    suspend fun deleteUser(@Path("userId") userId: Int): Response<NoDataResponse>
+
 
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>
@@ -197,6 +214,19 @@ interface ApiService {
     @POST("api/users/unfollow")
     suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
 
+    @POST("api/users/purchase-premium")
+    suspend fun purchasePremium(): Response<NoDataResponse>
+
+
+    @POST("/api/transactions")
+    suspend fun createTransaction(@Body transactionRequest: TransactionRequest): Response<Transaction>
+
+    @GET("/api/transactions/user/{userId}")
+    suspend fun getAllUserTransaction(
+        @Path("userId") userId: Int,
+        @Query("lastId") lastId: Int,
+    ): Response<ListTransactionResponse>
+
 
 
     @POST("api/users/login")
@@ -214,6 +244,17 @@ interface ApiService {
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
 }
+
+class TransactionRequest (
+    val userId: Int,
+    val money: Int,
+    val type: String
+)
+class ListTransactionResponse(
+    val transactions: List<Transaction>,
+    val hasMore: Boolean,
+    val nextLastId: Int?=-1
+)
 
 data class UserFollowRequest (
     val followedId: Int
@@ -329,10 +370,6 @@ data class User(
     val DOB: String
 )
 
-data class Role(
-    val roleId: Int,
-    val roleName: String
-)
 
 data class UploadResponse(
     val url: String,

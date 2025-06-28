@@ -29,6 +29,7 @@ export default {
         limit,
         lastId,
       });
+      console.log(result)
       res.status(200).json(result);
     } catch (error) {
       next(error);

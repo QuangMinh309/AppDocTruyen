@@ -36,13 +36,11 @@ import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewMod
 import com.example.frontend.services.navigation.NavigationCommand
 import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.components.BottomNavigationBar
-import com.example.frontend.ui.screen.DiscoverDetailScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
 import com.example.frontend.ui.screen.admin.StoryManagementScreen
-import com.example.frontend.ui.screen.admin.TransactionManagementScreen
 import com.example.frontend.ui.screen.admin.UserManagementScreen
 import com.example.frontend.ui.screen.community.ChattingScreen
 import com.example.frontend.ui.screen.community.CommunityDetailScreen
@@ -51,6 +49,7 @@ import com.example.frontend.ui.screen.intro_authentication.IntroScreen
 import com.example.frontend.ui.screen.intro_authentication.LoginScreen
 import com.example.frontend.ui.screen.intro_authentication.RegisterScreen
 import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
+import com.example.frontend.ui.screen.intro_authentification.ChangePasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
@@ -181,8 +180,9 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             ) { backStackEntry ->
                 val otp = backStackEntry.arguments?.getString("otp") ?: ""
                 val userId = backStackEntry.arguments?.getString("userId") ?: "0"
-                SetUpPasswordScreen(navController = navController, otp = otp, userId = userId)
+                SetUpPasswordScreen(otp = otp, userId = userId)
             }
+            composable(Screen.Authentication.ChangePassword.route) { ChangePasswordScreen()  }
 
             composable(
                 route = Screen.Story.Detail.route,
@@ -236,7 +236,8 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(
                 route = Screen.Community.Detail.route,
                 arguments = listOf(
-                    navArgument("communityId") { type = NavType.StringType },
+                    navArgument("communityId") { type = NavType.StringType }
+                   // navArgument("name") { type = NavType.StringType },
                 )
             ) { CommunityDetailScreen() }
 
@@ -265,7 +266,6 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 )
             ) { YourStoryDetailScreen() }
 
-            composable(Screen.Discover.route) { DiscoverDetailScreen() }
             composable(Screen.Notification.route) { NotificationScreen() }
             composable(Screen.Setting.route) { SettingScreen() }
 
@@ -279,7 +279,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.AdminScreen.route) { AdminScreen() }
             composable(Screen.Admin.Category.route) { CategoryManagementScreen() }
-            composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
+           // composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
             composable(Screen.Admin.User.route) { UserManagementScreen() }
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
             composable(

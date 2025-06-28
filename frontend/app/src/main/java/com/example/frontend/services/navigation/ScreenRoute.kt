@@ -21,11 +21,15 @@ sealed class Screen(var route: String) {
         data object NewPassword : Authentication("Authentication/NewPassword/{otp}/{userId}") {
             fun createRoute(otp: String, userId: String) = "Authentication/NewPassword/$otp/$userId"
         }
+        data object ChangePassword : Authentication("Authentication/ChangePassword")
     }
 
     sealed class Community(route: String) : Screen(route) {
         fun createRoute(communityId: String) = route.replace("{communityId}", communityId)
         data object Chat : Community("Community/Chat/{communityId}")
+//        {
+//            fun createRoute(communityId: String, name: String) = "Community/Chat/$communityId/$name"
+//        }
         data object Detail : Community("Community/CommunityDetail/{communityId}")
         data object SearchingMember : Community("Community/SearchingMember/{communityId}")
     }
@@ -61,17 +65,13 @@ sealed class Screen(var route: String) {
         data object Premium : Transaction("Transaction/Premium")
         data object Wallet : Transaction("Transaction/Wallet")
         data object WithDraw : Transaction("Transaction/WithDraw")
-        data object Accept : Transaction("Accept/{depositMoney}") {
-            fun createRoute(depositMoney: Long) = "Accept/$depositMoney"
+        data object Accept : Transaction("Accept/{type-of-transaction}/{depositMoney}") {
+            fun createRoute(depositMoney: Long=0) = "Accept/${this.route.split("/")[2]}/$depositMoney"
         }
     }
 
-    data object Discover : Screen("Discover")
     data object Notification : Screen("Notification")
     data object Setting : Screen("Setting")
-    data object StoryList : Screen("List/{id}") {
-        fun createRoute(id: String) = "List/$id"
-    }
 
     data object AdminScreen : Screen("Admin")
     sealed class Admin(route: String) : Screen(route) {

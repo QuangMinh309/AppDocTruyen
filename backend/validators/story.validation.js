@@ -38,10 +38,6 @@ export const validateCreateStory = Joi.object({
     )
     .allow(null)
     .optional(),
-  price: Joi.number()
-    .min(0)
-    .optional()
-    .messages({ 'number.min': 'Giá truyện phải là số không âm' }),
   pricePerChapter: Joi.number()
     .min(0)
     .optional()

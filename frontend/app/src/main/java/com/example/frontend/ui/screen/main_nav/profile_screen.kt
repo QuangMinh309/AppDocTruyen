@@ -22,9 +22,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +36,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -70,11 +77,24 @@ import com.example.frontend.ui.theme.SteelBlue
 //    ProfileScreen(viewModel = fakeViewModel)
 //}
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
     val readLists by viewModel.readLists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            viewModel.loadUserData()
+            viewModel.loadReadLists()
+            isRefreshing = false
+        }
+    )
+
 
     ScreenFrame(
         topBar = {
@@ -86,66 +106,55 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(top = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            if (isLoading || user == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                user?.let { currentUser ->
+        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+            // Nội dung hiện tại của màn hình
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (isLoading || user == null) {
                     Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        // Background Image
-                        AsyncImage(
-                            model = currentUser.backgroundUrl,
-                            contentDescription = "Profile background",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(180.dp)
-                                .clip(RoundedCornerShape(20.dp)),
-                            placeholder = painterResource(id = R.drawable.broken_image),
-                            error = ColorPainter(Color(0xFFBDBDBD))
-                        )
-
-                        // Profile content
-                        Row(
-                            modifier = Modifier
-                                .height(240.dp)
-                                .fillMaxWidth()
-                                .padding(top = 110.dp, start = 30.dp),
-                            verticalAlignment = Alignment.Bottom
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    user?.let { currentUser ->
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            // Avatar with offset and transparent border
-                            Box(
+                            // Background Image
+                            AsyncImage(
+                                model = currentUser.backgroundUrl,
+                                contentDescription = "Profile background",
+                                contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .size(100.dp)
-                                    .border(
-                                        width = 6.dp,
-                                        color = DeepSpace,
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(180.dp)
+                                    .clip(RoundedCornerShape(20.dp)),
+                                placeholder = painterResource(id = R.drawable.broken_image),
+                                error = ColorPainter(Color(0xFFBDBDBD))
+                            )
+
+                            // Profile content
+                            Row(
+                                modifier = Modifier
+                                    .height(240.dp)
+                                    .fillMaxWidth()
+                                    .padding(top = 110.dp, start = 30.dp),
+                                verticalAlignment = Alignment.Bottom
                             ) {
+                                // Avatar with offset and transparent border
                                 Box(
                                     modifier = Modifier
-                                        .clip(CircleShape)
-                                        .size(90.dp)
+                                        .size(100.dp)
                                         .border(
                                             width = 6.dp,
-                                            brush = Brush.linearGradient(
-                                                colors = listOf(OrangeRed, BurntCoral)
-                                            ),
+                                            color = DeepSpace,
                                             shape = CircleShape
                                         ),
                                     contentAlignment = Alignment.Center
@@ -153,127 +162,141 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                     Box(
                                         modifier = Modifier
                                             .clip(CircleShape)
-                                            .size(80.dp)
+                                            .size(90.dp)
                                             .border(
-                                                width = 5.dp,
-                                                color = DeepSpace,
+                                                width = 6.dp,
+                                                brush = Brush.linearGradient(
+                                                    colors = listOf(OrangeRed, BurntCoral)
+                                                ),
                                                 shape = CircleShape
-                                            )
+                                            ),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        AsyncImage(
-                                            model = currentUser.avatarUrl,
-                                            contentDescription = "Profile avatar",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Crop,
-                                            placeholder = painterResource(id = R.drawable.avt_img),
-                                            error = ColorPainter(Color(0xFFE0E0E0))
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(CircleShape)
+                                                .size(80.dp)
+                                                .border(
+                                                    width = 5.dp,
+                                                    color = DeepSpace,
+                                                    shape = CircleShape
+                                                )
+                                        ) {
+                                            AsyncImage(
+                                                model = currentUser.avatarUrl,
+                                                contentDescription = "Profile avatar",
+                                                modifier = Modifier.fillMaxSize(),
+                                                contentScale = ContentScale.Crop,
+                                                placeholder = painterResource(id = R.drawable.avt_img),
+                                                error = ColorPainter(Color(0xFFE0E0E0))
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // Name and nickName
+                                Box(
+                                    modifier = Modifier
+                                        .padding(start = 16.dp, top = 50.dp)
+                                        .border(
+                                            2.dp,
+                                            Brush.linearGradient(
+                                                colors = listOf(BrightAquamarine, SteelBlue)
+                                            ),
+                                            RoundedCornerShape(50)
+                                        )
+                                        .background(color = DeepSpace)
+                                        .padding(5.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .background(
+                                                brush = Brush.horizontalGradient(
+                                                    colors = listOf(OrangeRed, BurntCoral)
+                                                ),
+                                                shape = RoundedCornerShape(30.dp)
+                                            )
+                                            .padding(horizontal = 20.dp, vertical = 4.dp),
+                                        verticalArrangement = Arrangement.spacedBy(0.dp)
+                                    ) {
+                                        Text(
+                                            text = currentUser.name,
+                                            style = TextStyle(
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Black,
+                                                fontSize = 14.sp
+                                            )
+                                        )
+                                        Text(
+                                            text = "@${currentUser.dName}",
+                                            style = TextStyle(
+                                                color = Color.White.copy(alpha = 0.8f),
+                                                fontSize = 10.sp
+                                            )
                                         )
                                     }
                                 }
                             }
-
-                            // Name and nickName
-                            Box(
-                                modifier = Modifier
-                                    .padding(start = 16.dp, top = 50.dp)
-                                    .border(
-                                        2.dp,
-                                        Brush.linearGradient(
-                                            colors = listOf(BrightAquamarine, SteelBlue)
-                                        ),
-                                        RoundedCornerShape(50)
-                                    )
-                                    .background(color = DeepSpace)
-                                    .padding(5.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .background(
-                                            brush = Brush.horizontalGradient(
-                                                colors = listOf(OrangeRed, BurntCoral)
-                                            ),
-                                            shape = RoundedCornerShape(30.dp)
-                                        )
-                                        .padding(horizontal = 20.dp, vertical = 4.dp),
-                                    verticalArrangement = Arrangement.spacedBy(0.dp)
-                                ) {
-                                    Text(
-                                        text = currentUser.name,
-                                        style = TextStyle(
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color.Black,
-                                            fontSize = 14.sp
-                                        )
-                                    )
-                                    Text(
-                                        text = "@${currentUser.dName}",
-                                        style = TextStyle(
-                                            color = Color.White.copy(alpha = 0.8f),
-                                            fontSize = 10.sp
-                                        )
-                                    )
-                                }
-                            }
                         }
-                    }
 
-                    // Thông tin số lượng
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        StatItem(value = currentUser.followerNum ?: 0, label = "Followers")
-                        StatItem(value = currentUser.novelsNum ?: 0, label = "Novels")
-                        StatItem(value = currentUser.readListNum ?: 0, label = "ReadList")
-                    }
+                        // Thông tin số lượng
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            StatItem(value = currentUser.followerNum ?: 0, label = "Followers")
+                            StatItem(value = currentUser.novelsNum ?: 0, label = "Novels")
+                            StatItem(value = currentUser.readListNum ?: 0, label = "ReadList")
+                        }
 
-                    // Email and dob
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color(0xFF0A2646),
-                                        Color(0xFF14488E)
-                                    )
-                                ),
-                                shape = RoundedCornerShape(15.dp)
-                            )
-                            .padding(15.dp)
-                    ) {
-                        InforItem(Icons.Outlined.Mail, currentUser.mail ?: "")
-                        Spacer(modifier = Modifier.height(8.dp))
-                        InforItem(Icons.Outlined.Cake, currentUser.dob ?: "")
-                    }
+                        // Email and dob
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(
+                                            Color(0xFF0A2646),
+                                            Color(0xFF14488E)
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(15.dp)
+                                )
+                                .padding(15.dp)
+                        ) {
+                            InforItem(Icons.Outlined.Mail, currentUser.mail ?: "")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            InforItem(Icons.Outlined.Cake, currentUser.dob ?: "")
+                        }
 
-                    AboutSection(content = currentUser.about)
+                        AboutSection(content = currentUser.about)
 
-                    // Danh sách truyện (Read Lists)
-                    if (readLists.isNotEmpty() || isLoading) {
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            SectionTitle(title = "StoryList")
-                            GradientDivider()
-                            if (isLoading) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(50.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            } else {
-                                LazyColumn(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(max = 200.dp),
-                                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    items(readLists) { list ->
-                                        ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
+                        // Danh sách truyện (Read Lists)
+                        if (readLists.isNotEmpty() || isLoading) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                SectionTitle(title = "StoryList")
+                                GradientDivider()
+                                if (isLoading) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(50.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                } else {
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .heightIn(max = 200.dp),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        items(readLists) { list ->
+                                            ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
+                                        }
                                     }
                                 }
                             }
@@ -281,7 +304,13 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                     }
                 }
             }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
+
     }
 }
 

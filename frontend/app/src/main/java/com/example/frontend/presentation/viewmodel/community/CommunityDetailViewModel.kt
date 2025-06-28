@@ -22,6 +22,7 @@ class CommunityDetailViewModel @Inject constructor(
 ) : BaseViewModel(navigationManager) {
     private val _id = savedStateHandle.getStateFlow("communityId", "")
 
+
     private val _isLoading = MutableStateFlow(false) // Thêm trạng thái loading
     val isLoading: StateFlow<Boolean> = _isLoading
 

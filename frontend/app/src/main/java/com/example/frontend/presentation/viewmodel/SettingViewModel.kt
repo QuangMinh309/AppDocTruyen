@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-//    savedStateHandle: SavedStateHandle,
     private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
@@ -36,6 +35,14 @@ class SettingViewModel @Inject constructor(
     val mail = mutableStateOf<String?>(null)
     val password = mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
+    val showDeleteDialog = mutableStateOf(false)
+
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
+    private val _dialogContent = MutableStateFlow("")
+    val dialogContent = _dialogContent
+
 
     init {
         loadUserData() // Tải dữ liệu người dùng từ API khi khởi tạo
@@ -88,7 +95,7 @@ class SettingViewModel @Inject constructor(
         showDatePicker.value = false
     }
 
-    fun saveChanges() {
+    private fun saveChanges() {
         viewModelScope.launch {
             val updateRequest = ApiService.UpdateUserRequest(
                 dUserName = displayName.value.takeIf { it.isNotEmpty() },
@@ -124,5 +131,34 @@ class SettingViewModel @Inject constructor(
 
     fun setBackgroundUri(uri: Uri?) {
         selectedBackgroundUri.value = uri
+    }
+
+    fun hideDeleteConfirmation() {
+        showDeleteDialog.value = false
+    }
+    fun showDeleteConfirmation() {
+        showDeleteDialog.value = true
+    }
+    fun deleteUser() {
+        viewModelScope.launch {
+            val userId = authRepository.getCurrentUser()?.id ?: return@launch
+            val result = authRepository.deleteUser()
+            when (result) {
+                is Result.Success -> {
+                    authRepository.clearToken()
+                    onGoToLoginScreen()
+                //    navigateTo("login") // Chuyển về LoginScreen sau khi xóa thành công
+                }
+                is Result.Failure -> {
+                    _toast.value = "Xóa người dùng thất bại: ${result.exception.message}"
+                }
+            }
+        }
+    }
+
+    fun setShowDialogState(isShow: Boolean,content:String="") {
+        _dialogContent.value = content
+        _isShowDialog.value = isShow
+
     }
 }

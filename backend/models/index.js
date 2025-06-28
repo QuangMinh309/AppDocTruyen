@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename)
 const basename = path.basename(__filename)
 
 const env = process.env.NODE_ENV || 'development'
-const currconfig = configFile[env]
+const currconfig = configFile[env] || configFile['development']
 
 const db = {}
 

@@ -8,6 +8,12 @@ const registerUser = async (data) => {
   try {
     const { password, userName, dUserName, ...userData } = data
 
+    userData.mail = userData.mail.toLowerCase()
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userData.mail)) {
+      throw new ApiError('Email không hợp lệ', 400)
+    }
+
     // Check if email already exists
     const existingUser = await User.findOne({
       where: { mail: userData.mail },

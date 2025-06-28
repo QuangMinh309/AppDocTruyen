@@ -5,6 +5,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from '../../utils/user.util.js'
+import userPremiumService from './user_premium_update.service.js'
 
 const User = sequelize.models.User
 const Role = sequelize.models.Role
@@ -13,8 +14,10 @@ const NameList = sequelize.models.NameList
 
 const loginUser = async (email, password) => {
   try {
+    const normalizedEmail = email.toLowerCase()
+
     const user = await User.findOne({
-      where: { mail: email },
+      where: { mail: normalizedEmail },
       include: [
         { model: Role, as: 'role', attributes: ['roleId', 'roleName'] },
       ],
@@ -32,6 +35,11 @@ const loginUser = async (email, password) => {
     if (!isPasswordValid) {
       throw new ApiError('Email hoặc mật khẩu không chính xác', 401)
     }
+
+    if (user.isPremium) {
+      await userPremiumService.UpdateUserPremiumInfo(user.userId)
+    }
+
 
     const storyCount = await Story.count({ where: { userId: user.userId } })
     const nameListCount = await NameList.count({ where: { userId: user.userId } })

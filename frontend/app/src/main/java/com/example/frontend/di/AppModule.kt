@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import dagger.Module
 import dagger.Provides
@@ -67,10 +68,21 @@ object AppModule {
 }
 class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
     override fun write(out: JsonWriter, value: LocalDateTime?) {
-        out.value(value?.toString()) // hoặc định dạng tùy chỉnh
+        if (value == null) {
+            out.nullValue()
+        } else {
+            out.value(value.toString()) // hoặc format nếu bạn muốn
+        }
     }
 
+
     override fun read(reader: JsonReader): LocalDateTime? {
+        if (reader.peek() == JsonToken.NULL) {
+            reader.nextNull()
+            return null
+        }
+
+
         val string = reader.nextString()
         return try {
             OffsetDateTime.parse(string).toLocalDateTime()
@@ -79,3 +91,4 @@ class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
         }
     }
 }
+

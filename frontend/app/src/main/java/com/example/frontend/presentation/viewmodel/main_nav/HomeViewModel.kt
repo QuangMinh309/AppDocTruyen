@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(
         loadReadLists()
     }
 
-    private fun loadUser() {
+    fun loadUser() {
         viewModelScope.launch {
             _isUserLoading.value = true
             try {
@@ -94,7 +94,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadStories() {
+    fun loadStories() {
         viewModelScope.launch {
             _isSuggestedLoading.value = true
             _isNewStoriesLoading.value = true
@@ -157,7 +157,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadCategories() {
+    fun loadCategories() {
         viewModelScope.launch {
             _isCategoriesLoading.value = true
             try {
@@ -181,7 +181,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadReadLists() {
+    fun loadReadLists() {
         viewModelScope.launch {
             _isReadListsLoading.value = true
             try {

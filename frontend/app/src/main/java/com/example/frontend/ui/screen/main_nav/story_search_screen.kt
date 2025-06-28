@@ -116,7 +116,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                 if (searchQuery.isEmpty()) {
                     StoryChips(
                         texts = categories,
-                        viewModel = viewModel
+                        onClick = { id, name -> viewModel.onGoToCategoryStoryList(id, name) }
                     )
                 } else {
                     LazyColumn(

@@ -35,10 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
 import com.example.frontend.data.model.Category
-import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.theme.OrangeRed
 
-@Composable
+ @Composable
 fun Chip(
     text: String,
     onClick: () -> Unit = {}
@@ -53,7 +52,7 @@ fun Chip(
                     onClick()
                 }
             )
-            .padding(2.dp)
+            .padding(horizontal = 10.dp)
             .border(
                 width = 2.dp,
                 brush = Brush.linearGradient(
@@ -69,14 +68,14 @@ fun Chip(
         Text(
             text = text,
             color = Color.White,
-            fontSize = 10.sp,
+            fontSize = 14.sp,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
         )
     }
 }
 
 @Composable
-fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:BaseViewModel) {
+fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, onClick: (id:Int,name:String) -> Unit) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -113,7 +112,7 @@ fun StoryChips(modifier: Modifier = Modifier,texts: List<Category>, viewModel:Ba
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             texts.forEach { genre ->
-                Chip(text = genre.name?:"", onClick = {viewModel.onGoToCategoryStoryList(genre.id,genre.name.toString())})
+                Chip(text = genre.name?:"", onClick = {onClick(genre.id,genre.name.toString())})
             }
         }
     }
