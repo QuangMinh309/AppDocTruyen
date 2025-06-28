@@ -66,69 +66,6 @@ export const canUserAccessChapter = async (userId, chapter) => {
   )
 }
 
-export const getChaptersByStory = async ({
-  storyId,
-  userId = null,
-  limit = 20,
-  lastId = null,
-  orderBy = 'ordinalNumber',
-  sort = 'ASC',
-}) => {
-  try {
-    const validOrderFields = ['ordinalNumber', 'createdAt', 'updatedAt']
-    const { orderBy: finalOrderBy, sort: finalSort } = validateSortParams(
-      orderBy,
-      sort,
-      validOrderFields
-    )
-
-    const where = lastId
-      ? {
-          storyId,
-          chapterId: {
-            [finalSort === 'DESC'
-              ? models.Sequelize.Op.lt
-              : models.Sequelize.Op.gt]: lastId,
-          },
-        }
-      : { storyId }
-
-    const chapters = await models.Chapter.findAll({
-      where,
-      limit: parseInt(limit),
-      order: [[finalOrderBy, finalSort]],
-      include: [
-        {
-          model: models.Story,
-          as: 'story',
-          attributes: ['storyId', 'storyName', 'userId'],
-        },
-      ],
-    })
-
-    if (userId) {
-      for (const chapter of chapters) {
-        chapter.dataValues.canAccess = await canUserAccessChapter(
-          userId,
-          chapter
-        )
-      }
-    }
-
-    const nextLastId =
-      chapters.length > 0 ? chapters[chapters.length - 1].chapterId : null
-    return {
-      chapters,
-      nextLastId,
-      hasMore: chapters.length === parseInt(limit),
-    }
-  } catch (error) {
-    throw error instanceof ApiError
-      ? error
-      : new ApiError('Lỗi khi lấy danh sách chương', 500)
-  }
-}
-
 export const handlePurchaseTransaction = async (
   userId,
   chapter,

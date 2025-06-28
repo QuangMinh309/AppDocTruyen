@@ -60,20 +60,6 @@ export const canAccessChapter = async (req, res, next) => {
 
     const now = new Date();
 
-    // Kiểm tra nếu người dùng đã mua toàn bộ truyện
-    const storyPurchase = await models.Purchase.findOne({
-      where: { userId, storyId: chapter.storyId, chapterId: null },
-    });
-    if (storyPurchase) {
-      const purchaseDate = new Date(storyPurchase.createdAt);
-      const expiryDate = new Date(
-        purchaseDate.getTime() +
-          parameters.Story_Access_Duration * 24 * 60 * 60 * 1000
-      );
-      if (now <= expiryDate) return next();
-      return next(new ApiError('Thời hạn truy cập truyện đã hết', 403));
-    }
-
     // Kiểm tra nếu người dùng đã mua chương này
     const chapterPurchase = await models.Purchase.findOne({
       where: { userId, chapterId },
