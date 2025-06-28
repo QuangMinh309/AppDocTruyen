@@ -27,6 +27,9 @@ const NotificationService = {
     try {
       const notification = await Notification.findByPk(notificationId);
       if (!notification) throw new ApiError('Thông báo không tồn tại', 404);
+
+      await this.markAsRead(notificationId);
+
       return notification.toJSON();
     } catch (err) {
       throw new ApiError('Lỗi khi lấy thông báo', 500);
