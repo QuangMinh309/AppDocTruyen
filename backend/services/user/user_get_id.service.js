@@ -26,7 +26,7 @@ const getUserById = async (userId) => {
         {
           model: Story,
           as: 'stories',
-          attributes: ['storyId', 'storyName', 'price', 'voteNum'],
+          attributes: ['storyId', 'storyName', 'voteNum'],
           include: [
             {
               model: User,
