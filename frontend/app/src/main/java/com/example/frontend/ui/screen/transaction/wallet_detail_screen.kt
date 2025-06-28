@@ -174,13 +174,13 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                         NotificationCard(
                             content = when(transactionList[index].type){
                                 "deposit" -> {
-                                     "You successfully deposited ${formatMoney(transactionList[index].money.toLong())}đ into your wallet"
+                                     "You successfully deposited ${formatMoney(transactionList[index].money.toLong())} into your wallet."
                                 }
                                 "withdraw" ->{
-                                     "You successfully withdrawn ${formatMoney(transactionList[index].money.toLong())}đ from your wallet"
+                                     "You successfully withdrawn ${formatMoney(transactionList[index].money.toLong())} from your wallet."
                                 }
                                 "purchase" ->{
-                                    "You successfully purchased a chapter with ${formatMoney(transactionList[index].money.toLong())}đ "
+                                    "You successfully purchased a chapter with ${formatMoney(transactionList[index].money.toLong())}. "
                                 }
                                 else -> "Unknown transaction."
 

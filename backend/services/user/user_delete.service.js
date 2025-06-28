@@ -48,6 +48,7 @@ const deleteUser = async (userId) => {
 
     return { message: 'Xóa người dùng thành công' }
   } catch (err) {
+    console.log(err)
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi xóa người dùng', 500)
   }

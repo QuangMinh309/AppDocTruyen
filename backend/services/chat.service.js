@@ -2,6 +2,7 @@ import { sequelize } from '../models/index.js';
 import ApiError from '../utils/api_error.util.js';
 import { getImageUrlFromCloudinary, uploadBase64ToCloudinary, deleteImageOnCloudinary } from './cloudinary.service.js';
 import moment from 'moment-timezone'; // Use moment-timezone for timezone support
+import CommunityService from './community.service.js';
 
 const getChatImageData = async (chatJson) => {
     try {
@@ -48,6 +49,8 @@ const ChatService = {
 
     async getAllChatsOfCommunity(id, userId) {
         try {
+            const joinChat = CommunityService.addMember(id, userId)
+            if (!joinChat) throw new ApiError(`Bạn chưa thể tham gia cộng đồng này!`, 500);
             const chats = await sequelize.models.Chat.findAll({
                 where: { communityId: id },
                 include: [

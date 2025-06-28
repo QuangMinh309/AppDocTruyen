@@ -10,6 +10,7 @@ import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -33,6 +34,13 @@ class SettingViewModel @Inject constructor(
     val password = mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
     val showDeleteDialog = mutableStateOf(false)
+
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
+    private val _dialogContent = MutableStateFlow("")
+    val dialogContent = _dialogContent
+
 
     init {
         loadUserData() // Tải dữ liệu người dùng từ API khi khởi tạo
@@ -142,5 +150,11 @@ class SettingViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun setShowDialogState(isShow: Boolean,content:String="") {
+        _dialogContent.value = content
+        _isShowDialog.value = isShow
+
     }
 }

@@ -31,9 +31,9 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
-import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.Lock
@@ -225,7 +225,7 @@ fun
                      type: String = "notification",
                      time: LocalDateTime
 ){
-    val typeList = listOf("purchase","withdraw","deposit")
+    val typeList = listOf("purchase","withdraw","deposit","premium")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,6 +237,7 @@ fun
                     "withdraw" -> Icons.Filled.LocalAtm
                     "deposit"-> Icons.Filled.AccountBalance
                     "purchase" -> Icons.Filled.Payments
+                    "premium" -> Icons.Filled.Diamond
                     else -> Icons.Filled.QuestionMark
                 },
                 contentDescription = "transaction icon" ,

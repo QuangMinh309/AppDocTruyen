@@ -11,6 +11,7 @@ const Category = sequelize.models.Category
 const History = sequelize.models.History
 const User = sequelize.models.User
 const Follow = sequelize.models.Follow
+const JoinCommunity = sequelize.model.JoinCommunity
 
 
 export function normalizeString(str) {
@@ -51,6 +52,8 @@ const CommunityService = {
             throw new ApiError('Lỗi khi lấy danh sách cộng đồng', 500)
         }
     },
+
+
     filterCommunities: async (limit, filter = {}) => {
         try {
             const whereClause = {};
@@ -93,6 +96,26 @@ const CommunityService = {
         } catch (err) {
             console.error('Lỗi khi lọc cộng đồng:', err);
             throw new ApiError('Lỗi khi lọc cộng đồng', 500);
+        }
+    },
+    addMember: async (communityId, userId) => {
+        try {
+            const community = await Community.findByPk(communityId)
+            const user = await User.findByPk(userId)
+            const hasJoin = await JoinCommunity.findOne({
+                where: {
+                    userId,
+                    communityId
+                }
+            });
+            if (!community || !user) throw new ApiError('community hoặc user khoogn tồn tại', 404)
+            if (hasJoin) return true
+
+            const join = await JoinCommunity.create({ userId, communityId });
+            return true
+        } catch (err) {
+            console.error('Lỗi khi lấy danh sách cộng đồng:', err)
+            throw new ApiError('Lỗi khi lấy danh sách cộng đồng', 500)
         }
     },
     getCommunityById: async (communityId, userId) => {

@@ -15,7 +15,7 @@ const TransactionService = {
         ...transactionData,
         status: 'pending',
         time: transactionData.time || new Date(),
-        finishAt: null,
+        finishAt: transactionData.finishAt,
       });
       return transaction;
     } catch (error) {

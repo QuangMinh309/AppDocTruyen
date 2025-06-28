@@ -19,8 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -31,15 +29,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.presentation.viewmodel.transaction.PremiumViewModel
-import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.ui.components.BuyConfirmationDialog
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.SalmonRose
 
@@ -48,7 +43,7 @@ fun PremiumScreen(viewmodel: PremiumViewModel= hiltViewModel())
 {
     val isShowDialog by viewmodel.isShowDialog.collectAsState()
 
-    BuyConfirmationDialog(
+    ConfirmationDialog(
         showDialog = isShowDialog,
         title="Purchase Premium",
         text = "Are you sure to join Premium with 50.000 đ?",
