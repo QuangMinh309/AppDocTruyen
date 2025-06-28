@@ -219,7 +219,6 @@ val ExamplStory=Story(
     name ="Alibaba",
     coverImgId = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
     description = "fgfssdf",
-    price = BigDecimal(10000),
     author = Author(id = 1,
         name = "peneloped",
         avatarId ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",

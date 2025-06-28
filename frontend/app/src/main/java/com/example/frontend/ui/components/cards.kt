@@ -84,6 +84,7 @@ import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -410,8 +411,9 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                             tint = OrangeRed
                         )
                         Spacer(modifier = Modifier.width(4.dp))
+                        val formatter = DecimalFormat("#,###"+"đ")
                         Text(
-                            text = novel.price.toString(), // Sử dụng price từ Story
+                            text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -550,13 +552,13 @@ fun StoryCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .background(
-                        color = if (story.price.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
+                        color = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = if (story.price.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
+                    text = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
                     color = Color.Black,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -604,7 +606,7 @@ fun StoryCard2(
     onClick: () -> Unit = {}
 ) {
     Log.d("StoryCard2", "Rendering story: ${story.name}")
-    val isPremium = story.price.compareTo(BigDecimal.ZERO) != 0
+    val isPremium = story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
             .width(200.dp)

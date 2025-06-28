@@ -63,7 +63,6 @@ export default (sequelize, DataTypes) => {
       voteNum: DataTypes.INTEGER,
       chapterNum: DataTypes.INTEGER,
       status: DataTypes.STRING,
-      price: DataTypes.FLOAT,
       pricePerChapter: DataTypes.FLOAT,
       coverImgId: DataTypes.STRING,
       createdAt: {

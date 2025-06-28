@@ -30,13 +30,13 @@ fun ConfirmationDialog(
         AlertDialog(
             modifier = Modifier.fillMaxWidth()
                 .padding(8.dp)
-                .border(0.5.dp, BurntCoral, shape = RoundedCornerShape(20.dp)),
+                .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
 
             onDismissRequest = onDismiss,
            title = { Text(title, color = Color.White) },
             text = {
                 Text(
-                    text = text,//"Are you sure to buy this Story / Chapter with $price$ ?",
+                    text = text,
                     color = Color.White
                 )
             },
