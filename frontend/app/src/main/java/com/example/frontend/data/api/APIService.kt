@@ -11,6 +11,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -157,6 +158,23 @@ interface ApiService {
         val success: Boolean,
         val data: User
     )
+
+    // Thêm data class trong ApiService.kt
+    data class ChangePasswordRequest(
+        val currentPassword: String,
+        val newPassword: String,
+        val confirmPassword: String
+    )
+
+    // Thêm endpoint trong ApiService.kt
+    @POST("api/users/change-password/{userId}")
+    suspend fun changePassword(
+        @Path("userId") userId: Int,
+        @Body request: ChangePasswordRequest
+    ): Response<NoDataResponse>
+
+    @DELETE("api/users/{userId}")
+    suspend fun deleteUser(@Path("userId") userId: Int): Response<NoDataResponse>
 
 
     @GET("api/categories")

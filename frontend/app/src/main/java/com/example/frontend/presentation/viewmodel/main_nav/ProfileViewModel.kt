@@ -35,7 +35,7 @@ class ProfileViewModel @Inject constructor(
         loadReadLists()
     }
 
-    private fun loadUserData() {
+    fun loadUserData() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -62,7 +62,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun loadReadLists() {
+    fun loadReadLists() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
