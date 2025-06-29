@@ -31,6 +31,7 @@ class PremiumViewModel @Inject constructor(
                 }.onFailure { fail ->
                     _toast.value = fail.message
                 }
+                onGoBack()
             }catch (err:Exception){
                 _toast.value = "Can not purchase premium !"
                 Log.e("From VM Error","Error: ${err.message}")

@@ -18,7 +18,9 @@ const getUserById = async (userId) => {
         'DOB',
         'about',
         'followerNum',
+        "wallet",
         'avatarId',
+        'isPremium',
         'backgroundId',
       ],
       include: [

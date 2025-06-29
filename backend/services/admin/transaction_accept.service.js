@@ -1,11 +1,12 @@
 import { sequelize } from '../../models/index.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
-import { formatDate } from '../../utils/date.util.js';
+import { validateUser } from '../../utils/user.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
 
 
 const Transaction = sequelize.models.Transaction
+
 
 const TransactionManagerService = {
     async approveTransaction(transactionId, approvalData) {
@@ -26,9 +27,15 @@ const TransactionManagerService = {
                 { transaction }
             );
 
+            const user = await validateUser(userId);
+            const currentWallet = user.wallet
+            user.update({
+                wallet: currentWallet + (trans.type == "withdraw") ? -trans.money : trans.money
+            })
+
             await NotificationService.createNotification(
                 'TRANSACTION_APPROVAL',
-                `Giao dịch gần đây của bạn ${approvalData.status === 'success' ? 'được xác thực' : 'bị từ chối.Vui lòng kiểm tra lại giao dịch đã thực hiện trước đó.'
+                `Giao dịch ${trans.type === 'withdraw' ? "rút" : "nạp"} ${trans.money}đ gần đây của bạn ${approvalData.status === 'success' ? 'được xác thực' : 'bị từ chối.Vui lòng kiểm tra lại giao dịch đã thực hiện trước đó.'
                 }.`,
                 0,
                 trans.userId,

@@ -26,7 +26,8 @@ class SettingViewModel @Inject constructor(
     private val _isVisible = MutableStateFlow(false)
     val isVisible : StateFlow<Boolean> = _isVisible
     val isEditMode = mutableStateOf(false)
-    val user = mutableStateOf<User?>(null) // Khởi tạo null, sẽ tải từ API
+    private val _user = MutableStateFlow<User?>(null)
+    val user:StateFlow<User?> = _user // Khởi tạo null, sẽ tải từ API
     val selectedAvatarUri = mutableStateOf<Uri?>(null)
     val selectedBackgroundUri = mutableStateOf<Uri?>(null)
     val displayName = mutableStateOf("")
@@ -57,7 +58,7 @@ class SettingViewModel @Inject constructor(
                 val result = authRepository.getUserById(currentUser.id)
                 when (result) {
                     is Result.Success -> {
-                        user.value = result.data
+                        _user.value = result.data
                         updateFieldsFromUser()
                     }
                     is Result.Failure -> {
@@ -69,7 +70,7 @@ class SettingViewModel @Inject constructor(
     }
 
     private fun updateFieldsFromUser() {
-        user.value?.let {
+        _user.value?.let {
             displayName.value = it.dName ?: ""
             dateOfBirth.value = it.dob ?: ""
             username.value = it.name ?: ""
@@ -113,7 +114,7 @@ class SettingViewModel @Inject constructor(
             val result = authRepository.updateUser(user.value?.id ?: 0, updateRequest, avatarFile, backgroundFile)
             when (result) {
                 is Result.Success -> {
-                    user.value = result.data // Cập nhật user với dữ liệu mới từ API
+                    _user.value = result.data // Cập nhật user với dữ liệu mới từ API
                     updateFieldsFromUser() // Đồng bộ các trường
                     isEditMode.value = false
                     Log.d("SettingViewModel", "Update successful: ${result.data}")

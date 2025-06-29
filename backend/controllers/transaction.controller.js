@@ -3,7 +3,9 @@ import TransactionService from '../services/transaction.service.js';
 export default {
   async createTransaction(req, res, next) {
     try {
-      const transaction = await TransactionService.createTransaction(req.body);
+      const userId = req.user.userId;
+      const transactionData = { userId, ...req.body };
+      const transaction = await TransactionService.createTransaction(transactionData);
       res.status(201).json(transaction);
     } catch (error) {
       next(error);

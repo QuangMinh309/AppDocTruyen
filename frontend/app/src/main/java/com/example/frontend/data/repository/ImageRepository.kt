@@ -40,7 +40,6 @@ class ImageRepository @Inject constructor(
     suspend fun getImageUrl(imageId: String): Result<String> {
         return try {
             val response = apiService.getImageUrl(imageId)
-            var url = response.body()?.url
             if (response.isSuccessful) {
                 Result.Success(response.body()?.url ?: "")
             } else {

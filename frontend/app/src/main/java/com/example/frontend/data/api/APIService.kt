@@ -1,16 +1,12 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
-import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.Functionality
 import com.example.frontend.data.model.NameList
-import com.example.frontend.data.model.Notification
-import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.example.frontend.presentation.viewmodel.transaction.BankAccountData
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -249,8 +245,8 @@ interface ApiService {
     suspend fun purchasePremium(): Response<NoDataResponse>
 
 
-    @POST("/api/transactions")
-    suspend fun createTransaction(@Body transactionRequest: TransactionRequest): Response<Transaction>
+    @POST("api/users/wallet")
+    suspend fun walletChange(@Body transactionRequest: TransactionRequest): Response<NoDataResponse>
 
     @GET("/api/transactions/user/{userId}")
     suspend fun getAllUserTransaction(
@@ -277,9 +273,9 @@ interface ApiService {
 }
 
 class TransactionRequest (
-    val userId: Int,
     val money: Int,
-    val type: String
+    val type: String,
+    val bankAccountData: BankAccountData?=null
 )
 class ListTransactionResponse(
     val transactions: List<Transaction>,

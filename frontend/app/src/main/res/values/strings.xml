@@ -2,6 +2,6 @@
     <string name="app_name">frontend</string>
 
     <string name="base_url">https://5fc4-116-110-41-191.ngrok-free.app/</string>
-    <string name="ws_base_url">ws://5fc4-116-110-41-191.ngrok-free.app/ws</string>
+    <string name="ws_base_url">ws://10.0.2.2:20268/</string>
 
 </resources>

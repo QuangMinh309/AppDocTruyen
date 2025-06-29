@@ -37,17 +37,6 @@ const transactionUpdateSchema = Joi.object({
 
 // Schema validation cho tạo/cập nhật giao dịch
 const transactionSchema = Joi.object({
-  userId: Joi.number()
-    .integer()
-    .min(1)
-    .required()
-    .messages({
-      ...messages,
-      'number.base': 'ID người dùng phải là số',
-      'number.integer': 'ID người dùng phải là số nguyên',
-      'number.min': 'ID người dùng không hợp lệ',
-      'any.required': 'ID người dùng là bắt buộc',
-    }),
   money: Joi.number()
     .integer()
     .required()
@@ -93,6 +82,35 @@ const transactionSchema = Joi.object({
     .messages({
       ...messages,
       'date.base': 'Thời gian hoàn thành phải là định dạng ngày hợp lệ',
+    }),
+  bankAccountData: Joi.object({
+    accountNumber: Joi.string() // Hoặc Joi.number() nếu muốn số
+      .allow(null)
+      .optional()
+      .messages({
+        ...messages,
+        'string.base': 'Số tài khoản phải là chuỗi',
+      }),
+    accountHolder: Joi.string()
+      .allow(null)
+      .optional()
+      .messages({
+        ...messages,
+        'string.base': 'Tên chủ tài khoản phải là chuỗi',
+      }),
+    bankName: Joi.string()
+      .allow(null)
+      .optional()
+      .messages({
+        ...messages,
+        'string.base': 'Tên ngân hàng phải là chuỗi',
+      }),
+  })
+    .allow(null) // Cho phép bankAccountData là null
+    .optional() // Không bắt buộc phải có bankAccountData
+    .messages({
+      ...messages,
+      'object.base': 'Dữ liệu tài khoản ngân hàng phải là một đối tượng',
     }),
 }).options({ stripUnknown: true });
 
