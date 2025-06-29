@@ -296,11 +296,12 @@ fun ChapterItemCard(
     chapter: Chapter,
     onClick: () -> Unit = {}
 ) {
+    Log.d("ChapterItemCard", "Rendering chapter: ${chapter.chapterName}, updatedAtString: ${chapter.updatedAtString}")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { onClick() }, // Thêm onClick vào Modifier
+            .clickable { onClick() },
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
@@ -320,15 +321,20 @@ fun ChapterItemCard(
             Spacer(modifier = Modifier.height(13.dp))
 
             Row {
-                // Xử lý null cho updateAt
-                val formattedDate = chapter.updateAt?.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) ?: "N/A"
-                val formattedTime = chapter.updateAt?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "N/A"
-                Text(text = formattedDate, color = OrangeRed, fontSize = 14.sp)
+                val formattedDateTime = chapter.updatedAtString?.let { dateStr ->
+                    try {
+                        val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+                        val dateTime = LocalDateTime.parse(dateStr.trim(), formatter)
+                        "${dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))} " +
+                                "${dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))}"
+                    } catch (e: Exception) {
+                        "N/A"
+                    }
+                } ?: "N/A"
                 Text(
-                    text = formattedTime,
-                    color = Color.White,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 7.dp)
+                    text = formattedDateTime,
+                    color = OrangeRed,
+                    fontSize = 14.sp
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -356,7 +362,6 @@ fun ChapterItemCard(
         }
     }
 }
-
 
 //region story card
 @Composable

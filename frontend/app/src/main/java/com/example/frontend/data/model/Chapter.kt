@@ -1,8 +1,9 @@
 package com.example.frontend.data.model
 
+import android.util.Log
 import com.google.gson.annotations.SerializedName
-import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 data class Chapter(
@@ -13,15 +14,23 @@ data class Chapter(
     @SerializedName("content") val content: String?,
     @SerializedName("viewNum") val viewNum: Int,
     @SerializedName("commentNumber") val commentNumber: Int,
-    @SerializedName("updatedAt") private val updatedAtString: String?, // Nhận chuỗi từ JSON
+    @SerializedName("updatedAt") val updatedAtString: String?, // Nhận chuỗi từ JSON
     @SerializedName("lockedStatus") val lockedStatus: Boolean
 ) {
-    // Chuyển đổi chuỗi thành LocalDate an toàn
-    val updateAt: LocalDate? = updatedAtString?.let {
+    val updateAt: LocalDate? = updatedAtString?.let { dateStr ->
         try {
-            LocalDate.parse(it.split("T")[0], DateTimeFormatter.ISO_LOCAL_DATE)
+            Log.d("Chapter", "Attempting to parse date: '$dateStr'")
+            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME // Hỗ trợ "yyyy-MM-dd'T'HH:mm:ss.SSSX"
+            val dateTime = LocalDateTime.parse(dateStr.trim(), formatter) // Thêm trim() để loại bỏ khoảng trắng thừa
+            val localDate = dateTime.toLocalDate()
+            Log.d("Chapter", "Successfully parsed updateAt: $localDate")
+            localDate
         } catch (e: Exception) {
-            null // Xử lý lỗi chuyển đổi
+            Log.e("Chapter", "Failed to parse updateAt: '$dateStr', error: ${e.message}", e)
+            null
         }
+    } ?: run {
+        Log.w("Chapter", "updatedAtString is null or empty: $updatedAtString")
+        null
     }
 }

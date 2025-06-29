@@ -1,5 +1,6 @@
 package com.example.frontend.presentation.viewmodel.story
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -55,6 +56,8 @@ class StoryDetailViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> {
                     story.value = result.data
+                    Log.d("StoryDetailViewModel", "Loaded story: ${result.data}")
+                    Log.d("StoryDetailViewModel", "Chapters: ${result.data.chapters}")
                     checkIsAuthor()
                 }
                 is Result.Failure -> {
