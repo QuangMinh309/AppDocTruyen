@@ -7,6 +7,7 @@ import {
   validateChapterId,
   validatePurchaseChapter,
   validateStoryIdParam,
+  validateStoryChapterIdParam,
 } from '../validators/chapter.validation.js';
 import validate from '../middlewares/validate.middleware.js';
 import {
@@ -55,8 +56,8 @@ router.get(
 
 router.put(
   '/story/:storyId/:chapterId',
+  validate(validateStoryChapterIdParam, 'params'),
   validate(validateUpdateChapter, 'body'),
-  validate(validateChapterId, 'params'),
   isStoryAuthor,
   ChapterController.updateChapter
 );

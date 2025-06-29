@@ -118,7 +118,7 @@ const ChapterService = {
           {
             model: Story,
             as: 'story',
-            attributes: ['storyId', 'storyName', 'userId'],
+            attributes: ['storyId', 'storyName'],
           },
         ],
       });

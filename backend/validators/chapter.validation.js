@@ -115,3 +115,8 @@ export const validateChapterId = Joi.object({
     'any.required': 'ID chương là bắt buộc',
   }),
 })
+
+export const validateStoryChapterIdParam = Joi.object({
+  storyId: Joi.number().integer().positive().required(),
+  chapterId: Joi.number().integer().positive().required(),
+})
