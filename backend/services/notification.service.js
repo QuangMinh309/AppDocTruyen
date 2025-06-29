@@ -5,7 +5,7 @@ const Notification = sequelize.models.Notification;
 const User = sequelize.models.User;
 
 const NotificationService = {
-  async createNotification(type, content, refId, userId, transaction) {
+  async createNotification(type, content, refId = 0, userId, transaction) {
     try {
       await Notification.create(
         {
@@ -19,6 +19,7 @@ const NotificationService = {
         { transaction }
       );
     } catch (error) {
+      console.log(error)
       throw new ApiError('Lỗi khi tạo thông báo', 500);
     }
   },

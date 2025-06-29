@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -64,6 +65,7 @@ import java.util.Locale
 @Composable
 fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
     val scrollState = rememberScrollState()
+    val isVisible = viewModel.isVisible.collectAsState()
     var showImagePicker by remember { mutableStateOf(false) }
     var isAvatarPicker by remember { mutableStateOf(true) }
     val isShowDialog by viewModel.isShowDialog.collectAsState()
@@ -126,6 +128,29 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .align(Alignment.CenterVertically)
                 )
+                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.16f else 0.33f))
+                if(isVisible.value)
+                {
+                    Button(
+                        onClick = {viewModel.onGoToAdminScreen()},
+                        colors =  ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent,
+                        ),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier
+                            .height(25.dp)
+                            .wrapContentWidth(Alignment.Start)
+                    ) {
+                        Text(
+                            text = "Admin",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
+                }
+
 
                 Button(
                     onClick = { viewModel.toggleEditMode() },

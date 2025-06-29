@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AppNavigationViewModel @Inject constructor(
-    navigationManager: NavigationManager
+    val navigationManager: NavigationManager
 ) : ViewModel(){
     val commands = navigationManager.commands
 }

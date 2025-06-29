@@ -32,7 +32,7 @@ fun ScreenFrame(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(horizontal = 0.dp)
+                .padding(horizontal = 16.dp)
         ) {
        //     Spacer(modifier = Modifier.height(20.dp))
             topBar?.invoke()
