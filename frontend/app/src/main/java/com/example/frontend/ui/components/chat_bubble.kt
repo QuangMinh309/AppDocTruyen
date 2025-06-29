@@ -83,7 +83,7 @@ fun ChatBubble(message: Chat) {
                     Box(
                         modifier = Modifier.run {
                             background(Color(0x41485ACC), RoundedCornerShape(20.dp))
-                                .padding(vertical = 10.dp, horizontal = 25.dp)
+                                .padding(vertical = 10.dp, horizontal = 15.dp)
                                 .widthIn(max = 150.dp)
                         }
                     ){
@@ -156,7 +156,7 @@ fun MyChatBubble(message: Chat) {
                     Box(
                         modifier = Modifier.run {
                             background(OrangeRed, RoundedCornerShape(20.dp))
-                                .padding(vertical = 10.dp, horizontal = 25.dp)
+                                .padding(vertical = 10.dp, horizontal = 15.dp)
                                 .widthIn(max = 150.dp)
                         }
                     ){

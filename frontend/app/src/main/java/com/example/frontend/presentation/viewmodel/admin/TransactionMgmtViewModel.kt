@@ -197,6 +197,7 @@ class TransactionMgmtViewModel @Inject constructor(
             finally {
                 _selectedStatus.value = ""
                 _selectedType.value = ""
+                _selectedTransaction.value = null
                 if(_userId.value != "") onUserNameChange(_userId.value)
                 else if(_transactionId.value != "") onTransactionIdChange(_transactionId.value)
                 loadDisplayedTransactions()

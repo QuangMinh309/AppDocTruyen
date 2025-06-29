@@ -218,6 +218,9 @@ interface ApiService {
     @PUT("api/admins/{transactionId}/approve-trans")
     suspend fun approveTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionApproveRequest): Response<TransactionApproveResponse>
 
+    @PUT("api/admins/{storyId}/approve")
+    suspend fun approveStory(@Path("storyId") storyId: Int, @Body story: StoryApproveRequest): Response<StoryApproveResponse>
+
     @GET("api/admins")
     suspend fun getAllUsers(): Response<UsersResponse>
 
@@ -431,6 +434,17 @@ data class TransactionApproveRequest(
 data class TransactionApproveResponse(
     val success : Boolean,
     val message : String
+)
+
+data class StoryApproveRequest(
+    val status : String,
+    val ageRange : String
+)
+
+data class StoryApproveResponse(
+    val success : Boolean,
+    val data : Story,
+    val message: String
 )
 
 data class ApiError(

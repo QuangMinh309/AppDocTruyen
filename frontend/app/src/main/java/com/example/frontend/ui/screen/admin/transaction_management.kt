@@ -259,7 +259,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) Color.LightGray else Color(0xAFAF2238)
                 ),
-                modifier = Modifier.width(100.dp)
+                modifier = Modifier.width(110.dp)
             )
             {
                 Text(
@@ -275,7 +275,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) BurntCoral else Color(0xAFAF2238)
                 ),
-                modifier = Modifier.width(100.dp)
+                modifier = Modifier.width(110.dp)
             )
             {
                 Text(
@@ -309,9 +309,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                     Text("Warning", color = Color.White)
                 },
                 text = {
-                    Column {
-                        Text("Are you sure to approve the transaction?: ", color = Color.LightGray)
-                    }
+                    Text("Are you sure to approve the transaction?", color = Color.LightGray)
                 },
                 containerColor = Color(0xFF1C1C1C)
             )
@@ -365,25 +363,13 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             }
             else
             {
-//                if(isTransactionsLoading)
-//                {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(50.dp),
-//                        contentAlignment = Alignment.Center
-//                    ) {
-//                        CircularProgressIndicator()
-//                    }
-//                }
-//                else
-                    transactions.forEach { transaction ->
-                        TransactionCard(
-                            item = transaction,
-                            isSelected = transaction == selectedTransaction,
-                            onClick = {viewModel.onSelectTransaction(transaction)}
-                        )
-                    }
+                transactions.forEach { transaction ->
+                    TransactionCard(
+                        item = transaction,
+                        isSelected = transaction == selectedTransaction,
+                        onClick = {viewModel.onSelectTransaction(transaction)}
+                    )
+                }
             }
         }
     }
