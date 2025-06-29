@@ -41,6 +41,12 @@ router.get(
 );
 
 router.get(
+  '/:storyId/chapters',
+  validate(validateStoryIdParam, 'params'),
+  ChapterController.getChaptersByStory
+);
+
+router.get(
   '/:chapterId',
   validate(validateChapterId, 'params'),
   canAccessChapter,

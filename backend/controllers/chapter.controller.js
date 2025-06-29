@@ -53,6 +53,25 @@ const ChapterController = {
     }
   },
 
+  async getChaptersByStory(req, res, next) {
+    try {
+      const { storyId } = req.params;
+      const userId = req.user ? req.user.userId : null;
+      const { limit, lastId, orderBy, sort } = req.query;
+      const result = await ChapterService.getChaptersByStory(
+        storyId,
+        userId,
+        limit,
+        lastId,
+        orderBy,
+        sort
+      );
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async updateChapter(req, res, next) {
     try {
       const { chapterId } = req.params;
@@ -77,25 +96,6 @@ const ChapterController = {
       return res
         .status(200)
         .json({ success: true, message: 'Xóa chương thành công' });
-    } catch (error) {
-      return next(error);
-    }
-  },
-
-  async getChaptersByStory(req, res, next) {
-    try {
-      const { storyId } = req.params;
-      const userId = req.user ? req.user.userId : null;
-      const { limit, lastId, orderBy, sort } = req.query;
-      const result = await ChapterService.getChaptersByStory(
-        storyId,
-        userId,
-        limit,
-        lastId,
-        orderBy,
-        sort
-      );
-      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
     }

@@ -4,10 +4,12 @@ import {
   validateChapter,
   canUserAccessChapter,
   handlePurchaseTransaction,
+  validateSortParams,
 } from '../../utils/chapter.util.js';
 import { validateStory } from '../../utils/story.util.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { formatDate } from '../../utils/date.util.js';
+import { Op } from 'sequelize';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
@@ -102,20 +104,19 @@ const ChapterService = {
         ? {
             storyId,
             chapterId: {
-              [finalSort === 'DESC'
-                ? sequelize.Sequelize.Op.lt
-                : sequelize.Sequelize.Op.gt]: lastId,
+              [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
             },
           }
         : { storyId };
 
-      const chapters = await sequelize.models.Chapter.findAll({
+      const chapters = await Chapter.findAll({
         where,
         limit: parseInt(limit),
         order: [[finalOrderBy, finalSort]],
+        attributes: { exclude: ['content'] },
         include: [
           {
-            model: sequelize.models.Story,
+            model: Story,
             as: 'story',
             attributes: ['storyId', 'storyName', 'userId'],
           },
@@ -129,6 +130,10 @@ const ChapterService = {
             chapter
           );
         }
+      }
+
+      for (const chapter of chapters) {
+        chapter.dataValues.updatedAt = formatDate(chapter.updatedAt);
       }
 
       const nextLastId =
