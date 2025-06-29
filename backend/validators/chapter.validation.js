@@ -52,12 +52,6 @@ export const validateUpdateChapter = Joi.object({
   })
 
 export const validatePurchaseChapter = Joi.object({
-  storyId: Joi.number().integer().positive().required().messages({
-    'number.base': 'ID truyện phải là số',
-    'number.integer': 'ID truyện phải là số nguyên',
-    'number.positive': 'ID truyện phải là số dương',
-    'any.required': 'ID truyện là bắt buộc',
-  }),
   chapterId: Joi.number().integer().positive().required().messages({
     'number.base': 'ID chương phải là số',
     'number.integer': 'ID chương phải là số nguyên',

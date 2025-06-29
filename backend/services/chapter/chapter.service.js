@@ -180,13 +180,13 @@ const ChapterService = {
 
       const where = lastId
         ? {
-            storyId,
-            chapterId: {
-              [finalSort === 'DESC'
-                ? sequelize.Sequelize.Op.lt
-                : sequelize.Sequelize.Op.gt]: lastId,
-            },
-          }
+          storyId,
+          chapterId: {
+            [finalSort === 'DESC'
+              ? sequelize.Sequelize.Op.lt
+              : sequelize.Sequelize.Op.gt]: lastId,
+          },
+        }
         : { storyId };
 
       const chapters = await sequelize.models.Chapter.findAll({
@@ -226,17 +226,6 @@ const ChapterService = {
     }
   },
 
-  async purchaseChapter(userId, storyId, chapterId) {
-    return await handleTransaction(async (transaction) => {
-      const chapter = await validateChapter(chapterId, true);
-      return await handlePurchaseTransaction(
-        userId,
-        chapter,
-        storyId,
-        transaction
-      );
-    });
-  },
 };
 
 export default ChapterService;

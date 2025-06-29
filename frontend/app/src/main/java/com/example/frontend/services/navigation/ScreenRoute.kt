@@ -14,6 +14,7 @@ sealed class Screen(var route: String) {
     }
 
     data object Intro : Screen("Intro")
+    data object Splash : Screen("Splash")
     sealed class Authentication(route: String) : Screen(route) {
         data object Login : Authentication("Authentication/Login")
         data object Register : Authentication("Authentication/Register")

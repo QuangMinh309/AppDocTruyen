@@ -5,7 +5,6 @@ import {
   validateCreateChapter,
   validateUpdateChapter,
   validateChapterId,
-  validatePurchaseChapter,
   validateStoryIdParam,
 } from '../validators/chapter.validation.js';
 import validate from '../middlewares/validate.middleware.js';
@@ -53,12 +52,6 @@ router.delete(
   validate(validateChapterId, 'params'),
   isStoryAuthor,
   ChapterController.deleteChapter
-);
-
-router.post(
-  '/story/:storyId/:chapterId/purchase',
-  validate(validatePurchaseChapter),
-  ChapterController.purchaseChapter
 );
 
 export default router;

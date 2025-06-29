@@ -9,14 +9,6 @@ const uploadImageValidation = (req, res, next) => {
     next();
 };
 
-// // Validation cho getImageUrl
-// const getImageUrlValidationSchema = Joi.object({
-//     imageId: Joi.string().required().messages({
-//         'any.required': 'imageId là bắt buộc',
-//         'string.base': 'Image ID phải là chuỗi',
-//         'string.empty': 'imageId không được để trống',
-//     }),
-// });
 
 const getImageUrlValidation = (req, res, next) => {
     const { error } = getImageUrlValidationSchema.validate(req.params);
