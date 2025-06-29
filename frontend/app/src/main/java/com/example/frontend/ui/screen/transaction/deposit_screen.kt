@@ -1,5 +1,6 @@
 package com.example.frontend.ui.screen.transaction
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,41 +23,40 @@ import androidx.compose.material.icons.filled.DoubleArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.transaction.DepositViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import java.text.DecimalFormat
+import com.example.frontend.ui.theme.BrightAquamarine
 import androidx.compose.foundation.layout.Box as Box1
-
-@Preview
-@Composable
-fun PreViewDepositeScreen() {
-    val fakeViewModel = DepositViewModel(NavigationManager())
-    DepositScreen(fakeViewModel)
-}
 
 @Composable
 fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
     // State để lưu giá trị số tiền dưới dạng Long
-    val amountState = remember { mutableLongStateOf(200000L) }
+    val amountState = viewModel.amountState.collectAsState()
+    val selectedTag by viewModel.selectedTag.collectAsState()
 
-    // Hàm định dạng số tiền thành chuỗi (ví dụ: 200000 -> "200,000")
-    fun formatAmount(amount: Long): String {
-        val formatter = DecimalFormat("#,###")
-        return formatter.format(amount)
+    val toast by viewModel.toast.collectAsState()
+    val context = LocalContext.current
+
+
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
     }
 
     ScreenFrame(
@@ -95,12 +95,12 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
 
                 // Money enter text box
                 BasicTextField(
-                    value = formatAmount(amountState.longValue), // Hiển thị số tiền đã định dạng
+                    value = viewModel.formatMoney(amountState.value), // Hiển thị số tiền đã định dạng
                     onValueChange = { newValue ->
                         // Chuyển đổi chuỗi nhập vào thành Long
                         val cleanedValue = newValue.replace(",", "").replace("đ", "")
-                        val newAmount = cleanedValue.toLongOrNull() ?: amountState.longValue
-                        amountState.longValue = newAmount
+                        val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                        viewModel.changeAmount(newAmount)
                     },
                     textStyle = TextStyle(
                         color = Color.Gray,
@@ -125,68 +125,35 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                 )
 
                 // Suggested amount
+                val amountButtons = listOf(50000L,200000L,500000L)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .align(Alignment.End)
                 ) {
-                    Box1(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .height(35.dp)
-                            .weight(0.3f)
-                            .background(Color.Transparent, RoundedCornerShape(5.dp))
-                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
-                            .clickable {
-                                amountState.longValue = 50000L // Cập nhật giá trị Long
-                            }
-                    ) {
-                        Text(
-                            text = "+ 50,000đ",
-                            style = TextStyle(
-                                color = Color.White,
-                                fontSize = 14.sp
+                    amountButtons.forEachIndexed { index, amount ->
+                        Box1(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .height(35.dp)
+                                .weight(0.3f)
+                                .background(Color.Transparent, RoundedCornerShape(5.dp))
+                                .border(1.dp,if(selectedTag == index ) BrightAquamarine else Color.Gray, RoundedCornerShape(5.dp))
+                                .clickable {
+                                    viewModel.changeAmount(amount)
+                                    viewModel.changeSeletectedTag(index)
+
+                                }
+                        ) {
+                            Text(
+                                text = viewModel.formatMoney(amount),
+                                style = TextStyle(
+                                    color = Color.White,
+                                    fontSize = 14.sp
+                                )
                             )
-                        )
-                    }
-                    Box1(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .height(35.dp)
-                            .weight(0.3f)
-                            .background(Color.Transparent, RoundedCornerShape(5.dp))
-                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
-                            .clickable {
-                                amountState.longValue = 200000L // Cập nhật giá trị Long
-                            }
-                    ) {
-                        Text(
-                            text = "+ 200,000đ",
-                            style = TextStyle(
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        )
-                    }
-                    Box1(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .height(35.dp)
-                            .weight(0.3f)
-                            .background(Color.Transparent, RoundedCornerShape(5.dp))
-                            .border(1.dp, Color.Gray, RoundedCornerShape(5.dp))
-                            .clickable {
-                                amountState.longValue = 500000L // Cập nhật giá trị Long
-                            }
-                    ) {
-                        Text(
-                            text = "+ 500,000đ",
-                            style = TextStyle(
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
-                        )
+                        }
                     }
                 }
 
@@ -246,12 +213,11 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                     .height(50.dp)
                     .padding(horizontal = 20.dp),
                 onClick = {
-                    // Kiểm tra số tiền tối thiểu
-                    if (amountState.longValue >= 20000L) {
-                        viewModel.onGoToTransactionAcceptScreen(amountState.longValue)
-
-                    } else {
-                        // TODO: Hiển thị thông báo lỗi (Toast/Snackbar) nếu số tiền < 20,000
+                    if(amountState.value < 20000L) {
+                        viewModel.showToast("Please enter the amount you want to deposit bigger than 20,000 VND")
+                    }
+                    else{
+                        viewModel.onGoToTransactionAcceptScreen(amountState.value)
                     }
                 }
             ) {

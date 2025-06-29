@@ -1,16 +1,19 @@
 package com.example.frontend.data.repository
 
+import com.example.frontend.data.api.ApiError
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.ListTransactionResponse
 import com.example.frontend.data.api.NoDataResponse
 import com.example.frontend.data.api.TransactionRequest
 import com.example.frontend.data.api.UserFollowRequest
 import com.example.frontend.data.model.Result
-import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.example.frontend.presentation.viewmodel.transaction.BankAccountData
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
+    private val gson: Gson,
     private val apiService: ApiService,
 ) {
     suspend fun follow(user: User): Result<NoDataResponse> {
@@ -50,22 +53,26 @@ class UserRepository @Inject constructor(
                 Result.Success( response.body() ?: throw Exception("Unfollow failed"))
 
             } else {
-                Result.Failure(Exception("Purchase premium failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = gson.fromJson(errorBody, ApiError::class.java)
+                Result.Failure(Exception(" ${errorResponse.message}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)
         }
     }
-    suspend fun createTransaction(trans:Transaction): Result<Transaction> {
+    suspend fun walletChange(money: Int, type: String,bankAccountData: BankAccountData?=null): Result<NoDataResponse> {
         return try {
-            val response = apiService.createTransaction(
-                TransactionRequest(trans.user?.id?:0,trans.money,trans.type)
+            val response = apiService.walletChange(
+                TransactionRequest(money,type,bankAccountData)
             )
             if (response.isSuccessful) {
                 Result.Success( response.body() ?: throw Exception("transaction failed"))
 
             } else {
-                Result.Failure(Exception("Create transaction failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = gson.fromJson(errorBody, ApiError::class.java)
+                Result.Failure(Exception(" ${errorResponse.message}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

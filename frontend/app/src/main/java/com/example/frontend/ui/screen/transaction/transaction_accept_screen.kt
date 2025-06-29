@@ -2,6 +2,7 @@ package com.example.frontend.ui.screen.transaction
 
 
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,39 +16,43 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.transaction.TransactionAcceptViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import java.text.DecimalFormat
 
 
-@Preview
-@Composable
-fun PreViewTransactionAcceptScreen(){
-    val fakeviewmodel=TransactionAcceptViewModel(NavigationManager())
-    TransactionAcceptScreen(fakeviewmodel)
-}
 @Composable
 fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel()){
-    val money=200000L
-    fun formatMoney(money: Long): String {
-        val formatter = DecimalFormat("#,###"+"đ")
-        return formatter.format(money)
+    // State để lưu giá trị số tiền dưới dạng Long
+    val amountState = viewModel.amountState.collectAsState()
+    val user by viewModel.user.collectAsState()
+
+
+    val toast by viewModel.toast.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
     }
     ScreenFrame(
         topBar = {
@@ -115,7 +120,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                                     )
                                 )
                                 Text(
-                                    text= formatMoney(money),
+                                    text= viewModel.formatMoney(amountState.value.toLong()),
                                     style = TextStyle(
                                         color = Color.Green,
                                         fontSize = 16.sp,
@@ -188,7 +193,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //transaction message
                             Text(
-                                text= "Message: Nạp ${formatMoney(money)}",
+                                text= "Message: Mã người dùng-${user?.id} nạp ${viewModel.formatMoney(amountState.value.toLong())}",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -225,7 +230,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                onClick = { viewModel.onGoBack() }
+                onClick = { viewModel.deposit() }
 
             ){
                 Row (

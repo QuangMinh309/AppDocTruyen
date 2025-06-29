@@ -1,5 +1,6 @@
 import UserManagerService from '../services/admin/user_management.service.js';
 import StoryManagerService from '../services/admin/story_management.service.js';
+import TransactionManagerService from '../services/admin/transaction_accept.service.js';
 
 const AdminController = {
   // Quản lý user
@@ -62,12 +63,37 @@ const AdminController = {
 
       const message =
         result === 'approved'
-          ? 'Truyện đã được duyệt. Bạn có thể cập nhật và hoàn thành truyện.'
-          : 'Truyện bị từ chối. Vui lòng kiểm tra và cập nhật lại.';
+          ? 'Truyện đã được duyệt thành công.'
+          : 'Từ chối public truyện thành công';
 
       res.status(200).json({
         success: true,
         data: story,
+        message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Quản lý Transaction
+  async approveTransaction(req, res, next) {
+    try {
+      const transactionId = req.params.transactionId;
+      const approvalData = req.body;
+
+      const { story, result } = await TransactionManagerService.approveTransaction(
+        transactionId,
+        approvalData,
+      );
+
+      const message =
+        result === 'success'
+          ? 'Giao dịch đã được xác thực.'
+          : 'Từ chối cập nhật giao dịch thành công';
+
+      res.status(200).json({
+        success: true,
         message,
       });
     } catch (error) {

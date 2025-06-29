@@ -1,6 +1,7 @@
 package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,13 +21,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,23 +48,35 @@ import com.example.frontend.ui.components.ScreenFrame
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.example.frontend.ui.components.CategoryList
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.text.isDigitsOnly
 import com.example.frontend.ui.components.SelectChip
-import com.example.frontend.ui.components.StoryCard4
+import com.example.frontend.ui.components.StoryCardCard
 import com.example.frontend.ui.theme.BurntCoral
-import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.ui.theme.DeepBlue
 
 @Composable
 fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
 {
-    val stories by viewModel.stories.collectAsState()
+    val context = LocalContext.current
+    val stories by viewModel.displayedStories.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val tbSearchValue by viewModel.tbSearchValue.collectAsState()
+    val selectedStory by viewModel.selectedStory.collectAsState()
     val selectedSearchType by viewModel.selectedSearchType.collectAsState()
     val selectedStates by viewModel.selectedStates.collectAsState()
     val selectedCategories by viewModel.selectedCategories.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
-
+    val showApproveDialog = remember { mutableStateOf(false) }
+    val showDeleteDialog = remember { mutableStateOf(false) }
+    val tbAgeRange = remember { mutableStateOf("") }
+    val toast by viewModel.toast.collectAsState()
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
     ScreenFrame(
         topBar = {
             Row(
@@ -115,7 +127,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 .padding(top = 30.dp)
         )
         {
-            Text(
+            Text(//title
                 text = "Find stories",
                 color = Color.White,
                 style = TextStyle(
@@ -156,17 +168,12 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                     onClick = { viewModel.onSelectSearchType("Name") }
                 )
                 SelectChip(
-                    name = "Author",
+                    name = "Author (handle)",
                     isSelected = "Author" == selectedSearchType,
                     onClick = { viewModel.onSelectSearchType("Author") }
                 )
-                SelectChip(
-                    name = "ID",
-                    isSelected = "ID" == selectedSearchType,
-                    onClick = { viewModel.onSelectSearchType("ID") }
-                )
             }
-            TextField(
+            TextField(//textfield
                 value = tbSearchValue,
                 onValueChange = { viewModel.onSearch(it) },
                 singleLine = true,
@@ -187,120 +194,253 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 )
             )
         }
+        //action buttons
         Column(modifier = Modifier) {
-            Spacer(Modifier.height(20.dp))
-            if (showDialog.value) {
-                AlertDialog(
-                    onDismissRequest = { showDialog.value = false },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            // Apply filters here
-                            showDialog.value = false
-                        }) {
-                            Text("Apply", color = Color.White)
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showDialog.value = false }) {
-                            Text("Cancel", color = Color.White)
-                        }
-                    },
-                    title = {
-                        Text("Select filters", color = Color.White)
-                    },
-                    text = {
-                        Column {
-                            Text("Date:", color = Color.LightGray)
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = BurntCoral,
-                                        checkmarkColor = Color(0xFF1C1C1C)
-                                    ),
-                                    checked = true,
-                                    onCheckedChange = {}
-                                )
-                                Text("Newest", color = Color.White)
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Checkbox(
-                                    colors = CheckboxDefaults.colors(
-                                        checkedColor = BurntCoral,
-                                        checkmarkColor = Color(0xFF1C1C1C)
-                                    ),
-                                    checked = false,
-                                    onCheckedChange = {}
-                                )
-                                Text("Oldest", color = Color.White)
-                            }
-
-                            Text("State:", color = Color.LightGray)
-                            Spacer(modifier = Modifier.height(10.dp))
-                            FlowRow {
-                                SelectChip(
-                                    name = "approved",
-                                    isSelected = "approved" in selectedStates,
-                                    onClick = { viewModel.onSelectState("approved") }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                SelectChip(
-                                    name = "rejected",
-                                    isSelected = "rejected" in selectedStates,
-                                    onClick = { viewModel.onSelectState("rejected") }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                SelectChip(
-                                    name = "pending",
-                                    isSelected = "pending" in selectedStates,
-                                    onClick = { viewModel.onSelectState("pending") }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                SelectChip(
-                                    name = "update",
-                                    isSelected = "update" in selectedStates,
-                                    onClick = { viewModel.onSelectState("update") }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                SelectChip(
-                                    name = "full",
-                                    isSelected = "full" in selectedStates,
-                                    onClick = { viewModel.onSelectState("full") }
-                                )
-                            }
-
-                            Text("Category:", color = Color.LightGray)
-                            Spacer(modifier = Modifier.height(10.dp))
-                            FlowRow {
-                                categories.forEach { category ->
-                                    SelectChip(
-                                        name = category.name?:"",
-                                        isSelected = category.name in selectedCategories,
-                                        onClick = { viewModel.onSelectCategory(category.name?:"") }
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    containerColor = Color(0xFF1C1C1C)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp, bottom = 10.dp)
+            )
+            {
+                Button(
+                    onClick = { showApproveDialog.value = true },
+                    enabled = selectedStory != null && selectedStory!!.status == "pending",
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Green
+                    ),
+                    modifier = Modifier.weight(1f)
                 )
+                {
+                    Text(
+                        text = "Approve",
+                        color = if (selectedStory != null && selectedStory!!.status == "pending") DeepBlue else Color.Gray,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(
+                    onClick = {  },
+                    enabled = selectedStory != null && selectedStory!!.status == "pending",
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Yellow
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                {
+                    Text(
+                        text = "Reject",
+                        color = if (selectedStory != null && selectedStory!!.status == "pending") DeepBlue else Color.Gray,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(
+                    onClick = { showDeleteDialog.value = true },
+                    enabled = selectedStory != null,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedStory != null) BurntCoral else Color(0xAFAF2238)
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                {
+                    Text(
+                        text = "Delete",
+                        color = if (selectedStory != null) DeepBlue else Color.Gray,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                    )
+                }
             }
             LazyColumn (
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 contentPadding = PaddingValues(8.dp)
             ){
                 items(stories) { story ->
-                    StoryCard4(story = story, onClick = {  })
+                    StoryCardCard(story = story, isSelected = story == selectedStory , onClick = { viewModel.onSelectStory(story) })
                 }
             }
+        }
+        if(showDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.loadDisplayedStories()
+                        showDialog.value = false
+                    }) {
+                        Text("Apply", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Select filters", color = Color.White)
+                },
+                text = {
+                    Column {
+//                        Text("Date:", color = Color.LightGray)
+//
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Checkbox(
+//                                colors = CheckboxDefaults.colors(
+//                                    checkedColor = BurntCoral,
+//                                    checkmarkColor = Color(0xFF1C1C1C)
+//                                ),
+//                                checked = true,
+//                                onCheckedChange = {}
+//                            )
+//                            Text("Newest", color = Color.White)
+//                            Spacer(modifier = Modifier.width(10.dp))
+//                            Checkbox(
+//                                colors = CheckboxDefaults.colors(
+//                                    checkedColor = BurntCoral,
+//                                    checkmarkColor = Color(0xFF1C1C1C)
+//                                ),
+//                                checked = false,
+//                                onCheckedChange = {}
+//                            )
+//                            Text("Oldest", color = Color.White)
+//                        }
+
+                        Text("State:", color = Color.LightGray)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        FlowRow {
+                            SelectChip(
+                                name = "update",
+                                isSelected = "update" in selectedStates,
+                                onClick = { viewModel.onSelectState("update") }
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            SelectChip(
+                                name = "rejected",
+                                isSelected = "rejected" in selectedStates,
+                                onClick = { viewModel.onSelectState("rejected") }
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            SelectChip(
+                                name = "pending",
+                                isSelected = "pending" in selectedStates,
+                                onClick = { viewModel.onSelectState("pending") }
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            SelectChip(
+                                name = "full",
+                                isSelected = "full" in selectedStates,
+                                onClick = { viewModel.onSelectState("full") }
+                            )
+                        }
+
+                        Text("Category:", color = Color.LightGray)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        FlowRow {
+                            categories.forEach { category ->
+                                SelectChip(
+                                    name = category.name?:"",
+                                    isSelected = category.name in selectedCategories,
+                                    onClick = { viewModel.onSelectCategory(category.name?:"") }
+                                )
+                            }
+                        }
+                    }
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
+        }
+        if(showApproveDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showApproveDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if(tbAgeRange.value.isEmpty() || !tbAgeRange.value.isDigitsOnly() || tbAgeRange.value.toInt() < 0)
+                            {
+                                Toast.makeText(context, "Please enter an appropriate age range", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                            showApproveDialog.value = false
+                            viewModel.approveSelectedStory(tbAgeRange.value)
+                        }
+                    ) {
+                        Text("Confirm", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showApproveDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Approve Story", color = Color.White)
+                },
+                text = {
+                    Column {
+                        Text("Choose an age range: ", color = Color.LightGray)
+                        TextField(
+                            value = tbAgeRange.value,
+                            onValueChange = { tbAgeRange.value = it },
+                            singleLine = true,
+                            placeholder = {
+                                Text("Enter here", style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Bold))
+                            },
+                            textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_bold))),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height = 53.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = BurntCoral,
+                                unfocusedIndicatorColor = Color.White
+                            )
+                        )
+                    }
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
+        }
+        if(showDeleteDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDeleteDialog.value = false
+                            //viewModel.deleteSelectedTransaction()
+                        }
+                    ) {
+                        Text("Yes", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Warning", color = Color.White)
+                },
+                text = {
+                    Text("Are you sure you want to delete this story?", color = Color.LightGray)
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
         }
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-private fun PreviewStoryManagementScreen()
-{
-    val fakeViewModel = StoryMgmtViewModel(NavigationManager())
-    StoryManagementScreen(fakeViewModel)
-}
+//@SuppressLint("ViewModelConstructorInComposable")
+//@Preview(showBackground = true)
+//@Composable
+//private fun PreviewStoryManagementScreen()
+//{
+//    val fakeViewModel = StoryMgmtViewModel(NavigationManager())
+//    StoryManagementScreen(fakeViewModel)
+//}

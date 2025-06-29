@@ -1,9 +1,9 @@
 package com.example.frontend.presentation.viewmodel.admin
 
+import android.util.Log
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.TransactionUpdateRequest
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.repository.TransactionRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Transaction
+import com.example.frontend.data.repository.AdminRepository
 
 val dummyTypes: List<String> = listOf(
     "deposit",
@@ -29,7 +30,8 @@ val dummyStatuses: List<String> = listOf(
 @HiltViewModel
 class TransactionMgmtViewModel @Inject constructor(
     navigationManager: NavigationManager,
-    private val transactionRepository : TransactionRepository
+    private val transactionRepository : TransactionRepository,
+    private val adminRepository: AdminRepository
 ) : BaseViewModel(navigationManager) {
     private val _userId = MutableStateFlow("")
     val userId: StateFlow<String> = _userId
@@ -177,29 +179,16 @@ class TransactionMgmtViewModel @Inject constructor(
         _selectedTransaction.value = if(_selectedTransaction.value == transaction) null else transaction
     }
 
-    fun updateSelectedTransaction(successSelected : Boolean)
+    fun approveSelectedTransaction()
     {
         if(_selectedTransaction.value == null) return
         viewModelScope.launch {
             try {
-                val status = if(successSelected == true) "success" else "pending"
-                val result = transactionRepository.updateTransaction(
-                    _selectedTransaction.value!!.transactionId,
-                    TransactionUpdateRequest(
-                        _selectedTransaction.value!!.user!!.id,
-                        _selectedTransaction.value!!.money,
-                        _selectedTransaction.value!!.type, status)
-                )
-                _selectedTransaction.value = when(result) {
-                    is Result.Success -> {
-                        _toast.value = "Transaction updated"
-                        null
-                    }
-
-                    is Result.Failure -> {
-                        _toast.value = "Failed to update transaction: ${result.exception.message}"
-                        _selectedTransaction.value
-                    }
+                val result = adminRepository.approveTransaction(_selectedTransaction.value!!.transactionId)
+                result.onSuccess { message ->
+                    _toast.value = message
+                }.onFailure { error ->
+                    Log.e("apiError","Error: ${error.message}")
                 }
             }
             catch (e: Exception){

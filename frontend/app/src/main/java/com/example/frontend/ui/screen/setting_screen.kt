@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -70,6 +70,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
     var isAvatarPicker by remember { mutableStateOf(true) }
     val isShowDialog by viewModel.isShowDialog.collectAsState()
     val dialogContent by viewModel.dialogContent.collectAsState()
+    val user = viewModel.user.collectAsState()
 
     // Launcher để chọn ảnh từ gallery
     val launcher = rememberLauncherForActivityResult(
@@ -128,7 +129,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .align(Alignment.CenterVertically)
                 )
-                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.16f else 0.33f))
+                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.01f else 0.33f))
                 if(isVisible.value)
                 {
                     Button(
@@ -176,7 +177,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 .padding(vertical = 40.dp)
                 .verticalScroll(scrollState)
         ) {
-            if (viewModel.user.value == null) {
+            if (user.value == null) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -401,23 +402,27 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { if(viewModel.user.value?.isPremium==false) viewModel.onGoToPremiumScreen()  }
+                        .clickable {
+                            val isPremium = user.value?.isPremium ?: false // Mặc định false nếu null
+                            if (!isPremium)
+                                viewModel.onGoToPremiumScreen()
+                        }
                         .padding(vertical = 10.dp)
                 ) {
                     Text(
-                        text = if(viewModel.user.value?.isPremium == true)"Premium" else "Upgrade to Premium",
+                        text = if(user.value?.isPremium == true)"Premium" else "Upgrade to Premium",
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 24.sp,
                             brush = Brush.linearGradient(
-                                colors =  if(viewModel.user.value?.isPremium == true) listOf(BurntCoral, OrangeRed) else listOf(Color.White, Color.White),
+                                colors =  if(user.value?.isPremium == true) listOf(BurntCoral, OrangeRed) else listOf(Color.White, Color.White),
                                 start = Offset(0f, 0f),
                                 end = Offset.Infinite
                             )
                         )
                     )
 
-                    // Registration Date (sử dụng DOB thay vì createdAt)
+                    // Registration Date
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -427,74 +432,73 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                     ) {
                         Text("Registration Date", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
                         Text(
-                            text = viewModel.user.value?.dob ?: "No Registration Date.",
+                            text = if(user.value?.isPremium == true) "The validity period of a premium package is 30 days from the date of registration, please check your transaction history." else "You are not the premium member.",
                             color = Color.White,
                             style = TextStyle(fontSize = 16.sp)
                         )
                     }
-
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-                        thickness = 1.dp,
-                        color = Color(0xff202430)
-                    )
-                    // Logout Button
-                    Row(
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
+                )
+                // Logout Button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.setShowDialogState(true,"Are you sure to logout?")
+                            // viewModel.logout()
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.setShowDialogState(true,"Are you sure to logout?")
-                               // viewModel.logout()
-                                       },
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 25.dp)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(top = 25.dp)
-                                .weight(1f),
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text("Logout", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                            Text(
-                                text = "Sign out of your account",
-                                color = Color.White,
-                                style = TextStyle(fontSize = 16.sp)
-                            )
-                        }
+                        Text("Logout", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                        Text(
+                            text = "Sign out of your account",
+                            color = Color.White,
+                            style = TextStyle(fontSize = 16.sp)
+                        )
                     }
-                    HorizontalDivider(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-                        thickness = 1.dp,
-                        color = Color(0xff202430)
-                    )
+                }
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                    color = Color(0xff202430)
+                )
 
-                    // Delete Account Button
-                    Row(
+                // Delete Account Button
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.showDeleteConfirmation()
+                            viewModel.setShowDialogState(true,"Are you sure to delete your account?This action cannot be undone.")
+                        },
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.showDeleteConfirmation()
-                                viewModel.setShowDialogState(true,"Are you sure to delete your account?This action cannot be undone.")
-                                       },
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(top = 25.dp)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(
-                            modifier = Modifier
-                                .padding(top = 25.dp)
-                                .weight(1f),
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text("Delete Account", color = Color.Red, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
-                            Text(
-                                text = "Permanently delete your account",
-                                color = Color.Red,
-                                style = TextStyle(fontSize = 16.sp)
-                            )
-                        }
+                        Text("Delete Account", color = Color.Red, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                        Text(
+                            text = "Permanently delete your account",
+                            color = Color.Red,
+                            style = TextStyle(fontSize = 16.sp)
+                        )
                     }
                 }
             }

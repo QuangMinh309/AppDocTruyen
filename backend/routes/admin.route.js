@@ -35,4 +35,11 @@ router.put(
   AdminController.approveStory
 );
 
+// Route quản lý giao dịch
+router.put(
+  '/:transactionId/approve-trans',
+  authorizeRoles('admin'),
+  AdminController.approveTransaction
+);
+
 export default router;

@@ -38,16 +38,12 @@ import com.example.frontend.ui.components.NotificationCard
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import java.math.BigDecimal
-import java.text.DecimalFormat
 
 @Composable
 fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
    val transactionList by viewModel.transactionList.collectAsState()
    val user = viewModel.user.collectAsState()
-    fun formatMoney(money: Long): String {
-        val formatter = DecimalFormat("#,###"+"đ")
-        return formatter.format(money)
-    }
+
     ScreenFrame(
         topBar = {
             TopBar(
@@ -79,7 +75,7 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                     fontSize = 18.sp
                 )
                 Text(
-                    text = "${user.value?.wallet?.toString() ?: "0.00"}đ",
+                    text = viewModel.formatMoney(user.value?.wallet?.toLong()?: 0L),
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold
@@ -174,13 +170,13 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                         NotificationCard(
                             content = when(transactionList[index].type){
                                 "deposit" -> {
-                                     "You successfully deposited ${formatMoney(transactionList[index].money.toLong())} into your wallet."
+                                     "You successfully deposited ${viewModel.formatMoney(transactionList[index].money.toLong())} into your wallet."
                                 }
                                 "withdraw" ->{
-                                     "You successfully withdrawn ${formatMoney(transactionList[index].money.toLong())} from your wallet."
+                                     "You successfully withdrawn ${viewModel.formatMoney(transactionList[index].money.toLong())} from your wallet."
                                 }
                                 "purchase" ->{
-                                    "You successfully purchased a chapter with ${formatMoney(transactionList[index].money.toLong())}. "
+                                    "You successfully purchased a chapter with ${viewModel.formatMoney(transactionList[index].money.toLong())}. "
                                 }
                                 else -> "Unknown transaction."
 

@@ -3,7 +3,6 @@ import ApiError from '../../utils/api_error.util.js';
 import {
   validateChapter,
   canUserAccessChapter,
-  handlePurchaseTransaction,
   validateSortParams,
 } from '../../utils/chapter.util.js';
 import { validateStory } from '../../utils/story.util.js';
@@ -13,6 +12,8 @@ import { Op } from 'sequelize';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
+const Comment = sequelize.models.Comment;
+const Purchase = sequelize.models.Purchase;
 
 const ChapterService = {
   async createChapter(chapterData, userId) {
@@ -171,23 +172,17 @@ const ChapterService = {
       );
 
       await Promise.all([
-        sequelize.models.Comment.destroy({ where: { chapterId }, transaction }),
-        sequelize.models.Purchase.destroy({
+        Comment.destroy({ where: { chapterId }, transaction }),
+        Purchase.destroy({
           where: { chapterId },
-          transaction,
-        }),
-        sequelize.models.History.destroy({ where: { chapterId }, transaction }),
-        chapter.destroy({ transaction }),
-        sequelize.models.Story.decrement('chapterNum', {
-          where: { storyId: chapter.story.storyId },
           transaction,
         }),
       ]);
 
-      const remainingChapters = await sequelize.models.Chapter.findAll({
+      const remainingChapters = await Chapter.findAll({
         where: {
           storyId: chapter.story.storyId,
-          ordinalNumber: { [sequelize.Sequelize.Op.gt]: chapter.ordinalNumber },
+          ordinalNumber: { [Op.gt]: chapter.ordinalNumber },
         },
         order: [['ordinalNumber', 'ASC']],
         transaction,

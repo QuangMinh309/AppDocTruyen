@@ -230,7 +230,7 @@ const UserController = {
     try {
       const userId = req.user.userId;
 
-      const result = await p(userId);
+      const result = await purchasePremium(userId);
 
       res.status(200).json({
         success: true,

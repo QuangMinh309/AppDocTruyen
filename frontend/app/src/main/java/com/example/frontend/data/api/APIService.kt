@@ -1,17 +1,12 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
-import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Community
-import com.example.frontend.data.model.Functionality
 import com.example.frontend.data.model.NameList
-import com.example.frontend.data.model.Notification
-import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
+import com.example.frontend.presentation.viewmodel.transaction.BankAccountData
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -278,8 +273,25 @@ interface ApiService {
     @DELETE("api/transactions/{transactionId}")
     suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
 
+    @PUT("api/admins/{transactionId}/approve-trans")
+    suspend fun approveTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionApproveRequest): Response<TransactionApproveResponse>
+
+    @PUT("api/admins/{storyId}/approve")
+    suspend fun approveStory(@Path("storyId") storyId: Int, @Body story: StoryApproveRequest): Response<StoryApproveResponse>
+
     @GET("api/admins")
     suspend fun getAllUsers(): Response<UsersResponse>
+
+    @POST("api/admins/lock/{userId}")
+    suspend fun lockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    @POST("api/admins/unlock/{userId}")
+    suspend fun unlockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    data class LockUserResponse(
+        val success: Boolean,
+        val message: String
+    )
 
 
     @GET("api/nameLists")
@@ -294,8 +306,8 @@ interface ApiService {
     suspend fun purchasePremium(): Response<NoDataResponse>
 
 
-    @POST("/api/transactions")
-    suspend fun createTransaction(@Body transactionRequest: TransactionRequest): Response<Transaction>
+    @POST("api/users/wallet")
+    suspend fun walletChange(@Body transactionRequest: TransactionRequest): Response<NoDataResponse>
 
     @GET("/api/transactions/user/{userId}")
     suspend fun getAllUserTransaction(
@@ -322,9 +334,9 @@ interface ApiService {
 }
 
 class TransactionRequest (
-    val userId: Int,
     val money: Int,
-    val type: String
+    val type: String,
+    val bankAccountData: BankAccountData?=null
 )
 class ListTransactionResponse(
     val transactions: List<Transaction>,
@@ -471,6 +483,26 @@ data class TransactionUpdateRequest(
     val money : Int,
     val type : String,
     val status : String
+)
+
+data class TransactionApproveRequest(
+    val status : String
+)
+
+data class TransactionApproveResponse(
+    val success : Boolean,
+    val message : String
+)
+
+data class StoryApproveRequest(
+    val status : String,
+    val ageRange : String
+)
+
+data class StoryApproveResponse(
+    val success : Boolean,
+    val data : Story,
+    val message: String
 )
 
 data class ApiError(

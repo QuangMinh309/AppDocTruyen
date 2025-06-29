@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.frontend.R
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
@@ -77,7 +78,6 @@ import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.ui.screen.main_nav.ReadListItem_
@@ -995,13 +995,6 @@ fun RowSelectItem(
     }
 }
 
-fun formatDate(raw: String): String {
-    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-    val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss") // Change this as needed
-    val date = LocalDateTime.parse(raw.substring(0, 19), inputFormatter)
-    return date.format(outputFormatter)
-}
-
 @Composable
 fun TransactionCard(
     item : Transaction,
@@ -1036,7 +1029,7 @@ fun TransactionCard(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Time: " + formatDate(item.time.toString()),
+                    text = "Time: " + item.time,
                     color = Color.White,
                     style = TextStyle(
                         fontSize = 11.sp,
@@ -1117,6 +1110,200 @@ fun TransactionCard(
                         ),
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun UserCard(
+    item : User,
+    isSelected : Boolean,
+    onClick: () -> Unit = {}
+)
+{
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(vertical = 10.dp)
+            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
+            .clickable{ onClick() },
+        contentAlignment = Alignment.CenterStart
+    )
+    {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        )
+        {
+            Row {
+                Text(
+                    text = "ID: " + item.id,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Mail: " + item.mail,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(IntrinsicSize.Min)
+            )
+            {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = item.avatarUrl
+                    ),
+                    contentDescription = "pfp",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(50.dp, 50.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Text(
+                        text = "Username: " + item.name,
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        ),
+                    )
+                    Text(
+                        text = "Handle: " + item.dName,
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 13.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                        ),
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    FlowRow {
+                        Text(
+                            text = "Status: ",
+                            color = Color.White,
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            ),
+                        )
+                        Text(
+                            text = item.status.toString(),
+                            color = if(item.status == "locked") Color.Red else Color.White,
+                            style = TextStyle(
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StoryCardCard(
+    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .background(if(isSelected) Color.DarkGray else Color.Transparent)
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        AsyncImage(
+            model= story.coverImgUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp, 160.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.width(13.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            //name
+            Text(
+                story.name?:"",
+                color = Color.White,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+            )
+            Spacer(modifier = Modifier.height(7.dp))
+            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
+
+            Spacer(modifier = Modifier.height(13.dp))
+
+            //genre tags
+            SmallGenreTags(story.categories?: emptyList())
+            Spacer(modifier = Modifier.height(10.dp))
+
+            //updated time
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Last Updated: ", color = Color.White, fontSize = 11.sp)
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), color = OrangeRed, fontSize = 11.sp)
+            }
+
+            //status
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Status: ", color = Color.White, fontSize = 13.sp)
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(story.status, color = if(story.status == "pending") Color.Yellow else OrangeRed, fontSize = 13.sp)
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // other info
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
+                    contentDescription = "View Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.width(7.dp))
+                Text("${story.viewNum}", color = Color.White, fontSize = 12.5.sp)
+
+                Spacer(modifier = Modifier.width(25.dp))
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
+                    contentDescription = "List Chapter Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.width(7.dp))
+                Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
             }
         }
     }

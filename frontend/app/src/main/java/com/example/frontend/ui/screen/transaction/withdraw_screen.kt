@@ -2,6 +2,12 @@ package com.example.frontend.ui.screen.transaction
 
 
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,17 +23,17 @@ import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.transaction.WithDrawViewModel
 import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
@@ -35,15 +41,27 @@ import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.WithdrawRadioOption
 
 
-@Preview
-@Composable
-fun PreViewWithDrawScreen(){
-    val fakeviewmodel= WithDrawViewModel(NavigationManager())
-    WithdrawScreen(fakeviewmodel)
-}
+
 @Composable
 fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
-    val selectedOption = rememberSaveable { mutableStateOf("full") }
+
+    val amountState = viewmodel.amountState.collectAsState()
+    val selectedOption by viewmodel.selectedOption.collectAsState()
+
+    val accountNumber by viewmodel.accountNumber.collectAsState()
+    val accountHolderName by viewmodel.accountHolderName.collectAsState()
+    val bankName by viewmodel.bankName.collectAsState()
+    val user by viewmodel.user.collectAsState()
+
+    val toast by viewmodel.toast.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewmodel.clearToast()
+        }
+    }
     ScreenFrame(
         topBar = {
             TopBar(
@@ -85,15 +103,60 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                     WithdrawRadioOption(
                         title = "Withdraw a partial amount",
                         subtitle = "Minimum withdrawal 20,000₫",
-                        selected = selectedOption.value == "partial",
-                        onSelect = { /*TODO*/ }
+                        selected = selectedOption == "partial",
+                        onSelect = {
+                            viewmodel.changeSelectedOption("partial")
+                            viewmodel.changeAmount(0L)
+                        }
 
                     )
+                    AnimatedVisibility(
+                        visible = selectedOption == "partial",
+                        enter = slideInVertically(
+                            // Slide from top to bottom
+                            initialOffsetY = { -it } // Bắt đầu từ phía trên
+                        ) + fadeIn(), // Thêm hiệu ứng mờ dần
+                        exit = slideOutVertically() + fadeOut() // Thu lại và mờ dần
+                    ) {
+                        BasicTextField(
+                            value =  "Enter the amount",
+                            onValueChange = { newValue ->
+                                // Chuyển đổi chuỗi nhập vào thành Long
+                                val cleanedValue = newValue.replace(",", "").replace("đ", "")
+                                val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                                viewmodel.changeAmount(newAmount)
+                            },
+                            textStyle = TextStyle(
+                                color = Color.Gray,
+                                fontSize = 16.sp
+                            ),
+                            modifier = Modifier
+                                .background(Color(0xA6747373), shape = RoundedCornerShape(5.dp))
+                                .padding(vertical = 15.dp, horizontal = 8.dp),
+                            singleLine = true,
+                            decorationBox = { innerTextField ->
+                                Row(modifier = Modifier.fillMaxWidth()) {
+                                    if (amountState.value == 0L) {
+                                    Text(
+                                        text = viewmodel.formatMoney(amountState.value),
+                                        color = Color.Gray,
+                                        fontSize = 16.sp
+                                    )
+                                    }
+                                }
+                                innerTextField()
+                            }
+
+                        )
+                    }
                     WithdrawRadioOption(
                         title = "Withdraw all",
-                        subtitle = "2,000,000₫",
-                        selected = selectedOption.value == "full",
-                        onSelect = { /*TODO*/ }
+                        subtitle = viewmodel.formatMoney(user?.wallet?.toLong()?:0L),
+                        selected = selectedOption== "full",
+                        onSelect = {
+                            viewmodel.changeSelectedOption("full")
+                            viewmodel.changeAmount(user?.wallet?.toLong()?:0L)
+                        }
 
                     )
 
@@ -116,7 +179,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                    //account number box
                    BasicTextField(
                        value =  "Enter account number",
-                       onValueChange =  {},
+                       onValueChange =  {value -> viewmodel.changeAccountNumber(value)},
                        textStyle = TextStyle(
                            color = Color.Gray,
                            fontSize = 16.sp
@@ -129,7 +192,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                            Row(modifier = Modifier.fillMaxWidth()) {
                                /*if (value.isEmpty()) {*/
                                Text(
-                                   text = "",
+                                   text = accountNumber,
                                    color = Color.Gray,
                                    fontSize = 16.sp
                                )
@@ -141,20 +204,20 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                    //Account holder name box
                    BasicTextField(
                        value =  "Account holder name",
-                       onValueChange =  {},
+                       onValueChange =  {viewmodel.changeAccountHolderName(it)},
                        textStyle = TextStyle(
                            color = Color.Gray,
                            fontSize = 16.sp
                        ),
                        modifier = Modifier
                            .background(Color(0xA6747373), shape = RoundedCornerShape(5.dp))
-                           .padding(vertical = 15.dp, horizontal = 8.dp),
+                           .padding(vertical = 25.dp, horizontal = 8.dp),
                        singleLine = true,
                        decorationBox = { innerTextField ->
                            Row(modifier = Modifier.fillMaxWidth()) {
                                /*if (value.isEmpty()) {*/
                                Text(
-                                   text = "",
+                                   text = accountHolderName,
                                    color = Color.Gray,
                                    fontSize = 16.sp
                                )
@@ -166,7 +229,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                    //Bank name box
                    BasicTextField(
                        value =  "Bank name",
-                       onValueChange =  {},
+                       onValueChange =  {viewmodel.changeBankName(it)},
                        textStyle = TextStyle(
                            color = Color.Gray,
                            fontSize = 16.sp
@@ -179,7 +242,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                            Row(modifier = Modifier.fillMaxWidth()) {
                                /*if (value.isEmpty()) {*/
                                Text(
-                                   text = "",
+                                   text = bankName,
                                    color = Color.Gray,
                                    fontSize = 16.sp
                                )
@@ -195,7 +258,14 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                     .fillMaxWidth()
                     .height(50.dp)
                     .padding(horizontal = 20.dp),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    if(amountState.value < 20000L) {
+                        viewmodel.showToast("The minimum amount to withdraw is 20,000 VND.Please enter the other number.")
+                    }
+                    else{
+                        viewmodel.withdraw()
+                    }
+                }
 
             ){
                 Row (

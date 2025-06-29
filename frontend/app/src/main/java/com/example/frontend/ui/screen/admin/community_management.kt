@@ -1,7 +1,5 @@
 package com.example.frontend.ui.screen.admin
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,24 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.presentation.viewmodel.admin.AdminViewModel
-import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.ui.components.RowSelectItem
+import com.example.frontend.presentation.viewmodel.admin.CommunityMgmtViewModel
 import com.example.frontend.ui.components.ScreenFrame
 
 @Composable
-fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
-{
+fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel()) {
     ScreenFrame(
         topBar = {
             Row(
@@ -62,7 +55,7 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
                 }
 
                 Text(
-                    text = "Admin",
+                    text = "Community",
                     color = Color.White,
                     style = TextStyle(
                         fontSize = 16.sp,
@@ -79,7 +72,7 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
     )
     {
         Text(
-            text = "Administrative Tools",
+            text = "Create community",
             color = Color.White,
             style = TextStyle(
                 fontSize = 30.sp,
@@ -89,44 +82,5 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
             modifier = Modifier
                 .padding(top = 30.dp)
         )
-        Column(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-        )
-        {
-            RowSelectItem(
-                "User",
-                painterResource(R.drawable.user_icon),
-                { viewModel.onGoToUserMgmtScreen() }
-            )
-            RowSelectItem(
-                "Category",
-                painterResource(R.drawable.category_icon),
-                { viewModel.onGoToCategoryMgmtScreen() }
-            )
-            RowSelectItem(
-                "Story",
-                painterResource(R.drawable.book_icon),
-                { viewModel.onGoToStoryMgmtScreen() }
-            )
-            RowSelectItem(
-                "Transaction",
-                painterResource(R.drawable.creditcard_icon),
-                { viewModel.onGoToTransactionMgmtScreen() }
-            )
-            RowSelectItem(
-                "Community",
-                painterResource(R.drawable.people),
-                {  }
-            )
-        }
     }
-}
-
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-private fun PreviewScreenContent() {
-    val fakeViewModel = AdminViewModel (NavigationManager())
-    AdminScreen(fakeViewModel)
 }

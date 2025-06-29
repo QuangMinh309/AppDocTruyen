@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,32 +19,16 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     val toast: StateFlow<String?> get() = _toast
 
     fun clearToast() { _toast.value = null }
+    fun showToast(message: String) {
+        _toast.value = message
+    }
 
-    fun onGoToProfileScreen() {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Profile.route)
-        }
+    fun formatMoney(money: Long): String {
+        val formatter = DecimalFormat("#,###"+"đ")
+        return formatter.format(money)
     }
-    fun onGoToHomeScreen() {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Home.route)
-        }
-    }
-    fun onGoToSearchScreen() {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Search.route)
-        }
-    }
-    fun onGoToYourStoryScreen() {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.YourStory.route)
-        }
-    }
-    fun onGoToCommunityScreen() {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.MainNav.Community.route)
-        }
-    }
+
+
     fun onGoToSetting() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Setting.route)
@@ -126,6 +111,7 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Transaction.Accept.createRoute(money))
         }
     }
+
     fun onGoToWalletDetailScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Transaction.Wallet.route)
