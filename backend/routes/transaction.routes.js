@@ -34,7 +34,7 @@ router.get(
 router.put(
   '/:transactionId',
   validate(validators.transactionId, 'params'),
-  validate(validators.transaction),
+  validate(validators.updateTransaction),
   authorizeRoles('admin'),
   TransactionController.updateTransaction
 );

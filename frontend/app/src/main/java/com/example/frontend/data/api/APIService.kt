@@ -425,6 +425,10 @@ data class TransactionUpdateRequest(
     val status : String
 )
 
+data class ApiError(
+    val status: Int,
+    val message: String
+)
 //// Placeholder data classes (cần định nghĩa thêm nếu dùng)
 //data class Story(val id: String) // Placeholder
 //data class Category(val id: String) // Placeholder

@@ -1,3 +1,4 @@
+
 import { sequelize } from '../models/index.js';
 import ApiError from '../utils/api_error.util.js';
 import { Op } from 'sequelize';
@@ -9,11 +10,15 @@ const TransactionService = {
   async createTransaction(transactionData) {
     try {
       const user = await User.findByPk(transactionData.userId)
-      if (!user) throw new ApiError("người dùng không tồn tại!", 404)
+      if (!user)
+        throw new ApiError("người dùng không tồn tại!", 404)
+
+      if (transactionData.type == "withdraw" && user.wallet - transactionData.money < 0)
+        throw new ApiError("Tiền trong ví không đủ để rút!", 400)
 
       const transaction = await Transaction.create({
         ...transactionData,
-        status: 'pending',
+        status: transactionData.status || 'pending',
         time: transactionData.time || new Date(),
         finishAt: transactionData.finishAt,
       });
@@ -109,6 +114,8 @@ const TransactionService = {
       if (!transaction) {
         throw new ApiError('Không tìm thấy giao dịch', 404);
       }
+      if (updateData.status == "success")
+        updateData.finishAt = new Date()
 
       await transaction.update(updateData);
       return transaction;

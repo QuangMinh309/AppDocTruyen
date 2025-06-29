@@ -1,7 +1,9 @@
 package com.example.frontend.data.repository
 
+import com.example.frontend.data.api.ApiError
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.model.Result
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -12,6 +14,7 @@ import javax.inject.Singleton
 @Singleton
 //@ViewModelScoped
 class ImageRepository @Inject constructor(
+    private val gson: Gson,
     private val apiService: ApiService
 ) {
     suspend fun uploadImageToServer(file: File): Result<Pair<String,String>> {
@@ -25,7 +28,9 @@ class ImageRepository @Inject constructor(
                 val res = Pair(response.body()?.url ?: "",response.body()?.publicId ?: "")
                 Result.Success(res)
             } else {
-                Result.Failure(Exception("Upload failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = gson.fromJson(errorBody, ApiError::class.java)
+                Result.Failure(Exception("Upload failed : ${errorResponse.message}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

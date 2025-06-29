@@ -33,7 +33,7 @@ const purchasePremium = async (userId) => {
       wallet: user.wallet - premiumCost,
       isPremium: true,
     });
-    const premium = await Premium.Create({ userId, expirateAt, createAt: new Date(), })
+    await Premium.create({ userId, expirateAt, createAt: new Date(), })
 
     await TransactionService.createTransaction({
       userId,
@@ -45,6 +45,7 @@ const purchasePremium = async (userId) => {
 
     return { message: 'Mua premium thành công' };
   } catch (err) {
+    console.log(err)
     if (err instanceof ApiError) throw err;
     throw new ApiError('Lỗi khi mua premium', 500);
   }

@@ -39,8 +39,8 @@ import com.example.frontend.ui.theme.OrangeRed
 @Composable
 fun StoryStatusAction(
     isAuthor: Boolean,
-    storyStatus: MutableState<String>, // "Full" or "Updating"
-    hasVoted: MutableState<String>,    // "Vote" or "Voted"
+    storyStatus: MutableState<String>, // "full" or "update"
+    hasVoted: MutableState<String>,    // "vote" or "voted"
     onActionClick: () -> Unit = {}
 ) {
     Row(
@@ -53,14 +53,14 @@ fun StoryStatusAction(
             onClick = {
                 if (isAuthor) {
                     storyStatus.value = when (storyStatus.value) {
-                        "Full" -> "Updating"
-                        "Updating" -> "Full"
+                        "full" -> "update"
+                        "update" -> "full"
                         else -> storyStatus.value
                     }
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (storyStatus.value == "Full") Green else OrangeRed
+                containerColor = if (storyStatus.value == "full") Green else OrangeRed
             ),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
@@ -97,12 +97,12 @@ fun StoryStatusAction(
                 colors = listOf(Color(0xFF792430), Color(0xFFDF4258))
             )
 
-            val isVoted = hasVoted.value == "Voted"
+            val isVoted = hasVoted.value == "voted"
             val background = if (isVoted) Color(0xFFBA3749) else Color.Transparent
 
             Button(
                 onClick = {
-                    hasVoted.value = if (isVoted) "Vote" else "Voted"
+                    hasVoted.value = if (isVoted) "vote" else "voted"
                     onActionClick()
                 },
                 modifier = Modifier
@@ -174,14 +174,14 @@ fun StoryStatusActionAdmin(
             onClick = {
                 if (isAuthor) {
                     storyStatus.value = when (storyStatus.value) {
-                        "Full" -> "Updating"
-                        "Updating" -> "Full"
+                        "full" -> "update"
+                        "update" -> "full"
                         else -> storyStatus.value
                     }
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (storyStatus.value == "Full") Green else OrangeRed
+                containerColor = if (storyStatus.value == "full") Green else OrangeRed
             ),
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
@@ -232,12 +232,12 @@ fun StoryStatusActionAdmin(
                 colors = listOf(Color(0xFF792430), Color(0xFFDF4258))
             )
 
-            val isVoted = hasVoted.value == "Voted"
+            val isVoted = hasVoted.value == "voted"
             val background = if (isVoted) Color(0xFFBA3749) else Color.Transparent
 
             Button(
                 onClick = {
-                    hasVoted.value = if (isVoted) "Vote" else "Voted"
+                    hasVoted.value = if (isVoted) "vote" else "voted"
                     onActionClick()
                 },
                 modifier = Modifier

@@ -9,6 +9,31 @@ const messages = {
   'number.base': 'Phải là số',
   'number.integer': 'Phải là số nguyên',
 };
+// Schema validation cho tạo/cập nhật giao dịch
+const transactionUpdateSchema = Joi.object({
+  money: Joi.number()
+    .integer()
+    .messages({
+      ...messages,
+      'number.base': 'Số tiền phải là số',
+      'number.integer': 'Số tiền phải là số nguyên',
+      'any.required': 'Số tiền là bắt buộc',
+    }),
+  type: Joi.string()
+    .valid('deposit', 'withdraw', 'purchase')
+    .messages({
+      ...messages,
+      'any.only': 'Loại giao dịch phải là deposit, withdraw hoặc purchase',
+      'any.required': 'Loại giao dịch là bắt buộc',
+    }),
+  status: Joi.string()
+    .valid('pending', 'success')
+    .messages({
+      ...messages,
+      'any.only': 'Trạng thái phải là pending hoặc success',
+      'any.required': 'Trạng thái là bắt buộc',
+    })
+}).options({ stripUnknown: true });
 
 // Schema validation cho tạo/cập nhật giao dịch
 const transactionSchema = Joi.object({
@@ -126,6 +151,7 @@ const getTransactionsSchema = Joi.object({
 export default {
   transaction: transactionSchema,
   transactionId: transactionIdSchema,
+  updateTransaction: transactionUpdateSchema,
   getTransactions: getTransactionsSchema,
   async validateUser(userId) {
     try {
