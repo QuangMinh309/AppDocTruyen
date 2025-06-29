@@ -46,8 +46,9 @@ const onConnection = async (ws, request) => {
         if (!handler) {
             throw new ApiError(`Không tìm thấy handler cho path: ${pathname}`, 404);
         }
-        console.log(handler)
+
         handler.init(ws, request, clients);
+
 
         ws.on('message', async (message) => {
             try {

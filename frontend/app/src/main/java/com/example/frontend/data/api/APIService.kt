@@ -1,10 +1,16 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.Functionality
 import com.example.frontend.data.model.NameList
+import com.example.frontend.data.model.Notification
+import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
+import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -33,8 +39,6 @@ interface ApiService {
         @Path("id") id: String
     ): Response<ImageUrlResponse>
 
-
-
     @GET("api/stories")
     suspend fun getAllStories(): Response<StoriesResponse>
 
@@ -46,6 +50,16 @@ interface ApiService {
 
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
+
+    @GET("api/stories/{storyId}")
+    suspend fun getStoryById(
+        @Path("storyId") storyId:Int
+    ): Response<StoryResponse>
+
+    data class StoryResponse(
+        val success: Boolean,
+        val data: Story
+    )
 
 
 
@@ -159,6 +173,11 @@ interface ApiService {
         val data: User
     )
 
+    data class UsersResponse(
+        val success: Boolean,
+        val data: List<User>
+    )
+
     // Thêm data class trong ApiService.kt
     data class ChangePasswordRequest(
         val currentPassword: String,
@@ -180,6 +199,33 @@ interface ApiService {
     @GET("api/categories")
     suspend fun getCategories(): Response<List<Category>>
 
+    @POST("api/categories/")
+    suspend fun createCategory(@Body categoryName: CategoryRequest): Response<Category>
+
+    @PUT("api/categories/{id}")
+    suspend fun updateCategory(@Path("id") id: Int, @Body categoryName: CategoryRequest): Response<Category>
+
+    @DELETE("api/categories/{id}")
+    suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
+
+    @GET("api/transactions/{transactionId}")
+    suspend fun getTransactionById(@Path("transactionId") transactionId: Int): Response<Transaction>
+
+    @GET("api/transactions/user/{userId}")
+    suspend fun getUserTransactions(@Path("userId") userId: Int): Response<UserTransactionResponse>
+
+    @PUT("api/transactions/{transactionId}")
+    suspend fun updateTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionUpdateRequest): Response<Transaction>
+
+    @DELETE("api/transactions/{transactionId}")
+    suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
+
+    @GET("api/admins")
+    suspend fun getAllUsers(): Response<UsersResponse>
+
+
+    @GET("api/nameLists")
+    suspend fun getNameLists(): Response<List<NameList>>
 
     @POST("api/users/follow")
     suspend fun follow(@Body followRequest: UserFollowRequest): Response<NoDataResponse>
@@ -215,12 +261,6 @@ interface ApiService {
 
     @POST("api/passwordResets/reset")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): Response<ResetPasswordResponse>
-
-
-
-
-
-
 }
 
 class TransactionRequest (
@@ -236,6 +276,10 @@ class ListTransactionResponse(
 
 data class UserFollowRequest (
     val followedId: Int
+)
+
+data class CategoryRequest(
+    val categoryName: String
 )
 
 // Data classes cho password reset
@@ -357,6 +401,20 @@ data class NoDataResponse(
     val status: Int,
     val message: String
 )
+
+data class UserTransactionResponse(
+    val transactions: List<Transaction>,
+    val nextLastId: Int?,
+    val hasMore: Boolean
+)
+
+data class TransactionUpdateRequest(
+    val userId : Int,
+    val money : Int,
+    val type : String,
+    val status : String
+)
+
 data class ApiError(
     val status: Int,
     val message: String

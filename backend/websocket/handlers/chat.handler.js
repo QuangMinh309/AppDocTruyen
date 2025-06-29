@@ -13,6 +13,7 @@ import {
 const broadcastToClients = (ws, action, data, clients) => {
     clients.forEach((clientWs) => {
         if (!clientWs || clientWs.readyState !== clientWs.OPEN) return; // Kiểm tra kết nối
+
         if (clientWs.communityId !== ws.communityId) return; // Chỉ gửi đến những client trong cùng community
 
 

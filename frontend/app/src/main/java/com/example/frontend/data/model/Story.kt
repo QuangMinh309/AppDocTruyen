@@ -18,7 +18,8 @@ data class Story(
     @SerializedName("updatedAt") val updateAt: String,
     @SerializedName("status") val status: String,
     @SerializedName("pricePerChapter") val pricePerChapter: BigDecimal,
-    @SerializedName("coverImgId") val coverImgId: String
+    @SerializedName("coverImgId") val coverImgId: String,
+    @SerializedName("chapters") val chapters: List<Chapter> ?
 ) {
     val coverImgUrl: String
         get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$coverImgId"

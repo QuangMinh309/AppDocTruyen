@@ -8,7 +8,7 @@ import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.screen.story.ExampleCategories
-import com.example.frontend.ui.screen.story.Examplechapters
+//import com.example.frontend.ui.screen.story.Examplechapters
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -27,7 +27,7 @@ val ExampleChapter: Chapter=Chapter (
     storyId = 1,
     content = "The hero embarks on a journey to find the lost artifact...",
     viewNum = 500, commentNumber = 10,
-    updateAt = LocalDate.parse("2024-12-12"),
+    updatedAtString = "2025-07-15T07:30:00.000Z",
     lockedStatus = false
 )
 
