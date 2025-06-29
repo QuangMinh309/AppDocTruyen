@@ -203,7 +203,6 @@ const ChapterService = {
       return true;
     });
   },
-
 };
 
 export default ChapterService;

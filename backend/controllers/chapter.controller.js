@@ -100,7 +100,6 @@ const ChapterController = {
       return next(error);
     }
   },
-
 };
 
 export default ChapterController;
