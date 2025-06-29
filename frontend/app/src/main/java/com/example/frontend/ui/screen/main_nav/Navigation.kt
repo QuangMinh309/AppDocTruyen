@@ -186,7 +186,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(
                 route = Screen.Story.Detail.route,
                 arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
+                    navArgument("storyId") { type = NavType.IntType },
                 )
             ) { StoryDetailScreen() }
 

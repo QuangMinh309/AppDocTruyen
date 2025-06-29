@@ -35,8 +35,8 @@ sealed class Screen(var route: String) {
     }
 
     sealed class Story(route: String) : Screen(route) {
-        data object Detail : Story("Story/StoryDetail/{id}") {
-            fun createRoute(id: String) = "Story/StoryDetail/$id"
+        data object Detail : Story("Story/StoryDetail/{storyId}") {
+            fun createRoute(storyId: Int) = "Story/StoryDetail/$storyId"
         }
         data object AuthorProfile : Story("AuthorProfile/{id}") {
             fun createRoute(id: String) = "AuthorProfile/$id"

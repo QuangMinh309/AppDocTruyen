@@ -50,9 +50,11 @@ const uploadBase64ToCloudinary = async (base64Image, des = "") => {
     }
 
     const buffer = Buffer.from(matches[2], 'base64');
+    console.log(buffer)
     const result = await uploadImageToCloudinary(buffer, des);
     return result;
   } catch (error) {
+    console.log(error)
     if (error instanceof ApiError) {
       throw error;
     }

@@ -10,6 +10,9 @@ import com.example.frontend.data.repository.StoryDetailRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,21 +24,34 @@ class StoryDetailViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
-    val storyId: Int = checkNotNull(savedStateHandle["storyId"])
+    private val _storyId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("storyId")))
+    val storyId: StateFlow<Int> = _storyId.asStateFlow()
+
+
     val story = mutableStateOf<Story?>(null)
     val isAuthor = mutableStateOf(false)
     val similarStories = mutableStateOf<List<Story>>(emptyList())
     val isLoading = mutableStateOf(false)
 
     init {
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow("storyId", 0).collect { newStoryId ->
+                if (_storyId.value != newStoryId) {
+                    _storyId.value = newStoryId
+                    loadStoryDetails()
+                    loadSimilarStories()
+                }
+            }
+        }
         loadStoryDetails()
         loadSimilarStories()
     }
 
+
     private fun loadStoryDetails() {
         viewModelScope.launch {
             isLoading.value = true
-            val result = storyDetailRepository.getStoryById(storyId)
+            val result = storyDetailRepository.getStoryById(storyId.value)
             when (result) {
                 is Result.Success -> {
                     story.value = result.data

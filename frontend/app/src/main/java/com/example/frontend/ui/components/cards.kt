@@ -291,30 +291,23 @@ fun
 }
 
 //endregion
-
 @Composable
 fun ChapterItemCard(
     chapter: Chapter,
-    onClick: () -> Unit={}
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable { onClick() }, // Thêm onClick vào Modifier
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
             Row {
                 Text(text = chapter.chapterName, color = Color.White, fontSize = 19.sp)
                 Spacer(modifier = Modifier.width(11.dp))
-                if (true) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.write_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(17.dp),
-                        tint = Color.White
-                    )
-                } else if (chapter.lockedStatus) {
+                if (chapter.lockedStatus) {
                     Icon(
                         imageVector = Icons.Outlined.Lock,
                         contentDescription = null,
@@ -327,9 +320,12 @@ fun ChapterItemCard(
             Spacer(modifier = Modifier.height(13.dp))
 
             Row {
-                Text(text = chapter.updateAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = OrangeRed, fontSize = 14.sp)
+                // Xử lý null cho updateAt
+                val formattedDate = chapter.updateAt?.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) ?: "N/A"
+                val formattedTime = chapter.updateAt?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "N/A"
+                Text(text = formattedDate, color = OrangeRed, fontSize = 14.sp)
                 Text(
-                    text = chapter.updateAt.format(DateTimeFormatter.ofPattern("HH:mm")) ,
+                    text = formattedTime,
                     color = Color.White,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 7.dp)
