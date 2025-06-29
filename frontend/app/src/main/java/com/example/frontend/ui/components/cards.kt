@@ -1226,3 +1226,85 @@ fun UserCard(
         }
     }
 }
+
+@Composable
+fun StoryCardCard(
+    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {},
+) {
+    Row(
+        modifier = modifier
+            .padding(8.dp)
+            .background(if(isSelected) Color.DarkGray else Color.Transparent)
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        AsyncImage(
+            model= story.coverImgUrl,
+            contentDescription = null,
+            modifier = Modifier
+                .size(100.dp, 160.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.width(13.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            //name
+            Text(
+                story.name?:"",
+                color = Color.White,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+            )
+            Spacer(modifier = Modifier.height(7.dp))
+            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
+
+            Spacer(modifier = Modifier.height(13.dp))
+
+            //genre tags
+            SmallGenreTags(story.categories?: emptyList())
+            Spacer(modifier = Modifier.height(10.dp))
+
+            //updated time
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Last Updated: ", color = Color.White, fontSize = 11.sp)
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), color = OrangeRed, fontSize = 11.sp)
+            }
+
+            //status
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Status: ", color = Color.White, fontSize = 13.sp)
+                Spacer(modifier = Modifier.width(2.dp))
+                Text(story.status, color = if(story.status == "pending") Color.Yellow else OrangeRed, fontSize = 13.sp)
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // other info
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
+                    contentDescription = "View Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.width(7.dp))
+                Text("${story.viewNum}", color = Color.White, fontSize = 12.5.sp)
+
+                Spacer(modifier = Modifier.width(25.dp))
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.FormatListBulleted,
+                    contentDescription = "List Chapter Icon",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(15.dp)
+                )
+                Spacer(modifier = Modifier.width(7.dp))
+                Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
+            }
+        }
+    }
+}
