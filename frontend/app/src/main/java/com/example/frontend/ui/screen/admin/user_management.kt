@@ -51,7 +51,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import com.example.frontend.data.api.User
+import com.example.frontend.data.model.User
 import com.example.frontend.ui.components.SelectChip
 import com.example.frontend.ui.theme.DeepBlue
 
@@ -185,11 +185,11 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
                 modifier = Modifier.weight(1f)
             )
             {
-                Text(
-                    text = if(selectedUser?.status == "Suspended") "Unsuspend" else "Suspend",
-                    color = if (selectedUser != null) DeepBlue else Color.Gray,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
-                )
+//                Text(
+//                    text = if(selectedUser?.status == "Suspended") "Unsuspend" else "Suspend",
+//                    color = if (selectedUser != null) DeepBlue else Color.Gray,
+//                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+//                )
             }
             Spacer(modifier = Modifier.width(10.dp))
             Button(
@@ -227,14 +227,14 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
-@Preview(showBackground = true)
-@Composable
-fun PreviewUserScreen()
-{
-    val fakeViewModel = UserMgmtViewModel(NavigationManager())
-    UserManagementScreen(fakeViewModel)
-}
+//@SuppressLint("ViewModelConstructorInComposable")
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewUserScreen()
+//{
+//    val fakeViewModel = UserMgmtViewModel(NavigationManager())
+//    UserManagementScreen(fakeViewModel)
+//}
 
 @Composable
 fun UserCard(
@@ -243,87 +243,87 @@ fun UserCard(
     onClick: () -> Unit = {}
 )
 {
-    Box (
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .padding(vertical = 10.dp)
-            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
-            .clickable{ onClick() },
-        contentAlignment = Alignment.CenterStart
-    )
-    {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-        )
-        {
-            Row {
-                Text(
-                    text = "ID: " + item.userId.toString(),
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Mail: " + item.mail,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(IntrinsicSize.Min)
-            )
-            {
-                Image(
-                    painter = painterResource(id = R.drawable.avt_img),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "pfp",
-                    modifier = Modifier
-                        .size(50.dp, 50.dp)
-                        .clip(RoundedCornerShape(50.dp))
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column()
-                {
-                    Text(
-                        text = "Username: " + item.userName,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold))
-                    )
-                    Text(
-                        text = "Handle: " + item.dUserName,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold))
-                    )
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Divider(
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Column()
-                {
-                    FlowRow {
-                        Text(
-                            text = "Status: ",
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                        Text(
-                            text = item.status,
-                            color = if(item.status == "Suspended") Color.Red else Color.White,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-                        )
-                    }
-                }
-            }
-        }
-    }
+//    Box (
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(120.dp)
+//            .padding(vertical = 10.dp)
+//            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
+//            .clickable{ onClick() },
+//        contentAlignment = Alignment.CenterStart
+//    )
+//    {
+//        Column(
+//            modifier = Modifier
+//                .padding(horizontal = 10.dp)
+//        )
+//        {
+//            Row {
+//                Text(
+//                    text = "ID: " + item.id,
+//                    color = Color.White,
+//                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                )
+//                Spacer(modifier = Modifier.weight(1f))
+//                Text(
+//                    text = "Mail: " + item.mail,
+//                    color = Color.White,
+//                    fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.height(10.dp))
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.height(IntrinsicSize.Min)
+//            )
+//            {
+//                Image(
+//                    painter = painterResource(id = R.drawable.avt_img),
+//                    contentScale = ContentScale.Crop,
+//                    contentDescription = "pfp",
+//                    modifier = Modifier
+//                        .size(50.dp, 50.dp)
+//                        .clip(RoundedCornerShape(50.dp))
+//                )
+//                Spacer(modifier = Modifier.width(10.dp))
+//                Column()
+//                {
+//                    Text(
+//                        text = "Username: " + item.name,
+//                        color = Color.White,
+//                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                    )
+//                    Text(
+//                        text = "Handle: " + item.dName,
+//                        color = Color.White,
+//                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                    )
+//                }
+//                Spacer(modifier = Modifier.width(10.dp))
+//                Divider(
+//                    color = Color.Gray,
+//                    modifier = Modifier
+//                        .fillMaxHeight()
+//                        .width(1.dp)
+//                )
+//                Spacer(modifier = Modifier.width(10.dp))
+//                Column()
+//                {
+//                    FlowRow {
+//                        Text(
+//                            text = "Status: ",
+//                            color = Color.White,
+//                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                        )
+//                        Text(
+//                            text = item.status,
+//                            color = if(item.status == "Suspended") Color.Red else Color.White,
+//                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

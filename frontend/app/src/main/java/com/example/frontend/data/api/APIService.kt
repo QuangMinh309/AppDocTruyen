@@ -163,6 +163,11 @@ interface ApiService {
         val data: User
     )
 
+    data class UsersResponse(
+        val success: Boolean,
+        val data: List<User>
+    )
+
     // Thêm data class trong ApiService.kt
     data class ChangePasswordRequest(
         val currentPassword: String,
@@ -194,7 +199,7 @@ interface ApiService {
     suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
 
     @GET("api/transactions/{transactionId}")
-    suspend fun getTransactionById(@Path("transactionId") transactionId: Int): Response<Transaction2>
+    suspend fun getTransactionById(@Path("transactionId") transactionId: Int): Response<Transaction>
 
     @GET("api/transactions/user/{userId}")
     suspend fun getUserTransactions(@Path("userId") userId: Int): Response<UserTransactionResponse>
@@ -204,6 +209,9 @@ interface ApiService {
 
     @DELETE("api/transactions/{transactionId}")
     suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
+
+    @GET("api/admins")
+    suspend fun getAllUsers(): Response<UsersResponse>
 
 
     @GET("api/nameLists")
@@ -385,7 +393,7 @@ data class NoDataResponse(
 )
 
 data class UserTransactionResponse(
-    val transactions: List<Transaction2>,
+    val transactions: List<Transaction>,
     val nextLastId: Int?,
     val hasMore: Boolean
 )

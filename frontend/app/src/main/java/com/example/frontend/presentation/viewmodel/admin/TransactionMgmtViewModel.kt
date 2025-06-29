@@ -3,7 +3,6 @@ package com.example.frontend.presentation.viewmodel.admin
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.TransactionUpdateRequest
-import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.repository.TransactionRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -12,10 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 import com.example.frontend.data.model.Result
-import kotlinx.coroutines.flow.filter
+import com.example.frontend.data.model.Transaction
 
 val dummyTypes: List<String> = listOf(
     "deposit",
@@ -45,14 +43,13 @@ class TransactionMgmtViewModel @Inject constructor(
     private val _selectedStatus = MutableStateFlow("")
     val selectedStatus: StateFlow<String> = _selectedStatus
 
-    private var _selectedTransaction = MutableStateFlow<Transaction2?>(null)
-    val selectedTransaction: StateFlow<Transaction2?> = _selectedTransaction
+    private var _selectedTransaction = MutableStateFlow<Transaction?>(null)
+    val selectedTransaction: StateFlow<Transaction?> = _selectedTransaction
 
-    private val _transactions = MutableStateFlow<List<Transaction2>>(emptyList())
-    val transactions: StateFlow<List<Transaction2>> = _transactions
+    private val _transactions = MutableStateFlow<List<Transaction>>(emptyList())
 
-    private val _displayedTransactions = MutableStateFlow<List<Transaction2>>(emptyList())
-    val displayedTransactions: StateFlow<List<Transaction2>> = _displayedTransactions
+    private val _displayedTransactions = MutableStateFlow<List<Transaction>>(emptyList())
+    val displayedTransactions: StateFlow<List<Transaction>> = _displayedTransactions
 
     private val _listTypes = MutableStateFlow<List<String>>(dummyTypes)
     val listTypes: StateFlow<List<String>> = _listTypes
@@ -139,7 +136,7 @@ class TransactionMgmtViewModel @Inject constructor(
                     _transactions.value = when(result) {
                         is Result.Success -> {
                             _toast.value = "Transaction loaded"
-                            listOf<Transaction2>(result.data)
+                            listOf<Transaction>(result.data)
                         }
                         is Result.Failure -> {
                             _toast.value = "Failed to load transaction: ${result.exception.message}"
@@ -175,7 +172,7 @@ class TransactionMgmtViewModel @Inject constructor(
         loadDisplayedTransactions()
     }
 
-    fun onSelectTransaction(transaction: Transaction2)
+    fun onSelectTransaction(transaction: Transaction)
     {
         _selectedTransaction.value = if(_selectedTransaction.value == transaction) null else transaction
     }
@@ -189,7 +186,7 @@ class TransactionMgmtViewModel @Inject constructor(
                 val result = transactionRepository.updateTransaction(
                     _selectedTransaction.value!!.transactionId,
                     TransactionUpdateRequest(
-                        _selectedTransaction.value!!.user.userId,
+                        _selectedTransaction.value!!.user!!.id,
                         _selectedTransaction.value!!.money,
                         _selectedTransaction.value!!.type, status)
                 )
@@ -201,9 +198,9 @@ class TransactionMgmtViewModel @Inject constructor(
 
                     is Result.Failure -> {
                         _toast.value = "Failed to update transaction: ${result.exception.message}"
-                        MutableStateFlow(_selectedTransaction.value)
+                        _selectedTransaction.value
                     }
-                } as Transaction2?
+                }
             }
             catch (e: Exception){
                 _toast.value = "Error: ${e.message}"
@@ -233,9 +230,9 @@ class TransactionMgmtViewModel @Inject constructor(
 
                     is Result.Failure -> {
                         _toast.value = "Failed to delete transaction: ${result.exception.message}"
-                        MutableStateFlow(_selectedTransaction.value)
+                        _selectedTransaction.value
                     }
-                } as Transaction2?
+                }
             }
             catch (e: Exception){
                 _toast.value = "Error: ${e.message}"

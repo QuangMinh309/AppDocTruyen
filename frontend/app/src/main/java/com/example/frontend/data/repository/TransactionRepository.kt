@@ -24,7 +24,7 @@ class TransactionRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun getTransactionById(id: Int): Result<Transaction2> {
+    suspend fun getTransactionById(id: Int): Result<Transaction> {
         return try {
             val response = apiService.getTransactionById(id)
             if (response.isSuccessful) {
@@ -37,7 +37,7 @@ class TransactionRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserTransactions(id: Int): Result<List<Transaction2>> {
+    suspend fun getUserTransactions(id: Int): Result<List<Transaction>> {
         return try {
             val response = apiService.getUserTransactions(id)
             if (response.isSuccessful) {

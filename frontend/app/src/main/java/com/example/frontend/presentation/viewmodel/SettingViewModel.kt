@@ -52,7 +52,7 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = authRepository.getCurrentUser()
             if (currentUser != null) {
-                if(currentUser.role!!.roleId == 1)
+                if(currentUser.role!!.roleName == "admin")
                     _isVisible.value = true
                 val result = authRepository.getUserById(currentUser.id)
                 when (result) {

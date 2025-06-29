@@ -41,6 +41,7 @@ import com.example.frontend.ui.screen.SettingScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
 import com.example.frontend.ui.screen.admin.StoryManagementScreen
+import com.example.frontend.ui.screen.admin.TransactionManagementScreen
 import com.example.frontend.ui.screen.admin.UserManagementScreen
 import com.example.frontend.ui.screen.community.ChattingScreen
 import com.example.frontend.ui.screen.community.CommunityDetailScreen
@@ -279,7 +280,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.AdminScreen.route) { AdminScreen() }
             composable(Screen.Admin.Category.route) { CategoryManagementScreen() }
-           // composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
+            composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
             composable(Screen.Admin.User.route) { UserManagementScreen() }
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
             composable(

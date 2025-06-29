@@ -1003,7 +1003,7 @@ fun formatDate(raw: String): String {
 
 @Composable
 fun TransactionCard(
-    item : Transaction2,
+    item : Transaction,
     isSelected : Boolean,
     onClick: () -> Unit = {}
 )
@@ -1035,7 +1035,7 @@ fun TransactionCard(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "Time: " + formatDate(item.time),
+                    text = "Time: " + formatDate(item.time.toString()),
                     color = Color.White,
                     style = TextStyle(
                         fontSize = 11.sp,
@@ -1051,7 +1051,7 @@ fun TransactionCard(
             )
             {
                 AsyncImage(
-                    model = item.user.avatarId,
+                    model = item.user!!.avatarId,
                     contentDescription = "pfp",
                     placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,
@@ -1063,7 +1063,7 @@ fun TransactionCard(
                 Column()
                 {
                     Text(
-                        text = "User ID: " + item.user.userId,
+                        text = "User ID: " + item.user.id,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 13.sp,
