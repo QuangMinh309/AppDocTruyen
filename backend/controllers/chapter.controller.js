@@ -1,4 +1,5 @@
 import ChapterService from '../services/chapter/chapter.service.js';
+import ChapterReadingService from '../services/chapter/chapter_read.service.js';
 
 const ChapterController = {
   async createChapter(req, res, next) {
@@ -15,10 +16,27 @@ const ChapterController = {
 
   async readChapter(req, res, next) {
     try {
-      const { chapterId } = req.params
-      const userId = req.user ? req.user.userId : null
-      const chapter = await ChapterService.readChapter(chapterId, userId)
-      return res.status(200).json({ success: true, data: chapter })
+      const { chapterId } = req.params;
+      const userId = req.user ? req.user.userId : null;
+      const chapter = await ChapterReadingService.readChapter(
+        chapterId,
+        userId
+      );
+      return res.status(200).json({ success: true, data: chapter });
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async readNextChapter(req, res, next) {
+    try {
+      const { chapterId } = req.params;
+      const userId = req.user ? req.user.userId : null;
+      const chapter = await ChapterReadingService.readNextChapter(
+        chapterId,
+        userId
+      );
+      return res.status(200).json({ success: true, data: chapter });
     } catch (error) {
       return next(error);
     }

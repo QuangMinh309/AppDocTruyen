@@ -34,6 +34,13 @@ router.get(
 );
 
 router.get(
+  '/:chapterId/read-next',
+  validate(validateChapterId, 'params'),
+  canAccessChapter,
+  ChapterController.readNextChapter
+);
+
+router.get(
   '/:chapterId',
   validate(validateChapterId, 'params'),
   canAccessChapter,

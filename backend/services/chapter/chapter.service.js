@@ -11,7 +11,6 @@ import { formatDate } from '../../utils/date.util.js';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
-const History = sequelize.models.History;
 
 const ChapterService = {
   async createChapter(chapterData, userId) {
@@ -82,88 +81,6 @@ const ChapterService = {
     return chapterResult;
   },
 
-  async readChapter(chapterId, userId) {
-    return await handleTransaction(async (transaction) => {
-      const chapter = await validateChapter(chapterId, true);
-      if (chapter.lockedStatus && userId !== chapter.story.userId) {
-        const canAccess = await canUserAccessChapter(userId, chapter);
-        if (!canAccess) {
-          throw new ApiError('Bạn cần mua chương này để đọc', 403);
-        }
-      }
-
-      await Promise.all([
-        sequelize.models.History.upsert(
-          { userId, storyId: chapter.storyId, lastReadAt: new Date() },
-          { transaction }
-        ),
-        chapter.increment('viewNum', { transaction }),
-        sequelize.models.Story.increment('viewNum', {
-          where: { storyId: chapter.story.storyId },
-          transaction,
-        }),
-      ]);
-
-      const chapterResult = chapter.toJSON();
-      chapterResult.updatedAt = formatDate(chapter.updatedAt);
-
-      return chapterResult;
-    });
-  },
-
-  async updateChapter(chapterId, chapterData, userId) {
-    const chapter = await validateChapter(chapterId, true);
-    await validateStory(
-      chapter.story.storyId,
-      userId,
-      'Bạn không có quyền sửa chương này'
-    );
-    return await chapter.update({ ...chapterData, updatedAt: new Date() });
-  },
-
-  async deleteChapter(chapterId, userId) {
-    return await handleTransaction(async (transaction) => {
-      const chapter = await validateChapter(chapterId, true);
-      await validateStory(
-        chapter.story.storyId,
-        userId,
-        'Bạn không có quyền xóa chương này'
-      );
-
-      await Promise.all([
-        sequelize.models.Comment.destroy({ where: { chapterId }, transaction }),
-        sequelize.models.Purchase.destroy({
-          where: { chapterId },
-          transaction,
-        }),
-        sequelize.models.History.destroy({ where: { chapterId }, transaction }),
-        chapter.destroy({ transaction }),
-        sequelize.models.Story.decrement('chapterNum', {
-          where: { storyId: chapter.story.storyId },
-          transaction,
-        }),
-      ]);
-
-      const remainingChapters = await sequelize.models.Chapter.findAll({
-        where: {
-          storyId: chapter.story.storyId,
-          ordinalNumber: { [sequelize.Sequelize.Op.gt]: chapter.ordinalNumber },
-        },
-        order: [['ordinalNumber', 'ASC']],
-        transaction,
-      });
-
-      for (const ch of remainingChapters) {
-        await ch.update(
-          { ordinalNumber: ch.ordinalNumber - 1 },
-          { transaction }
-        );
-      }
-
-      return true;
-    });
-  },
-
   async getChaptersByStory(
     storyId,
     userId = null,
@@ -227,6 +144,59 @@ const ChapterService = {
         ? error
         : new ApiError('Lỗi khi lấy danh sách chương', 500);
     }
+  },
+
+  async updateChapter(chapterId, chapterData, userId) {
+    const chapter = await validateChapter(chapterId, true);
+    await validateStory(
+      chapter.story.storyId,
+      userId,
+      'Bạn không có quyền sửa chương này'
+    );
+    return await chapter.update({ ...chapterData, updatedAt: new Date() });
+  },
+
+  async deleteChapter(chapterId, userId) {
+    return await handleTransaction(async (transaction) => {
+      const chapter = await validateChapter(chapterId, true);
+      await validateStory(
+        chapter.story.storyId,
+        userId,
+        'Bạn không có quyền xóa chương này'
+      );
+
+      await Promise.all([
+        sequelize.models.Comment.destroy({ where: { chapterId }, transaction }),
+        sequelize.models.Purchase.destroy({
+          where: { chapterId },
+          transaction,
+        }),
+        sequelize.models.History.destroy({ where: { chapterId }, transaction }),
+        chapter.destroy({ transaction }),
+        sequelize.models.Story.decrement('chapterNum', {
+          where: { storyId: chapter.story.storyId },
+          transaction,
+        }),
+      ]);
+
+      const remainingChapters = await sequelize.models.Chapter.findAll({
+        where: {
+          storyId: chapter.story.storyId,
+          ordinalNumber: { [sequelize.Sequelize.Op.gt]: chapter.ordinalNumber },
+        },
+        order: [['ordinalNumber', 'ASC']],
+        transaction,
+      });
+
+      for (const ch of remainingChapters) {
+        await ch.update(
+          { ordinalNumber: ch.ordinalNumber - 1 },
+          { transaction }
+        );
+      }
+
+      return true;
+    });
   },
 
   async purchaseChapter(userId, storyId, chapterId) {
