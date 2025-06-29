@@ -12,12 +12,14 @@ const userPremiumService = {
             const user = await validateUser(userId);
 
             const premium = await Premium.findOne({
-                where: { userId: yourUserId },
+                where: { userId },
                 order: [['createdAt', 'DESC']]
             });
 
             if (!premium) throw new ApiError("người dùng này chưa đăng kí Premium")
-            if (premium.expirateAt && new Date(premium.expirateAt) < new Date()) {
+            if (!premium.expirateAt) return true
+
+            if (new Date(premium.expirateAt) < new Date()) {
                 await user.update({
                     isPremium: false,
                 });
@@ -25,8 +27,9 @@ const userPremiumService = {
 
             return true
         } catch (err) {
+            console.log(err)
             if (err instanceof ApiError) throw err;
-            throw new ApiError('Lỗi khi mua premium', 500);
+            throw new ApiError('Lỗi khi cập nhật trạng thái premium', 500);
         }
     },
 };

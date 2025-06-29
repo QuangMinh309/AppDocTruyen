@@ -30,7 +30,7 @@ export default (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Premium',
       tableName: 'premium',
-      timestamps: true,
+      timestamps: false,
     }
   )
 
