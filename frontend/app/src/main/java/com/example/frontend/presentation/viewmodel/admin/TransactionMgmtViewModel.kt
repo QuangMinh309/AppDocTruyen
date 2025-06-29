@@ -3,7 +3,6 @@ package com.example.frontend.presentation.viewmodel.admin
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.TransactionUpdateRequest
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.repository.TransactionRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager

@@ -114,6 +114,11 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
                 painterResource(R.drawable.creditcard_icon),
                 { viewModel.onGoToTransactionMgmtScreen() }
             )
+            RowSelectItem(
+                "Community",
+                painterResource(R.drawable.people),
+                {  }
+            )
         }
     }
 }

@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.example.frontend.data.model.Result
 
 @HiltViewModel
 class UserMgmtViewModel @Inject constructor(
@@ -22,17 +21,28 @@ class UserMgmtViewModel @Inject constructor(
     private val _users = MutableStateFlow<List<User>>(emptyList())
     val users : StateFlow<List<User>> = _users
 
+    private val _displayedUsers = MutableStateFlow<List<User>>(emptyList())
+    val displayedUsers : StateFlow<List<User>> = _displayedUsers
+
     private val _selectedUser = MutableStateFlow<User?>(null)
     val selectedUser : StateFlow<User?> = _selectedUser
 
     private val _userName = MutableStateFlow("")
     val userName: StateFlow<String> = _userName
 
-    private val _showOnlySuspended = MutableStateFlow(false)
-    val showOnlySuspended: StateFlow<Boolean> = _showOnlySuspended
+    private val _showOnlyLocked = MutableStateFlow(false)
+    val showOnlyLocked: StateFlow<Boolean> = _showOnlyLocked
 
     init{
         loadUsers()
+    }
+
+    fun loadDisplayedUsers() {
+        _displayedUsers.value = _users.value
+        if(_showOnlyLocked.value == true)
+            _displayedUsers.value = _displayedUsers.value.filter { it.status == "locked" }
+        if(_userName.value != "")
+            _displayedUsers.value = _displayedUsers.value.filter { it.name.contains(_userName.value) }
     }
 
     fun loadUsers()
@@ -42,6 +52,7 @@ class UserMgmtViewModel @Inject constructor(
                 val result = adminRepository.getAllUsers()
                 result.onSuccess { list ->
                     _users.value = list
+                    loadDisplayedUsers()
                 }.onFailure { error ->
                     Log.e("apiError","Error: ${error.message}")
                 }
@@ -55,26 +66,57 @@ class UserMgmtViewModel @Inject constructor(
     fun onUserNameChange(name : String)
     {
         _userName.value = name
-        if(_userName.value != "")
-        {
-            viewModelScope.launch {
-                try {
-
-                }
-                catch(e: Exception) {
-                    _toast.value = "Error: ${e.message}"
-                }
-            }
-        }
+        loadDisplayedUsers()
     }
 
-    fun toggleShowOnlySuspended()
+    fun toggleShowOnlyLocked()
     {
-        _showOnlySuspended.value = !_showOnlySuspended.value
+        _showOnlyLocked.value = !_showOnlyLocked.value
+        loadDisplayedUsers()
     }
 
     fun onSelectedUserChange(user : User)
     {
         _selectedUser.value = if(_selectedUser.value == user) null else user
+    }
+
+    fun lockSelectedUser()
+    {
+        if(_selectedUser.value == null) return
+        if(_selectedUser.value!!.status != "locked")
+        {
+            viewModelScope.launch {
+                try {
+                    val result = adminRepository.lockUser(_selectedUser.value!!.id)
+                    result.onSuccess { message ->
+                        _toast.value = message
+                        loadUsers()
+                        _selectedUser.value = null
+                    }.onFailure { error ->
+                        Log.e("apiError","Error: ${error.message}")
+                    }
+                }
+                catch (e: Exception) {
+                    _toast.value = "Error: ${e.message}"
+                }
+            }
+        }
+        else
+        {
+            viewModelScope.launch {
+                try {
+                    val result = adminRepository.unlockUser(_selectedUser.value!!.id)
+                    result.onSuccess { message ->
+                        _toast.value = message
+                        loadUsers()
+                        _selectedUser.value = null
+                    }.onFailure { error ->
+                        Log.e("apiError","Error: ${error.message}")
+                    }
+                } catch (e: Exception) {
+                    _toast.value = "Error: ${e.message}"
+                }
+            }
+        }
     }
 }

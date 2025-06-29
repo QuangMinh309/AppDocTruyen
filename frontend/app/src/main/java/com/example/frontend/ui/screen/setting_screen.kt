@@ -128,7 +128,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .align(Alignment.CenterVertically)
                 )
-                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.16f else 0.33f))
+                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.01f else 0.33f))
                 if(isVisible.value)
                 {
                     Button(

@@ -10,7 +10,6 @@ import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -222,6 +221,17 @@ interface ApiService {
 
     @GET("api/admins")
     suspend fun getAllUsers(): Response<UsersResponse>
+
+    @POST("api/admins/lock/{userId}")
+    suspend fun lockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    @POST("api/admins/unlock/{userId}")
+    suspend fun unlockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    data class LockUserResponse(
+        val success: Boolean,
+        val message: String
+    )
 
 
     @GET("api/nameLists")
