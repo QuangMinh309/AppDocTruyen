@@ -2,10 +2,8 @@ package com.example.frontend.data.repository
 
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.TransactionUpdateRequest
-import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Transaction
-import com.example.frontend.data.model.Transaction2
 import javax.inject.Inject
 
 class TransactionRepository @Inject constructor(

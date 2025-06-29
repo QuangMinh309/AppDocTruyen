@@ -1,35 +1,26 @@
 package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,20 +39,26 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.example.frontend.data.model.User
+import androidx.compose.ui.platform.LocalContext
 import com.example.frontend.ui.components.SelectChip
+import com.example.frontend.ui.components.UserCard
 import com.example.frontend.ui.theme.DeepBlue
 
 @Composable
 fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
 {
-    val users by viewModel.users.collectAsState()
+    val context = LocalContext.current
+    val users by viewModel.displayedUsers.collectAsState()
     val selectedUser by viewModel.selectedUser.collectAsState()
     val tbUserNameValue by viewModel.userName.collectAsState()
-    val showOnlySuspended by viewModel.showOnlySuspended.collectAsState()
+    val showOnlyLocked by viewModel.showOnlyLocked.collectAsState()
+    val toast by viewModel.toast.collectAsState()
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
     ScreenFrame(
         topBar = {
             Row(
@@ -122,7 +119,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
         )
         {
             Text(
-                text = "Find by display name",
+                text = "Find by Username",
                 color = Color.LightGray,
                 style = TextStyle(
                     fontSize = 16.sp,
@@ -156,7 +153,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
         )
         {
             Text(
-                text = "Show suspended users only: ",
+                text = "Show locked users only: ",
                 color = Color.LightGray,
                 style = TextStyle(
                     fontSize = 16.sp,
@@ -164,9 +161,9 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
                 ),
             )
             SelectChip(
-                name = if(showOnlySuspended == true) "Yes" else "No",
-                isSelected = showOnlySuspended == true,
-                onClick = { viewModel.toggleShowOnlySuspended() }
+                name = if(showOnlyLocked == true) "Yes" else "No",
+                isSelected = showOnlyLocked == true,
+                onClick = { viewModel.toggleShowOnlyLocked() }
             )
         }
         Row(
@@ -177,7 +174,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
         )
         {
             Button(
-                onClick = { },
+                onClick = { viewModel.lockSelectedUser() },
                 enabled = selectedUser != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedUser != null) Color.LightGray else Color(0xAFAF2238)
@@ -185,24 +182,8 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
                 modifier = Modifier.weight(1f)
             )
             {
-//                Text(
-//                    text = if(selectedUser?.status == "Suspended") "Unsuspend" else "Suspend",
-//                    color = if (selectedUser != null) DeepBlue else Color.Gray,
-//                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
-//                )
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Button(
-                onClick = { },
-                enabled = selectedUser != null,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedUser != null) BurntCoral else Color(0xAFAF2238)
-                ),
-                modifier = Modifier.weight(1f)
-            )
-            {
                 Text(
-                    text = "Delete",
+                    text = if(selectedUser?.status == "locked") "Unlock" else "Lock",
                     color = if (selectedUser != null) DeepBlue else Color.Gray,
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
@@ -230,100 +211,8 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
 //@SuppressLint("ViewModelConstructorInComposable")
 //@Preview(showBackground = true)
 //@Composable
-//fun PreviewUserScreen()
+//private fun PreviewUserScreen()
 //{
 //    val fakeViewModel = UserMgmtViewModel(NavigationManager())
 //    UserManagementScreen(fakeViewModel)
 //}
-
-@Composable
-fun UserCard(
-    item : User,
-    isSelected : Boolean,
-    onClick: () -> Unit = {}
-)
-{
-//    Box (
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(120.dp)
-//            .padding(vertical = 10.dp)
-//            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
-//            .clickable{ onClick() },
-//        contentAlignment = Alignment.CenterStart
-//    )
-//    {
-//        Column(
-//            modifier = Modifier
-//                .padding(horizontal = 10.dp)
-//        )
-//        {
-//            Row {
-//                Text(
-//                    text = "ID: " + item.id,
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                )
-//                Spacer(modifier = Modifier.weight(1f))
-//                Text(
-//                    text = "Mail: " + item.mail,
-//                    color = Color.White,
-//                    fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                )
-//            }
-//
-//            Spacer(modifier = Modifier.height(10.dp))
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                modifier = Modifier.height(IntrinsicSize.Min)
-//            )
-//            {
-//                Image(
-//                    painter = painterResource(id = R.drawable.avt_img),
-//                    contentScale = ContentScale.Crop,
-//                    contentDescription = "pfp",
-//                    modifier = Modifier
-//                        .size(50.dp, 50.dp)
-//                        .clip(RoundedCornerShape(50.dp))
-//                )
-//                Spacer(modifier = Modifier.width(10.dp))
-//                Column()
-//                {
-//                    Text(
-//                        text = "Username: " + item.name,
-//                        color = Color.White,
-//                        fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                    )
-//                    Text(
-//                        text = "Handle: " + item.dName,
-//                        color = Color.White,
-//                        fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                    )
-//                }
-//                Spacer(modifier = Modifier.width(10.dp))
-//                Divider(
-//                    color = Color.Gray,
-//                    modifier = Modifier
-//                        .fillMaxHeight()
-//                        .width(1.dp)
-//                )
-//                Spacer(modifier = Modifier.width(10.dp))
-//                Column()
-//                {
-//                    FlowRow {
-//                        Text(
-//                            text = "Status: ",
-//                            color = Color.White,
-//                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                        )
-//                        Text(
-//                            text = item.status,
-//                            color = if(item.status == "Suspended") Color.Red else Color.White,
-//                            fontFamily = FontFamily(Font(R.font.poppins_bold))
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//    }
-}

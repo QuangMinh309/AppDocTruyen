@@ -10,7 +10,6 @@ import com.example.frontend.data.model.Password_Reset
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
-import com.example.frontend.data.model.Transaction2
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -220,8 +219,22 @@ interface ApiService {
     @DELETE("api/transactions/{transactionId}")
     suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
 
+    @PUT("api/admins/{transactionId}/approve-trans")
+    suspend fun approveTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionApproveRequest): Response<TransactionApproveResponse>
+
     @GET("api/admins")
     suspend fun getAllUsers(): Response<UsersResponse>
+
+    @POST("api/admins/lock/{userId}")
+    suspend fun lockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    @POST("api/admins/unlock/{userId}")
+    suspend fun unlockUser(@Path("userId") userId: Int): Response<LockUserResponse>
+
+    data class LockUserResponse(
+        val success: Boolean,
+        val message: String
+    )
 
 
     @GET("api/nameLists")
@@ -413,6 +426,15 @@ data class TransactionUpdateRequest(
     val money : Int,
     val type : String,
     val status : String
+)
+
+data class TransactionApproveRequest(
+    val status : String
+)
+
+data class TransactionApproveResponse(
+    val success : Boolean,
+    val message : String
 )
 
 data class ApiError(

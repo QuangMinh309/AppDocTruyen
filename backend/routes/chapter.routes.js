@@ -6,6 +6,7 @@ import {
   validateUpdateChapter,
   validateChapterId,
   validateStoryIdParam,
+  validateStoryChapterIdParam,
 } from '../validators/chapter.validation.js';
 import validate from '../middlewares/validate.middleware.js';
 import {
@@ -33,6 +34,19 @@ router.get(
 );
 
 router.get(
+  '/:chapterId/read-next',
+  validate(validateChapterId, 'params'),
+  canAccessChapter,
+  ChapterController.readNextChapter
+);
+
+router.get(
+  '/:storyId/chapters',
+  validate(validateStoryIdParam, 'params'),
+  ChapterController.getChaptersByStory
+);
+
+router.get(
   '/:chapterId',
   validate(validateChapterId, 'params'),
   canAccessChapter,
@@ -41,8 +55,8 @@ router.get(
 
 router.put(
   '/story/:storyId/:chapterId',
+  validate(validateStoryChapterIdParam, 'params'),
   validate(validateUpdateChapter, 'body'),
-  validate(validateChapterId, 'params'),
   isStoryAuthor,
   ChapterController.updateChapter
 );

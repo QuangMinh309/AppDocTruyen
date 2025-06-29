@@ -1,9 +1,8 @@
 package com.example.frontend.data.repository
-
-import android.content.Context
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.TransactionApproveRequest
+import com.example.frontend.data.api.TransactionApproveResponse
 import com.example.frontend.data.model.User
-import com.example.frontend.util.TokenManager
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,6 +28,65 @@ class AdminRepository @Inject constructor(
             }
         }
         catch (e:Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun lockUser(userId: Int) : Result<String>
+    {
+        return try{
+            val response = apiService.lockUser(userId)
+            if(response.isSuccessful) {
+                val result = response.body()
+                if(result?.success == true) {
+                    Result.success(result.message)
+                }
+                else {
+                    Result.failure(Exception("API returned success: false"))
+                }
+            }
+            else {
+                Result.failure(Exception("Failed to lock user: ${response.message()}"))
+            }
+        } catch (e:Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun unlockUser(userId: Int) : Result<String>
+    {
+        return try{
+            val response = apiService.unlockUser(userId)
+            if(response.isSuccessful) {
+                val result = response.body()
+                if(result?.success == true) {
+                    Result.success(result.message)
+                }
+                else {
+                    Result.failure(Exception("API returned success: false"))
+                }
+            }
+            else {
+                Result.failure(Exception("Failed to unlock user: ${response.message()}"))
+            }
+        } catch (e:Exception) {
+            Result.failure(e)
+        }
+    }
+    suspend fun approveTransaction(transactionId: Int) : Result<String> {
+        return try {
+            val approvalBody = TransactionApproveRequest(status = "success")
+            val response = apiService.approveTransaction(transactionId, approvalBody)
+            if(response.isSuccessful) {
+                val result = response.body()
+                if (result?.success == true) {
+                    Result.success(result.message)
+                } else {
+                    Result.failure(Exception("API returned success: false"))
+                }
+            }
+            else {
+                Result.failure(Exception("Failed to approve transaction: ${response.message()}"))
+            }
+        } catch (e:Exception) {
             Result.failure(e)
         }
     }

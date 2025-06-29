@@ -3,15 +3,17 @@ import ApiError from '../../utils/api_error.util.js';
 import {
   validateChapter,
   canUserAccessChapter,
-  handlePurchaseTransaction,
+  validateSortParams,
 } from '../../utils/chapter.util.js';
 import { validateStory } from '../../utils/story.util.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { formatDate } from '../../utils/date.util.js';
+import { Op } from 'sequelize';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
-const History = sequelize.models.History;
+const Comment = sequelize.models.Comment;
+const Purchase = sequelize.models.Purchase;
 
 const ChapterService = {
   async createChapter(chapterData, userId) {
@@ -76,36 +78,78 @@ const ChapterService = {
         chapter
       );
     }
-    return chapter;
+    const chapterResult = chapter.toJSON();
+    chapterResult.updatedAt = formatDate(chapter.updatedAt);
+
+    return chapterResult;
   },
 
-  async readChapter(chapterId, userId) {
-    return await handleTransaction(async (transaction) => {
-      const chapter = await validateChapter(chapterId, true);
-      if (chapter.lockedStatus && userId !== chapter.story.userId) {
-        const canAccess = await canUserAccessChapter(userId, chapter);
-        if (!canAccess) {
-          throw new ApiError('Bạn cần mua chương này để đọc', 403);
+  async getChaptersByStory(
+    storyId,
+    userId = null,
+    limit = 20,
+    lastId = null,
+    orderBy = 'ordinalNumber',
+    sort = 'ASC'
+  ) {
+    try {
+      await validateStory(storyId);
+      const validOrderFields = ['ordinalNumber', 'createdAt', 'updatedAt'];
+      const { orderBy: finalOrderBy, sort: finalSort } = validateSortParams(
+        orderBy,
+        sort,
+        validOrderFields
+      );
+
+      const where = lastId
+        ? {
+            storyId,
+            chapterId: {
+              [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+            },
+          }
+        : { storyId };
+
+      const chapters = await Chapter.findAll({
+        where,
+        limit: parseInt(limit),
+        order: [[finalOrderBy, finalSort]],
+        attributes: { exclude: ['content'] },
+        include: [
+          {
+            model: Story,
+            as: 'story',
+            attributes: ['storyId', 'storyName'],
+          },
+        ],
+      });
+
+      if (userId) {
+        for (const chapter of chapters) {
+          chapter.dataValues.canAccess = await canUserAccessChapter(
+            userId,
+            chapter
+          );
         }
       }
 
-      await Promise.all([
-        sequelize.models.History.upsert(
-          { userId, storyId: chapter.storyId, lastReadAt: new Date() },
-          { transaction }
-        ),
-        chapter.increment('viewNum', { transaction }),
-        sequelize.models.Story.increment('viewNum', {
-          where: { storyId: chapter.story.storyId },
-          transaction,
-        }),
-      ]);
+      for (const chapter of chapters) {
+        chapter.dataValues.updatedAt = formatDate(chapter.updatedAt);
+      }
 
-      const chapterResult = chapter.toJSON();
-      chapterResult.updatedAt = formatDate(chapter.updatedAt);
+      const nextLastId =
+        chapters.length > 0 ? chapters[chapters.length - 1].chapterId : null;
 
-      return chapterResult;
-    });
+      return {
+        chapters,
+        nextLastId,
+        hasMore: chapters.length === parseInt(limit),
+      };
+    } catch (error) {
+      throw error instanceof ApiError
+        ? error
+        : new ApiError('Lỗi khi lấy danh sách chương', 500);
+    }
   },
 
   async updateChapter(chapterId, chapterData, userId) {
@@ -128,23 +172,17 @@ const ChapterService = {
       );
 
       await Promise.all([
-        sequelize.models.Comment.destroy({ where: { chapterId }, transaction }),
-        sequelize.models.Purchase.destroy({
+        Comment.destroy({ where: { chapterId }, transaction }),
+        Purchase.destroy({
           where: { chapterId },
-          transaction,
-        }),
-        sequelize.models.History.destroy({ where: { chapterId }, transaction }),
-        chapter.destroy({ transaction }),
-        sequelize.models.Story.decrement('chapterNum', {
-          where: { storyId: chapter.story.storyId },
           transaction,
         }),
       ]);
 
-      const remainingChapters = await sequelize.models.Chapter.findAll({
+      const remainingChapters = await Chapter.findAll({
         where: {
           storyId: chapter.story.storyId,
-          ordinalNumber: { [sequelize.Sequelize.Op.gt]: chapter.ordinalNumber },
+          ordinalNumber: { [Op.gt]: chapter.ordinalNumber },
         },
         order: [['ordinalNumber', 'ASC']],
         transaction,
@@ -160,72 +198,6 @@ const ChapterService = {
       return true;
     });
   },
-
-  async getChaptersByStory(
-    storyId,
-    userId = null,
-    limit = 20,
-    lastId = null,
-    orderBy = 'ordinalNumber',
-    sort = 'ASC'
-  ) {
-    try {
-      await validateStory(storyId);
-      const validOrderFields = ['ordinalNumber', 'createdAt', 'updatedAt'];
-      const { orderBy: finalOrderBy, sort: finalSort } = validateSortParams(
-        orderBy,
-        sort,
-        validOrderFields
-      );
-
-      const where = lastId
-        ? {
-          storyId,
-          chapterId: {
-            [finalSort === 'DESC'
-              ? sequelize.Sequelize.Op.lt
-              : sequelize.Sequelize.Op.gt]: lastId,
-          },
-        }
-        : { storyId };
-
-      const chapters = await sequelize.models.Chapter.findAll({
-        where,
-        limit: parseInt(limit),
-        order: [[finalOrderBy, finalSort]],
-        include: [
-          {
-            model: sequelize.models.Story,
-            as: 'story',
-            attributes: ['storyId', 'storyName', 'userId'],
-          },
-        ],
-      });
-
-      if (userId) {
-        for (const chapter of chapters) {
-          chapter.dataValues.canAccess = await canUserAccessChapter(
-            userId,
-            chapter
-          );
-        }
-      }
-
-      const nextLastId =
-        chapters.length > 0 ? chapters[chapters.length - 1].chapterId : null;
-
-      return {
-        chapters,
-        nextLastId,
-        hasMore: chapters.length === parseInt(limit),
-      };
-    } catch (error) {
-      throw error instanceof ApiError
-        ? error
-        : new ApiError('Lỗi khi lấy danh sách chương', 500);
-    }
-  },
-
 };
 
 export default ChapterService;

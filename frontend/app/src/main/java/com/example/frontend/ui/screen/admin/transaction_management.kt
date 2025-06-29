@@ -3,7 +3,6 @@ package com.example.frontend.ui.screen.admin
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,9 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -69,7 +65,6 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
     val transactions by viewModel.displayedTransactions.collectAsState()
     val showUpdateDialog = remember { mutableStateOf(false) }
     val showDeleteDialog = remember { mutableStateOf(false) }
-    var successSelected = remember { mutableStateOf(false) }
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
         toast?.let {
@@ -268,7 +263,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             )
             {
                 Text(
-                    text = "Update",
+                    text = "Approve",
                     color = if (selectedTransaction != null) DeepBlue else Color.Gray,
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
@@ -293,14 +288,13 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
 
         if(showUpdateDialog.value == true)
         {
-            successSelected.value = selectedTransaction!!.status == "success"
             AlertDialog(
                 onDismissRequest = { showUpdateDialog.value = false },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             showUpdateDialog.value = false
-                            viewModel.updateSelectedTransaction(successSelected.value)
+                            viewModel.approveSelectedTransaction()
                         }
                     ) {
                         Text("Confirm", color = Color.White)
@@ -312,32 +306,11 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                     }
                 },
                 title = {
-                    Text("Update", color = Color.White)
+                    Text("Warning", color = Color.White)
                 },
                 text = {
                     Column {
-                        Text("Choose status: ", color = Color.LightGray)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = BurntCoral,
-                                    checkmarkColor = Color(0xFF1C1C1C)
-                                ),
-                                checked = !successSelected.value,
-                                onCheckedChange = {successSelected.value = !successSelected.value}
-                            )
-                            Text("pending", color = Color.White)
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Checkbox(
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = BurntCoral,
-                                    checkmarkColor = Color(0xFF1C1C1C)
-                                ),
-                                checked = successSelected.value,
-                                onCheckedChange = {successSelected.value = !successSelected.value}
-                            )
-                            Text("success", color = Color.White)
-                        }
+                        Text("Are you sure to approve the transaction?: ", color = Color.LightGray)
                     }
                 },
                 containerColor = Color(0xFF1C1C1C)
