@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -52,13 +50,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.text.isDigitsOnly
-import com.example.frontend.ui.components.CategoryList
 import com.example.frontend.ui.components.SelectChip
-import com.example.frontend.ui.components.StoryCard4
 import com.example.frontend.ui.components.StoryCardCard
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepBlue
-import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
 fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
@@ -173,14 +168,9 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                     onClick = { viewModel.onSelectSearchType("Name") }
                 )
                 SelectChip(
-                    name = "Author",
+                    name = "Author (handle)",
                     isSelected = "Author" == selectedSearchType,
                     onClick = { viewModel.onSelectSearchType("Author") }
-                )
-                SelectChip(
-                    name = "ID",
-                    isSelected = "ID" == selectedSearchType,
-                    onClick = { viewModel.onSelectSearchType("ID") }
                 )
             }
             TextField(//textfield
@@ -276,7 +266,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 onDismissRequest = { showDialog.value = false },
                 confirmButton = {
                     TextButton(onClick = {
-                        // Apply filters here
+                        viewModel.loadDisplayedStories()
                         showDialog.value = false
                     }) {
                         Text("Apply", color = Color.White)
@@ -292,37 +282,37 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 },
                 text = {
                     Column {
-                        Text("Date:", color = Color.LightGray)
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = BurntCoral,
-                                    checkmarkColor = Color(0xFF1C1C1C)
-                                ),
-                                checked = true,
-                                onCheckedChange = {}
-                            )
-                            Text("Newest", color = Color.White)
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Checkbox(
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = BurntCoral,
-                                    checkmarkColor = Color(0xFF1C1C1C)
-                                ),
-                                checked = false,
-                                onCheckedChange = {}
-                            )
-                            Text("Oldest", color = Color.White)
-                        }
+//                        Text("Date:", color = Color.LightGray)
+//
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Checkbox(
+//                                colors = CheckboxDefaults.colors(
+//                                    checkedColor = BurntCoral,
+//                                    checkmarkColor = Color(0xFF1C1C1C)
+//                                ),
+//                                checked = true,
+//                                onCheckedChange = {}
+//                            )
+//                            Text("Newest", color = Color.White)
+//                            Spacer(modifier = Modifier.width(10.dp))
+//                            Checkbox(
+//                                colors = CheckboxDefaults.colors(
+//                                    checkedColor = BurntCoral,
+//                                    checkmarkColor = Color(0xFF1C1C1C)
+//                                ),
+//                                checked = false,
+//                                onCheckedChange = {}
+//                            )
+//                            Text("Oldest", color = Color.White)
+//                        }
 
                         Text("State:", color = Color.LightGray)
                         Spacer(modifier = Modifier.height(10.dp))
                         FlowRow {
                             SelectChip(
-                                name = "approved",
-                                isSelected = "approved" in selectedStates,
-                                onClick = { viewModel.onSelectState("approved") }
+                                name = "update",
+                                isSelected = "update" in selectedStates,
+                                onClick = { viewModel.onSelectState("update") }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             SelectChip(
@@ -335,12 +325,6 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                                 name = "pending",
                                 isSelected = "pending" in selectedStates,
                                 onClick = { viewModel.onSelectState("pending") }
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            SelectChip(
-                                name = "update",
-                                isSelected = "update" in selectedStates,
-                                onClick = { viewModel.onSelectState("update") }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                             SelectChip(

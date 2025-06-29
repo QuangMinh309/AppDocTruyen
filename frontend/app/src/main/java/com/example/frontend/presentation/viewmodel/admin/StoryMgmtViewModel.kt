@@ -99,6 +99,33 @@ class StoryMgmtViewModel @Inject constructor(
     fun loadDisplayedStories()
     {
         _displayedStories.value = _stories.value
+        if(_selectedSearchType.value != "")
+        {
+            if (_selectedSearchType.value == "Author") {
+                _displayedStories.value = _displayedStories.value.filter {
+                    it.author.dName?.contains(_tbSearchValue.value, ignoreCase = true) == true
+                }
+            } else {
+                _displayedStories.value = _displayedStories.value.filter {
+                    it.name?.contains(_tbSearchValue.value, ignoreCase = true) == true
+                }
+            }
+        }
+        if(!_selectedStates.value.isEmpty())
+        {
+            _displayedStories.value = _displayedStories.value.filter {
+                _selectedStates.value.contains(it.status)
+            }
+        }
+        if(!_selectedCategories.value.isEmpty())
+        {
+            _displayedStories.value = _displayedStories.value.filter { story ->
+                story.categories!!.any { category ->
+                    _selectedCategories.value.contains(category.name)
+                }
+            }
+        }
+        _selectedStory.value = null
     }
 
     fun onSelectSearchType(type: String)
@@ -109,6 +136,7 @@ class StoryMgmtViewModel @Inject constructor(
     fun onSearch(name : String)
     {
         _tbSearchValue.value = name
+        loadDisplayedStories()
     }
 
     fun onSelectState(state: String)
