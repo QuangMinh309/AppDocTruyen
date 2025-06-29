@@ -3,7 +3,6 @@ package com.example.frontend.presentation.viewmodel.admin
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.User
-import com.example.frontend.data.model.Role
 import com.example.frontend.data.repository.AdminRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
@@ -19,7 +18,6 @@ class UserMgmtViewModel @Inject constructor(
     private val adminRepository: AdminRepository
 ) : BaseViewModel(navigationManager) {
     private val _users = MutableStateFlow<List<User>>(emptyList())
-    val users : StateFlow<List<User>> = _users
 
     private val _displayedUsers = MutableStateFlow<List<User>>(emptyList())
     val displayedUsers : StateFlow<List<User>> = _displayedUsers

@@ -995,13 +995,6 @@ fun RowSelectItem(
     }
 }
 
-fun formatDate(raw: String): String {
-    val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-    val outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss") // Change this as needed
-    val date = LocalDateTime.parse(raw.substring(0, 19), inputFormatter)
-    return date.format(outputFormatter)
-}
-
 @Composable
 fun TransactionCard(
     item : Transaction,

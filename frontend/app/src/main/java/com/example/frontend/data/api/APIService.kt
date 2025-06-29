@@ -219,6 +219,9 @@ interface ApiService {
     @DELETE("api/transactions/{transactionId}")
     suspend fun deleteTransaction(@Path("transactionId") transactionId: Int) : Response<Unit>
 
+    @PUT("api/admins/{transactionId}/approve-trans")
+    suspend fun approveTransaction(@Path("transactionId") transactionId: Int, @Body transaction: TransactionApproveRequest): Response<TransactionApproveResponse>
+
     @GET("api/admins")
     suspend fun getAllUsers(): Response<UsersResponse>
 
@@ -423,6 +426,15 @@ data class TransactionUpdateRequest(
     val money : Int,
     val type : String,
     val status : String
+)
+
+data class TransactionApproveRequest(
+    val status : String
+)
+
+data class TransactionApproveResponse(
+    val success : Boolean,
+    val message : String
 )
 
 data class ApiError(
