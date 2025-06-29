@@ -3,23 +3,45 @@ import ApiError from '../utils/api_error.util.js';
 
 export const isStoryAuthor = async (req, res, next) => {
   try {
-    const storyId = req.params.storyId || req.body.storyId;
+    const chapterId = req.params.chapterId;
     const userId = req.user.userId;
 
-    if (!storyId) {
-      return next(new ApiError('Thiếu storyId', 400));
-    }
+    if (chapterId) {
+      const chapter = await models.Chapter.findByPk(chapterId, {
+        include: [
+          {
+            model: models.Story,
+            as: 'story',
+            attributes: ['storyId', 'userId'],
+          },
+        ],
+      });
 
-    const story = await models.Story.findByPk(storyId);
-    if (!story) {
-      return next(new ApiError('Truyện không tồn tại', 404));
-    }
+      if (!chapter) {
+        return next(new ApiError('Chương không tồn tại', 404));
+      }
+      if (!chapter.story) {
+        return next(
+          new ApiError('Không tìm thấy truyện liên quan đến chương', 404)
+        );
+      }
 
-    if (story.userId !== userId && req.user.role.roleName !== 'admin') {
-      return next(new ApiError('Bạn không có quyền với truyện này', 403));
-    }
+      const storyId = chapter.story.storyId;
+      const story = await models.Story.findByPk(storyId);
+      if (!story) {
+        return next(new ApiError('Truyện không tồn tại', 404));
+      }
 
-    next();
+      if (story.userId !== userId && req.user.role.roleName !== 'admin') {
+        return next(new ApiError('Bạn không có quyền với truyện này', 403));
+      }
+
+      // Lưu storyId vào req để sử dụng sau này nếu cần
+      req.storyId = storyId;
+      next();
+    } else {
+      return next(new ApiError('Thiếu chapterId', 400));
+    }
   } catch (error) {
     console.error('Lỗi khi kiểm tra quyền tác giả:', error);
     return next(new ApiError('Lỗi khi kiểm tra quyền tác giả', 500));
