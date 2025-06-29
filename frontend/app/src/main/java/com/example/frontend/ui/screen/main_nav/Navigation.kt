@@ -36,11 +36,13 @@ import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewMod
 import com.example.frontend.services.navigation.NavigationCommand
 import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.components.BottomNavigationBar
+import com.example.frontend.ui.screen.CustomSplashScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
 import com.example.frontend.ui.screen.admin.StoryManagementScreen
+import com.example.frontend.ui.screen.admin.TransactionManagementScreen
 import com.example.frontend.ui.screen.admin.UserManagementScreen
 import com.example.frontend.ui.screen.community.ChattingScreen
 import com.example.frontend.ui.screen.community.CommunityDetailScreen
@@ -55,6 +57,7 @@ import com.example.frontend.ui.screen.story.CategoryStoryListScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
+import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
@@ -156,9 +159,10 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Intro.route,
+            startDestination = Screen.Splash.route,
             modifier = Modifier.padding(paddingValues)
         ) {
+
             composable(Screen.MainNav.Home.route) { HomeScreen() }
             composable(Screen.MainNav.YourStory.route) { YourStoryScreen() }
             composable(Screen.MainNav.Search.route) { StorySearchScreen() }
@@ -166,6 +170,14 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.MainNav.Profile.route) { ProfileScreen() }
 
             composable(Screen.Intro.route) { IntroScreen() }
+            composable(Screen.Splash.route) {
+                CustomSplashScreen{
+                    navController.navigate(Screen.Intro.route) {
+                        popUpTo("splash") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
 
             composable(Screen.Authentication.Login.route) { LoginScreen() }
             composable(Screen.Authentication.Register.route) { RegisterScreen() }
@@ -278,7 +290,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.AdminScreen.route) { AdminScreen() }
             composable(Screen.Admin.Category.route) { CategoryManagementScreen() }
-           // composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
+            composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
             composable(Screen.Admin.User.route) { UserManagementScreen() }
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
             composable(
@@ -286,7 +298,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 arguments = listOf(
                     navArgument("id") { type = NavType.StringType },
                 )
-            ) { CategoryManagementScreen() }
+            ) { StoryViewManagementScreen() }
         }
     }
 }

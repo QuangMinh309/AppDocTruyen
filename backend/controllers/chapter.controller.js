@@ -101,20 +101,6 @@ const ChapterController = {
     }
   },
 
-  async purchaseChapter(req, res, next) {
-    try {
-      const { storyId, chapterId } = req.params;
-      const userId = req.user.userId;
-      const result = await ChapterService.purchaseChapter(
-        userId,
-        storyId,
-        chapterId
-      );
-      return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-      return next(error);
-    }
-  },
 };
 
 export default ChapterController;

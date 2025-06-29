@@ -7,6 +7,7 @@ import {
   authenticateRefreshToken,
   isResourceOwner,
 } from '../middlewares/auth.middleware.js'
+import { validatePurchaseChapter } from '../validators/chapter.validation.js';
 import { uploadUserImages } from '../middlewares/uploadImage.middleware.js'
 
 const router = express.Router()
@@ -73,6 +74,10 @@ router.post(
 router.get('/follow/status/:followedId', UserController.getFollowStatus)
 
 router.post('/purchase-premium', UserController.purchasePremium)
+
+router.post('/purchase-chapter/:chapterId', validate(validatePurchaseChapter, "params"), UserController.PurchaseChapter)
+
+router.post('/wallet', validate(validators.walletChange), UserController.walletChange)
 
 router.post('/report', UserController.reportUser)
 

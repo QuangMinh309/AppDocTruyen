@@ -28,6 +28,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -159,7 +161,7 @@ fun SelectChip(
             text = name,
             color = Color.Black,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            fontWeight = FontWeight.Bold
+            fontFamily = FontFamily(Font(R.font.poppins_bold))
         )
     }
 }

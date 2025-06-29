@@ -204,17 +204,6 @@ const ChapterService = {
     });
   },
 
-  async purchaseChapter(userId, storyId, chapterId) {
-    return await handleTransaction(async (transaction) => {
-      const chapter = await validateChapter(chapterId, true);
-      return await handlePurchaseTransaction(
-        userId,
-        chapter,
-        storyId,
-        transaction
-      );
-    });
-  },
 };
 
 export default ChapterService;

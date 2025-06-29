@@ -165,6 +165,27 @@ const changePasswordSchema = Joi.object({
     }),
 }).options({ stripUnknown: true });
 
+// Schema validation cho thay đổi mật khẩu
+const WalletChangeSchema = Joi.object({
+  money: Joi.number()
+    .integer()
+    .required()
+    .messages({
+      ...messages,
+      'number.base': 'Số tiền phải là số',
+      'number.integer': 'Số tiền phải là số nguyên',
+      'any.required': 'Số tiền là bắt buộc',
+    }),
+  type: Joi.string()
+    .valid('deposit', 'withdraw')
+    .required()
+    .messages({
+      ...messages,
+      'any.only': 'Loại giao dịch phải là deposit, withdraw ',
+      'any.required': 'Loại giao dịch là bắt buộc',
+    }),
+}).options({ stripUnknown: true });
+
 // Schema validation cho follow/unfollow user
 const followUserSchema = Joi.object({
   followedId: Joi.number()
@@ -210,4 +231,5 @@ export default {
   followUser: followUserSchema,
   refreshToken: refreshTokenSchema,
   userId: userIdSchema,
+  walletChange: WalletChangeSchema
 };

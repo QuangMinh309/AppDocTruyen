@@ -11,6 +11,8 @@ import purchasePremium from '../services/user/user_purchase_premium.service.js';
 import refreshTokenUser from '../services/user/user_refresh_token.service.js';
 import reportUser from '../services/user/user_report.service.js';
 import checkFollowStatus from '../services/user/user_check_follow.service.js';
+import PurchaseChapterService from '../services/user/user_purchase_chapter.service.js';
+import WalletManagementService from '../services/user/user_wallet_management.service.js';
 
 const UserController = {
   async register(req, res, next) {
@@ -208,11 +210,12 @@ const UserController = {
     }
   },
 
-  async purchasePremium(req, res, next) {
+  async PurchaseChapter(req, res, next) {
     try {
       const userId = req.user.userId;
+      const chapterId = req.params.chapterId
 
-      const result = await purchasePremium(userId);
+      const result = await PurchaseChapterService.purchaseChapter(userId, chapterId);
 
       res.status(200).json({
         success: true,
@@ -222,6 +225,38 @@ const UserController = {
       next(error);
     }
   },
+
+  async purchasePremium(req, res, next) {
+    try {
+      const userId = req.user.userId;
+
+      const result = await p(userId);
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async walletChange(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const data = req.body
+      console.log(data)
+      const result = await WalletManagementService.walletChange(userId, data);
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
 
   async reportUser(req, res, next) {
     try {
