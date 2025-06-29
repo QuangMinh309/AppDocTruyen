@@ -11,6 +11,7 @@ import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -22,7 +23,8 @@ class SettingViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
-
+    private val _isVisible = MutableStateFlow(false)
+    val isVisible : StateFlow<Boolean> = _isVisible
     val isEditMode = mutableStateOf(false)
     val user = mutableStateOf<User?>(null) // Khởi tạo null, sẽ tải từ API
     val selectedAvatarUri = mutableStateOf<Uri?>(null)
@@ -50,6 +52,8 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             val currentUser = authRepository.getCurrentUser()
             if (currentUser != null) {
+                if(currentUser.role!!.roleName == "admin")
+                    _isVisible.value = true
                 val result = authRepository.getUserById(currentUser.id)
                 when (result) {
                     is Result.Success -> {

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">frontend</string>
-    <string name="base_url">https://46a5-125-235-239-39.ngrok-free.app/</string>
-    <string name="ws_base_url">ws://46a5-125-235-239-39.ngrok-free.app/ws</string>
+    <string name="base_url">https://appdoctruyen.onrender.com/</string>
+    <string name="ws_base_url">ws://appdoctruyen.onrender.com/ws</string>
 </resources>

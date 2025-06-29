@@ -33,7 +33,7 @@ const TransactionService = {
           {
             model: User,
             as: 'user',
-            attributes: ['userId', 'userName', 'dUserName'],
+            attributes: ['userId', 'userName', 'dUserName', 'avatarId'],
           },
         ],
       });
@@ -78,7 +78,7 @@ const TransactionService = {
           {
             model: User,
             as: 'user',
-            attributes: ['userId', 'userName', 'dUserName'],
+            attributes: ['userId', 'userName', 'dUserName', 'avatarId'],
           },
         ],
         time: [['time', 'ASC']],
