@@ -31,6 +31,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
 import androidx.compose.material.icons.filled.Payments
@@ -83,7 +84,11 @@ import com.example.frontend.ui.theme.BrightAquamarine
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 //region community Card
 @Composable
@@ -197,7 +202,7 @@ fun MemberCard(model : User, onClick: () -> Unit = {}){
                     .fillMaxHeight()
                     .width(100.dp)
                     .background(
-                        color = if (model.isFollowed) OrangeRed else Color.LightGray,
+                        color = if (model.isFollowed)  Color.LightGray else OrangeRed,
                         shape = RoundedCornerShape(30.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -216,28 +221,30 @@ fun MemberCard(model : User, onClick: () -> Unit = {}){
 }
 
 @Composable
-fun NotificationCard(cardType :String ,
-                     transactionContent:String = "",
-                     transactionType: String = "",
-                     time: String = ""
+fun
+        NotificationCard(content:String = "",
+                     type: String = "notification",
+                     time: LocalDateTime
 ){
+    val typeList = listOf("purchase","withdraw","deposit","premium")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 15.dp)
     ){
-        if(cardType == "transactionNotification")
+        if(type in typeList)
             Icon(
-                imageVector = when (transactionType) {
-                    "Withdraw" -> Icons.Filled.LocalAtm
-                    "Recharge" -> Icons.Filled.AccountBalance
-                    "Transfer" -> Icons.Filled.Payments
+                imageVector = when (type) {
+                    "withdraw" -> Icons.Filled.LocalAtm
+                    "deposit"-> Icons.Filled.AccountBalance
+                    "purchase" -> Icons.Filled.Payments
+                    "premium" -> Icons.Filled.Diamond
                     else -> Icons.Filled.QuestionMark
                 },
                 contentDescription = "transaction icon" ,
                 tint = Color.White,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(50.dp)
                     .padding(horizontal = 5.dp)
             )
         else{
@@ -245,7 +252,7 @@ fun NotificationCard(cardType :String ,
                 painter = painterResource(id = R.drawable.intro_page1_bg),
                 contentDescription =null,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(50.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop // fill mode
             )
@@ -258,17 +265,25 @@ fun NotificationCard(cardType :String ,
         ){
 
             Text(
-                text = transactionContent,
+                text = content,
                 color = Color.White,
                 style = TextStyle(
-                    fontSize = 14.sp
+                    fontSize = 16.sp
                 )
             )
+            //Time
+            val formatter = DateTimeFormatter.ofPattern("E", Locale.ENGLISH)
+            val daysDifference = ChronoUnit.DAYS.between(time, LocalDateTime.now())
+            val dayOfWeek = time.format(formatter)
             Text(
-                text = time,
+                text =  if (daysDifference>7)
+                            "$dayOfWeek ${time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}"
+                        else if(daysDifference>1)
+                            "$daysDifference ago."
+                        else time.format(DateTimeFormatter.ofPattern("hh:MM a")),
                 color = Color.LightGray,
                 style = TextStyle(
-                    fontSize = 12.sp
+                    fontSize = 14.sp
                 )
             )
         }
@@ -276,30 +291,23 @@ fun NotificationCard(cardType :String ,
 }
 
 //endregion
-
 @Composable
 fun ChapterItemCard(
     chapter: Chapter,
-    onClick: () -> Unit={}
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 8.dp)
+            .clickable { onClick() }, // Thêm onClick vào Modifier
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
             Row {
                 Text(text = chapter.chapterName, color = Color.White, fontSize = 19.sp)
                 Spacer(modifier = Modifier.width(11.dp))
-                if (true) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.write_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(17.dp),
-                        tint = Color.White
-                    )
-                } else if (chapter.lockedStatus) {
+                if (chapter.lockedStatus) {
                     Icon(
                         imageVector = Icons.Outlined.Lock,
                         contentDescription = null,
@@ -312,9 +320,12 @@ fun ChapterItemCard(
             Spacer(modifier = Modifier.height(13.dp))
 
             Row {
-                Text(text = chapter.updateAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = OrangeRed, fontSize = 14.sp)
+                // Xử lý null cho updateAt
+                val formattedDate = chapter.updateAt?.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) ?: "N/A"
+                val formattedTime = chapter.updateAt?.format(DateTimeFormatter.ofPattern("HH:mm")) ?: "N/A"
+                Text(text = formattedDate, color = OrangeRed, fontSize = 14.sp)
                 Text(
-                    text = chapter.updateAt.format(DateTimeFormatter.ofPattern("HH:mm")) ,
+                    text = formattedTime,
                     color = Color.White,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 7.dp)
@@ -396,8 +407,9 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                             tint = OrangeRed
                         )
                         Spacer(modifier = Modifier.width(4.dp))
+                        val formatter = DecimalFormat("#,###"+"đ")
                         Text(
-                            text = novel.price.toString(), // Sử dụng price từ Story
+                            text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
                             color = Color.White,
                             fontSize = 12.sp
                         )
@@ -536,13 +548,13 @@ fun StoryCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .background(
-                        color = if (story.price.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
+                        color = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = if (story.price.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
+                    text = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
                     color = Color.Black,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -590,7 +602,7 @@ fun StoryCard2(
     onClick: () -> Unit = {}
 ) {
     Log.d("StoryCard2", "Rendering story: ${story.name}")
-    val isPremium = story.price.compareTo(BigDecimal.ZERO) != 0
+    val isPremium = story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
             .width(200.dp)
@@ -1030,7 +1042,7 @@ fun TransactionCard(
                 Column()
                 {
                     Text(
-                        text = "User ID: " + item.userId.toString(),
+                        text = "User ID: " + item.user?.id.toString(),
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.poppins_bold))
                     )

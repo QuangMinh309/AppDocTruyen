@@ -54,7 +54,7 @@ class ChatRepository @Inject constructor(
              handleWebSocketMessage(text)
         }
         override fun onFailure(webSocket: WebSocket, t: Throwable, response:Response?) {
-            Log.e("ChatRepository", "WebSocket error: ${t.message}", t)
+            Log.e("WebSocket", "Error: ${t.message}")
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -92,7 +92,7 @@ class ChatRepository @Inject constructor(
                     scope.launch(Dispatchers.Main) {
                         _isConnected.emit(true)
                     }
-                    Log.i("ChatRepository", "Connection success: ${wsMessage.payload}")
+                    Log.i("ChatRepository", "Connection success: ${wsMessage.message}")
                     return@launch
                 }
                 when (wsMessage.action) {

@@ -7,6 +7,7 @@ import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.CommunityApiService
 import com.example.frontend.util.TokenManager
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,7 +33,7 @@ object NetworkModule {
     @Singleton
     @Named("BaseUrl")
     fun provideBaseUrl(@ApplicationContext context: Context): String {
-        return if (isEmulator()) "http://10.0.2.2:20268/" else context.getString(R.string.base_url)
+        return context.getString(R.string.base_url)
         //"http://10.0.2.2:3000/"
         // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
     }
@@ -87,11 +88,11 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient,  @Named("BaseUrl") baseUrl: String): Retrofit {
+    fun provideRetrofit(gson: Gson, okHttpClient: OkHttpClient, @Named("BaseUrl") baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 

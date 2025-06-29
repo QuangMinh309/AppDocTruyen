@@ -1,9 +1,11 @@
+
 import { sequelize } from '../../models/index.js';
 import ApiError from '../../utils/api_error.util.js';
 import { validateUser } from '../../utils/user.util.js';
+import TransactionService from '../transaction.service.js';
 
 const Parameter = sequelize.models.Parameter;
-const Transaction = sequelize.models.Transaction;
+const Premium = sequelize.models.Premium
 
 const purchasePremium = async (userId) => {
   try {
@@ -18,25 +20,25 @@ const purchasePremium = async (userId) => {
       throw new ApiError('Không tìm thấy tham số hệ thống', 500);
     }
 
-    const premiumCost = 100000; // Chi phí mua premium
+    const premiumCost = 50000; // Chi phí mua premium
     if (user.wallet < premiumCost) {
       throw new ApiError('Số dư ví không đủ', 400);
     }
 
-    const premiumExpiresAt = new Date(
+    const expirateAt = new Date(
       Date.now() + parameters.Premium_Period * 24 * 60 * 60 * 1000
     );
 
     await user.update({
       wallet: user.wallet - premiumCost,
       isPremium: true,
-      premiumExpiresAt,
     });
+    const premium = await Premium.Create({ userId, expirateAt, createAt: new Date(), })
 
-    await Transaction.create({
+    await TransactionService.createTransaction({
       userId,
-      money: -premiumCost,
-      time: new Date(),
+      type: "premium",
+      money: premiumCost,
       status: 'success',
       finishAt: new Date(),
     });

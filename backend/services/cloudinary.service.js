@@ -43,7 +43,6 @@ const uploadImageToCloudinary = async (fileBuffer, des = "") => {
 
 const uploadBase64ToCloudinary = async (base64Image, des = "") => {
   try {
-
     // Bỏ phần "data:image/png;base64," nếu có
     const matches = base64Image.match(/^data:(.+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
@@ -51,9 +50,11 @@ const uploadBase64ToCloudinary = async (base64Image, des = "") => {
     }
 
     const buffer = Buffer.from(matches[2], 'base64');
+    console.log(buffer)
     const result = await uploadImageToCloudinary(buffer, des);
     return result;
   } catch (error) {
+    console.log(error)
     if (error instanceof ApiError) {
       throw error;
     }

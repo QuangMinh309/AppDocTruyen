@@ -4,6 +4,7 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -45,6 +46,16 @@ interface ApiService {
 
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
+
+    @GET("api/stories/{storyId}")
+    suspend fun getStoryById(
+        @Path("storyId") storyId:Int
+    ): Response<StoryResponse>
+
+    data class StoryResponse(
+        val success: Boolean,
+        val data: Story
+    )
 
 
 
@@ -185,6 +196,19 @@ interface ApiService {
     @POST("api/users/unfollow")
     suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
 
+    @POST("api/users/purchase-premium")
+    suspend fun purchasePremium(): Response<NoDataResponse>
+
+
+    @POST("/api/transactions")
+    suspend fun createTransaction(@Body transactionRequest: TransactionRequest): Response<Transaction>
+
+    @GET("/api/transactions/user/{userId}")
+    suspend fun getAllUserTransaction(
+        @Path("userId") userId: Int,
+        @Query("lastId") lastId: Int,
+    ): Response<ListTransactionResponse>
+
 
 
     @POST("api/users/login")
@@ -208,6 +232,17 @@ interface ApiService {
 
 
 }
+
+class TransactionRequest (
+    val userId: Int,
+    val money: Int,
+    val type: String
+)
+class ListTransactionResponse(
+    val transactions: List<Transaction>,
+    val hasMore: Boolean,
+    val nextLastId: Int?=-1
+)
 
 data class UserFollowRequest (
     val followedId: Int
@@ -319,10 +354,6 @@ data class User(
     val DOB: String
 )
 
-data class Role(
-    val roleId: Int,
-    val roleName: String
-)
 
 data class UploadResponse(
     val url: String,

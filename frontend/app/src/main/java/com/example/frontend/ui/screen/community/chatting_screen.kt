@@ -56,6 +56,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
     val messages = viewModel.messages.collectAsState()
     val toast by viewModel.toast.collectAsState()
     val commentUri by viewModel.selectedPicUri.collectAsState()
+    //val name by viewModel.communityName.collectAsState()
 
     val context = LocalContext.current
     val listState = rememberLazyListState()
@@ -73,7 +74,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
         }
     )
     //cuộn xuống dưới khi có tin nhắn mới
-    LaunchedEffect(messages.value.size) {
+    LaunchedEffect(messages.value) {
         if (messages.value.isNotEmpty()) {
             listState.animateScrollToItem(messages.value.size - 1)
         }
@@ -90,6 +91,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
     ScreenFrame(
         topBar = {
             TopBar(
+//                title = name ,
                 showBackButton = true,
                 iconType = "Searching",
                 onLeftClick = {
@@ -117,6 +119,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
             }
             else{
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 90.dp)
