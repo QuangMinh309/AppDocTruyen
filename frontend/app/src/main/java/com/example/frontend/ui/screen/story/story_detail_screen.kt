@@ -15,6 +15,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,9 +73,20 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         }
     }
 
-    val storyStatus = remember { mutableStateOf("Full") }
-    val btnVote = remember { mutableStateOf("Vote") }
-    val isLoading by viewModel.isLoading
+    // Đồng bộ storyStatus với viewModel.story.value?.status
+    val storyStatus = remember { mutableStateOf(viewModel.story.value?.status ?: "Full") }
+    LaunchedEffect(viewModel.story.value?.status) {
+        viewModel.story.value?.status?.let { storyStatus.value = it }
+    }
+
+    // Quan sát hasVoted từ StateFlow
+    val hasVoted by viewModel.hasVoted.collectAsState()
+    val voteButtonText = remember { mutableStateOf(if (hasVoted) "Voted" else "Vote") }
+    LaunchedEffect(hasVoted) {
+        voteButtonText.value = if (hasVoted) "Voted" else "Vote"
+    }
+
+    val isLoading by viewModel.isLoading // Có thể loại bỏ nếu không dùng loading toàn màn hình
 
     ScreenFrame(
         topBar = {
@@ -86,115 +99,102 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
             )
         }
     ) {
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                androidx.compose.material3.CircularProgressIndicator()
-            }
-        } else {
-            Box(
+        // Loại bỏ CircularProgressIndicator toàn màn hình vì loading giờ nằm trong button
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
             ) {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    item { Spacer(Modifier.height(8.dp)) }
-                    item { StoryInfo(viewModel) }
-                    item { Spacer(Modifier.height(19.dp)) }
-                    item {
-                        StoryStatusAction(
-                            isAuthor = viewModel.isAuthor.value,
-                            storyStatus = storyStatus,
-                            hasVoted = btnVote,
-                            onActionClick = {
-                             //   viewModel.onGoToWriteScreen(viewModel.storyId)
-                            }
-                        )
-//                        {
-//                            // Thêm hành động cho "Add to ReadLists"
-//                            viewModel._toast.value = "Added to ReadLists"
-//                        }
-                    }
-                    item { Spacer(Modifier.height(29.dp)) }
-                    item {
-                        DescriptionStory(
-                            aboutContent = {
-                                Text(
-                                    text = viewModel.story.value?.description ?: "",
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                )
-                                Spacer(Modifier.height(29.dp))
-
-                                LargeGenreTags(viewModel.story.value?.categories ?: emptyList())
-
-                                Spacer(Modifier.height(37.dp))
-                                if (!viewModel.isAuthor.value) {
-                                    viewModel.story.value?.author?.let { author ->
-                                        AuthorInfoCard(model = author, onClick = { viewModel.onGoToUserProfileScreen(author.id) })
-                                    }
-                                    Spacer(Modifier.height(37.dp))
-                                }
-                                SectionTitle(title = "Novel Similar")
-                                SimilarNovelsCard(viewModel.similarStories.value, viewModel)
-                            },
-                            chapterContent = {
-                                Spacer(Modifier.height(29.dp))
-                                viewModel.story.value?.chapters?.forEachIndexed { index, chapter ->
-                                    ChapterItemCard(
-                                        chapter = chapter,
-                                        onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
-                                    )
-                                    if (index < (viewModel.story.value?.chapters?.lastIndex ?: -1)) {
-                                        HorizontalDivider(
-                                            modifier = Modifier.padding(vertical = 8.dp),
-                                            thickness = 1.2.dp,
-                                            color = Color.Gray
-                                        )
-                                    }
-                                }
-                            }
-                        )
-                    }
-                    item { Spacer(Modifier.height(80.dp)) }
+                item { Spacer(Modifier.height(8.dp)) }
+                item { StoryInfo(viewModel) }
+                item { Spacer(Modifier.height(19.dp)) }
+                item {
+                    StoryStatusAction(
+                        isAuthor = viewModel.isAuthor.value,
+                        storyStatus = storyStatus,
+                        hasVoted = voteButtonText,
+                        onActionClick = {},
+                        viewModel = viewModel
+                    )
                 }
-
-                if (isFabVisible) {
-                    FloatingActionButton(
-                        onClick = {
-                            scope.launch {
-                                listState.animateScrollToItem(0)
+                item { Spacer(Modifier.height(29.dp)) }
+                item {
+                    DescriptionStory(
+                        aboutContent = {
+                            Text(
+                                text = viewModel.story.value?.description ?: "",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                            )
+                            Spacer(Modifier.height(29.dp))
+                            LargeGenreTags(viewModel.story.value?.categories ?: emptyList())
+                            Spacer(Modifier.height(37.dp))
+                            if (!viewModel.isAuthor.value) {
+                                viewModel.story.value?.author?.let { author ->
+                                    AuthorInfoCard(model = author, onClick = { viewModel.onGoToUserProfileScreen(author.id) })
+                                }
+                                Spacer(Modifier.height(37.dp))
                             }
+                            SectionTitle(title = "Novel Similar")
+                            SimilarNovelsCard(viewModel.similarStories.value, viewModel)
                         },
-                        containerColor = OrangeRed,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(15.dp),
-                        shape = RoundedCornerShape(50.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.KeyboardArrowUp,
-                            contentDescription = "Scroll to top",
-                            tint = Color.White
-                        )
-                    }
+                        chapterContent = {
+                            Spacer(Modifier.height(29.dp))
+                            viewModel.story.value?.chapters?.forEachIndexed { index, chapter ->
+                                ChapterItemCard(
+                                    chapter = chapter,
+                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId) }
+                                )
+                                if (index < (viewModel.story.value?.chapters?.lastIndex ?: -1)) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(vertical = 8.dp),
+                                        thickness = 1.2.dp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+                item { Spacer(Modifier.height(80.dp)) }
+            }
+
+            if (isFabVisible) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    containerColor = OrangeRed,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(15.dp),
+                    shape = RoundedCornerShape(50.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.KeyboardArrowUp,
+                        contentDescription = "Scroll to top",
+                        tint = Color.White
+                    )
                 }
             }
         }
     }
 }
-
 val ExampleChapter: Chapter=Chapter (
-chapterId = 1,
-chapterName = "The Beginning",
-ordinalNumber = 1,
-storyId = 1,
-content = "The hero embarks on a journey to find the lost artifact...",
-viewNum = 500, commentNumber = 10,
-updatedAtString = "2025-07-15T07:30:00.000Z",
-lockedStatus = false
+    chapterId = 1,
+    chapterName = "The Beginning",
+    ordinalNumber = 1,
+    storyId = 1,
+    content = "The hero embarks on a journey to find the lost artifact...",
+    viewNum = 500, commentNumber = 10,
+    updatedAtString = "2025-07-15T07:30:00.000Z",
+    lockedStatus = false
 )
 
 val Examplechapters: List<Chapter> = listOf(
@@ -234,7 +234,7 @@ val ExampleCategories = listOf(
 )
 
 val Examplestories = listOf(
-   ExamplStory
+    ExamplStory
 )
 
 

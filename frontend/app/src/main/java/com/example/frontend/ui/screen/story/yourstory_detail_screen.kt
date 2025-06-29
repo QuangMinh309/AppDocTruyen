@@ -219,8 +219,8 @@ fun YourStoryDetailScreen(viewModel: YourStoryDetailViewModel= hiltViewModel()) 
 
             }
             item { Spacer(Modifier.height(19.dp)) }
-            item { StoryStatusAction(
-                isAuthor = true,storyStatus = storyStatus, hasVoted = btnVote) }
+//            item { StoryStatusAction(
+//                isAuthor = true,storyStatus = storyStatus, hasVoted = btnVote, viewModel=viewModel) }
             item { Spacer(Modifier.height(29.dp)) }
             item {
                 DescriptionStory(

@@ -15,7 +15,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,15 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.frontend.R
+import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.theme.Green
 import com.example.frontend.ui.theme.OrangeRed
 
 @Composable
 fun StoryStatusAction(
     isAuthor: Boolean,
-    storyStatus: MutableState<String>, // "full" or "update"
-    hasVoted: MutableState<String>,    // "vote" or "voted"
-    onActionClick: () -> Unit = {}
+    storyStatus: MutableState<String>,
+    hasVoted: MutableState<String>,
+    onActionClick: () -> Unit = {},
+    viewModel: StoryDetailViewModel
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -52,11 +57,8 @@ fun StoryStatusAction(
         Button(
             onClick = {
                 if (isAuthor) {
-                    storyStatus.value = when (storyStatus.value) {
-                        "full" -> "update"
-                        "update" -> "full"
-                        else -> storyStatus.value
-                    }
+                    viewModel.updateStoryStatus()
+                    storyStatus.value = if (storyStatus.value == "update") "full" else "update"
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -65,13 +67,21 @@ fun StoryStatusAction(
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .height(35.dp)
-                .widthIn(min = 95.dp)
+                .widthIn(min = 95.dp),
+            enabled = !viewModel.isLoadingStatus.value // Vô hiệu hóa button khi loading
         ) {
-            Text(
-                text = storyStatus.value,
-                color = Color.Black,
-                fontSize = 14.sp
-            )
+            if (viewModel.isLoadingStatus.value) {
+                androidx.compose.material3.CircularProgressIndicator(
+                    color = Color.Black,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text(
+                    text = storyStatus.value,
+                    color = Color.Black,
+                    fontSize = 14.sp
+                )
+            }
         }
 
         if (isAuthor) {
@@ -97,13 +107,13 @@ fun StoryStatusAction(
                 colors = listOf(Color(0xFF792430), Color(0xFFDF4258))
             )
 
-            val isVoted = hasVoted.value == "voted"
+            val isVoted = hasVoted.value == "Voted"
             val background = if (isVoted) Color(0xFFBA3749) else Color.Transparent
 
             Button(
                 onClick = {
-                    hasVoted.value = if (isVoted) "vote" else "voted"
-                    onActionClick()
+                    viewModel.voteStory()
+                    // Cập nhật hasVoted dựa trên phản hồi từ viewModel (sẽ được đồng bộ qua LaunchedEffect)
                 },
                 modifier = Modifier
                     .height(35.dp)
@@ -128,29 +138,37 @@ fun StoryStatusAction(
                     containerColor = background,
                     contentColor = if (isVoted) Color.Black else Color.Unspecified
                 ),
-                contentPadding = PaddingValues(0.dp)
+                contentPadding = PaddingValues(0.dp),
+                enabled = !viewModel.isLoadingVote.value // Vô hiệu hóa button khi loading
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.height(35.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
-                        contentDescription = "Vote",
-                        modifier = Modifier.size(16.dp),
-                        tint = if (isVoted) Color.Black else Color(0xFFBA3749)
+                if (viewModel.isLoadingVote.value) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        color = if (isVoted) Color.Black else Color(0xFFBA3749),
+                        modifier = Modifier.size(20.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = hasVoted.value,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        style = if (!isVoted) {
-                            TextStyle(brush = gradientText)
-                        } else {
-                            TextStyle(color = Color.Black)
-                        }
-                    )
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.height(35.dp)
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                            contentDescription = "Vote",
+                            modifier = Modifier.size(16.dp),
+                            tint = if (isVoted) Color.Black else Color(0xFFBA3749)
+                        )
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = hasVoted.value,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            style = if (!isVoted) {
+                                TextStyle(brush = gradientText)
+                            } else {
+                                TextStyle(color = Color.Black)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -291,3 +309,4 @@ fun StoryStatusActionAdmin(
         }
     }
 }
+

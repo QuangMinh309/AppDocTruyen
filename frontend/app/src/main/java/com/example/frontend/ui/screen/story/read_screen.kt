@@ -1,6 +1,7 @@
 package com.example.frontend.ui.screen.story
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,11 +17,13 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,29 +45,30 @@ import com.example.frontend.presentation.viewmodel.story.ReadViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 
-@Preview
-@Composable
-fun PreviewReadScreen()
-{
-    val fakeviewmodel=ReadViewModel(NavigationManager())
-    ReadScreen(fakeviewmodel)
-}
+//@Preview
+//@Composable
+//fun PreviewReadScreen() {
+//    val fakeViewModel = ReadViewModel(NavigationManager())
+//    ReadScreen(fakeViewModel)
+//}
 
 @Composable
-fun ReadScreen(viewModel: ReadViewModel= hiltViewModel()) {
+fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
     var comment by remember { mutableStateOf("") }
+    val currentChapter by viewModel.currentChapter.collectAsState()
+    val isLoading by viewModel.isLoading
 
     ScreenFrame(
         topBar = {
             TopBar(
-                title = ExampleChapter.chapterName,
+                title = currentChapter?.chapterName ?: ExampleChapter.chapterName,
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
-                onRightClick = { viewModel.onGoToSetting()}
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -72,46 +76,52 @@ fun ReadScreen(viewModel: ReadViewModel= hiltViewModel()) {
         ) {
             Spacer(modifier = Modifier.height(30.dp))
 
-            Text(
-                text = "Your membership starts as soon as you set up payment and subscribe. Your monthly charge will occur on the last day of the current billing period." +
-                        "We’ll renew your membership for you can manage your subscription or turn off auto-renewal under accounts setting.",
-                color = Color.White,
-                fontSize = 15.sp,
-            )
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else {
+                currentChapter?.content?.let { content ->
+                    Text(
+                        text = content,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                    )
+                } ?: Text(
+                    text = "No content available",
+                    color = Color.White,
+                    fontSize = 15.sp,
+                )
+            }
 
             // Push the end to the bottom
             Spacer(modifier = Modifier.weight(1f, fill = true))
 
             Button(
-                onClick = {viewModel.goToNextChapter()},
+                onClick = { viewModel.goToNextChapter() },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                contentPadding = PaddingValues( vertical = 7.dp),
+                contentPadding = PaddingValues(vertical = 7.dp),
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
+                enabled = !isLoading // Vô hiệu hóa button khi loading
             ) {
-                Text(
-                    text = "Next Chapter",
-                    color = Color.Black,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
-
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
+                } else {
+                    Text(
+                        text = "Next Chapter",
+                        color = Color.Black,
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
-//            val rawComments = listOf(
-//                listOf("huy", "Cảnh này chất!", R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
-//                listOf("huy", null, R.drawable.intro_page1_bg, "Chap 3", "2025-05-06", "09:45", "24", "2"),
-//                listOf("thu", "Truyện hay nha", null, "Chap 1", "2025-05-05", "12:30", "33", "1")
-//            )
-        //    TopComments(comments,viewModel)
-
-            Spacer(modifier = Modifier.height(24.dp))
-
+//Topcomment
             // Comment input field
             Row(
                 modifier = Modifier
@@ -144,7 +154,7 @@ fun ReadScreen(viewModel: ReadViewModel= hiltViewModel()) {
                 )
 
                 IconButton(
-                    onClick = {}
+                    onClick = {},
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_add_img),

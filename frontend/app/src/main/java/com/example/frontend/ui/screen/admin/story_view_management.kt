@@ -129,7 +129,9 @@ fun StoryViewManagementScreen(viewModel : StoryViewMgmtViewModel = hiltViewModel
                             Examplechapters.forEachIndexed { index, chapter ->
                                 ChapterItemCard(
                                     chapter = chapter,
-                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId.toString()) }
+                                    onClick = {
+                                        viewModel.onGoToChapterScreen(chapter.chapterId)
+                                    }
                                 )
 
                                 if (index < Examplechapters.lastIndex) {

@@ -205,7 +205,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(
                 route = Screen.Story.Chapter.Read.route,
                 arguments = listOf(
-                    navArgument("chapterId") { type = NavType.StringType },
+                    navArgument("chapterId") { type = NavType.IntType },
                 )
             ) { ReadScreen() }
 

@@ -96,6 +96,64 @@ interface ApiService {
         @Path("categoryId") categoryId: Int
     ) : Response<CategoryStoriesResponse>
 
+    @PUT("api/stories/{storyId}")
+    suspend fun updateStory(
+        @Path("storyId") storyId: Int,
+        @Body request: StoryUpdateRequest
+    ): Response<UpdateStoryResponse>
+
+    data class StoryUpdateRequest(
+        val status: String
+    )
+    data class UpdateStoryResponse (
+        val success: Boolean,
+        val data: Story,
+        val message: String
+    )
+
+    @GET("api/stories/{storyId}/vote/status")
+    suspend fun checkVote(
+        @Path("storyId") storyId:Int
+    ):Response<CheckVoteResponse>
+
+    data class CheckVoteResponse(
+        val hasVoted: Boolean,
+        val voteCount:Int
+    )
+
+    @POST("api/stories/{storyId}/vote")
+    suspend fun voteStory(
+        @Path("storyId") storyId:Int
+    ): Response<VoteStoryResponse>
+
+    data class VoteStoryResponse(
+        val success: Boolean,
+        val data: VoteStoryResponseData
+    )
+
+    data class VoteStoryResponseData(
+        val message: String,
+        val voteCount: Int,
+        val hasVoted: Boolean
+
+    )
+
+    @GET("api/chapters/{chapterId}/read")
+    suspend fun getChapter(
+        @Path("chapterId") chapterId:Int
+    ):Response<ChapterRespone>
+
+    data class ChapterRespone(
+        val success: Boolean,
+        val data:Chapter
+    )
+
+    @GET("api/chapters/{chapterId}/read-next")
+    suspend fun getNextChapter(
+        @Path("chapterId") chapterId: Int
+    ): Response<ChapterRespone>
+
+
     data class CategoryStoriesResponse(
         val success: Boolean,
         val data: CategoryStoriesData
