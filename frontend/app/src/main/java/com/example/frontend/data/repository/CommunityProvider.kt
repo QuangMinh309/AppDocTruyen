@@ -1,5 +1,6 @@
 package com.example.frontend.data.repository
 import android.util.Log
+import com.example.frontend.data.api.CommunityRequest
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.User
 import com.example.frontend.data.model.onFailure
@@ -62,7 +63,7 @@ class CommunityProvider @Inject constructor(
         return memList
     }
 
-    suspend fun createCommunity(community: Community, file: File?): Community? {
+    suspend fun createCommunity(community: CommunityRequest, file: File?): Community? {
             val imageInfo = imageUrlProvider.uploadImage(file)
             val result = repository.createCommunity(community, imageInfo)
             var createdCommunity:Community? = null

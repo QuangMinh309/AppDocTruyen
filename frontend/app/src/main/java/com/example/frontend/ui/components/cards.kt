@@ -131,7 +131,10 @@ fun CommunityCard(model: Community, onClick: () -> Unit = {}){
                     .padding( vertical = 4.dp,horizontal = 10.dp)
             )
             //genre chip
-            GenreChip(genre = model.category)
+            //GenreChip(genre = model.category)
+            model.category?.let {
+                GenreChip(genre = it)
+            }
 
             //member number
             Text(
@@ -1304,6 +1307,106 @@ fun StoryCardCard(
                 )
                 Spacer(modifier = Modifier.width(7.dp))
                 Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun CommunityCardCard(
+    item : Community,
+    isSelected : Boolean,
+    onClick: () -> Unit = {}
+)
+{
+    Box (
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .padding(vertical = 10.dp)
+            .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
+            .clickable{ onClick() },
+        contentAlignment = Alignment.CenterStart
+    )
+    {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        )
+        {
+            Row {
+                Text(
+                    text = item.name,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "ID: " + item.id,
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.height(IntrinsicSize.Min)
+            )
+            {
+                Image(
+                    painter = rememberAsyncImagePainter(
+                        model = item.avatarUrl ?: R.drawable.intro_page1_bg
+                    ),
+                    contentDescription = "pfp",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(50.dp, 50.dp)
+                        .clip(RoundedCornerShape(50.dp))
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column()
+                {
+                    Text(
+                        text = item.memberNum.toString() + " Members",
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_regular))
+                        )
+                    )
+                    Text(
+                        text = "Category: " + item.category?.name, //dont remove question mark
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_regular))
+                        )
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(1.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                FlowRow {
+                    Text(
+                        text = "Description: " + item.description,
+                        color = Color.White,
+                        style = TextStyle(
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.poppins_regular))
+                        )
+                    )
+                }
             }
         }
     }

@@ -163,6 +163,12 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         }
     }
 
+    fun onGoToCommunityMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Community.route)
+        }
+    }
+
     fun onGoToStoryMgmtScreen() {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Admin.Story.route)

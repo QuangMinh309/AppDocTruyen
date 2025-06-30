@@ -69,7 +69,7 @@ fun IntroScreen(viewModel: IntroViewModel = hiltViewModel()) {
         { Page1() },
         { Page2() },
         { Page3() },
-        { Page4(onLoginClick = {viewModel.onGoToLoginScreen()}) }
+        { Page4(onLoginClick = {viewModel.onGoToRegisterScreen()}) }
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
@@ -327,7 +327,7 @@ fun Page4(onLoginClick: () -> Unit = {})
                 .fillMaxWidth()
         ) {
             Text(
-                text = "LOGIN to join us!",
+                text = "REGISTER to join us!",
                 style = TextStyle(
                     fontFamily = ReemKufifunFontFamily,
                     fontSize = 32.sp,
@@ -348,12 +348,11 @@ fun Page4(onLoginClick: () -> Unit = {})
                     )
                 ),
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
                     .align(Alignment.Center)
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         Box(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -372,23 +371,21 @@ fun Page4(onLoginClick: () -> Unit = {})
                     onLoginClick()
                 },
                 modifier = Modifier
-                    .size(width = 140.dp, height =45.dp)
-                    .padding(5.dp),
+                    .size(width = 150.dp, height =45.dp)
+                    .padding(3.dp),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OrangeRed
                 )
             ) {
                 Text(
-                    text = "LOGIN",
+                    text = "REGISTER",
                     style = TextStyle(
                         fontSize = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_bold)),
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),
                         textAlign = TextAlign.Center,
                         color = Color.Black
                     ),
-                    modifier = Modifier
-                        .size(width = 140.dp, height = 34.dp)
                 )
             }
         }

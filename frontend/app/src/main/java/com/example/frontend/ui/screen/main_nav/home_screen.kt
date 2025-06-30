@@ -123,7 +123,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -132,7 +132,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         contentDescription = "Notification",
                         tint = Color.White,
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(40.dp)
                             .clickable { viewModel.onGoToNotificationScreen() }
                     )
 

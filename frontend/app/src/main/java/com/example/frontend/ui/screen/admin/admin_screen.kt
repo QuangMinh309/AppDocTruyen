@@ -117,7 +117,7 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
             RowSelectItem(
                 "Community",
                 painterResource(R.drawable.people),
-                {  }
+                { viewModel.onGoToCommunityMgmtScreen() }
             )
         }
     }

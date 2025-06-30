@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,7 @@ import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
+import com.example.frontend.ui.screen.admin.CommunityManagementScreen
 import com.example.frontend.ui.screen.admin.StoryManagementScreen
 import com.example.frontend.ui.screen.admin.TransactionManagementScreen
 import com.example.frontend.ui.screen.admin.UserManagementScreen
@@ -69,14 +71,18 @@ import com.example.frontend.ui.screen.transaction.WithdrawScreen
 import com.example.frontend.ui.theme.BrightBlue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
+import com.example.frontend.util.UserPreferences
 
 @Composable
 fun AppNavigation(navController: NavHostController, viewModel: AppNavigationViewModel = hiltViewModel()) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     var showBottomBar by remember { mutableStateOf(true) }
+    val context = LocalContext.current
+    var showIntro by remember { mutableStateOf(true) }
 
     LaunchedEffect(viewModel.commands) {
+
         viewModel.commands.collect { command ->
             when (command) {
                 is NavigationCommand.Navigate -> {
@@ -87,6 +93,14 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 is NavigationCommand.Back -> {
                     navController.popBackStack()
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        UserPreferences.checkLoggedIn(context).collect { loggedIn ->
+            if (loggedIn) {
+                showIntro = false
             }
         }
     }
@@ -171,10 +185,14 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.Intro.route) { IntroScreen() }
             composable(Screen.Splash.route) {
-                CustomSplashScreen{
-                    navController.navigate(Screen.Intro.route) {
-                        popUpTo("splash") { inclusive = true }
-                        launchSingleTop = true
+                CustomSplashScreen {
+                    if (showIntro) {
+                        navController.navigate(Screen.Intro.route) {
+                            popUpTo("splash") { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    } else {
+                        navController.navigate(Screen.Authentication.Login.route)
                     }
                 }
             }
@@ -293,6 +311,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.Admin.Transaction.route) { TransactionManagementScreen() }
             composable(Screen.Admin.User.route) { UserManagementScreen() }
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
+            composable(Screen.Admin.Community.route) { CommunityManagementScreen() }
             composable(
                 route = Screen.Admin.StoryDetail.route,
                 arguments = listOf(
