@@ -1,47 +1,80 @@
-import dotenv from 'dotenv'
-dotenv.config({ path: './backend/.env' });
-
+// server.js
+import { WebSocketServer } from 'ws'
 import express from 'express'
-import cors from 'cors'   
-import db from './models/index.js'; // Import object db
-import imageRoutes from './routes/imageRoutes.js'// Import route xử lý ảnh
+import http from 'http'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import db from './models/index.js'
+import errorHandler from './middlewares/errorHandler.js'
 
-const sequelize = db.sequelize; // Lấy sequelize instance từ db
+import route from './routes/index.js'
+import WebSocket from './websocket/socket.js'
+
+dotenv.config()
+
+// Khởi tạo server Express và WebSocket
 const app = express()
+const server = http.createServer(app)
+const wss = new WebSocketServer({ server })
+
+const sequelize = db.sequelize
 
 // Middleware
-app.use(cors()); // Cho phép kết nối từ Android app
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Cho phép gửi dữ liệu từ form lên server
-app.use(express.static('public')); // Cho phép truy cập vào thư mục public
-app.use('/uploads', express.static('uploads'));  // Dùng để phục vụ file tạm thời
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(express.static('public'))
 
-// Routes
-app.use('/api/images', imageRoutes);  // URL gốc sẽ là /api/images/:imageId (lấy ảnh) và /api/images/upload (upload ảnh)
-
-//run server
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (req, res) => {
-  res.send("I'm alive!");
-});
-  
-app.listen(PORT , () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
-
-
-// Gọi kết nối DB
-sequelize.authenticate()
-  .then(() => {
-    console.log('Đã kết nối thành công đến database!');
-  })
-  .catch((err) => {
-    console.error('Lỗi kết nối DB:', err);
-  });
+route(app)
 
 app.get('/', (req, res) => {
-  res.send('Hello from backend!');
+  res.send('Hello from backend!')
+})
+
+// Error handling middleware
+app.use(errorHandler)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Có thể gửi thông báo hoặc log thêm
 });
 
+// // WebSocket connection handling
+// // Store connected clients  :userId => ws
+// const clients = new Map()
 
+// // WebSocket logic với middleware
+// wss.on('connection', async (ws, req) => {
+//   const user = await authenticateWebSocket(ws, req);
+//   if (user) {
+//     ws.userId = user.userId;
+//     clients.set(ws.userId, ws);
+//     console.log(`User ${user.userId} connected.`);
+
+//     ws.on('message', (message) => {
+//       console.log(`Received: ${message} from ${user.userId}`);
+//     });
+
+//     ws.on('close', () => {
+//       clients.delete(user.userId);
+//       console.log(`User ${user.userId} disconnected.`);
+//     });
+//   }
+// });
+// Start server
+
+WebSocket(wss)
+
+const PORT = process.env.DB_PORT || 3000
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running at http://localhost:${PORT}`)
+})
+
+// DB connection
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Đã kết nối thành công đến database!')
+  })
+  .catch((err) => {
+    console.error('Lỗi kết nối database:', err)
+  })

@@ -1,25 +1,32 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class story_category extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+import { Model } from 'sequelize'
+
+export default (sequelize, DataTypes) => {
+  class StoryCategory extends Model {
     static associate(models) {
-      // define association here
+      // Junction table associations are defined in the related models
     }
   }
-  story_category.init({
-    Id: DataTypes.INTEGER,
-    storyId: DataTypes.INTEGER,
-    categoryId: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'story_category',
-  });
-  return story_category;
-};
+
+  StoryCategory.init(
+    {
+      storyId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+      categoryId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: 'StoryCategory',
+      tableName: 'story_category',
+      timestamps: false,
+    }
+  )
+
+  return StoryCategory
+}

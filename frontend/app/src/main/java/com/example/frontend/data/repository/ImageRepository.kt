@@ -1,19 +1,23 @@
 package com.example.frontend.data.repository
 
+import com.example.frontend.data.api.ApiError
+import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.model.Result
-import com.example.frontend.data.util.ApiService
-import dagger.hilt.android.scopes.ViewModelScoped
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@ViewModelScoped
+@Singleton
+//@ViewModelScoped
 class ImageRepository @Inject constructor(
+    private val gson: Gson,
     private val apiService: ApiService
 ) {
-    suspend fun uploadImageToServer(file: File): Result<String> {
+    suspend fun uploadImageToServer(file: File): Result<Pair<String,String>> {
         return try {
             val mediaType = "image/*".toMediaTypeOrNull()
             val requestBody = file.asRequestBody(mediaType)
@@ -21,9 +25,12 @@ class ImageRepository @Inject constructor(
 
             val response = apiService.uploadImage(imagePart)
             if (response.isSuccessful) {
-                Result.Success(response.body()?.url ?: "")
+                val res = Pair(response.body()?.url ?: "",response.body()?.publicId ?: "")
+                Result.Success(res)
             } else {
-                Result.Failure(Exception("Upload failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorResponse = gson.fromJson(errorBody, ApiError::class.java)
+                Result.Failure(Exception("Upload failed : ${errorResponse.message}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

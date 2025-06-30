@@ -3,10 +3,13 @@ package com.example.frontend.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,17 +31,18 @@ import com.example.frontend.R
 fun TopBar(title: String = "",
               showBackButton: Boolean = true,
               iconType: String = "",
-              onBackClick: () -> Unit = {},
-              onIconClick: () -> Unit = {}){
+              onLeftClick: () -> Unit = {},
+              onRightClick: () -> Unit = {}){
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(start = 25.dp, end = 25.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         // Back button
         if (showBackButton) {
             Button(
-                onClick = onBackClick,
+                onClick = onLeftClick,
                 colors =  ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                 ),
@@ -58,7 +62,16 @@ fun TopBar(title: String = "",
             }
         }
         else{
-            Spacer(modifier = Modifier.weight(0.33f))
+            Icon(
+                imageVector = Icons.Outlined.NotificationsActive,
+                contentDescription = "Custom notification Icon",
+                tint = Color.White,
+                modifier = Modifier
+                    .weight(0.33f)
+                    .size(50.dp)
+                    .wrapContentWidth(Alignment.Start)
+                    .clickable { onLeftClick() }
+            )
         }
         Text(
             text = title,
@@ -72,25 +85,25 @@ fun TopBar(title: String = "",
                 .wrapContentWidth(Alignment.CenterHorizontally)
                 .align(Alignment.CenterVertically)
         )
-        if(iconType =="Setting"){
-            Icon(
-                painter = painterResource(id = R.drawable.setting_icon),
-                contentDescription = "Custom Icon",
-                tint = Color.White,
-                modifier = Modifier
-                    .weight(0.33f)
-                    .wrapContentWidth(Alignment.End)
-            )
-        }else {
-            Icon(
-                painter = painterResource(id = R.drawable.search_normal),
-                contentDescription = "Custom Icon",
-                tint = Color.White,
-                modifier = Modifier
-                    .weight(0.33f)
-                    .wrapContentWidth(Alignment.End)
-                    .clickable { onIconClick() }
-            )
+
+
+        val drawableId = if (iconType == "Setting") {
+            R.drawable.setting_config
+        } else {
+            R.drawable.search_normal
         }
+        Icon(
+            painter = painterResource(id = drawableId),
+            contentDescription = "Custom Icon",
+            tint = Color.White,
+            modifier = Modifier
+                .weight(0.33f)
+                .size(22.dp)
+                .wrapContentWidth(Alignment.End)
+                .clickable { onRightClick() }
+        )
+
+
     }
 }
+
