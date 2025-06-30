@@ -23,8 +23,14 @@ class ReadViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
-    private val _chapterId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("id")))
+    private val _chapterId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("chapterId")))
     val chapterId: StateFlow<Int> = _chapterId.asStateFlow()
+
+    private val _storyId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("storyId")))
+    val storyId: StateFlow<Int> = _storyId.asStateFlow()
+
+    private val _isAuthor = MutableStateFlow(checkNotNull(savedStateHandle.get<Boolean>("isAuthor")))
+    val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
 
     // State để lưu chapter hiện tại
     private val _currentChapter = MutableStateFlow<Chapter?>(null)

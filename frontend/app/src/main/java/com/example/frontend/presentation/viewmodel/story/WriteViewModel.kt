@@ -23,7 +23,7 @@ class WriteViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
-    private val _storyId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("id")))
+    private val _storyId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("storyId")))
     val storyId: StateFlow<Int> = _storyId.asStateFlow()
 
     // State cho loading

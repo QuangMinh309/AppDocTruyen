@@ -199,7 +199,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
         }
         // Button start read
         LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
-            onClick = {viewModel.onGoToChapterScreen(viewModel.firstChapterId.value?:0) }){
+            onClick = {viewModel.onGoToChapterScreen(viewModel.firstChapterId.value?:0,viewModel.storyId.value,viewModel.isAuthor.value) }){
             Text(
                 text = "Start  read",
                 color = Color.Black,
@@ -362,7 +362,7 @@ fun StoryInfo2(viewModel: StoryViewMgmtViewModel) {
         }
         // Button start read
         LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
-            onClick = {viewModel.onGoToChapterScreen(0) }){
+            onClick = { }){
             Text(
                 text = "Start  read",
                 color = Color.Black,

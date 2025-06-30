@@ -162,7 +162,17 @@ interface ApiService {
         val message: String
     )
 
+    @PUT("api/chapters/story/{storyId}/{chapterId}")
+    suspend fun updateChapter(
+        @Path("storyId") storyId:Int,
+        @Path("chapterId") chapterId:Int,
+        @Body updateChapterRequest:UpdateChapterRequest
+    ):Response<ChapterResponse>
 
+    data class UpdateChapterRequest(
+        val chapterName: String,
+        val content:String
+    )
 
 
 

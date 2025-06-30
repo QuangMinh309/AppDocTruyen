@@ -57,11 +57,12 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
     var comment by remember { mutableStateOf("") }
     val currentChapter by viewModel.currentChapter.collectAsState()
     val isLoading by viewModel.isLoading
+    val isAuthor by viewModel.isAuthor.collectAsState()
 
     ScreenFrame(
         topBar = {
             TopBar(
-                title = currentChapter?.chapterName ?: ExampleChapter.chapterName,
+                title = currentChapter?.chapterName ?: "Chapter",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -97,31 +98,65 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
             // Push the end to the bottom
             Spacer(modifier = Modifier.weight(1f, fill = true))
 
-            Button(
-                onClick = { viewModel.goToNextChapter() },
-                shape = RoundedCornerShape(30.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                contentPadding = PaddingValues(vertical = 7.dp),
+            // Nút Next Chapter và Update Chapter (nếu là tác giả)
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.9f)
+                    .padding(horizontal = 16.dp)
                     .align(Alignment.CenterHorizontally),
-                enabled = !isLoading // Vô hiệu hóa button khi loading
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
-                } else {
-                    Text(
-                        text = "Next Chapter",
-                        color = Color.Black,
-                        fontSize = 19.sp,
-                        fontWeight = FontWeight.Bold,
-                        fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
-                    )
+                Button(
+                    onClick = { viewModel.goToNextChapter() },
+                    shape = RoundedCornerShape(30.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    contentPadding = PaddingValues(vertical = 7.dp),
+                    modifier = Modifier
+                        .weight(if (isAuthor) 0.45f else 0.7f),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
+                    } else {
+                        Text(
+                            text = "Next Chapter",
+                            color = Color.Black,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
+                        )
+                    }
+                }
+
+                if (isAuthor) {
+                    Button(
+                        onClick = {
+                           viewModel.onGoToUpdateChapterScreen(viewModel.storyId.value,viewModel.chapterId.value)
+                                  },
+                        shape = RoundedCornerShape(30.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        contentPadding = PaddingValues(vertical = 7.dp),
+                        modifier = Modifier
+                            .weight(0.45f),
+                        enabled = !isLoading
+                    ) {
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
+                        } else {
+                            Text(
+                                text = "Update Chapter",
+                                color = Color.Black,
+                                fontSize = 19.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
+                            )
+                        }
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-//Topcomment
+
             // Comment input field
             Row(
                 modifier = Modifier

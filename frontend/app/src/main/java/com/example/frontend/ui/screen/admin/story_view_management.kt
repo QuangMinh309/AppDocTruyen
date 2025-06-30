@@ -130,7 +130,7 @@ fun StoryViewManagementScreen(viewModel : StoryViewMgmtViewModel = hiltViewModel
                                 ChapterItemCard(
                                     chapter = chapter,
                                     onClick = {
-                                        viewModel.onGoToChapterScreen(chapter.chapterId)
+                                     //   viewModel.onGoToChapterScreen(chapter.chapterId)
                                     }
                                 )
 

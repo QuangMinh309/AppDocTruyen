@@ -66,9 +66,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.back()
         }
     }
-    fun onGoToChapterScreen(chapterId: Int) {
+    fun onGoToChapterScreen(chapterId: Int,storyId: Int,isAuthor:Boolean) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId))
+            navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId,storyId,isAuthor))
         }
     }
     open fun onGoToSearchingMemberScreen(id: Int) {
@@ -178,6 +178,12 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     fun onGoToChangePasswordScreen(){
         viewModelScope.launch {
             navigationManager.navigate(Screen.Authentication.ChangePassword.route)
+        }
+    }
+
+    fun onGoToUpdateChapterScreen(storyId: Int,chapterId: Int){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.Chapter.Update.createRoute(storyId,chapterId))
         }
     }
 }

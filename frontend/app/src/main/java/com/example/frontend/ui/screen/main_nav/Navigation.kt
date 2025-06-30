@@ -59,6 +59,7 @@ import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
+import com.example.frontend.ui.screen.story.UpdateChapterScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -205,16 +206,27 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(
                 route = Screen.Story.Chapter.Read.route,
                 arguments = listOf(
-                    navArgument("id") { type = NavType.IntType },
+                    navArgument("chapterId") { type = NavType.IntType },
+                    navArgument("storyId"){type=NavType.IntType},
+                    navArgument("isAuthor"){type=NavType.BoolType}
                 )
             ) { ReadScreen() }
 
             composable(
                 route = Screen.Story.Chapter.Write.route,
                 arguments = listOf(
-                    navArgument("id") { type = NavType.IntType },
+                    navArgument("storyId") { type = NavType.IntType },
                 )
             ) { WriteScreen() }
+
+            composable(
+                route = Screen.Story.Chapter.Update.route,
+                arguments = listOf(
+                    navArgument("storyId") { type = NavType.IntType },
+                    navArgument("chapterId") {type=NavType.IntType}
+                )
+            ) { UpdateChapterScreen() }
+
 
             composable(
                 route = Screen.Story.Category.route,
