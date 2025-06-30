@@ -3,6 +3,7 @@ package com.example.frontend.ui.screen.story
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,8 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
@@ -44,6 +48,7 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
 import com.example.frontend.ui.components.ChapterItemCard
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.DescriptionStory
 import com.example.frontend.ui.components.LargeGenreTags
 import com.example.frontend.ui.components.ScreenFrame
@@ -94,7 +99,12 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         voteButtonText.value = if (hasVoted) "Voted" else "Vote"
     }
 
-    val isLoading by viewModel.isLoading // Có thể dùng để kiểm soát trạng thái loading nếu cần
+    val isLoading by viewModel.isLoading
+
+    // Trạng thái cho chế độ chọn và danh sách chapter được chọn
+    var isSelectionMode by remember { mutableStateOf(false) }
+    var selectedChapters by remember { mutableStateOf(setOf<Int>()) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     // State để kiểm soát làm mới
     var isRefreshing by remember { mutableStateOf(false) }
@@ -104,15 +114,13 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
             scope.launch {
                 isRefreshing = true
                 try {
-                    // Chạy các tác vụ bất đồng bộ song song
                     listOf(
                         async { viewModel.loadStoryDetails() },
                         async { viewModel.loadSimilarStories() },
                         async { viewModel.loadVoteStatus() }
                     ).awaitAll()
                 } catch (e: Exception) {
-                    // Xử lý lỗi nếu cần, ví dụ: hiển thị Toast
-
+                 //   viewModel.setToast("Lỗi khi làm mới: ${e.message}")
                 } finally {
                     isRefreshing = false
                 }
@@ -134,7 +142,7 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .pullRefresh(pullRefreshState) // Thêm pull-to-refresh
+                .pullRefresh(pullRefreshState)
         ) {
             LazyColumn(
                 state = listState,
@@ -179,10 +187,41 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                         },
                         chapterContent = {
                             Spacer(Modifier.height(29.dp))
+                            if (viewModel.isAuthor.value) {
+                                // Hiển thị nút xóa khi có chapter được chọn
+                                if (isSelectionMode && selectedChapters.isNotEmpty()) {
+                                    Button(
+                                        onClick = { showDeleteDialog = true },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text("Xóa ${selectedChapters.size} chương", color = Color.White)
+                                    }
+                                }
+                            }
                             viewModel.story.value?.chapters?.forEachIndexed { index, chapter ->
                                 ChapterItemCard(
                                     chapter = chapter,
-                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId) }
+                                    isSelectionMode = isSelectionMode && viewModel.isAuthor.value,
+                                    isSelected = chapter.chapterId in selectedChapters,
+                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId) },
+                                    onLongClick = {
+                                        isSelectionMode = true
+                                        selectedChapters = selectedChapters + chapter.chapterId
+                                    },
+                                    onCheckedChange = { isChecked ->
+                                        selectedChapters = if (isChecked) {
+                                            selectedChapters + chapter.chapterId
+                                        } else {
+                                            selectedChapters - chapter.chapterId
+                                        }
+                                        if (selectedChapters.isEmpty()) {
+                                            isSelectionMode = false
+                                        }
+                                    }
                                 )
                                 if (index < (viewModel.story.value?.chapters?.lastIndex ?: -1)) {
                                     HorizontalDivider(
@@ -197,6 +236,26 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                 }
                 item { Spacer(Modifier.height(80.dp)) }
             }
+
+            // Hiển thị ConfirmationDialog
+            ConfirmationDialog(
+                showDialog = showDeleteDialog,
+                title = "Xác nhận xóa",
+                text = "Bạn có chắc muốn xóa ${selectedChapters.size} chương đã chọn?",
+                onConfirm = {
+                    scope.launch {
+                        viewModel.deleteChapters(selectedChapters.toList())
+                        selectedChapters = emptySet()
+                        isSelectionMode = false
+                        showDeleteDialog = false
+                    }
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                    selectedChapters = emptySet()
+                    isSelectionMode = false
+                }
+            )
 
             // Hiển thị PullRefreshIndicator
             PullRefreshIndicator(

@@ -31,20 +31,16 @@ class StoryDetailViewModel @Inject constructor(
     val story = mutableStateOf<Story?>(null)
     val isAuthor = mutableStateOf(false)
     val similarStories = mutableStateOf<List<Story>>(emptyList())
-    val isLoading = mutableStateOf(false) // Giữ state này cho loading toàn màn hình (nếu cần)
-
-    // State cho loading riêng từng button
+    val isLoading = mutableStateOf(false)
     val isLoadingStatus = mutableStateOf(false)
     val isLoadingVote = mutableStateOf(false)
 
-    // State để lưu trạng thái vote
     private val _hasVoted = MutableStateFlow(false)
     val hasVoted: StateFlow<Boolean> = _hasVoted.asStateFlow()
 
     private val _voteCount = MutableStateFlow(0)
     val voteCount: StateFlow<Int> = _voteCount.asStateFlow()
 
-    // Biến mới để lưu id của chapter đầu tiên
     val firstChapterId = mutableStateOf<Int?>(null)
 
     init {
@@ -57,7 +53,7 @@ class StoryDetailViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            loadData() // Gọi loadData trong coroutine scope
+            loadData()
         }
     }
 
@@ -66,7 +62,7 @@ class StoryDetailViewModel @Inject constructor(
         try {
             loadStoryDetails()
             loadSimilarStories()
-            loadVoteStatus() // Đảm bảo tải trạng thái vote khi khởi động
+            loadVoteStatus()
         } finally {
             isLoading.value = false
         }
@@ -79,7 +75,6 @@ class StoryDetailViewModel @Inject constructor(
                 story.value = result.data
                 Log.d("StoryDetailViewModel", "Loaded story: ${result.data}")
                 Log.d("StoryDetailViewModel", "Chapters: ${result.data.chapters}")
-                // Cập nhật firstChapterId nếu có chapters
                 firstChapterId.value = result.data.chapters?.minByOrNull { it.ordinalNumber }?.chapterId
                 checkIsAuthor()
             }
@@ -110,7 +105,6 @@ class StoryDetailViewModel @Inject constructor(
         }
     }
 
-    // Hàm cập nhật trạng thái với loading riêng
     fun updateStoryStatus() {
         viewModelScope.launch {
             Log.d("StoryDetailViewModel", "Starting updateStoryStatus for storyId: ${storyId.value}")
@@ -140,7 +134,6 @@ class StoryDetailViewModel @Inject constructor(
         }
     }
 
-    // Hàm loadVoteStatus để kiểm tra trạng thái vote
     suspend fun loadVoteStatus() {
         Log.d("StoryDetailViewModel", "Checking vote status for storyId: ${storyId.value}")
         val result = storyDetailRepository.checkVote(storyId.value)
@@ -153,12 +146,11 @@ class StoryDetailViewModel @Inject constructor(
             is Result.Failure -> {
                 Log.e("StoryDetailViewModel", "Failed to check vote status: ${result.exception.message}", result.exception)
                 _toast.value = "Failed to check vote status: ${result.exception.message}"
-                _hasVoted.value = false // Giá trị mặc định nếu API thất bại
+                _hasVoted.value = false
             }
         }
     }
 
-    // Hàm voteStory với loading riêng
     fun voteStory() {
         viewModelScope.launch {
             Log.d("StoryDetailViewModel", "Voting for storyId: ${storyId.value}")
@@ -178,6 +170,31 @@ class StoryDetailViewModel @Inject constructor(
             }
             isLoadingVote.value = false
             Log.d("StoryDetailViewModel", "Finished voting")
+        }
+    }
+
+    suspend fun deleteChapters(chapterIds: List<Int>) {
+        Log.d("StoryDetailViewModel", "Deleting chapters: $chapterIds")
+        try {
+            chapterIds.forEach { chapterId ->
+                val result = storyDetailRepository.deleteChapter(chapterId)
+                when (result) {
+                    is Result.Success -> {
+                        Log.d("StoryDetailViewModel", "Deleted chapter $chapterId: ${result.data.message}")
+                        _toast.value = result.data.message
+                    }
+                    is Result.Failure -> {
+                        Log.e("StoryDetailViewModel", "Failed to delete chapter $chapterId: ${result.exception.message}")
+                        _toast.value = "Failed to delete chapter $chapterId: ${result.exception.message}"
+                        throw result.exception
+                    }
+                }
+            }
+            // Làm mới dữ liệu sau khi xóa
+            loadStoryDetails()
+        } catch (e: Exception) {
+            Log.e("StoryDetailViewModel", "Error deleting chapters: ${e.message}")
+            _toast.value = "Lỗi khi xóa chương: ${e.message}"
         }
     }
 }
