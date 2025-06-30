@@ -3,6 +3,7 @@ package com.example.frontend.ui.screen.admin
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -53,6 +55,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
     val tbUserNameValue by viewModel.userName.collectAsState()
     val showOnlyLocked by viewModel.showOnlyLocked.collectAsState()
     val toast by viewModel.toast.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     LaunchedEffect(toast) {
         toast?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -197,12 +200,24 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
             horizontalArrangement = Arrangement.Center
         )
         {
-            users.forEach { user ->
-                UserCard(
-                    item = user,
-                    isSelected = user == selectedUser,
-                    onClick = { viewModel.onSelectedUserChange(user) }
-                )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            else{
+                users.forEach { user ->
+                    UserCard(
+                        item = user,
+                        isSelected = user == selectedUser,
+                        onClick = { viewModel.onSelectedUserChange(user) }
+                    )
+                }
             }
         }
     }

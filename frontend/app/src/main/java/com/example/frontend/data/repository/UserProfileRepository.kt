@@ -2,6 +2,7 @@ package com.example.frontend.data.repository
 
 import android.util.Log
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.ReportRequest
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
@@ -93,6 +94,29 @@ class UserProfileRepository @Inject constructor(
                 }
             } else {
                 Result.Failure(Exception("Failed to fetch all stories: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun reportUser(userId: Int, reason: String): Result<String> {
+        Log.d("UserProfileRepository", "Reporting user with userId: $userId")
+        return try{
+            val request = ReportRequest(
+                reportedUserId = userId,
+                reason = reason
+            )
+            val response = apiService.reportUser(request)
+            if (response.isSuccessful) {
+                val reportResponse = response.body()
+                if (reportResponse?.success == true) {
+                    Result.Success(reportResponse.message)
+                } else {
+                    Result.Failure(Exception("API returned success: false"))
+                }
+            } else {
+                Result.Failure(Exception("Failed to report user: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

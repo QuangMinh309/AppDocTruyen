@@ -106,7 +106,7 @@ class CommunityRepository @Inject constructor(
             val updatedCommunity:Community? = response.body()?.copy()
             if (response.isSuccessful) {
                 updatedCommunity?.avatarUrl = imageInfo?.second?:community.avatarUrl
-                Result.Success( updatedCommunity?: throw Exception("Creation community failed"))
+                Result.Success( updatedCommunity?: throw Exception("Update community failed"))
             } else {
                 Result.Failure(Exception("Update community failed with code: ${response.code()}"))
             }

@@ -362,6 +362,9 @@ interface ApiService {
     @POST("api/users/purchase-premium")
     suspend fun purchasePremium(): Response<NoDataResponse>
 
+    @POST("api/users/report")
+    suspend fun reportUser(@Body reportRequest: ReportRequest): Response<ReportResponse>
+
 
     @POST("api/users/wallet")
     suspend fun walletChange(@Body transactionRequest: TransactionRequest): Response<NoDataResponse>
@@ -560,6 +563,17 @@ data class StoryApproveResponse(
     val success : Boolean,
     val data : Story,
     val message: String
+)
+
+data class ReportRequest(
+    val reportedUserId: Int,
+    val reason: String
+)
+
+data class ReportResponse(
+    val success: Boolean,
+    val message: String,
+    val data: ReportRequest? = null
 )
 
 data class ApiError(

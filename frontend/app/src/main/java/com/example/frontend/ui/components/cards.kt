@@ -1073,7 +1073,7 @@ fun TransactionCard(
             )
             {
                 AsyncImage(
-                    model = item.user!!.avatarId,
+                    model = if(!item.user?.avatarUrl.isNullOrEmpty())item.user.avatarUrl else R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
                     placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,
@@ -1085,7 +1085,7 @@ fun TransactionCard(
                 Column()
                 {
                     Text(
-                        text = "User ID: " + item.user.id,
+                        text = "User ID: " + item.user!!.id,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 13.sp,
@@ -1193,7 +1193,7 @@ fun UserCard(
             {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = item.avatarUrl
+                        model = if(item.avatarUrl != "")item.avatarUrl else R.drawable.intro_page1_bg
                     ),
                     contentDescription = "pfp",
                     contentScale = ContentScale.Crop,
@@ -1386,7 +1386,7 @@ fun CommunityCardCard(
             {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = item.avatarUrl ?: R.drawable.intro_page1_bg
+                        model = if(item.avatarUrl != "")item.avatarUrl else R.drawable.intro_page1_bg
                     ),
                     contentDescription = "pfp",
                     contentScale = ContentScale.Crop,

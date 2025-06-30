@@ -33,6 +33,9 @@ class UserMgmtViewModel @Inject constructor(
     private val _showOnlyLocked = MutableStateFlow(false)
     val showOnlyLocked: StateFlow<Boolean> = _showOnlyLocked
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init{
         loadUsers()
     }
@@ -48,6 +51,7 @@ class UserMgmtViewModel @Inject constructor(
     fun loadUsers()
     {
         viewModelScope.launch {
+            _isLoading.value = true
             try{
                 val result = adminRepository.getAllUsers()
                 result.onSuccess { list ->
@@ -60,6 +64,7 @@ class UserMgmtViewModel @Inject constructor(
             catch (e: Exception){
                 _toast.value = "Error: ${e.message}"
             }
+            _isLoading.value = false
         }
     }
 
