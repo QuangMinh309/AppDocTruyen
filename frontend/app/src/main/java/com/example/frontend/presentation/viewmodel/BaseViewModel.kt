@@ -91,9 +91,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.Chapter.Write.createRoute(id))
         }
     }
-    fun onGoToUserProfileScreen(id: Int) {
+    fun onGoToUserProfileScreen(userId: Int) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.AuthorProfile.createRoute(id.toString()))
+            navigationManager.navigate(Screen.Story.UserProfile.createRoute(userId))
         }
     }
     fun onGoToWithDraw() {

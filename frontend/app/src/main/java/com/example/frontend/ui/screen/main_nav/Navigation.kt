@@ -281,12 +281,12 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.Setting.route) { SettingScreen() }
 
             composable(
-                route = Screen.Story.AuthorProfile.route,
+                route = Screen.Story.UserProfile.route,
                 arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
+                    navArgument("userId") { type = NavType.IntType },
                 )
 
-            ) {ProfileScreen() }
+            ) { UserProfileScreen() }
 
             composable(Screen.AdminScreen.route) { AdminScreen() }
             composable(Screen.Admin.Category.route) { CategoryManagementScreen() }

@@ -23,6 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cake
 import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,6 +56,7 @@ import com.example.frontend.presentation.viewmodel.main_nav.UserProfileViewModel
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
+import com.example.frontend.ui.components.SimilarNovelsCard
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.formatViews
 import com.example.frontend.ui.theme.BrightAquamarine
@@ -62,34 +66,37 @@ import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
 
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewUserScreenContent2() {
+//    val fakeViewModel = UserProfileViewModel(NavigationManager())
+//    UserProfileScreen(viewModel = fakeViewModel)
+//}
 @Composable
-fun PreviewUserScreenContent2() {
-    val fakeViewModel = UserProfileViewModel(NavigationManager())
-    UserProfileScreen(viewModel = fakeViewModel)
-}
-@Composable
-fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
-{
+fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
-    val storyList  = viewModel.storyList
+    val isFollowing by viewModel.isFollowing.collectAsState()
+    val isLoading by viewModel.isLoading
+    val isLoadingStories by viewModel.isLoadingStories
+    val stories by viewModel.Stories.collectAsState()
+    val storyList = viewModel.storyList
+
     ScreenFrame(
         topBar = {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoToNotificationScreen() },
-                onRightClick = { viewModel.onGoToSetting()}
+                onRightClick = { viewModel.onGoToSetting() }
             )
         }
-    ){
+    ) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(top = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
-        ){
-
+        ) {
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -111,7 +118,7 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                     modifier = Modifier
                         .height(240.dp)
                         .fillMaxWidth()
-                        .padding(top = 110.dp,start = 30.dp),
+                        .padding(top = 110.dp, start = 30.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     // Avatar with offset and transparent border
@@ -124,31 +131,32 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                                 shape = CircleShape
                             ),
                         contentAlignment = Alignment.Center
-
                     ) {
-                        Box(modifier = Modifier
-                            .clip(CircleShape)
-                            .size(90.dp)
-                            .border(
-                                width = 6.dp,
-                                brush = Brush.linearGradient(
-                                    colors = listOf(OrangeRed, BurntCoral)
-                                ),
-                                shape = CircleShape
-                            ),
-                            contentAlignment = Alignment.Center
-                        ){
-                            Box(modifier = Modifier
+                        Box(
+                            modifier = Modifier
                                 .clip(CircleShape)
-                                .size(80.dp)
+                                .size(90.dp)
                                 .border(
-                                    width = 5.dp,
-                                    color = DeepSpace,
+                                    width = 6.dp,
+                                    brush = Brush.linearGradient(
+                                        colors = listOf(OrangeRed, BurntCoral)
+                                    ),
                                     shape = CircleShape
-                                )
-                            ){
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .size(80.dp)
+                                    .border(
+                                        width = 5.dp,
+                                        color = DeepSpace,
+                                        shape = CircleShape
+                                    )
+                            ) {
                                 AsyncImage(
-                                    model =  user.avatarUrl,
+                                    model = user.avatarUrl,
                                     contentDescription = "Profile avatar",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop,
@@ -167,15 +175,13 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                                 colors = listOf(
                                     BrightAquamarine, SteelBlue
                                 ),
-                            ),RoundedCornerShape(50))
+                            ), RoundedCornerShape(50))
                             .background(color = DeepSpace)
                             .padding(5.dp),
                         contentAlignment = Alignment.Center
-
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
-
                                 .background(
                                     brush = Brush.horizontalGradient(
                                         colors = listOf(
@@ -184,11 +190,11 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                                     ),
                                     shape = RoundedCornerShape(30.dp)
                                 )
-                                .padding(horizontal = 20.dp, vertical = 4.dp ),
+                                .padding(horizontal = 20.dp, vertical = 4.dp),
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
                             Text(
-                                text =  user.name,
+                                text = user.name,
                                 style = TextStyle(
                                     fontWeight = FontWeight.Bold,
                                     color = Color.Black,
@@ -196,7 +202,7 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                                 )
                             )
                             Text(
-                                text =  "@${user.dName}",
+                                text = "@${user.dName}",
                                 style = TextStyle(
                                     color = Color.White.copy(alpha = 0.8f),
                                     fontSize = 10.sp
@@ -206,57 +212,81 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel())
                     }
                 }
             }
-            // Thông tin  number
+
+            // Thông tin number và Follow/Unfollow button
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp, start = 5.dp),
+                horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier= Modifier.weight(1f))
-                StatItem(value = user.followerNum?:0, label = "Followers")
-                StatItem(value = user.novelsNum?:0, label = "Novels")
-                StatItem(value = user.readListNum?:0, label = "ReadList")
+                // Follow/Unfollow button
+                Button(
+                    onClick = { viewModel.toggleFollow() },
+                    modifier = Modifier
+                        .height(40.dp)
+                        .padding(end = 8.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isFollowing == true) Color.Gray else OrangeRed
+                    ),
+                    enabled = !isLoading // Vô hiệu hóa khi loading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
+                    } else {
+                        Text(
+                            text = if (isFollowing == true) "Unfollow" else "Follow",
+                            color = Color.White,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Spacer để tạo khoảng cách
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Các thông tin số liệu
+                StatItem(value = user.followerNum ?: 0, label = "Followers")
+                Spacer(modifier = Modifier.weight(1f))
+                StatItem(value = user.novelsNum ?: 0, label = "Novels")
+                Spacer(modifier = Modifier.weight(1f))
+                StatItem(value = user.readListNum ?: 0, label = "ReadList")
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             // Email and dob
             Column(
-                modifier= Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
-                                Color(0xFF0A2646), // Màu xanh lam
-                                Color(0xFF14488E)  // Màu xanh nhạt
+                                Color(0xFF0A2646),
+                                Color(0xFF14488E)
                             )
                         ),
-                        shape= RoundedCornerShape(15.dp)
+                        shape = RoundedCornerShape(15.dp)
                     )
                     .padding(15.dp)
-            )
-            {
-                InforItem(Icons.Outlined.Mail,user.mail?:"")
-                Spacer(modifier= Modifier.height(8.dp))
-                InforItem(Icons.Outlined.Cake,user.dob.toString())
-
+            ) {
+                InforItem(Icons.Outlined.Mail, user.mail ?: "")
+                Spacer(modifier = Modifier.height(8.dp))
+                InforItem(Icons.Outlined.Cake, user.dob.toString())
             }
+
             AboutSection(content = user.about)
-            //user readList
-            Column (modifier = Modifier.fillMaxWidth()){
-                SectionTitle(title = "Author Stories")
-                // Đường phân cách
-                GradientDivider()
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(storyList ) { item ->
-                        ReadListItem(item = ReadListItem_, onClick = {viewModel.onGoToStoryScreen(item.id)})
-                    }
+            SectionTitle(title = "Author Stories")
+            GradientDivider()
+            if (isLoadingStories) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.White)
                 }
+            } else {
+                SimilarNovelsCard(stories, viewModel)
             }
-
         }
     }
-
 }
-
-

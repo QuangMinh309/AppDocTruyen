@@ -836,7 +836,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
             Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp)
         }
         Spacer(modifier = Modifier.weight(1f))
-        TextButton(onClick = {}) {
+        TextButton(onClick = onClick) {
             Text("Thêm >", color = Color.White)
         }
     }
