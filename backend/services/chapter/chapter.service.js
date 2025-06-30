@@ -50,6 +50,7 @@ const ChapterService = {
       const chapter = await Chapter.create(
         {
           ...chapterData,
+          storyId: parseInt(storyId), // Chuyển storyId sang Int
           ordinalNumber: nextOrdinal,
           viewNum: 0,
           lockedStatus: nextOrdinal === 1 ? false : shouldLock,
@@ -64,6 +65,7 @@ const ChapterService = {
       });
 
       const chapterResult = chapter.toJSON();
+      chapterResult.storyId = parseInt(chapterResult.storyId); // Đảm bảo storyId trong JSON là Int
       chapterResult.updatedAt = formatDate(chapter.updatedAt);
 
       return chapterResult;
@@ -103,11 +105,11 @@ const ChapterService = {
 
       const where = lastId
         ? {
-            storyId,
-            chapterId: {
-              [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
-            },
-          }
+          storyId,
+          chapterId: {
+            [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+          },
+        }
         : { storyId };
 
       const chapters = await Chapter.findAll({

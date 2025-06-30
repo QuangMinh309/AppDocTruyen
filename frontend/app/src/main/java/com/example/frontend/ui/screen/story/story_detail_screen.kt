@@ -117,7 +117,7 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                         isAuthor = viewModel.isAuthor.value,
                         storyStatus = storyStatus,
                         hasVoted = voteButtonText,
-                        onActionClick = {},
+                        onActionClick = {viewModel.onGoToWriteScreen(viewModel.storyId.value)},
                         viewModel = viewModel
                     )
                 }

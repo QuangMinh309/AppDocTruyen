@@ -1,6 +1,7 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
@@ -136,17 +137,33 @@ interface ApiService {
     @GET("api/chapters/{chapterId}/read")
     suspend fun getChapter(
         @Path("chapterId") chapterId:Int
-    ):Response<ChapterRespone>
+    ):Response<ChapterResponse>
 
-    data class ChapterRespone(
-        val success: Boolean,
-        val data:Chapter
-    )
+
 
     @GET("api/chapters/{chapterId}/read-next")
     suspend fun getNextChapter(
         @Path("chapterId") chapterId: Int
-    ): Response<ChapterRespone>
+    ): Response<ChapterResponse>
+
+    @POST("api/chapters/story/{storyId}")
+    suspend fun createChapter(
+        @Path("storyId") storyId: Int,
+        @Body createChapterRequest: CreateChapterRequest
+    ):Response<ChapterResponse>
+
+
+
+
+    data class  CreateChapterRequest(
+        val chapterName:String,
+        val content:String
+    )
+
+    data class ChapterResponse(
+        val success: Boolean,
+        val data: Chapter
+    )
 
 
     data class CategoryStoriesResponse(

@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class BaseViewModel @Inject constructor(protected val navigationManager: NavigationManager) : ViewModel() {
 
-    protected val _toast = MutableStateFlow<String?>(null)
+    val _toast = MutableStateFlow<String?>(null)
     val toast: StateFlow<String?> get() = _toast
 
     fun clearToast() { _toast.value = null }

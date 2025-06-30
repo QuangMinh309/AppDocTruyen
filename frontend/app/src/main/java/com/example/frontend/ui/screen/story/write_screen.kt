@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,26 +37,20 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.WriteViewModel
 import com.example.frontend.ui.components.ScreenFrame
 
-@Preview
-@Composable
-fun PreviewWriteScreen()
-{
-    val fakeviewmodel=WriteViewModel(NavigationManager())
-    WriteScreen(fakeviewmodel)
-}
 
 @Composable
-fun WriteScreen(viewModel: WriteViewModel= hiltViewModel()) {
+fun WriteScreen(viewModel: WriteViewModel = hiltViewModel()) {
     var content by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    ScreenFrame{
+    val isLoading by viewModel.isLoading
 
+    ScreenFrame {
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
             Spacer(modifier = Modifier.height(35.dp))
-            //Chapter name
+            // Chapter name
             BasicTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -67,7 +63,7 @@ fun WriteScreen(viewModel: WriteViewModel= hiltViewModel()) {
                 ),
                 cursorBrush = SolidColor(Color.White),
                 decorationBox = { innerTextField ->
-                    if (content.isEmpty()) {
+                    if (name.isEmpty()) {
                         Text(
                             text = "Enter Chapter Name...",
                             color = Color.Gray,
@@ -78,7 +74,7 @@ fun WriteScreen(viewModel: WriteViewModel= hiltViewModel()) {
                 }
             )
             Spacer(modifier = Modifier.height(35.dp))
-            //content
+            // Content
             BasicTextField(
                 value = content,
                 onValueChange = { content = it },
@@ -108,21 +104,32 @@ fun WriteScreen(viewModel: WriteViewModel= hiltViewModel()) {
             Spacer(modifier = Modifier.weight(1f, fill = true))
 
             Button(
-                onClick = {},
+                onClick = {
+                    if (name.isNotEmpty() && content.isNotEmpty()) {
+                        viewModel.createChapter(name, content)
+                    } else {
+                        viewModel._toast.value = "Please fill in both chapter name and content"
+                    }
+                },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 modifier = Modifier
                     .heightIn(39.dp)
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
+                enabled = !isLoading
             ) {
-                Text(
-                    text = "Done",
-                    color = Color.Black,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
+                } else {
+                    Text(
+                        text = "Done",
+                        color = Color.Black,
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(13.dp))
