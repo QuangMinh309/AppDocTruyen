@@ -152,6 +152,17 @@ interface ApiService {
         @Body createChapterRequest: CreateChapterRequest
     ):Response<ChapterResponse>
 
+    @DELETE("api/chapters/{chapterId}")
+    suspend fun deleteChapter(
+        @Path("chapterId") chapterId: Int,
+    ): Response<DeleteChapterResponse>
+
+    data class DeleteChapterResponse(
+        val success: Boolean,
+        val message: String
+    )
+
+
 
 
 

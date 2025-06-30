@@ -8,8 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,6 +55,8 @@ import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.screen.main_nav.demoAppUser
 import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -63,6 +70,7 @@ import java.util.Date
 //    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
 //    StoryDetailScreen(viewModel=fakeviewmodel)
 //}
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
@@ -86,7 +94,31 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         voteButtonText.value = if (hasVoted) "Voted" else "Vote"
     }
 
-    val isLoading by viewModel.isLoading // Có thể loại bỏ nếu không dùng loading toàn màn hình
+    val isLoading by viewModel.isLoading // Có thể dùng để kiểm soát trạng thái loading nếu cần
+
+    // State để kiểm soát làm mới
+    var isRefreshing by remember { mutableStateOf(false) }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            scope.launch {
+                isRefreshing = true
+                try {
+                    // Chạy các tác vụ bất đồng bộ song song
+                    listOf(
+                        async { viewModel.loadStoryDetails() },
+                        async { viewModel.loadSimilarStories() },
+                        async { viewModel.loadVoteStatus() }
+                    ).awaitAll()
+                } catch (e: Exception) {
+                    // Xử lý lỗi nếu cần, ví dụ: hiển thị Toast
+
+                } finally {
+                    isRefreshing = false
+                }
+            }
+        }
+    )
 
     ScreenFrame(
         topBar = {
@@ -99,10 +131,10 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
             )
         }
     ) {
-        // Loại bỏ CircularProgressIndicator toàn màn hình vì loading giờ nằm trong button
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .pullRefresh(pullRefreshState) // Thêm pull-to-refresh
         ) {
             LazyColumn(
                 state = listState,
@@ -117,7 +149,7 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                         isAuthor = viewModel.isAuthor.value,
                         storyStatus = storyStatus,
                         hasVoted = voteButtonText,
-                        onActionClick = {viewModel.onGoToWriteScreen(viewModel.storyId.value)},
+                        onActionClick = { viewModel.onGoToWriteScreen(viewModel.storyId.value) },
                         viewModel = viewModel
                     )
                 }
@@ -135,7 +167,10 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                             Spacer(Modifier.height(37.dp))
                             if (!viewModel.isAuthor.value) {
                                 viewModel.story.value?.author?.let { author ->
-                                    AuthorInfoCard(model = author, onClick = { viewModel.onGoToUserProfileScreen(author.id) })
+                                    AuthorInfoCard(
+                                        model = author,
+                                        onClick = { viewModel.onGoToUserProfileScreen(author.id) }
+                                    )
                                 }
                                 Spacer(Modifier.height(37.dp))
                             }
@@ -162,6 +197,15 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                 }
                 item { Spacer(Modifier.height(80.dp)) }
             }
+
+            // Hiển thị PullRefreshIndicator
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = OrangeRed,
+                backgroundColor = Color.White
+            )
 
             if (isFabVisible) {
                 FloatingActionButton(

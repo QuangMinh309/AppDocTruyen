@@ -72,7 +72,7 @@ class StoryDetailViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadStoryDetails() {
+    suspend fun loadStoryDetails() {
         val result = storyDetailRepository.getStoryById(storyId.value)
         when (result) {
             is Result.Success -> {
@@ -89,7 +89,7 @@ class StoryDetailViewModel @Inject constructor(
         }
     }
 
-    private fun loadSimilarStories() {
+    fun loadSimilarStories() {
         viewModelScope.launch {
             val result = storyDetailRepository.getAllStories()
             when (result) {
@@ -141,7 +141,7 @@ class StoryDetailViewModel @Inject constructor(
     }
 
     // Hàm loadVoteStatus để kiểm tra trạng thái vote
-    private suspend fun loadVoteStatus() {
+    suspend fun loadVoteStatus() {
         Log.d("StoryDetailViewModel", "Checking vote status for storyId: ${storyId.value}")
         val result = storyDetailRepository.checkVote(storyId.value)
         when (result) {
