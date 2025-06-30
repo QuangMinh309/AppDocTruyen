@@ -170,7 +170,30 @@ class StoryMgmtViewModel @Inject constructor(
         if(age.isEmpty() || !age.isDigitsOnly() || age.toInt() < 0) return
         viewModelScope.launch {
             try {
-                val result = adminRepository.approveStory(_selectedStory.value!!.id, age)
+                val result = adminRepository.approveStory(_selectedStory.value!!.id, age, "approved")
+                result.onSuccess { message ->
+                    _toast.value = message
+                }.onFailure { error ->
+                    Log.e("apiError", "Error: ${error.message}")
+                }
+            }
+            catch (e: Exception){
+                _toast.value = "Error: ${e.message}"
+            }
+            finally {
+                _selectedStory.value = null
+                loadStories()
+            }
+        }
+    }
+
+    fun rejectSelectedStory(age: String)
+    {
+        if(_selectedStory.value == null) return
+        if(age.isEmpty() || !age.isDigitsOnly() || age.toInt() < 0) return
+        viewModelScope.launch {
+            try {
+                val result = adminRepository.approveStory(_selectedStory.value!!.id, age, "rejected")
                 result.onSuccess { message ->
                     _toast.value = message
                 }.onFailure { error ->

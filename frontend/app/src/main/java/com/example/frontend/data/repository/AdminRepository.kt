@@ -72,9 +72,9 @@ class AdminRepository @Inject constructor(
             Result.failure(e)
         }
     }
-    suspend fun approveTransaction(transactionId: Int) : Result<String> {
+    suspend fun approveTransaction(transactionId: Int, status: String) : Result<String> {
         return try {
-            val approvalBody = TransactionApproveRequest(status = "success")
+            val approvalBody = TransactionApproveRequest(status = status)
             val response = apiService.approveTransaction(transactionId, approvalBody)
             if(response.isSuccessful) {
                 val result = response.body()
@@ -91,9 +91,9 @@ class AdminRepository @Inject constructor(
             Result.failure(e)
         }
     }
-    suspend fun approveStory(storyId: Int, age : String) : Result<String> {
+    suspend fun approveStory(storyId: Int, age : String, status: String) : Result<String> {
         return try{
-            val response = apiService.approveStory(storyId, StoryApproveRequest(status = "approved", ageRange = age))
+            val response = apiService.approveStory(storyId, StoryApproveRequest(status = status, ageRange = age))
             if(response.isSuccessful) {
                 val result = response.body()
                 if (result?.success == true) {

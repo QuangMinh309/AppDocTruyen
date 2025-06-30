@@ -1,6 +1,7 @@
 package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
+import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
