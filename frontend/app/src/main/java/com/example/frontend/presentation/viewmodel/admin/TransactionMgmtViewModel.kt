@@ -24,7 +24,8 @@ val dummyTypes: List<String> = listOf(
 
 val dummyStatuses: List<String> = listOf(
     "pending",
-    "success"
+    "success",
+    "denied"
 )
 
 @HiltViewModel
