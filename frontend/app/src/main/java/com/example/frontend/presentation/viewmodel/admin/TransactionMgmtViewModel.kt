@@ -24,7 +24,8 @@ val dummyTypes: List<String> = listOf(
 
 val dummyStatuses: List<String> = listOf(
     "pending",
-    "success"
+    "success",
+    "denied"
 )
 
 @HiltViewModel
@@ -184,7 +185,33 @@ class TransactionMgmtViewModel @Inject constructor(
         if(_selectedTransaction.value == null) return
         viewModelScope.launch {
             try {
-                val result = adminRepository.approveTransaction(_selectedTransaction.value!!.transactionId)
+                val result = adminRepository.approveTransaction(_selectedTransaction.value!!.transactionId, "success")
+                result.onSuccess { message ->
+                    _toast.value = message
+                }.onFailure { error ->
+                    Log.e("apiError","Error: ${error.message}")
+                }
+            }
+            catch (e: Exception){
+                _toast.value = "Error: ${e.message}"
+            }
+            finally {
+                _selectedStatus.value = ""
+                _selectedType.value = ""
+                _selectedTransaction.value = null
+                if(_userId.value != "") onUserNameChange(_userId.value)
+                else if(_transactionId.value != "") onTransactionIdChange(_transactionId.value)
+                loadDisplayedTransactions()
+            }
+        }
+    }
+
+    fun denySelectedTransaction()
+    {
+        if(_selectedTransaction.value == null) return
+        viewModelScope.launch {
+            try {
+                val result = adminRepository.approveTransaction(_selectedTransaction.value!!.transactionId, "denied")
                 result.onSuccess { message ->
                     _toast.value = message
                 }.onFailure { error ->

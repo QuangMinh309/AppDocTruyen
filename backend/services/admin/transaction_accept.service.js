@@ -27,10 +27,10 @@ const TransactionManagerService = {
                 { transaction }
             );
 
-            const user = await validateUser(userId);
+            const user = await validateUser(trans.userId);
             const currentWallet = user.wallet
             user.update({
-                wallet: currentWallet + (trans.type == "withdraw") ? -trans.money : trans.money
+                wallet: currentWallet + ((trans.type === "withdraw") ? -trans.money : trans.money)
             })
 
             await NotificationService.createNotification(

@@ -68,6 +68,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
     val selectedCategories by viewModel.selectedCategories.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
     val showApproveDialog = remember { mutableStateOf(false) }
+    val showRejectDialog = remember { mutableStateOf(false) }
     val showDeleteDialog = remember { mutableStateOf(false) }
     val tbAgeRange = remember { mutableStateOf("") }
     val toast by viewModel.toast.collectAsState()
@@ -220,7 +221,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 Button(
-                    onClick = {  },
+                    onClick = { showRejectDialog.value = true },
                     enabled = selectedStory != null && selectedStory!!.status == "pending",
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Yellow
@@ -362,8 +363,8 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                                 Toast.makeText(context, "Please enter an appropriate age range", Toast.LENGTH_SHORT).show()
                                 return@TextButton
                             }
-                            showApproveDialog.value = false
                             viewModel.approveSelectedStory(tbAgeRange.value)
+                            showApproveDialog.value = false
                         }
                     ) {
                         Text("Confirm", color = Color.White)
@@ -376,6 +377,61 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 },
                 title = {
                     Text("Approve Story", color = Color.White)
+                },
+                text = {
+                    Column {
+                        Text("Choose an age range: ", color = Color.LightGray)
+                        TextField(
+                            value = tbAgeRange.value,
+                            onValueChange = { tbAgeRange.value = it },
+                            singleLine = true,
+                            placeholder = {
+                                Text("Enter here", style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Bold))
+                            },
+                            textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_bold))),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height = 53.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = BurntCoral,
+                                unfocusedIndicatorColor = Color.White
+                            )
+                        )
+                    }
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
+        }
+        if(showRejectDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showRejectDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if(tbAgeRange.value.isEmpty() || !tbAgeRange.value.isDigitsOnly() || tbAgeRange.value.toInt() < 0)
+                            {
+                                Toast.makeText(context, "Please enter an appropriate age range", Toast.LENGTH_SHORT).show()
+                                return@TextButton
+                            }
+                            viewModel.rejectSelectedStory(tbAgeRange.value)
+                            showRejectDialog.value = false
+                        }
+                    ) {
+                        Text("Confirm", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showRejectDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Reject Story", color = Color.White)
                 },
                 text = {
                     Column {

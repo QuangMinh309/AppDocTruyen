@@ -64,6 +64,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
     val statusTypes by viewModel.statusTypes.collectAsState()
     val transactions by viewModel.displayedTransactions.collectAsState()
     val showUpdateDialog = remember { mutableStateOf(false) }
+    val showDenyDialog = remember { mutableStateOf(false) }
     val showDeleteDialog = remember { mutableStateOf(false) }
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
@@ -242,29 +243,35 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 10.dp)
         )
-        {
-            Text(
-                text = "Results",
-                color = Color.White,
-                style = TextStyle(
-                    fontSize = 33.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
-                )
-            )
-            Spacer(modifier = Modifier.weight(1f))
+        {//buttons
             Button(
                 onClick = { showUpdateDialog.value = true },
-                enabled = selectedTransaction != null,
+                enabled = selectedTransaction != null && selectedTransaction!!.status == "pending",
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (selectedTransaction != null) Color.LightGray else Color(0xAFAF2238)
+                    containerColor = if (selectedTransaction != null) Color.Green else Color.LightGray
                 ),
-                modifier = Modifier.width(110.dp)
+                modifier = Modifier.weight(1f)
             )
             {
                 Text(
                     text = "Approve",
-                    color = if (selectedTransaction != null) DeepBlue else Color.Gray,
+                    color = if (selectedTransaction != null && selectedTransaction!!.status == "pending") DeepBlue else Color.Gray,
+                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+            Button(
+                onClick = { showDenyDialog.value = true },
+                enabled = selectedTransaction != null && selectedTransaction!!.status == "pending",
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (selectedTransaction != null) Color.LightGray else Color(0xAFAF2238)
+                ),
+                modifier = Modifier.weight(1f)
+            )
+            {
+                Text(
+                    text = "Deny",
+                    color = if (selectedTransaction != null && selectedTransaction!!.status == "pending") DeepBlue else Color.Gray,
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
             }
@@ -275,7 +282,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) BurntCoral else Color(0xAFAF2238)
                 ),
-                modifier = Modifier.width(110.dp)
+                modifier = Modifier.weight(1f)
             )
             {
                 Text(
@@ -286,7 +293,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             }
         }
 
-        if(showUpdateDialog.value == true)
+        if(showUpdateDialog.value)
         {
             AlertDialog(
                 onDismissRequest = { showUpdateDialog.value = false },
@@ -310,6 +317,35 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 },
                 text = {
                     Text("Are you sure to approve the transaction?", color = Color.LightGray)
+                },
+                containerColor = Color(0xFF1C1C1C)
+            )
+        }
+
+        if(showDenyDialog.value)
+        {
+            AlertDialog(
+                onDismissRequest = { showDenyDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showDenyDialog.value = false
+                            viewModel.denySelectedTransaction()
+                        }
+                    ) {
+                        Text("Confirm", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDenyDialog.value = false }) {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Warning", color = Color.White)
+                },
+                text = {
+                    Text("Are you sure to deny the transaction?", color = Color.LightGray)
                 },
                 containerColor = Color(0xFF1C1C1C)
             )

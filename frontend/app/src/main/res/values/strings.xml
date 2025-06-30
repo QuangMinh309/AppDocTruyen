@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">frontend</string>
+    <string name="app_name">Reavel</string>
 
     <string name="base_url">https://f0c2-14-169-18-157.ngrok-free.app/</string>
     <string name="ws_base_url">ws://f0c2-14-169-18-157.ngrok-free.app/ws</string>
