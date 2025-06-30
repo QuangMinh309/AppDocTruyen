@@ -33,7 +33,9 @@ object NetworkModule {
     @Singleton
     @Named("BaseUrl")
     fun provideBaseUrl(@ApplicationContext context: Context): String {
-        return context.getString(R.string.base_url) //"http://10.0.2.2:20268/"
+
+        return context.getString(R.string.base_url)
+
         //"http://10.0.2.2:3000/"
         // return if (isEmulator()) "http://10.0.2.2:3000/" else "http://your-real-server.com/"
     }

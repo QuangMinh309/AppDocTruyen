@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 open class BaseViewModel @Inject constructor(protected val navigationManager: NavigationManager) : ViewModel() {
 
-    protected val _toast = MutableStateFlow<String?>(null)
+    val _toast = MutableStateFlow<String?>(null)
     val toast: StateFlow<String?> get() = _toast
 
     fun clearToast() { _toast.value = null }
@@ -91,9 +91,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.Chapter.Write.createRoute(id))
         }
     }
-    fun onGoToUserProfileScreen(id: Int) {
+    fun onGoToUserProfileScreen(userId: Int) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.AuthorProfile.createRoute(id.toString()))
+            navigationManager.navigate(Screen.Story.UserProfile.createRoute(userId))
         }
     }
     fun onGoToWithDraw() {

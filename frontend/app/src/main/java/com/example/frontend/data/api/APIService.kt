@@ -137,17 +137,44 @@ interface ApiService {
     @GET("api/chapters/{chapterId}/read")
     suspend fun getChapter(
         @Path("chapterId") chapterId:Int
-    ):Response<ChapterRespone>
+    ):Response<ChapterResponse>
 
-    data class ChapterRespone(
-        val success: Boolean,
-        val data:Chapter
-    )
+
 
     @GET("api/chapters/{chapterId}/read-next")
     suspend fun getNextChapter(
         @Path("chapterId") chapterId: Int
-    ): Response<ChapterRespone>
+    ): Response<ChapterResponse>
+
+    @POST("api/chapters/story/{storyId}")
+    suspend fun createChapter(
+        @Path("storyId") storyId: Int,
+        @Body createChapterRequest: CreateChapterRequest
+    ):Response<ChapterResponse>
+
+    @DELETE("api/chapters/{chapterId}")
+    suspend fun deleteChapter(
+        @Path("chapterId") chapterId: Int,
+    ): Response<DeleteChapterResponse>
+
+    data class DeleteChapterResponse(
+        val success: Boolean,
+        val message: String
+    )
+
+
+
+
+
+    data class  CreateChapterRequest(
+        val chapterName:String,
+        val content:String
+    )
+
+    data class ChapterResponse(
+        val success: Boolean,
+        val data: Chapter
+    )
 
 
     data class CategoryStoriesResponse(
@@ -188,7 +215,36 @@ interface ApiService {
         @SerializedName("nameList") val name: String,
         @SerializedName("userId") val userId: Int,
         @SerializedName("description") val description: String
-    )   
+    )
+
+    @POST("api/users/follow")
+    suspend fun followUser(
+        @Body followRequest:FollowRequest
+    ): Response<FollowResponse>
+
+    @POST("api/users/unfollow")
+    suspend fun unFollowUser(
+        @Body followRequest:FollowRequest
+    ): Response<FollowResponse>
+
+    data class FollowRequest(
+        val followedId:String
+    )
+
+    data class FollowResponse(
+        val status: Int,
+        val message: String
+    )
+
+
+    @GET("api/users/follow/status/{userId}")
+    suspend fun checkFollowUser(
+        @Path("userId") userId:Int
+    ):Response<CheckFollowUserResponse>
+
+    data class CheckFollowUserResponse(
+        val isFollowing: Boolean
+    )
 
     @Multipart
     @PUT("api/users/{userId}")

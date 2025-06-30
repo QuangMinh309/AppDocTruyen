@@ -41,6 +41,7 @@ class StoryDetailRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+
     suspend fun updateStory(storyId: Int, status: String): Result<Story> {
         Log.d("StoryDetailRepository", "Updating story $storyId with status: $status")
         return try {
@@ -87,6 +88,22 @@ class StoryDetailRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during voteStory: ${e.message}", e)
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun deleteChapter(chapterId: Int): Result<ApiService.DeleteChapterResponse> {
+        Log.d("StoryDetailRepository", "Deleting chapter $chapterId")
+        return try {
+            val response = apiService.deleteChapter(chapterId)
+            Log.d("StoryDetailRepository", "DeleteChapter Response - Code: ${response.code()}, Body: ${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No delete response data"))
+            } else {
+                Result.Failure(Exception("Failed to delete chapter: ${response.code()} - ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Log.e("StoryDetailRepository", "Exception during deleteChapter: ${e.message}", e)
             Result.Failure(e)
         }
     }

@@ -1,10 +1,12 @@
 package com.example.frontend.ui.components
 
 
+
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
@@ -50,6 +53,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -299,21 +303,40 @@ fun
 @Composable
 fun ChapterItemCard(
     chapter: Chapter,
-    onClick: () -> Unit = {}
+    isSelectionMode: Boolean = false,
+    isSelected: Boolean = false,
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
+    onCheckedChange: (Boolean) -> Unit = {}
 ) {
     Log.d("ChapterItemCard", "Rendering chapter: ${chapter.chapterName}, updatedAtString: ${chapter.updatedAtString}")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable { onClick() },
-        horizontalArrangement = Arrangement.SpaceBetween
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { if (!isSelectionMode) onClick() },
+                    onLongPress = { onLongClick() }
+                )
+            },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column {
+        if (isSelectionMode) {
+            Checkbox(
+                checked = isSelected,
+                onCheckedChange = onCheckedChange,
+                modifier = Modifier.padding(end = 8.dp)
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Row {
                 Text(text = chapter.chapterName, color = Color.White, fontSize = 19.sp)
                 Spacer(modifier = Modifier.width(11.dp))
-                if (chapter.lockedStatus) {
+                if (chapter.lockedStatus && !isSelectionMode) {
                     Icon(
                         imageVector = Icons.Outlined.Lock,
                         contentDescription = null,
@@ -344,24 +367,26 @@ fun ChapterItemCard(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.comment_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.White
-                    )
-                    Text(chapter.commentNumber.toString(), color = Color.White, fontSize = 15.sp)
+                if (!isSelectionMode) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.comment_icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                        Text(chapter.commentNumber.toString(), color = Color.White, fontSize = 15.sp)
 
-                    Spacer(modifier = Modifier.width(11.dp))
+                        Spacer(modifier = Modifier.width(11.dp))
 
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.White
-                    )
-                    Text(chapter.viewNum.toString(), color = Color.White, fontSize = 15.sp)
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.view_icon),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
+                        )
+                        Text(chapter.viewNum.toString(), color = Color.White, fontSize = 15.sp)
+                    }
                 }
             }
         }
@@ -839,7 +864,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
             Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp)
         }
         Spacer(modifier = Modifier.weight(1f))
-        TextButton(onClick = {}) {
+        TextButton(onClick = onClick) {
             Text("Thêm >", color = Color.White)
         }
     }
