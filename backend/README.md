@@ -12,7 +12,7 @@ backend/
 |-- routes/            # định nghĩa route API
 |-- seeders/           # file seed dữ liệu mẫu
 |-- services/          # chứa nghiệp vụ + xử lý logic phức tạp
-|-- server.js           # file khởi chạy app
+|-- server.js          # file khởi chạy app
 |-- package.json       # cấu hình dự án + script
 ```
 
