@@ -217,7 +217,7 @@ const CommunityService = {
 
     createCommunity: async (data) => {
         try {
-            if (!Category.findByPk(data.categoryId))
+            if (!await Category.findByPk(data.categoryId))
                 throw new ApiError('category không tồn tại', 404)
 
             const community = await Community.create(data);
@@ -230,8 +230,9 @@ const CommunityService = {
                     },
                 ],
             });
-            delete communityData.categoryId;
-            return communityWithCategory.toJSON();
+            const result = communityWithCategory.toJSON();
+            delete result.categoryId;
+            return result;
         } catch (err) {
             console.error('Lỗi khi tạo cộng đồng:', err);
             throw new ApiError('Lỗi khi tạo cộng đồng', 500);

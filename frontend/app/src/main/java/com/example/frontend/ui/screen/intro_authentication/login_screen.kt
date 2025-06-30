@@ -363,7 +363,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                 )
             ) {
                 Text(
-                    text = "Let's get started",
+                    text = "Log in",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),

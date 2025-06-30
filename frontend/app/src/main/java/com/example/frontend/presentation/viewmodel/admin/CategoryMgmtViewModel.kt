@@ -12,45 +12,6 @@ import com.example.frontend.data.repository.CategoryRepository
 import kotlinx.coroutines.launch
 import com.example.frontend.data.model.Result
 
-val dummyCategories: List<Category> = listOf(
-    Category(
-        id = 1,
-        name = "Fantasy"
-    ),
-    Category(
-        id = 2,
-        name = "Adventure"
-    ),
-    Category(
-        id = 3,
-        name = "Romance"
-    ),
-    Category(
-        id = 4,
-        name = "Mystery"
-    ),
-    Category(
-        id = 5,
-        name = "Science Fiction"
-    ),
-    Category(
-        id = 6,
-        name = "Anthropology"
-    ),
-    Category(
-        id = 7,
-        name = "Action"
-    ),
-    Category(
-        id = 8,
-        name = "Medieval"
-    ),
-    Category(
-        id = 9,
-        name = "Isekai"
-    ),
-)
-
 @HiltViewModel
 class CategoryMgmtViewModel @Inject constructor(
     navigationManager: NavigationManager,

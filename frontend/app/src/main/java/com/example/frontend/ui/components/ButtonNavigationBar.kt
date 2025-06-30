@@ -31,7 +31,7 @@ fun BottomNavigationBar(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        containerColor = colorResource(id = R.color.black3),
+        containerColor = colorResource(id = R.color.black1),
         contentColor = colorResource(id = R.color.white),
         tonalElevation = 3.dp,
         modifier = Modifier.height(75.dp)

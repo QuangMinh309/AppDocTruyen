@@ -85,7 +85,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
     )
     ConfirmationDialog(
         showDialog = isShowDialog,
-        title=if (viewModel.showDeleteDialog.value) "Confirm Logout" else "Confirm Deletion",
+        title=if (viewModel.showDeleteDialog.value) "Confirm Deletion" else "Confirm Logout",
         text = dialogContent,
         onConfirm = {
             if (viewModel.showDeleteDialog.value){

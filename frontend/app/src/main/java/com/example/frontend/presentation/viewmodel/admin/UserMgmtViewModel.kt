@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.AdminRepository
+import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserMgmtViewModel @Inject constructor(
     navigationManager: NavigationManager,
-    private val adminRepository: AdminRepository
+    private val adminRepository: AdminRepository,
+    private val authRepository: AuthRepository
 ) : BaseViewModel(navigationManager) {
     private val _users = MutableStateFlow<List<User>>(emptyList())
 
@@ -81,7 +83,9 @@ class UserMgmtViewModel @Inject constructor(
     fun lockSelectedUser()
     {
         if(_selectedUser.value == null) return
-        if(_selectedUser.value!!.status != "locked")
+        if(_selectedUser.value!!.id == authRepository.getCurrentUser()?.id)
+            _toast.value = "Bạn không thể khóa chính mình"
+        else if(_selectedUser.value!!.status != "locked")
         {
             viewModelScope.launch {
                 try {

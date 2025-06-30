@@ -109,7 +109,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                     contentPadding = PaddingValues(8.dp)
                 ) {
                     items(stories) { story ->
-                        StoryCard4(story = story) {  }
+                        StoryCard4(story = story, onClick = { viewModel.onGoToStoryScreen(story.id) } )
                     }
                 }
             } else {

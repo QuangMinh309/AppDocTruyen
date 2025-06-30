@@ -578,7 +578,7 @@ fun RegisterScreen(viewModel: RegisterViewModel = hiltViewModel()) {
                 )
             ) {
                 Text(
-                    text = "Register",
+                    text = "Let's get started",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),

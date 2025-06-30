@@ -67,11 +67,11 @@ class CommunityRepository @Inject constructor(
         }
     }
 
-    suspend fun createCommunity(community: Community,imageInfo:Pair<String,String>?): Result<Community> {
+    suspend fun createCommunity(community: CommunityRequest,imageInfo:Pair<String,String>?): Result<Community> {
         return try {
             val request = CommunityRequest(
                 name=community.name,
-                categoryId=community.category.id,
+                categoryId=community.categoryId,
                 avatarId=imageInfo?.first,
                 memberNum=community.memberNum,
                 description=community.description
