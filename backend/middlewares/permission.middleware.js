@@ -4,6 +4,7 @@ import ApiError from '../utils/api_error.util.js';
 export const isStoryAuthor = async (req, res, next) => {
   try {
     const chapterId = req.params.chapterId;
+    const storyId = req.params.storyId;
     const userId = req.user.userId;
 
     if (chapterId) {
@@ -26,7 +27,16 @@ export const isStoryAuthor = async (req, res, next) => {
         );
       }
 
-      const storyId = chapter.story.storyId;
+      if (
+        chapter.story.userId !== userId &&
+        req.user.role.roleName !== 'admin'
+      ) {
+        return next(new ApiError('Bạn không có quyền với truyện này', 403));
+      }
+
+      req.storyId = chapter.story.storyId;
+      return next();
+    } else if (storyId) {
       const story = await models.Story.findByPk(storyId);
       if (!story) {
         return next(new ApiError('Truyện không tồn tại', 404));
@@ -36,11 +46,10 @@ export const isStoryAuthor = async (req, res, next) => {
         return next(new ApiError('Bạn không có quyền với truyện này', 403));
       }
 
-      // Lưu storyId vào req để sử dụng sau này nếu cần
       req.storyId = storyId;
-      next();
+      return next();
     } else {
-      return next(new ApiError('Thiếu chapterId', 400));
+      return next(new ApiError('Thiếu thông tin truyện hoặc chương', 400));
     }
   } catch (error) {
     console.error('Lỗi khi kiểm tra quyền tác giả:', error);
