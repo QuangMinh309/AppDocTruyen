@@ -53,7 +53,7 @@ fun UserReportScreen(viewModel: ReportVIewModel = hiltViewModel())
     val context = LocalContext.current
     val name by viewModel.name.collectAsState()
     val toast by viewModel.toast.collectAsState()
-    var content by remember { mutableStateOf("") }
+    val content by viewModel.content.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(toast) {
@@ -126,7 +126,7 @@ fun UserReportScreen(viewModel: ReportVIewModel = hiltViewModel())
             // Content
             BasicTextField(
                 value = content,
-                onValueChange = { content = it },
+                onValueChange = { viewModel.onContentChange(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(650.dp)

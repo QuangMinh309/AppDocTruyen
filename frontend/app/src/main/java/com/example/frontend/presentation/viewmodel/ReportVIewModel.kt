@@ -1,5 +1,6 @@
 package com.example.frontend.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.onFailure
@@ -24,10 +25,15 @@ class ReportVIewModel  @Inject constructor(
     val name: MutableStateFlow<String> = _name
 
     private val _userId = MutableStateFlow<Int?>(checkNotNull(savedStateHandle.get<Int>("userId")))
+    val userId: MutableStateFlow<Int?> = _userId
 
     fun reportUser()
     {
-        if(_userId.value != null || _content.value.isEmpty()) return
+        if(_userId.value == null || _content.value.isEmpty())
+        {
+            _toast.value = "Please fill in all fields"
+            return
+        }
         viewModelScope.launch {
             try {
                 val result = userProfileRepository.reportUser(_userId.value!!, _content.value)
@@ -40,5 +46,9 @@ class ReportVIewModel  @Inject constructor(
                 _toast.value = "Error: ${e.message}"
             }
         }
+    }
+
+    fun onContentChange(content: String) {
+        _content.value = content
     }
 }

@@ -405,7 +405,7 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                 horizontalAlignment = Alignment.Start
             ) {
                 AsyncImage(
-                    model = novel.coverImgUrl, // Sử dụng URL từ Story
+                    model = novel.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover, // Sử dụng URL từ Story
                     contentDescription = null,
                     modifier = Modifier
                         .height(184.dp)
@@ -443,11 +443,14 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         val formatter = DecimalFormat("#,###"+"đ")
-                        Text(
-                            text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
+                        if(novel.pricePerChapter != null)
+                        {
+                            Text(
+                                text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -583,13 +586,13 @@ fun StoryCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .background(
-                        color = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
+                        color = if (story.pricePerChapter?.compareTo(BigDecimal.ZERO) != 0) Color(0xFFFBBC05) else BrightAquamarine,
                         shape = RoundedCornerShape(4.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = if (story.pricePerChapter.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
+                    text = if (story.pricePerChapter?.compareTo(BigDecimal.ZERO) !=0) "PREMIUM" else "FREE",
                     color = Color.Black,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
@@ -637,7 +640,7 @@ fun StoryCard2(
     onClick: () -> Unit = {}
 ) {
     Log.d("StoryCard2", "Rendering story: ${story.name}")
-    val isPremium = story.pricePerChapter.compareTo(BigDecimal.ZERO) != 0
+    val isPremium = story.pricePerChapter?.compareTo(BigDecimal.ZERO) != 0
     Column(
         modifier = modifier
             .width(200.dp)
@@ -647,7 +650,7 @@ fun StoryCard2(
     ) {
         // Story Image (on top)
         AsyncImage(
-            model = story.coverImgUrl,
+            model = story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
             contentDescription = "Story Image",
             modifier = Modifier
                 .fillMaxWidth()

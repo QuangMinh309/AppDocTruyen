@@ -237,7 +237,7 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel()) {
                             onDismissRequest = { expanded.value = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Report") },
+                                text = { Text("Report User") },
                                 onClick = {
                                     viewModel.onGoToReportScreen(user.id, user.name)
                                     expanded.value = false
