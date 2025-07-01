@@ -100,12 +100,6 @@ router.post(
   StoryController.toggleVote
 );
 
-router.post(
-  '/:storyId/purchase',
-  validate(validateStoryId),
-  StoryController.purchaseEntireStory
-);
-
 // Dành cho tác giả
 router.put(
   '/:storyId',

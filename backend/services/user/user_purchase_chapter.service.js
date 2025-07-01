@@ -5,6 +5,7 @@ import { validateUser } from '../../utils/user.util.js';
 import TransactionService from '../transaction.service.js';
 import ChapterService from '../chapter/chapter.service.js';
 import getStoryById from '../story/story_get_id.service.js';
+import ReportService from '../admin/report_turnover.service.js';
 
 const Parameter = sequelize.models.Parameter;
 const Purchase = sequelize.models.Purchase
@@ -45,15 +46,21 @@ const PurchaseChapterService = {
                     throw new ApiError('Bạn đã mua chapter này rồi!', 400);
             }
 
+            await user.update({
+                wallet: user.wallet - story.pricePerChapter,
+            });
+
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
-            await TransactionService.createTransaction({
+            const transaction = await TransactionService.createTransaction({
                 userId,
                 type: "purchase",
                 money: story.pricePerChapter,
                 status: 'success',
                 finishAt: new Date(),
             });
+
+            await ReportService.updateDailyRevenue(sequelize, transaction);
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {

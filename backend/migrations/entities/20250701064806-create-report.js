@@ -16,16 +16,6 @@ export default {
         allowNull: false,
         defaultValue: 0,
       },
-      totalExpense: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
-      netRevenue: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -38,6 +28,6 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('daily_revenue');
+    await queryInterface.dropTable('report');
   },
 };

@@ -276,20 +276,6 @@ const StoryController = {
     }
   },
 
-  async purchaseEntireStory(req, res, next) {
-    try {
-      const userId = req.user.userId;
-      const { storyId } = req.params;
-      const result = await StoryPurchaseService.purchaseEntireStory(
-        userId,
-        storyId
-      );
-      return res.status(200).json({ success: true, data: result });
-    } catch (error) {
-      return next(error);
-    }
-  },
-
   async checkChapterPurchase(req, res, next) {
     try {
       const userId = req.user.userId;
