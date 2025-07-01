@@ -1,6 +1,5 @@
 package com.example.frontend.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.onFailure
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReportVIewModel  @Inject constructor(
+class ReportUserViewModel  @Inject constructor(
    savedStateHandle: SavedStateHandle,
    private val userProfileRepository: UserProfileRepository,
     navigationManager: NavigationManager

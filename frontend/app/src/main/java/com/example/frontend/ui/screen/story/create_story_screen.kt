@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
@@ -53,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +65,7 @@ import com.example.frontend.presentation.viewmodel.story.CreateStoryViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.OrangeRed
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -330,9 +333,9 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     BasicTextField(
-                        value = pricePerChapter?.toString() ?: "",
+                        value = pricePerChapter,
                         onValueChange = {
-                            viewModel.updatePricePerChapter(it.toFloatOrNull())
+                            viewModel.updatePricePerChapter(it)
                         },
                         singleLine = true,
                         modifier = Modifier
@@ -344,15 +347,16 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                             fontSize = 16.sp
                         ),
                         decorationBox = { innerTextField ->
-                            if (pricePerChapter == null) {
+                            if (pricePerChapter.isBlank()) {
                                 Text(
-                                    text = "Enter price per chapter (e.g., 0.99)...",
+                                    text = "Enter price per chapter (set as 0 if free)...",
                                     color = Color.LightGray,
                                     fontSize = 16.sp
                                 )
                             }
                             innerTextField()
-                        }
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
                     Spacer(modifier = Modifier.height(17.dp))

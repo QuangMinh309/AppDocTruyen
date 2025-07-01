@@ -161,13 +161,13 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                         viewModel = viewModel
                     )
                 }
-                item { Spacer(Modifier.height(29.dp)) }
+                item { Spacer(Modifier.height(20.dp)) }
                 item {
                     DescriptionStory(
                         aboutContent = {
                             Text(
                                 text = viewModel.story.value?.description ?: "",
-                                color = Color.White,
+                                color = Color.LightGray,
                                 fontSize = 16.sp,
                             )
                             Spacer(Modifier.height(29.dp))

@@ -41,6 +41,7 @@ import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.screen.story.ExampleChapter
 import com.example.frontend.ui.screen.story.Examplechapters
+import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 
 fun Text(text: String, color: Color, fontSize: TextUnit, fontWeight: FontWeight, any: Any?) {
@@ -95,7 +96,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 .offset(y = (-9).dp)
                 .padding(start = 16.dp)
                 .background(
-                    color = Color.Black,
+                    color = DeepSpace,
                     shape = RoundedCornerShape(30.dp)
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -201,7 +202,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
         LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
             onClick = {viewModel.onGoToChapterScreen(viewModel.firstChapterId.value?:0,viewModel.storyId.value,viewModel.isAuthor.value) }){
             Text(
-                text = "Start  read",
+                text = "Start  reading",
                 color = Color.Black,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,

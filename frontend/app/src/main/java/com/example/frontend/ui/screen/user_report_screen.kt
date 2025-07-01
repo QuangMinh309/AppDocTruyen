@@ -1,6 +1,5 @@
 package com.example.frontend.ui.screen
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -38,17 +37,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.presentation.viewmodel.ReportVIewModel
-import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.presentation.viewmodel.ReportUserViewModel
 import com.example.frontend.ui.components.ScreenFrame
 
 @Composable
-fun UserReportScreen(viewModel: ReportVIewModel = hiltViewModel())
+fun UserReportScreen(viewModel: ReportUserViewModel = hiltViewModel())
 {
     val context = LocalContext.current
     val name by viewModel.name.collectAsState()
@@ -213,6 +210,6 @@ fun UserReportScreen(viewModel: ReportVIewModel = hiltViewModel())
 //@Preview(showBackground = true)
 //@Composable
 //private fun PreviewReportScreenContent() {
-//    val fakeViewModel = ReportVIewModel(NavigationManager())
+//    val fakeViewModel = ReportUserViewModel(NavigationManager())
 //    UserReportScreen(viewModel = fakeViewModel)
 //}

@@ -32,8 +32,8 @@ class CreateStoryViewModel @Inject constructor(
     private val _categories = MutableStateFlow<List<Int>>(emptyList())
     val categories: StateFlow<List<Int>> = _categories.asStateFlow()
 
-    private val _pricePerChapter = MutableStateFlow<Float?>(null)
-    val pricePerChapter: StateFlow<Float?> = _pricePerChapter.asStateFlow()
+    private val _pricePerChapter = MutableStateFlow<String>("")
+    val pricePerChapter: StateFlow<String> = _pricePerChapter.asStateFlow()
 
     private val _coverImage = MutableStateFlow<File?>(null)
     val coverImage: StateFlow<File?> = _coverImage.asStateFlow()
@@ -77,10 +77,8 @@ class CreateStoryViewModel @Inject constructor(
         _categories.value = newCategories
     }
 
-    fun updatePricePerChapter(newPrice: Float?) {
-        if (newPrice == null || newPrice >= 0) {
-            _pricePerChapter.value = newPrice
-        }
+    fun updatePricePerChapter(newPrice: String) {
+        _pricePerChapter.value = newPrice
     }
 
     fun updateCoverImage(newImage: File?) {
@@ -91,8 +89,11 @@ class CreateStoryViewModel @Inject constructor(
     fun createStory() {
         viewModelScope.launch {
             if (_storyName.value.isEmpty()) {
-
                 showToast("Please enter a story title")
+                return@launch
+            }
+            if (_pricePerChapter.value.toFloatOrNull() == null) {
+                _toast.value = "Please enter a valid price"
                 return@launch
             }
             isLoading.value = true
@@ -100,7 +101,7 @@ class CreateStoryViewModel @Inject constructor(
                 storyName = _storyName.value,
                 description = _description.value,
                 categories = _categories.value,
-                pricePerChapter = _pricePerChapter.value,
+                pricePerChapter = if(_pricePerChapter.value.isEmpty()) 0f else _pricePerChapter.value.toFloat(),
                 coverImage = _coverImage.value
             )
             when (result) {
