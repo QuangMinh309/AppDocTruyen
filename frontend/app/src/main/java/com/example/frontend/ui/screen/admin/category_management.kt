@@ -2,6 +2,7 @@ package com.example.frontend.ui.screen.admin
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -43,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CategoryList
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 
@@ -55,7 +58,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
     val categoryList by viewModel.categories.collectAsState()
     val selectedItem by viewModel.selectedItem.collectAsState()
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
-    val showDialog = remember { mutableStateOf(false) }
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
         toast?.let {
@@ -63,6 +66,18 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             viewModel.clearToast()
         }
     }
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Confirm Deletion",
+        text = "Are you sure you want to delete this category?",
+        onConfirm = {
+            viewModel.deleteSelectedCategory()
+            viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+        }
+    )
     ScreenFrame(
         topBar = {
             Row(
@@ -111,7 +126,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             text = "Create or update categories",
             color = Color.White,
             style = TextStyle(
-                fontSize = 33.sp,
+                fontSize = 35.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             ),
@@ -223,7 +238,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             )
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = { showDialog.value = true },
+                onClick = { viewModel.setShowDialogState(true) },
                 enabled = selectedItem != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedItem != null) BurntCoral else Color(0xAFAF2238)
@@ -237,34 +252,6 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
             }
-        }
-        if(showDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog.value = false
-                            viewModel.deleteSelectedCategory()
-                        }
-                    ) {
-                        Text("Yes", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure you want to delete this category?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
-            )
         }
         if (isCategoriesLoading) {
             Box(

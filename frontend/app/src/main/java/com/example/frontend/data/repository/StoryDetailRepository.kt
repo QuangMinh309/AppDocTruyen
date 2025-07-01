@@ -107,4 +107,20 @@ class StoryDetailRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+
+    suspend fun deleteStory(storyId: Int): Result<ApiService.StoryDeleteResponse> {
+        Log.d("StoryDetailRepository", "Deleting story $storyId")
+        return try {
+            val response = apiService.deleteStory(storyId)
+            Log.d("StoryDetailRepository", "DeleteStory Response - Code: ${response.code()}, Body: ${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No delete response data"))
+                } else {
+                Result.Failure(Exception("Failed to delete story: ${response.code()} - ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Log.e("StoryDetailRepository", "Exception during deleteStory: ${e.message}", e)
+            Result.Failure(e)
+        }
+    }
 }

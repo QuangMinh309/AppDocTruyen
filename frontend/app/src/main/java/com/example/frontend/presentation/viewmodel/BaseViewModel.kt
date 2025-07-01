@@ -28,6 +28,11 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         return formatter.format(money)
     }
 
+    fun onGoToCommunityDetailScreen(id : Int) {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Community.Detail.createRoute(id.toString()))
+        }
+    }
 
     fun onGoToSetting() {
         viewModelScope.launch {

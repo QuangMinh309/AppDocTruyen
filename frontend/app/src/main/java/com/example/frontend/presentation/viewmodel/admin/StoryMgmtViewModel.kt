@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
 import com.example.frontend.data.repository.AdminRepository
 import com.example.frontend.data.repository.CategoryRepository
 import com.example.frontend.data.repository.HomeRepository
+import com.example.frontend.data.repository.StoryDetailRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +25,8 @@ class StoryMgmtViewModel @Inject constructor(
     navigationManager: NavigationManager,
     private val homeRepository: HomeRepository,
     private val adminRepository: AdminRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val storyDetailRepository: StoryDetailRepository
 ) : BaseViewModel(navigationManager) {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories : StateFlow<List<Category>> = _categories
@@ -201,6 +205,28 @@ class StoryMgmtViewModel @Inject constructor(
                 val result = adminRepository.approveStory(_selectedStory.value!!.id, age, "rejected")
                 result.onSuccess { message ->
                     _toast.value = message
+                }.onFailure { error ->
+                    Log.e("apiError", "Error: ${error.message}")
+                }
+            }
+            catch (e: Exception){
+                _toast.value = "Error: ${e.message}"
+            }
+            finally {
+                _selectedStory.value = null
+                loadStories()
+            }
+        }
+    }
+
+    fun deleteSelectedStory()
+    {
+        if(_selectedStory.value == null) return
+        viewModelScope.launch {
+            try{
+                val result = storyDetailRepository.deleteStory(_selectedStory.value!!.id)
+                result.onSuccess { data ->
+                    _toast.value = data.message
                 }.onFailure { error ->
                     Log.e("apiError", "Error: ${error.message}")
                 }

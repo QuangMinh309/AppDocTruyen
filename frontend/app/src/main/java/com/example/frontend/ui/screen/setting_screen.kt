@@ -129,29 +129,6 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                         .wrapContentWidth(Alignment.CenterHorizontally)
                         .align(Alignment.CenterVertically)
                 )
-                Spacer(modifier = Modifier.weight(if(isVisible.value) 0.01f else 0.33f))
-                if(isVisible.value)
-                {
-                    Button(
-                        onClick = {viewModel.onGoToAdminScreen()},
-                        colors =  ButtonDefaults.buttonColors(
-                            containerColor = Color.Transparent,
-                        ),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier
-                            .height(25.dp)
-                            .wrapContentWidth(Alignment.Start)
-                    ) {
-                        Text(
-                            text = "Admin",
-                            color = Color.White,
-                            style = TextStyle(
-                                fontSize = 16.sp
-                            )
-                        )
-                    }
-                }
-
 
                 Button(
                     onClick = { viewModel.toggleEditMode() },
@@ -280,10 +257,41 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                     }
                 }
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = 15.dp),
                     thickness = 1.dp,
                     color = Color(0xff202430)
                 )
+
+                if(isVisible.value)
+                {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.onGoToAdminScreen() }
+                            .padding(vertical = 15.dp)
+                    ) {
+                        Text(
+                            text = "Admin tools",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 24.sp,
+                                brush = Brush.linearGradient(
+                                    colors = if (user.value?.isPremium == true) listOf(
+                                        BurntCoral,
+                                        OrangeRed
+                                    ) else listOf(Color.White, Color.White),
+                                    start = Offset(0f, 0f),
+                                    end = Offset.Infinite
+                                )
+                            )
+                        )
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        thickness = 1.dp,
+                        color = Color(0xff202430)
+                    )
+                }
 
                 // Display Name
                 EditableField(
@@ -432,7 +440,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                     ) {
                         Text("Registration Date", color = Color.White, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
                         Text(
-                            text = if(user.value?.isPremium == true) "The validity period of a premium package is 30 days from the date of registration, please check your transaction history." else "You are not the premium member.",
+                            text = if(user.value?.isPremium == true) "The validity period of a premium package is 30 days from the date of registration, please check your transaction history." else "You are not a premium member.",
                             color = Color.White,
                             style = TextStyle(fontSize = 16.sp)
                         )
@@ -481,7 +489,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                         .fillMaxWidth()
                         .clickable {
                             viewModel.showDeleteConfirmation()
-                            viewModel.setShowDialogState(true,"Are you sure to delete your account?This action cannot be undone.")
+                            viewModel.setShowDialogState(true,"Are you sure to delete your account? This action cannot be undone.")
                         },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
