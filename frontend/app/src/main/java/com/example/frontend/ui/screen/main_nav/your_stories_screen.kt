@@ -64,7 +64,7 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                    //    viewModel.createNewStory()
+                       viewModel.onGoToCreateStoryScreen()
                     },
                     containerColor = Color(0xFFFFAE95),
                     shape = RoundedCornerShape(50.dp),

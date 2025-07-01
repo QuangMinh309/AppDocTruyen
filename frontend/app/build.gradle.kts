@@ -103,6 +103,7 @@ dependencies {
      implementation(libs.logging.interceptor)
     implementation ("com.google.accompanist:accompanist-swiperefresh:0.32.0")
     implementation ("org.threeten:threetenbp:1.6.5") // Hoặc phiên bản mới nhất
+    implementation("androidx.activity:activity-compose:1.8.0")
 //     ksp(libs.hilt.compiler)
 
 

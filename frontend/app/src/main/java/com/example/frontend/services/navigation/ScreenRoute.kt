@@ -65,10 +65,12 @@ sealed class Screen(var route: String) {
             fun createRoute(nameListsId:Int)="Story/NameLists/$nameListsId"
         }
 
-    }
+        data object CreateStory :Story("Story/CreateStory")
 
+    }
+// create story
     data object YourStoryDetail : Screen("YourStoryDetail/{id}") {
-        fun createRoute(id: String) = "YourStoryDetail/$id"
+        fun createRoute(id: Int) = "YourStoryDetail/$id"
     }
 
     sealed class Transaction(route: String) : Screen(route) {

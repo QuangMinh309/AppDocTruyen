@@ -56,6 +56,7 @@ import com.example.frontend.ui.screen.intro_authentication.ResetPasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.ChangePasswordScreen
 import com.example.frontend.ui.screen.intro_authentification.SetUpPasswordScreen
 import com.example.frontend.ui.screen.story.CategoryStoryListScreen
+import com.example.frontend.ui.screen.story.CreateStoryScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
@@ -266,6 +267,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             }
 
             composable(Screen.Story.TopRanking.route) { TopRankingStoryListScreen()  }
+            composable(Screen.Story.CreateStory.route) { CreateStoryScreen()  }
 
             composable(
                 route = Screen.Community.Chat.route,

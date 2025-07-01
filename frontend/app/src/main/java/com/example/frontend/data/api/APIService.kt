@@ -7,6 +7,7 @@ import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
 import com.example.frontend.data.model.User
+import com.example.frontend.data.repository.CreateStoryRepository
 import com.example.frontend.presentation.viewmodel.transaction.BankAccountData
 import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
@@ -34,6 +35,10 @@ interface ApiService {
     suspend fun getImageUrl(
         @Path("id") id: String
     ): Response<ImageUrlResponse>
+    @POST("api/stories")
+    suspend fun createStory(
+        @Body request: CreateStoryRepository.CreateStoryRequest
+    ): Response<StoryResponse>
 
     @GET("api/stories")
     suspend fun getAllStories(): Response<StoriesResponse>
