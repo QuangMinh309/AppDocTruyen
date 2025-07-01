@@ -13,13 +13,22 @@ const StoryCategory = sequelize.models.StoryCategory;
 const getStoriesByCategoryAndStatus = async (
   categoryId,
   status,
-  { limit = 20, lastId = null, orderBy = 'createdAt', sort = 'DESC' } = {}
+  { limit = 20, lastId = null, orderBy = 'createdAt', sort = 'DESC', role } = {}
 ) => {
   try {
     await validateCategory(categoryId);
-    const validStatuses = ['update', 'full'];
+
+    const allowedStatusesByRole = {
+      user: ['update', 'full'],
+      admin: ['pending', 'rejected', 'approved', 'update', 'full'],
+    };
+
+    const validStatuses = allowedStatusesByRole[role] || [];
     if (!validStatuses.includes(status)) {
-      throw new ApiError('Trạng thái truyện không hợp lệ', 400);
+      throw new ApiError(
+        'Trạng thái truyện không hợp lệ với vai trò của bạn',
+        403
+      );
     }
 
     const validOrderFields = ['createdAt', 'updatedAt', 'voteNum', 'viewNum'];

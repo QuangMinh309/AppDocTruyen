@@ -147,6 +147,7 @@ const StoryController = {
 
   async getStoriesByCategoryAndStatus(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { categoryId, status } = req.params;
       const { limit, lastId, orderBy, sort } = req.query;
       const result = await getStoriesByCategoryAndStatus(categoryId, status, {
@@ -154,6 +155,7 @@ const StoryController = {
         lastId,
         orderBy,
         sort,
+        role: roleName,
       });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
