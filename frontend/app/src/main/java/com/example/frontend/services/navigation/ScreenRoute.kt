@@ -83,6 +83,9 @@ sealed class Screen(var route: String) {
         }
     }
 
+    data object Report : Screen("Report/{userId}/{name}") {
+        fun createRoute(userId: Int, name: String) = "Report/$userId/$name"
+    }
     data object Notification : Screen("Notification")
     data object Setting : Screen("Setting")
 

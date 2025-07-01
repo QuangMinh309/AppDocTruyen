@@ -57,6 +57,9 @@ class CommunityMgmtViewModel @Inject constructor(
 
     val selectedAvatarUri = mutableStateOf<Uri?>(null)
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init{
         loadCommunities()
         loadCategories()
@@ -65,8 +68,10 @@ class CommunityMgmtViewModel @Inject constructor(
     fun loadCommunities()
     {
         viewModelScope.launch {
+            _isLoading.value = true
             _communities.value = communityProvider.fetchAllCommunity()
             _displayedCommunities.value = _communities.value
+            _isLoading.value = false
         }
     }
 
@@ -97,6 +102,7 @@ class CommunityMgmtViewModel @Inject constructor(
         {
             _displayedCommunities.value = _displayedCommunities.value.filter { it.name.contains(_tbSearchValue.value) }
         }
+        if(!_displayedCommunities.value.contains(_selectedCommunity.value)) _selectedCommunity.value = null
     }
 
     fun createCommunity(context : Context)
@@ -128,6 +134,76 @@ class CommunityMgmtViewModel @Inject constructor(
                 Log.e("apiError","Error: ${e.message}")
             }
         }
+    }
+
+    fun updateCommunity(context : Context)
+    {
+        if(_selectedCommunity.value == null) return
+        if(_tbCommNameValue.value.isBlank() || _selectedCategory.value == null)
+            return
+        viewModelScope.launch {
+            try{
+                val file = selectedAvatarUri.value?.let { uriToFile(it, context) }
+                val imageInfo = imageUrlProvider.uploadImage(file)
+                val community = Community(
+                    id = _selectedCommunity.value!!.id,
+                    name = _tbCommNameValue.value,
+                    description = _tbCommDescValue.value,
+                    category = _selectedCategory.value!!,
+                    memberNum = _selectedCommunity.value!!.memberNum,
+                )
+                val result = communityRepository.updateCommunity(community, imageInfo)
+
+                result.onSuccess {
+                    loadCommunities()
+                    _selectedCommunity.value = null
+                    _toast.value = "Community updated successfully"
+                }.onFailure { error ->
+                    Log.e("apiError","Error: ${error.message}")
+                }
+            }
+            catch (e: Exception) {
+                _toast.value = "Error: ${e.message}"
+                Log.e("apiError","Error: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteSelectedCommunity()
+    {
+        if(_selectedCommunity.value == null) return
+        viewModelScope.launch {
+            try{
+                val result = communityRepository.deleteCommunity(_selectedCommunity.value!!.id)
+                result.onSuccess {
+                    loadCommunities()
+                    _selectedCommunity.value = null
+                    _toast.value = "Community deleted successfully"
+                }.onFailure { error ->
+                    Log.e("apiError","Error: ${error.message}")
+                }
+            }
+            catch (e: Exception) {
+                _toast.value = "Error: ${e.message}"
+                Log.e("apiError","Error: ${e.message}")
+            }
+        }
+    }
+
+    fun updateFields()
+    {
+        if(_selectedCommunity.value == null) return
+        _tbCommNameValue.value = _selectedCommunity.value!!.name
+        _tbCommDescValue.value = _selectedCommunity.value!!.description.toString()
+        _selectedCategory.value = _categories.value.find { it.id == _selectedCommunity.value?.category?.id }
+    }
+
+    fun clearFields()
+    {
+        _tbCommNameValue.value = ""
+        _tbCommDescValue.value = ""
+        _selectedCategory.value = null
+        selectedAvatarUri.value = null
     }
 
     fun onSelectCommunity(community: Community)

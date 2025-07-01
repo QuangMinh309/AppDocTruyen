@@ -40,6 +40,7 @@ import com.example.frontend.ui.components.BottomNavigationBar
 import com.example.frontend.ui.screen.CustomSplashScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
+import com.example.frontend.ui.screen.UserReportScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
 import com.example.frontend.ui.screen.admin.CommunityManagementScreen
@@ -311,6 +312,13 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.Notification.route) { NotificationScreen() }
             composable(Screen.Setting.route) { SettingScreen() }
+            composable(
+                route = Screen.Report.route,
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.IntType },
+                    navArgument("name") { type = NavType.StringType },
+                )
+            ) { UserReportScreen() }
 
             composable(
                 route = Screen.Story.UserProfile.route,

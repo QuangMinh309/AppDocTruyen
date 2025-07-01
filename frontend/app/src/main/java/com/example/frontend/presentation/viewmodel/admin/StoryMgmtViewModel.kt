@@ -48,6 +48,9 @@ class StoryMgmtViewModel @Inject constructor(
     private val _displayedStories = MutableStateFlow<List<Story>>(emptyList())
     val displayedStories : MutableStateFlow<List<Story>> = _displayedStories
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
     init{
         loadStories()
         loadCategories()
@@ -56,6 +59,7 @@ class StoryMgmtViewModel @Inject constructor(
     fun loadStories()
     {
         viewModelScope.launch {
+            _isLoading.value = true
             try{
                 val result = homeRepository.getAllStories()
                 _stories.value = when (result) {
@@ -73,6 +77,7 @@ class StoryMgmtViewModel @Inject constructor(
             catch (e: Exception){
                 _toast.value = "Error: ${e.message}"
             }
+            _isLoading.value = false
         }
     }
 

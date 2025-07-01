@@ -7,6 +7,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -72,6 +74,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
     val tbCommDescValue by viewModel.tbCommDescValue.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val categories by viewModel.categories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     var showImagePicker by remember { mutableStateOf(false) }
     val showCreateDialog = remember { mutableStateOf(false) }
     val showUpdateDialog = remember { mutableStateOf(false) }
@@ -237,12 +240,24 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                 .verticalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.Center
         ) {
-            communities.forEach { community ->
-                CommunityCardCard(
-                    community,
-                    isSelected = community == selectedCommunity,
-                    onClick = { viewModel.onSelectCommunity(community) }
-                )
+            if (isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            else{
+                communities.forEach { community ->
+                    CommunityCardCard(
+                        community,
+                        isSelected = community == selectedCommunity,
+                        onClick = { viewModel.onSelectCommunity(community) }
+                    )
+                }
             }
         }
         if(showCreateDialog.value) //create dialog
@@ -356,6 +371,124 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                 containerColor = Color(0xFA171717)
             )
         }
+        if(showUpdateDialog.value) //update dialog
+        {
+            viewModel.updateFields()
+            AlertDialog(
+                onDismissRequest = {
+                    viewModel.clearFields()
+                    showUpdateDialog.value = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            if(tbCommNameValue.isBlank() || selectedCategory == null)
+                            {
+                                Toast.makeText(context, "Please fill in all the necessary fields", Toast.LENGTH_SHORT).show()
+                            }
+                            else
+                            {
+                                viewModel.updateCommunity(context)
+                                viewModel.clearFields()
+                                showUpdateDialog.value = false
+                            }
+                        }
+                    ) {
+                        Text("Confirm", color = Color.White)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        viewModel.clearFields()
+                        showUpdateDialog.value = false })
+                    {
+                        Text("Cancel", color = Color.White)
+                    }
+                },
+                title = {
+                    Text("Update community", color = Color.White)
+                },
+                text = {
+                    Column {
+                        Text("Name: ", color = Color.LightGray) //name
+                        TextField(
+                            value = tbCommNameValue,
+                            onValueChange = { viewModel.onTbNameChange(it) },
+                            singleLine = true,
+                            placeholder = {
+                                Text("Enter name", style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Bold))
+                            },
+                            textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_regular))),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height = 53.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = BurntCoral,
+                                unfocusedIndicatorColor = Color.White
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text("Description: ", color = Color.LightGray) //desc
+                        TextField(
+                            value = tbCommDescValue,
+                            onValueChange = { viewModel.onTbDescChange(it) },
+                            singleLine = true,
+                            placeholder = {
+                                Text("Enter description", style = TextStyle(color = Color.Gray, fontWeight = FontWeight.Bold))
+                            },
+                            textStyle = TextStyle(fontFamily = FontFamily(Font(R.font.poppins_regular))),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(height = 53.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.LightGray,
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = BurntCoral,
+                                unfocusedIndicatorColor = Color.White
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) { //avatar
+                            Text("Avatar: ", color = Color.LightGray)
+                            Button(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = DarkDenim
+                                ),
+                                onClick = { showImagePicker = true }
+                            ) {
+                                Text("Choose", color = Color.White)
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    model = viewModel.selectedAvatarUri.value ?: R.drawable.intro_page1_bg
+                                ),
+                                contentDescription = "Avatar",
+                                modifier = Modifier
+                                    .size(70.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text("Category: ", color = Color.LightGray) //category
+                        CategoryList(
+                            categories = categories,
+                            selectedCategory = selectedCategory,
+                            onCategorySelected = { viewModel.onSelectCategory(it) }
+                        )
+                    }
+                },
+                containerColor = Color(0xFA171717)
+            )
+        }
         if(showDeleteDialog.value)
         {
             AlertDialog(
@@ -363,8 +496,8 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                 confirmButton = {
                     TextButton(
                         onClick = {
+                            viewModel.deleteSelectedCommunity()
                             showDeleteDialog.value = false
-                            //viewModel.deleteSelectedCommunity()
                         }
                     ) {
                         Text("Yes", color = Color.White)

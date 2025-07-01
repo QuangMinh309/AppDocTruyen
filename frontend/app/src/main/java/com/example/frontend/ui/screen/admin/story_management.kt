@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -66,6 +68,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
     val selectedSearchType by viewModel.selectedSearchType.collectAsState()
     val selectedStates by viewModel.selectedStates.collectAsState()
     val selectedCategories by viewModel.selectedCategories.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
     val showApproveDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
@@ -338,12 +341,25 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         Text("Category:", color = Color.LightGray)
                         Spacer(modifier = Modifier.height(10.dp))
                         FlowRow {
-                            categories.forEach { category ->
-                                SelectChip(
-                                    name = category.name?:"",
-                                    isSelected = category.name in selectedCategories,
-                                    onClick = { viewModel.onSelectCategory(category.name?:"") }
-                                )
+                            if (isLoading) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(50.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                            else
+                            {
+                                categories.forEach { category ->
+                                    SelectChip(
+                                        name = category.name?:"",
+                                        isSelected = category.name in selectedCategories,
+                                        onClick = { viewModel.onSelectCategory(category.name?:"") }
+                                    )
+                                }
                             }
                         }
                     }
