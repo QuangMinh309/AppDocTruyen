@@ -71,7 +71,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 }
             }
 
-            SectionTitle(title = "Your Communities", modifier = Modifier.padding(start = 20.dp))
+            SectionTitle(title = "Find Communities", modifier = Modifier.padding(start = 20.dp))
 
             //community follow category
             if (isLoadingCommunitiesFollowCategory.value) {
@@ -92,7 +92,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                         .height(192.dp)
                 ){
                     Text(
-                        text = "No community found.",
+                        text = "No communities found.",
                         modifier = Modifier.align(Alignment.Center),
                         style = TextStyle(
                             fontSize = 16.sp,
