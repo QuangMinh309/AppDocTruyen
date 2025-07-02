@@ -97,7 +97,7 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
                         items(stories) { story ->
                             StoryCard4(
                                 story = story,
-                                onClick = { viewModel.onGoToStoryScreen(story.id) },
+                                onClick = { viewModel.onGoToUpdateStoryScreen(story.id)},
                                 onDeleteClick = { viewModel.deleteStory(story.id) } // Truyền hàm xóa
                             )
                         }
