@@ -1,6 +1,9 @@
 import UserManagerService from '../services/admin/user_management.service.js';
 import StoryManagerService from '../services/admin/story_management.service.js';
 import TransactionManagerService from '../services/admin/transaction_accept.service.js';
+import ReportService from '../services/admin/report_turnover.service.js';
+import ApiError from '../utils/api_error.util.js';
+import { sequelize } from '../models/index.js';
 
 const AdminController = {
   // Quản lý user
@@ -58,7 +61,7 @@ const AdminController = {
 
       const { story, result } = await StoryManagerService.approveStory(
         storyId,
-        approvalData,
+        approvalData
       );
 
       const message =
@@ -82,10 +85,11 @@ const AdminController = {
       const transactionId = req.params.transactionId;
       const approvalData = req.body;
 
-      const { story, result } = await TransactionManagerService.approveTransaction(
-        transactionId,
-        approvalData,
-      );
+      const { story, result } =
+        await TransactionManagerService.approveTransaction(
+          transactionId,
+          approvalData
+        );
 
       const message =
         result === 'success'
@@ -95,6 +99,30 @@ const AdminController = {
       res.status(200).json({
         success: true,
         message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  // Lấy báo cáo
+  async getDailyRevenueByMonth(req, res, next) {
+    try {
+      const { year, month } = req.query;
+
+      const yearNum = parseInt(year);
+      const monthNum = parseInt(month);
+
+      // Gọi service để lấy báo cáo
+      const dailyRevenues = await ReportService.getDailyRevenueByMonth(
+        sequelize,
+        yearNum,
+        monthNum
+      );
+
+      res.status(200).json({
+        success: true,
+        data: dailyRevenues,
       });
     } catch (error) {
       next(error);

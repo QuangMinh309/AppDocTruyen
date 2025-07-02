@@ -6,6 +6,7 @@ import {
   authenticate,
   authorizeRoles,
 } from '../middlewares/auth.middleware.js';
+import { getDailyRevenueQuery } from '../validators/report.validation.js';
 
 const router = express.Router();
 
@@ -40,6 +41,13 @@ router.put(
   '/:transactionId/approve-trans',
   authorizeRoles('admin'),
   AdminController.approveTransaction
+);
+
+router.get(
+  '/revenue/daily',
+  validate(getDailyRevenueQuery, 'query'),
+  authorizeRoles('admin'),
+  AdminController.getDailyRevenueByMonth
 );
 
 export default router;

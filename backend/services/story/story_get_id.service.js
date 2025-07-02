@@ -2,13 +2,14 @@ import { sequelize } from '../../models/index.js';
 import ApiError from '../../utils/api_error.util.js';
 import { updateStoryViewNum } from '../../utils/story.util.js';
 import { formatDate } from '../../utils/date.util.js';
+import { checkChapterAccessCore } from '../../utils/chapter.util.js';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
 const User = sequelize.models.User;
 const Category = sequelize.models.Category;
 
-const getStoryById = async (storyId) => {
+const getStoryById = async (storyId, userId) => {
   try {
     const story = await Story.findByPk(storyId, {
       include: [
@@ -40,11 +41,27 @@ const getStoryById = async (storyId) => {
 
     if (!story) throw new ApiError('Truyện không tồn tại', 404);
 
+    console.log('Truyện tìm được:', story.toJSON());
+
     story.dataValues.createdAt = formatDate(story.createdAt);
     story.dataValues.updatedAt = formatDate(story.updatedAt);
 
     // Cập nhật lượt xem
     await updateStoryViewNum(storyId);
+
+    // Ẩn lockedStatus nếu người dùng có quyền truy cập
+    if (userId && Array.isArray(story.chapters)) {
+      for (const chapter of story.chapters) {
+        const canAccess = await checkChapterAccessCore(
+          userId,
+          storyId,
+          chapter.chapterId
+        );
+        if (canAccess) {
+          chapter.dataValues.lockedStatus = false;
+        }
+      }
+    }
 
     return story;
   } catch (err) {
