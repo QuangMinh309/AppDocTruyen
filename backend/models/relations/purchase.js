@@ -32,7 +32,6 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
       userId: DataTypes.INTEGER,
-      storyId: DataTypes.INTEGER,
       chapterId: DataTypes.INTEGER,
       purchasedAt: DataTypes.DATE,
     },

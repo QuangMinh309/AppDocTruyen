@@ -37,7 +37,7 @@ const purchasePremium = async (userId) => {
     await Premium.create({
       userId,
       expirateAt,
-      createAt: new Date(),
+      CreatedAt: new Date(),
     });
 
     const transaction = await TransactionService.createTransaction({

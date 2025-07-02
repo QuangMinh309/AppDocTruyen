@@ -27,7 +27,8 @@ export const checkChapterAccessCore = async (
   userId,
   storyId,
   chapterId,
-  returnDetails = false
+  returnDetails = false,
+  isPremium = false
 ) => {
   try {
     const chapter = await models.Chapter.findByPk(chapterId, {
@@ -45,6 +46,10 @@ export const checkChapterAccessCore = async (
 
     if (chapter.story.userId === userId) {
       return returnDetails ? { purchased: true, isAuthor: true } : true;
+    }
+
+    if (isPremium) {
+      return returnDetails ? { purchased: true, isPremium: true } : true;
     }
 
     const storyPurchase = await models.Purchase.findOne({
@@ -85,7 +90,8 @@ export const canUserAccessChapter = async (userId, chapter) => {
     userId,
     chapter.storyId,
     chapter.chapterId,
-    false
+    false,
+    req.user.isPremium
   );
 };
 
