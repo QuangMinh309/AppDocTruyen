@@ -175,6 +175,30 @@ fun StoryStatusAction(
                 }
             }
         }
+
+        // Add button
+        Button(
+            onClick = {viewModel.onGoToAddStoyToNameListScreen(viewModel.storyId.value)},
+            colors = ButtonDefaults.buttonColors(Color.White),
+            shape = RoundedCornerShape(30.dp),
+            modifier = Modifier
+                .height(35.dp)
+                .widthIn(min = 95.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                    contentDescription = "Add",
+                    modifier = Modifier.size(16.dp),
+                    tint = Color.Black
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+
+            }
+        }
     }
 }
 

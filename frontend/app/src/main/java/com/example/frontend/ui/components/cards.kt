@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
@@ -39,11 +40,13 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -791,14 +794,18 @@ fun StoryCard2(
 fun StoryCard3(
     story: Story,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Log.d("StoryCard3", "Rendering story: ${story.name}")
-    // Hàng 1: Ảnh bìa + Thông tin cơ bản
+
     Row(
         modifier = modifier
+            .padding(8.dp)
             .clickable { onClick() },
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // Ảnh bìa (tỉ lệ 3:4)
         Box(
@@ -814,6 +821,8 @@ fun StoryCard3(
             )
         }
 
+        Spacer(modifier = Modifier.width(16.dp))
+
         // Thông tin chi tiết
         Column(
             modifier = Modifier.weight(1f),
@@ -821,18 +830,19 @@ fun StoryCard3(
         ) {
             // Tiêu đề
             Text(
-                text = story.name?:"",
+                text = story.name ?: "",
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Ngày cập nhật
             Text(
-                buildAnnotatedString {
+                text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -851,7 +861,7 @@ fun StoryCard3(
                     ) {
                         append(story.updateAt?.toString() ?: "N/A")
                     }
-                },
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -867,7 +877,10 @@ fun StoryCard3(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Số lượt xem
             Row(
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -885,9 +898,35 @@ fun StoryCard3(
                 )
             }
         }
-    }
-}
 
+        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
+        if (onDeleteClick != null) {
+            IconButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Story",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+
+    // Dialog xác nhận xóa
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = "Remove Story",
+        text = "Are you sure you want to remove '${story.name}' from this list? This action cannot be undone.",
+        onConfirm = {
+            onDeleteClick?.invoke()
+            showDeleteDialog = false
+        },
+        onDismiss = { showDeleteDialog = false }
+    )
+}
 // Định dạng số lượt xem (167800 -> 167.8K)
 internal fun formatViews(views: Long): String {
     return when {
@@ -942,8 +981,12 @@ fun PreviewReadListItem(){
 fun ReadListItem(
     item: NameList,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onUpdateClick: (NameList) -> Unit = {}, // Thêm tham số cho Update
+    onDeleteClick: (NameList) -> Unit = {} // Thêm tham số cho Delete
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -991,6 +1034,7 @@ fun ReadListItem(
         // Phần thông tin
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -1011,7 +1055,7 @@ fun ReadListItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
-                    modifier = modifier
+                    modifier = Modifier
                         .widthIn(max = halfWidth)
                         .background(
                             brush = Brush.horizontalGradient(
@@ -1021,6 +1065,36 @@ fun ReadListItem(
                         )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
+
+                // Icon 3 chấm dọc
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options",
+                        tint = Color.White
+                    )
+                }
+
+                // Dropdown Menu
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Update Read List") },
+                        onClick = {
+                            onUpdateClick(item)
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete Read List") },
+                        onClick = {
+                            onDeleteClick(item)
+                            showMenu = false
+                        }
+                    )
+                }
             }
 
             Text(
@@ -1028,13 +1102,11 @@ fun ReadListItem(
                 color = Color.White,
                 fontSize = 14.sp,
                 maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
-
 }
-
 @Composable
 fun RowSelectItem(
     name: String,

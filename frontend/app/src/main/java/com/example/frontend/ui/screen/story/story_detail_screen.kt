@@ -64,17 +64,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.util.Date
 
-//@Preview
-//@Composable
-//fun PreviewStoryDetailScreen()
-//{
-//    val fakeviewmodel=StoryDetailViewModel( NavigationManager())
-//    StoryDetailScreen(viewModel=fakeviewmodel)
-//}
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {

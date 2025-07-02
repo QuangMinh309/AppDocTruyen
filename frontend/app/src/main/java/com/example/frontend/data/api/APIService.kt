@@ -1,5 +1,6 @@
 package com.example.frontend.data.api
 
+import android.media.MediaDescription
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.NameList
@@ -56,6 +57,7 @@ interface ApiService {
 
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
+
 
     @GET("api/stories/{storyId}")
     suspend fun getStoryById(
@@ -248,10 +250,81 @@ interface ApiService {
         val hasMore: Boolean
     )
 
+
+    @POST("api/nameLists")
+    suspend fun createNameList(
+        @Body createNameListRequest:CreateNameListRequest
+    ):Response<CreateNameListResponse>
+
+    data class CreateNameListRequest(
+        val nameList: String,
+        val description: String
+    )
+
+    data class CreateNameListResponse(
+        val nameListId: Int,
+        val nameList: String,
+        val userId: Int,
+        val description: String
+    )
+
+    @PUT("api/nameLists/{nameListId}")
+    suspend fun updateNameList(
+        @Path("nameList") nameListId: Int,
+        @Body updateNameListRequest: UpdateNameListRequest
+    ):Response<UpdateNameListReponse>
+
+    data class UpdateNameListRequest(
+        val nameList:String,
+        val description: String
+    )
+
+    data class UpdateNameListReponse(
+        val nameListId: Int,
+        val nameList: String,
+        val userId: Int,
+        val description: String
+    )
+
+    @DELETE("api/nameLists/{nameListId}")
+    suspend fun deleteNameList(
+        @Path("nameListId") nameListId:Int
+    ) :Response<DeleteNameListResponse>
+
+    data class DeleteNameListResponse(
+        val message: String
+    )
+
     @GET("api/nameLists/{nameListsId}")
     suspend fun getNameListById (
         @Path("nameListsId") nameListsId:Int
     ): Response<NameListResponse>
+
+    @DELETE("api/nameLists/{nameListId}/stories/{storyId}")
+    suspend fun deleteStoryInNameList(
+        @Path("nameListId") nameListId: Int,
+        @Path("storyId") storyId:Int
+    ):Response<DeleteStoryInNameListResponse>
+
+    data class  DeleteStoryInNameListResponse(
+        val storyId: Int,
+        val nameListId: Int
+    )
+
+    @POST("api/nameLists/{nameListId}/stories")
+    suspend fun addStoryToNameList(
+        @Path ("nameListId") nameListId: Int,
+        @Body addStoryToNameListRequest: AddStoryToNameListRequest
+    ) :Response<AddStoryToNameListResponse>
+
+    data class AddStoryToNameListRequest(
+        val storyId: Int
+    )
+
+    data class AddStoryToNameListResponse(
+        val storyId: Int,
+        val nameListId: Int
+    )
 
     data class NameListResponse(
        val nameList: NameListStory,

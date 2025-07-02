@@ -57,8 +57,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.frontend.R
+import com.example.frontend.data.model.NameList
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.main_nav.ProfileViewModel
+import com.example.frontend.ui.components.ConfirmationDialog
+import com.example.frontend.ui.components.InputDialog
 import com.example.frontend.ui.components.ReadListItem
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.SectionTitle
@@ -95,6 +98,10 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
         }
     )
 
+    // State cho InputDialog và ConfirmationDialog
+    var showUpdateDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var selectedReadList by remember { mutableStateOf<NameList?>(null) }
 
     ScreenFrame(
         topBar = {
@@ -107,7 +114,6 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
         }
     ) {
         Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
-            // Nội dung hiện tại của màn hình
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -295,7 +301,12 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                         verticalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         items(readLists) { list ->
-                                            ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
+                                            ReadListItem(
+                                                item = list,
+                                                onClick = { viewModel.onGoToNameListStoryScreen(list.id) },
+                                                onUpdateClick = { selectedReadList = it; showUpdateDialog = true },
+                                                onDeleteClick = { selectedReadList = it; showDeleteDialog = true }
+                                            )
                                         }
                                     }
                                 }
@@ -311,6 +322,40 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             )
         }
 
+        // InputDialog cho Update Read List
+        if (showUpdateDialog && selectedReadList != null) {
+            InputDialog(
+                showDialog = showUpdateDialog,
+                title = "Update Read List",
+                onConfirm = { name, description ->
+                    viewModel.updateReadList(selectedReadList!!.id, name, description)
+                    showUpdateDialog = false
+                    selectedReadList = null
+                },
+                onDismiss = {
+                    showUpdateDialog = false
+                    selectedReadList = null
+                }
+            )
+        }
+
+        // ConfirmationDialog cho Delete Read List
+        if (showDeleteDialog && selectedReadList != null) {
+            ConfirmationDialog(
+                showDialog = showDeleteDialog,
+                title = "Delete Read List",
+                text = "Are you sure you want to delete ${selectedReadList!!.name}?",
+                onConfirm = {
+                    viewModel.deleteReadList(selectedReadList!!.id)
+                    showDeleteDialog = false
+                    selectedReadList = null
+                },
+                onDismiss = {
+                    showDeleteDialog = false
+                    selectedReadList = null
+                }
+            )
+        }
     }
 }
 

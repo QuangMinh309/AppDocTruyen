@@ -55,22 +55,51 @@ class NameListStoryViewModel @Inject constructor(
                 val result = nameListRepository.getNameListById(nameListsId.value)
                 _stories.value = when (result) {
                     is Result.Success -> {
-                        val nameListName = result.data.nameList.name // Lấy tên từ nameList
+                        val nameListName = result.data.nameList.name
                         _nameListName.value = nameListName
                         Log.d("NameListStoryViewModel", "Stories loaded: ${result.data.stories.size}, NameList: $nameListName")
                         result.data.stories
                     }
                     is Result.Failure -> {
                         Log.e("NameListStoryViewModel", "Error loading stories", result.exception)
+                        showToast("Failed to load stories: ${result.exception.message}")
                         emptyList()
                     }
                 }
             } catch (e: Exception) {
                 _stories.value = emptyList()
                 Log.e("NameListStoryViewModel", "Exception during loadStories", e)
+                showToast("Error: ${e.message}")
             } finally {
                 _isLoading.value = false
             }
         }
     }
+
+    fun deleteStoryInNameList(storyId: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val result = nameListRepository.deleteStoryInNameList(nameListsId.value, storyId)
+                when (result) {
+                    is Result.Success -> {
+                        Log.d("NameListStoryViewModel", "Deleted story $storyId from nameList ${nameListsId.value}")
+                        showToast("Story removed successfully")
+                        _stories.value = _stories.value.filter { it.id != storyId }
+                    }
+                    is Result.Failure -> {
+                        Log.e("NameListStoryViewModel", "Failed to delete story $storyId: ${result.exception.message}", result.exception)
+                        showToast("Failed to remove story: ${result.exception.message}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("NameListStoryViewModel", "Exception during deleteStoryInNameList", e)
+                showToast("Error: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
 }

@@ -218,4 +218,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.UpdateStory.createRoute(storyId))
         }
     }
+    fun onGoToAddStoyToNameListScreen(storyId: Int){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.AddStoryToNameList.createRoute(storyId))
+        }
+    }
 }

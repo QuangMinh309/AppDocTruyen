@@ -37,6 +37,7 @@ import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewMod
 import com.example.frontend.services.navigation.NavigationCommand
 import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.components.BottomNavigationBar
+import com.example.frontend.ui.screen.AddStoryToNameListScreen
 import com.example.frontend.ui.screen.CustomSplashScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
@@ -276,6 +277,13 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                     navArgument("storyId") { type = NavType.IntType }
                 )
             ) {  UpdateStoryScreen() }
+
+            composable(
+                route = Screen.Story.AddStoryToNameList.route,
+                arguments = listOf(
+                    navArgument("storyId") { type = NavType.IntType }
+                )
+            ){ AddStoryToNameListScreen() }
 
             composable(
                 route = Screen.Community.Chat.route,
