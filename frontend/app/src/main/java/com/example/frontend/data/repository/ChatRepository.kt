@@ -179,6 +179,8 @@ class ChatRepository @Inject constructor(
     // Ngắt kết nối WebSocket
     fun disconnect() {
         webSocketManager.disconnect(room = roomName)
+        _isConnected.value = false
+        _chatList.value = emptyList()
         webSocketManager.removeListener(room = roomName, listener = listener)
 
     }

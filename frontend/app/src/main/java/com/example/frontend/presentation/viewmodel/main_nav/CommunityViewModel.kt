@@ -9,7 +9,6 @@ import com.example.frontend.data.repository.CommunityProvider
 import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
-import com.example.frontend.services.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

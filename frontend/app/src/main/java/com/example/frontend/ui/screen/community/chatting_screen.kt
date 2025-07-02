@@ -189,7 +189,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                     ) {
                         Icon(
 
-                            painter = if(yourChat == "") painterResource(id = R.drawable.icon_add_img) else painterResource(id = R.drawable.popular_icon),
+                            painter = if(yourChat == "" && (commentUri == null)) painterResource(id = R.drawable.icon_add_img) else painterResource(id = R.drawable.popular_icon),
                             contentDescription = "Add Image",
                             tint = Color.Black,
                             modifier = Modifier

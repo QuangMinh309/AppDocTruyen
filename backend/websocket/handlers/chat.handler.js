@@ -11,15 +11,14 @@ import {
 
 // Broadcast đến tất cả client trong community
 const broadcastToClients = (ws, action, data, clients) => {
-    clients.forEach((clientWs) => {
+    clients.forEach((client) => {
+        const clientWs = client?.get('/ws/chat');
         if (!clientWs || clientWs.readyState !== clientWs.OPEN) return; // Kiểm tra kết nối
-
         if (clientWs.communityId !== ws.communityId) return; // Chỉ gửi đến những client trong cùng community
-
 
         const dataToSend = { ...data };
         dataToSend.isUser = data.sender?.userId === clientWs.userId;
-
+        if( dataToSend.isUser==clientWs.userId) console,log("mee")
 
         clientWs.send(JSON.stringify({
             action: `BRC_${action}`,
@@ -36,6 +35,7 @@ async function init(ws, request, clients) {
 
         // Lấy communityId từ query
         const communityId = myURL.searchParams.get('community');
+
 
         if (!communityId) {
             throw new ApiError('communityId không được để trống!', 400);
@@ -96,6 +96,7 @@ async function onMessage(ws, message, clients) {
 
             case 'FETCH_CHAT_BY_COMMUNITY':
                 validateMessage(fetchChatByCommunitySchema, data); // Validate trước khi xử lý
+                        console.log(ws.communityId)
                 const allChats = await ChatService.getAllChatsOfCommunity(ws.communityId, ws.userId);
                 console.log(allChats)
                 ws.send(JSON.stringify({ success: true, action: action, payload: allChats }));
