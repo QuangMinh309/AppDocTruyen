@@ -29,11 +29,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
@@ -46,6 +48,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,6 +78,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material3.IconButton
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -477,48 +484,65 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
 
 @Composable
 fun StoryCard4(
-    modifier: Modifier = Modifier, story: Story, onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    story: Story,
+    onClick: () -> Unit = {},
+    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .padding(8.dp)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         AsyncImage(
-            model= story.coverImgUrl,
+            model = story.coverImgUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp, 160.dp),
-            contentScale = ContentScale.Crop
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.width(13.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            //name
+            // name
             Text(
-                story.name?:"",
+                story.name ?: "",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
             Spacer(modifier = Modifier.height(7.dp))
-            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
+            Text(
+                "@${story.author.name}",
+                color = Color.LightGray,
+                fontSize = 14.sp
+            )
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            //genre tags
-            SmallGenreTags(story.categories?: emptyList())
+            // genre tags
+            SmallGenreTags(story.categories ?: emptyList())
             Spacer(modifier = Modifier.height(27.dp))
 
-            //updated time
+            // updated time
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Last Updated: ", color = Color.White, fontSize = 11.sp)
+                Text(
+                    "Last Updated: ",
+                    color = Color.White,
+                    fontSize = 11.sp
+                )
                 Spacer(modifier = Modifier.width(2.dp))
-                Text(story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), color = OrangeRed, fontSize = 11.sp)
+                Text(
+                    story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    color = OrangeRed,
+                    fontSize = 11.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(11.dp))
@@ -532,7 +556,11 @@ fun StoryCard4(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("${story.viewNum}", color = Color.White, fontSize = 12.5.sp)
+                Text(
+                    "${story.viewNum}",
+                    color = Color.White,
+                    fontSize = 12.5.sp
+                )
 
                 Spacer(modifier = Modifier.width(25.dp))
 
@@ -543,10 +571,42 @@ fun StoryCard4(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
+                Text(
+                    "${story.chapterNum}",
+                    color = Color.White,
+                    fontSize = 12.5.sp
+                )
+            }
+        }
+
+        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
+        if (onDeleteClick != null) {
+            IconButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Story",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }
+
+    // Dialog xác nhận xóa
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = "Delete Story",
+        text = "Are you sure you want to delete '${story.name}'? This action cannot be undone.",
+        onConfirm = {
+            onDeleteClick?.invoke()
+            showDeleteDialog = false
+        },
+        onDismiss = { showDeleteDialog = false }
+    )
+
     Spacer(Modifier.height(11.dp))
 }
 

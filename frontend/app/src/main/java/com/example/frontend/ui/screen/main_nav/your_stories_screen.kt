@@ -44,11 +44,6 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
     val isLoading by viewModel.isLoading.collectAsState()
     val listState = rememberLazyListState()
 
-//    // Kiểm tra cuộn để tải thêm
-//    if (listState.isScrolledToEnd() && !isLoading) {
-//        viewModel.loadMoreStories()
-//    }
-
     ScreenFrame(
         topBar = {
             TopBar(
@@ -64,10 +59,10 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
             floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
-                       viewModel.onGoToCreateStoryScreen()
+                        viewModel.onGoToCreateStoryScreen()
                     },
                     containerColor = Color(0xFFFFAE95),
-                    shape = RoundedCornerShape(50.dp),
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(50.dp),
                     elevation = FloatingActionButtonDefaults.elevation(
                         defaultElevation = 8.dp,
                         pressedElevation = 12.dp
@@ -100,12 +95,11 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
                         contentPadding = PaddingValues(8.dp)
                     ) {
                         items(stories) { story ->
-                            StoryCard4(story = story){
-                                viewModel.onGoToUpdateStoryScreen(story.id)
-                            }
-
-
-
+                            StoryCard4(
+                                story = story,
+                                onClick = { viewModel.onGoToUpdateStoryScreen(story.id) },
+                                onDeleteClick = { viewModel.deleteStory(story.id) } // Truyền hàm xóa
+                            )
                         }
                         if (isLoading && stories.isNotEmpty()) {
                             item {
@@ -123,7 +117,6 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
         }
     }
 }
-
 //// Extension function để kiểm tra cuộn đến cuối
 //fun LazyListState.isScrolledToEnd(): Boolean {
 //    val layoutInfo = layoutInfo

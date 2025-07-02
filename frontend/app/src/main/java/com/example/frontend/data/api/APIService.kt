@@ -35,9 +35,14 @@ interface ApiService {
     suspend fun getImageUrl(
         @Path("id") id: String
     ): Response<ImageUrlResponse>
+    @Multipart
     @POST("api/stories")
     suspend fun createStory(
-        @Body request: CreateStoryRepository.CreateStoryRequest
+        @Part("storyName") storyName: RequestBody,
+        @Part("description") description: RequestBody?,
+        @Part("categories") categories: RequestBody?,
+        @Part("pricePerChapter") pricePerChapter: RequestBody?,
+        @Part coverImage: MultipartBody.Part?
     ): Response<StoryResponse>
 
     @GET("api/stories")

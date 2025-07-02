@@ -1,5 +1,6 @@
 package com.example.frontend.presentation.viewmodel.main_nav
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
@@ -47,7 +48,8 @@ class YourStoryViewModel @Inject constructor(
                         lastId = result.data.lastOrNull()?.id
                     }
                     is Result.Failure -> {
-                        // Xử lý lỗi nếu cần (ví dụ: log error)
+                        showToast("Failed to load stories: ${result.exception.message}")
+                        Log.e("YourStoryViewModel", "Failed to load stories: ${result.exception.message}", result.exception)
                     }
                 }
             }
@@ -55,6 +57,27 @@ class YourStoryViewModel @Inject constructor(
         }
     }
 
+
+
+    fun deleteStory(storyId: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            val result = yourStoryRepository.deleteStory(storyId)
+            when (result) {
+                is Result.Success -> {
+                    showToast("Story deleted successfully")
+                    Log.d("YourStoryViewModel", "Deleted story: $storyId")
+                    // Cập nhật danh sách truyện
+                    _stories.value = _stories.value.filter { it.id != storyId }
+                }
+                is Result.Failure -> {
+                    showToast("Failed to delete story: ${result.exception.message}")
+                    Log.e("YourStoryViewModel", "Failed to delete story: ${result.exception.message}", result.exception)
+                }
+            }
+            _isLoading.value = false
+        }
+    }
 
 
     fun loadMoreStories() {
