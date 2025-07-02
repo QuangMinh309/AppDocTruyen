@@ -126,7 +126,7 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel()) {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
-                unreadNotificationCount = unreadNotificationCount.value,
+             //   unreadNotificationCount = unreadNotificationCount.value,
                 onLeftClick = { viewModel.onGoToNotificationScreen() },
                 onRightClick = { viewModel.onGoToSetting() }
             )
