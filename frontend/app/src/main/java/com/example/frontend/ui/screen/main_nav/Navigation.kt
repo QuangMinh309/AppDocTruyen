@@ -64,6 +64,7 @@ import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.UpdateChapterScreen
+import com.example.frontend.ui.screen.story.UpdateStoryScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -269,6 +270,12 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.Story.TopRanking.route) { TopRankingStoryListScreen()  }
             composable(Screen.Story.CreateStory.route) { CreateStoryScreen()  }
+            composable(
+                route = Screen.Story.UpdateStory.route,
+                arguments = listOf(
+                    navArgument("storyId") { type = NavType.IntType }
+                )
+            ) {  UpdateStoryScreen() }
 
             composable(
                 route = Screen.Community.Chat.route,

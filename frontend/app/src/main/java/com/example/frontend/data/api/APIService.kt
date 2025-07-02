@@ -98,10 +98,31 @@ interface ApiService {
     ) : Response<CategoryStoriesResponse>
 
     @PUT("api/stories/{storyId}")
-    suspend fun updateStory(
+    suspend fun updateStatusStory(
         @Path("storyId") storyId: Int,
         @Body request: StoryUpdateRequest
     ): Response<UpdateStoryResponse>
+
+    @Multipart
+    @PUT("api/stories/{storyId}")
+    suspend fun updateStory(
+        @Path("storyId") storyId: Int,
+        @Part("storyName") storyName: RequestBody?,
+        @Part("description") description: RequestBody?,
+        @Part("categories") categories: RequestBody?,
+        @Part("pricePerChapter") pricePerChapter: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part coverImage: MultipartBody.Part?
+    ): Response<UpdateStoryResponse>
+
+
+    data class UpdateStoryRequest(
+        val storyName: String?,
+        val description: String?,
+        val categories: List<Int>,
+        val pricePerChapter: Float?
+    )
+
 
     data class StoryUpdateRequest(
         val status: String

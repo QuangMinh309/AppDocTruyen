@@ -100,9 +100,12 @@ fun YourStoryScreen(viewModel: YourStoryViewModel = hiltViewModel()) {
                         contentPadding = PaddingValues(8.dp)
                     ) {
                         items(stories) { story ->
-                            StoryCard4(story = story) {
-                            //    viewModel.onGoToYourStoryDetailScreen(story.id)
+                            StoryCard4(story = story){
+                                viewModel.onGoToUpdateStoryScreen(story.id)
                             }
+
+
+
                         }
                         if (isLoading && stories.isNotEmpty()) {
                             item {

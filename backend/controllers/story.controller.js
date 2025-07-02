@@ -80,12 +80,22 @@ const StoryController = {
               : [];
           }
         }
-
         if (!Array.isArray(storyData.categories)) {
           storyData.categories = [Number(storyData.categories)];
         }
       } else {
         storyData.categories = [];
+      }
+
+      // Xử lý status nếu được gửi
+      if (storyData.status) {
+        storyData.status = storyData.status.toLowerCase();
+        if (!['update', 'full'].includes(storyData.status)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid status. Must be "update" or "full"',
+          });
+        }
       }
 
       const story = await updateStory(storyId, storyData, userId, file);

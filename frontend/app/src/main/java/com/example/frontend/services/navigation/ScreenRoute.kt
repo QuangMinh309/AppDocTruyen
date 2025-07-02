@@ -67,6 +67,10 @@ sealed class Screen(var route: String) {
 
         data object CreateStory :Story("Story/CreateStory")
 
+        data object UpdateStory: Story("Story/UpdateStory/{storyId}"){
+            fun createRoute(storyId: Int)="Story/UpdateStory/$storyId"
+        }
+
     }
 // create story
     data object YourStoryDetail : Screen("YourStoryDetail/{id}") {

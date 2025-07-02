@@ -208,4 +208,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.navigate(Screen.Story.CreateStory.route)
         }
     }
+    fun onGoToUpdateStoryScreen(storyId: Int){
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Story.UpdateStory.createRoute(storyId))
+        }
+    }
 }
