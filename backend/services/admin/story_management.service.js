@@ -3,8 +3,9 @@ import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
+import { notifyUser } from '../../utils/notifyUser.util.js';
 
-const { Story, User, Notification } = sequelize.models;
+const { Story } = sequelize.models;
 
 const StoryManagerService = {
   async approveStory(storyId, approvalData) {
@@ -38,6 +39,7 @@ const StoryManagerService = {
         transaction
       );
 
+
       if (approvalData.status === 'approved') {
         const message = `Tác giả bạn theo dõi vừa đăng truyện mới: ${story.storyName}`;
         await NotificationService.notifyFollowers(
@@ -47,6 +49,7 @@ const StoryManagerService = {
           transaction
         );
       }
+       notifyUser(story.userId)
 
       const formattedStory = {
         ...story.toJSON(),

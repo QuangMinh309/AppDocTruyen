@@ -13,7 +13,7 @@ const getImageUrlFromCloudinary = async (imageId) => {
       quality: 'auto',
     });
   } catch (error) {
-    console.log(error)
+    console.log(error )
     console.log(`không thể lấy ảnh từ cloudinary!`, 500)
     return ""
   }

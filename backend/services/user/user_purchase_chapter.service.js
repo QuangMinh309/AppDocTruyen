@@ -33,15 +33,12 @@ const PurchaseChapterService = {
             }
 
             const purchase = await Purchase.findOne({
-                where: { chapterId },
+                where: { chapterId, userId },
                 order: [['purchasedAt', 'DESC']]
             });
-            
-            await user.update({ wallet: user.wallet - story.pricePerChapter });
+    
 
-            const author = User.findPk(story.userId)
-            author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
-
+           
             if (purchase) {
 
                 const expirateAt = new Date(
@@ -51,9 +48,16 @@ const PurchaseChapterService = {
                     throw new ApiError('Bạn đã mua chapter này rồi!', 400);
             }
 
+            await user.update({
+                wallet: user.wallet - story.pricePerChapter,
+            });
+            
+            const author = User.findPk(story.userId)
+            author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
+
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
-            await TransactionService.createTransaction({
+            const transaction = await TransactionService.createTransaction({
                 userId,
                 type: "purchase",
                 money: story.pricePerChapter,

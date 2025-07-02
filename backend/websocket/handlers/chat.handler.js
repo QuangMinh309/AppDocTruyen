@@ -96,7 +96,7 @@ async function onMessage(ws, message, clients) {
 
             case 'FETCH_CHAT_BY_COMMUNITY':
                 validateMessage(fetchChatByCommunitySchema, data); // Validate trước khi xử lý
-                        console.log(ws.communityId)
+            
                 const allChats = await ChatService.getAllChatsOfCommunity(ws.communityId, ws.userId);
                 console.log(allChats)
                 ws.send(JSON.stringify({ success: true, action: action, payload: allChats }));
