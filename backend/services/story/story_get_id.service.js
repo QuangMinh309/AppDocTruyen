@@ -41,8 +41,6 @@ const getStoryById = async (storyId, userId) => {
 
     if (!story) throw new ApiError('Truyện không tồn tại', 404);
 
-    console.log('Truyện tìm được:', story.toJSON());
-
     story.dataValues.createdAt = formatDate(story.createdAt);
     story.dataValues.updatedAt = formatDate(story.updatedAt);
 
