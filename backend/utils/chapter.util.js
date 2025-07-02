@@ -9,7 +9,7 @@ export const validateChapter = async (chapterId, includeStory = false) => {
           {
             model: models.Story,
             as: 'story',
-            attributes: ['storyId', 'storyName'],
+            attributes: ['storyId', 'storyName', 'userId'],
           },
         ]
       : [];

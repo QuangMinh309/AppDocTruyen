@@ -15,24 +15,27 @@ const ChapterReadingService = {
   async readChapter(chapterId, userId) {
     return await handleTransaction(async (transaction) => {
       const chapter = await validateChapter(chapterId, true);
+
       if (chapter.lockedStatus && userId !== chapter.story.userId) {
         const canAccess = await canUserAccessChapter(userId, chapter);
         if (!canAccess) {
           throw new ApiError('Bạn cần mua chương này để đọc', 403);
         }
       }
-
-      await Promise.all([
-        History.upsert(
-          { userId, storyId: chapter.storyId, lastReadAt: new Date() },
-          { transaction }
-        ),
-        chapter.increment('viewNum', { transaction }),
-        Story.increment('viewNum', {
-          where: { storyId: chapter.story.storyId },
-          transaction,
-        }),
-      ]);
+      
+      if (userId !== chapter.story.userId) {
+        await Promise.all([
+          History.upsert(
+            { userId, storyId: chapter.storyId, lastReadAt: new Date() },
+            { transaction }
+          ),
+          chapter.increment('viewNum', { transaction }),
+          Story.increment('viewNum', {
+            where: { storyId: chapter.story.storyId },
+            transaction,
+          }),
+        ]);
+      }
 
       const chapterResult = chapter.toJSON();
       chapterResult.updatedAt = formatDate(chapter.updatedAt);
@@ -61,7 +64,6 @@ const ChapterReadingService = {
       throw new ApiError('Chương tiếp theo không tồn tại', 404);
     }
 
-    // Kiểm tra quyền truy cập nếu chương tiếp theo bị khóa
     if (nextChapter.lockedStatus && userId !== nextChapter.story.userId) {
       const canAccess = await canUserAccessChapter(userId, nextChapter);
       if (!canAccess) {
@@ -69,10 +71,18 @@ const ChapterReadingService = {
       }
     }
 
-    await nextChapter.increment('viewNum');
-    await Story.increment('viewNum', {
-      where: { storyId: nextChapter.storyId },
-    });
+    if (userId !== nextChapter.story.userId) {
+      await Promise.all([
+        nextChapter.increment('viewNum'),
+        Story.increment('viewNum', {
+          where: { storyId: nextChapter.storyId },
+        }),
+        History.upsert(
+          { userId, storyId: nextChapter.storyId, lastReadAt: new Date() },
+          { transaction: null }
+        ),
+      ]);
+    }
 
     const chapterResult = nextChapter.toJSON();
     chapterResult.updatedAt = formatDate(nextChapter.updatedAt);
