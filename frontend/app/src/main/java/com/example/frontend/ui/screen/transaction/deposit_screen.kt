@@ -26,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +49,7 @@ import androidx.compose.foundation.layout.Box as Box1
 fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
     // State để lưu giá trị số tiền dưới dạng Long
     val amountState = viewModel.amountState.collectAsState()
+    val amountTextState = rememberSaveable() { mutableStateOf("") }
     val selectedTag by viewModel.selectedTag.collectAsState()
 
     val toast by viewModel.toast.collectAsState()
@@ -58,6 +61,10 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearToast()
         }
+    }
+
+    LaunchedEffect(amountState.value) {
+        amountTextState.value = viewModel.formatMoney(amountState.value)
     }
 
     ScreenFrame(
@@ -96,34 +103,29 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                 )
 
                 // Money enter text box
-                val formatter = DecimalFormat("#,###")
                 BasicTextField(
-                    value = formatter.format(amountState.value), // Hiển thị số tiền đã định dạng
+                    value = amountTextState.value,
                     onValueChange = { newValue ->
-                        // Chuyển đổi chuỗi nhập vào thành Long
-                        val cleanedValue = newValue.replace(",", "").replace("đ", "")
-                        val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                        // Làm sạch chuỗi nhập
+                        val cleaned = newValue.replace("[^\\d]".toRegex(), "")
+                        val newAmount = cleaned.toLongOrNull() ?: 0L
+
+                        // Cập nhật Long và hiển thị format
                         viewModel.changeAmount(newAmount)
+                        amountTextState.value = viewModel.formatMoney(newAmount)
                     },
                     textStyle = TextStyle(
                         color = Color.Gray,
-                        fontSize = 20.sp
+                        fontSize = 16.sp
                     ),
                     modifier = Modifier
-                        .padding(vertical = 5.dp, horizontal = 8.dp),
+                        .background(Color(0xA6747373), shape = RoundedCornerShape(5.dp))
+                        .padding(vertical = 15.dp, horizontal = 8.dp),
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = "đ",
-                                color = Color.Gray,
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .wrapContentWidth(Alignment.End)
-                            )
+                            innerTextField()
                         }
-                        innerTextField()
                     }
                 )
 

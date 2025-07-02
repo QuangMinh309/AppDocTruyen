@@ -48,7 +48,7 @@ class NameListStoryViewModel @Inject constructor(
         loadStories()
     }
 
-    private fun loadStories() {
+    fun loadStories() {
         viewModelScope.launch {
             _isLoading.value = true
             try {

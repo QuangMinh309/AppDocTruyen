@@ -63,7 +63,7 @@ fun Chip(
                 ),
                 shape = RoundedCornerShape(30.dp)
             )
-            .minimumInteractiveComponentSize() // Đảm bảo kích thước tối thiểu để nhận sự kiện
+            // Đảm bảo kích thước tối thiểu để nhận sự kiện
     ) {
         Text(
             text = text,

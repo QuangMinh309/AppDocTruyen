@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -44,8 +45,13 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.ReadViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-import com.example.frontend.ui.components.TopComments
 
+//@Preview
+//@Composable
+//fun PreviewReadScreen() {
+//    val fakeViewModel = ReadViewModel(NavigationManager())
+//    ReadScreen(fakeViewModel)
+//}
 
 @Composable
 fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
@@ -53,7 +59,6 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
     val currentChapter by viewModel.currentChapter.collectAsState()
     val isLoading by viewModel.isLoading
     val isAuthor by viewModel.isAuthor.collectAsState()
-    val comments = viewModel.comments.collectAsState()
 
     ScreenFrame(
         topBar = {
@@ -66,57 +71,82 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
             )
         }
     ) {
-        Box(modifier = Modifier.fillMaxSize()){
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Spacer(modifier = Modifier.height(30.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(30.dp))
 
-                if (isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Color.White)
-                    }
-                } else {
-                    currentChapter?.content?.let { content ->
-                        Text(
-                            text = content,
-                            color = Color.White,
-                            fontSize = 15.sp,
-                        )
-                    } ?: Text(
-                        text = "No content available",
+            if (isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else {
+                currentChapter?.content?.let { content ->
+                    Text(
+                        text = content,
                         color = Color.White,
                         fontSize = 15.sp,
                     )
+                } ?: Text(
+                    text = "No content available",
+                    color = Color.White,
+                    fontSize = 15.sp,
+                )
+            }
+
+            // Push the end to the bottom
+            Spacer(modifier = Modifier.weight(1f, fill = true))
+
+            // Nút Next Chapter và Update Chapter (nếu là tác giả)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterHorizontally),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = { viewModel.goToNextChapter() },
+                    shape = RoundedCornerShape(30.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                    contentPadding = PaddingValues(vertical = 7.dp),
+                    modifier = Modifier
+                        .weight(if (isAuthor) 0.45f else 0.7f)
+                        .padding(end=if(isAuthor) 10.dp else 0.dp),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
+                    } else {
+                        Text(
+                            text = "Next Chapter",
+                            color = Color.Black,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
+                        )
+                    }
                 }
 
-                // Push the end to the bottom
-                Spacer(modifier = Modifier.weight(1f, fill = true))
-
-                // Nút Next Chapter và Update Chapter (nếu là tác giả)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .padding(horizontal = 16.dp)
-                        .align(Alignment.CenterHorizontally),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
-                ) {
+                if (isAuthor) {
                     Button(
-                        onClick = { viewModel.goToNextChapter() },
+                        onClick = {
+                            viewModel.onGoToUpdateChapterScreen(viewModel.storyId.value,viewModel.chapterId.value)
+                        },
                         shape = RoundedCornerShape(30.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                         contentPadding = PaddingValues(vertical = 7.dp),
                         modifier = Modifier
-                            .weight(if (isAuthor) 0.45f else 0.7f),
+                            .weight(0.45f),
                         enabled = !isLoading
                     ) {
                         if (isLoading) {
                             CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
                         } else {
                             Text(
-                                text = "Next Chapter",
+                                text = "Update Chapter",
                                 color = Color.Black,
                                 fontSize = 19.sp,
                                 fontWeight = FontWeight.Bold,
@@ -124,38 +154,9 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                             )
                         }
                     }
-
-                    if (isAuthor) {
-                        Button(
-                            onClick = {
-                               viewModel.onGoToUpdateChapterScreen(viewModel.storyId.value,viewModel.chapterId.value)
-                                      },
-                            shape = RoundedCornerShape(30.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                            contentPadding = PaddingValues(vertical = 7.dp),
-                            modifier = Modifier
-                                .weight(0.45f),
-                            enabled = !isLoading
-                        ) {
-                            if (isLoading) {
-                                CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(20.dp))
-                            } else {
-                                Text(
-                                    text = "Update Chapter",
-                                    color = Color.Black,
-                                    fontSize = 19.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontFamily = FontFamily(Font(R.font.reemkufifun_wght)),
-                                )
-                            }
-                        }
-                    }
                 }
-
-                TopComments(comments= comments.value, onClick ={})
-
-
             }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             // Comment input field
@@ -163,8 +164,7 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFF4B4A4A), shape = RoundedCornerShape(50))
-                    .padding(horizontal = 20.dp, vertical = 4.dp)
-                    .align(Alignment.BottomCenter),
+                    .padding(horizontal = 20.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val scrollState = rememberScrollState()

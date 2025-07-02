@@ -61,6 +61,8 @@ const PurchaseChapterService = {
                 finishAt: new Date(),
             });
 
+            await ReportService.updateDailyRevenue(sequelize, transaction);
+
             return { message: 'Mua chapter thành công' };
         } catch (err) {
             console.log(err)

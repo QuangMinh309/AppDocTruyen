@@ -179,7 +179,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Splash.route,
+            startDestination = Screen.Intro.route,
             modifier = Modifier.padding(paddingValues)
         ) {
 
@@ -190,18 +190,6 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.MainNav.Profile.route) { ProfileScreen() }
 
             composable(Screen.Intro.route) { IntroScreen() }
-            composable(Screen.Splash.route) {
-                CustomSplashScreen {
-                    if (showIntro) {
-                        navController.navigate(Screen.Intro.route) {
-                            popUpTo("splash") { inclusive = true }
-                            launchSingleTop = true
-                        }
-                    } else {
-                        navController.navigate(Screen.Authentication.Login.route)
-                    }
-                }
-            }
 
             composable(Screen.Authentication.Login.route) { LoginScreen() }
             composable(Screen.Authentication.Register.route) { RegisterScreen() }
