@@ -1,6 +1,6 @@
 package com.example.frontend.data.repository
 import android.util.Log
-import com.example.frontend.data.model.Chat
+import com.example.frontend.data.model.Comment
 import com.example.frontend.services.websocket.WebSocketManager
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -16,28 +16,19 @@ import okhttp3.WebSocketListener
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// WebSocketMessage tổng quát
-data class WebSocketMessage(
-    val success: Boolean? = null,
-    val action: String? = null,
-    val payload: Any? = null,
-    val type: String? = null, // Cho lỗi từ middleware
-    val statusCode: Int? = null, // Cho lỗi từ middleware
-    val message: String? = null // Cho lỗi từ middleware
-)
 
 
 
 // Repository để quản lý kết nối WebSocket và dữ liệu chat
 @Singleton
-class ChatRepository @Inject constructor(
+class CommentRepository @Inject constructor(
     private val webSocketManager:WebSocketManager,
     private val gson: Gson,
 ) {
-    private val roomName = "chat"
+    private val roomName = "comment"
 
-    private val _chatList = MutableStateFlow<List<Chat>>(emptyList())
-    val chatList : StateFlow<List<Chat>> = _chatList
+    private val _commentList = MutableStateFlow<List<Comment>>(emptyList())
+    val commentList : StateFlow<List<Comment>> = _commentList
     private val _isConnected = MutableStateFlow(false)
     val isConnected  : StateFlow<Boolean> = _isConnected
 
@@ -45,10 +36,10 @@ class ChatRepository @Inject constructor(
 
     private val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
-            Log.i("ChatRepository", "WebSocket opened!")
+            Log.i("CommentRepository", "WebSocket opened!")
         }
         override fun onMessage(webSocket: WebSocket, text: String) {
-             handleWebSocketMessage(text)
+            handleWebSocketMessage(text)
         }
         override fun onFailure(webSocket: WebSocket, t: Throwable, response:Response?) {
             Log.e("WebSocket", "Error: ${t.message}")
@@ -71,7 +62,7 @@ class ChatRepository @Inject constructor(
     }
 
     private suspend fun reconnect(communityId: Int) {
-       // Logic reconnect (tùy thuộc vào WebSocketManager)
+        // Logic reconnect (tùy thuộc vào WebSocketManager)
         delay(2000) // Delay trước khi reconnect
         connect(communityId)
     }
@@ -82,91 +73,80 @@ class ChatRepository @Inject constructor(
             try {
                 val wsMessage = gson.fromJson(message, WebSocketMessage::class.java)
                 if (wsMessage.type == "ERROR") {
-                    Log.e("ChatRepository", "Server error: ${wsMessage.message}, code: ${wsMessage.statusCode}")
+                    Log.e("CommentRepository", "Server error: ${wsMessage.message}, code: ${wsMessage.statusCode}")
                     return@launch
                 }
                 if(wsMessage.type == "CONNECTION_SUCCESS" ){
                     scope.launch(Dispatchers.Main) {
                         _isConnected.emit(true)
                     }
-                    Log.i("ChatRepository", "Connection success: ${wsMessage.message}")
+                    Log.i("CommentRepository", "Connection success: ${wsMessage.message}")
                     return@launch
                 }
                 when (wsMessage.action) {
-                    "FETCH_CHAT_BY_COMMUNITY" -> {
+                    "FETCH_COMMENT_BY_CHAPTER" -> {
                         if (wsMessage.success == true) {
                             val chatMessages = gson.fromJson(
                                 gson.toJson(wsMessage.payload),
-                                Array<Chat>::class.java
+                                Array<Comment>::class.java
                             ).toList()
 
 
                             scope.launch(Dispatchers.Main) {
-                                _chatList .emit(chatMessages )
+                                _commentList.emit(chatMessages )
                             }
                         }
                     }
-                    "BRC_CREATE_CHAT"-> {
-                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
+                    "BRC_CREATE_COMMENT"-> {
+                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
                         scope.launch(Dispatchers.Main) {
 
-                            _chatList .emit(_chatList .value + chatMessage)
+                            _commentList .emit(_commentList .value + chatMessage)
                         }
                     }
-                    "BRC_UPDATE_CHAT" -> {
-                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
+                    "BRC_UPDATE_COMMENT" -> {
+                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
 
                         scope.launch(Dispatchers.Main) {
-                           _chatList .emit(_chatList.value.map {chat->
+                            _commentList .emit(_commentList.value.map {chat->
                                 if(chat.id == chatMessage.id) chatMessage else chat })
                         }
                     }
-                    "BRC_DELETE_CHAT" -> {
-                        val deletedChat = gson.fromJson(gson.toJson(wsMessage.payload), Chat::class.java)
+                    "BRC_DELETE_COMMENT" -> {
+                        val deletedChat = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
                         scope.launch(Dispatchers.Main) {
-                            _chatList.emit(_chatList .value.filter { it.id != deletedChat.id })
+                            _commentList.emit(_commentList .value.filter { it.id != deletedChat.id })
                         }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChatRepository", "Error parsing message: ${e.message}")
+                Log.e("CommentRepository", "Error parsing message: ${e.message}")
             }
         }
     }
 
     // Gửi tin nhắn tạo chat
-    fun createChat(content: String?, commentPicData: String?) {
+    fun createComment(content: String?, commentPicData: String?) {
         var newCommentPicData = commentPicData
         if(commentPicData?.isEmpty()==true) newCommentPicData = null
         val payload = mapOf(
             "content" to content,
             "commentPicData" to newCommentPicData
         )
-        sendMessage("CREATE_CHAT", payload)
+        sendMessage("CREATE_COMMENT", payload)
     }
 
-    // Gửi tin nhắn cập nhật chat
-    fun updateChat(chatId: String, content: String?, commentPicData: String?) {
-        var newCommentPicData = commentPicData
-        if(commentPicData?.isEmpty()==true) newCommentPicData = null
-        val payload = mapOf(
-            "chatId" to chatId,
-            "content" to content,
-            "commentPicId" to newCommentPicData
-        )
-        sendMessage("UPDATE_CHAT", payload)
-    }
 
-    // Gửi tin nhắn xóa chat
-    fun deleteChat(chatId: Int) {
+    // Gửi tin nhắn xóa comment
+    fun deleteComment(chatId: Int) {
         val payload = mapOf("chatId" to chatId)
-        sendMessage("DELETE_CHAT", payload)
+        sendMessage("DELETE_COMMENT", payload)
     }
 
-    // Gửi yêu cầu lấy danh sách chat
-    fun  fetchChats() {
+    // Gửi yêu cầu lấy danh sách comment
+    fun  fetchComments() {
         val payload = {}
-        sendMessage("FETCH_CHAT_BY_COMMUNITY", payload)
+        sendMessage("FETCH_COMMENT_BY_CHAPTER", payload)
     }
 
     // Gửi tin nhắn tới server
@@ -180,7 +160,7 @@ class ChatRepository @Inject constructor(
     fun disconnect() {
         webSocketManager.disconnect(room = roomName)
         _isConnected.value = false
-        _chatList.value = emptyList()
+        _commentList.value = emptyList()
         webSocketManager.removeListener(room = roomName, listener = listener)
 
     }

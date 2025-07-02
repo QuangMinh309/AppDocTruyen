@@ -1,6 +1,10 @@
 package com.example.frontend.ui.screen.main_nav
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +28,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationsNone
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -42,11 +49,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.data.model.Category
@@ -79,6 +88,7 @@ import java.time.LocalDateTime
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     // Lấy dữ liệu từ ViewModel
+    RequestNotificationPermission()
     val suggestedStories by viewModel.suggestedStories.collectAsState()
     val newStories by viewModel.newStories.collectAsState()
     val topRankingStories by viewModel.topRankingStories.collectAsState()
@@ -91,6 +101,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val isCategoriesLoading by viewModel.isCategoriesLoading.collectAsState()
     val isReadListsLoading by viewModel.isReadListsLoading.collectAsState()
     val isUserLoading by viewModel.isUserLoading.collectAsState()
+    val unreadNotificationCount = viewModel.unReadNotificationsCount.collectAsState()
 
     // State để kiểm soát làm mới
     var isRefreshing by remember { mutableStateOf(false) }
@@ -149,7 +160,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.notification_ic),
+                        painter = painterResource(if (unreadNotificationCount.value == 0) R.drawable.notification_ic else R.drawable.notification) ,
                         contentDescription = "Notification",
                         tint = Color.White,
                         modifier = Modifier
@@ -420,6 +431,32 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         }
     }
 }
+@Composable
+fun RequestNotificationPermission() {
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.d("Permission", "Thông báo đã được cấp quyền")
+        } else {
+            Log.d("Permission", "Người dùng từ chối quyền thông báo")
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+}
+
 val categories: List<Category> = listOf(
     Category(
         id = 1,
@@ -480,31 +517,8 @@ var  ReadListItem_= NameList(
     storyCount = 2
 )
 
-val readlistlist=listOf(
-    ReadListItem_,
-    ReadListItem_,
-    ReadListItem_,
-    ReadListItem_,
-    ReadListItem_
-
-)
 
 
-
-
-//fun getSampleStories(category: Category, status :String,premiumStatus: String ): List<Story> {
-//    return ExampleList.filter { story ->
-//        val matchCategory = story.categories.any { it == category }
-//        val matchStatus = if(status == "all") true else story.status == status
-//        val matchPrice = when(premiumStatus){
-//            "Premium" -> story.price.compareTo(BigDecimal.ZERO) != 0
-//            "Free" -> story.price.compareTo(BigDecimal.ZERO) == 0
-//            else -> true
-//        }
-//
-//        matchCategory && matchStatus && matchPrice
-//    }
-//}
 
 val demoUser = com.example.frontend.data.model.User(
     id = 1,
@@ -544,61 +558,3 @@ val demoAppUser = com.example.frontend.data.model.User(
     wallet = BigDecimal(0),
     dob = "2020-03-12",
 )
-
-val demoChatList  = listOf(
-    Chat(
-        id = 1,
-        communityId = 1,
-        sender = demoUser,
-        content = "sdagthoruaes99ig",
-        messagePicUrl = null,
-        time = LocalDateTime.parse("2020-10-22T12:22:10"),
-    ),
-    Chat(
-        id = 1,
-        communityId = 1,
-        sender = demoAppUser,
-        content = "Hello?",
-        messagePicUrl = null,
-        time = LocalDateTime.parse("2020-10-22T12:22:10"),
-    ),
-    Chat(
-        id = 1,
-        communityId = 1,
-        sender = demoUser,
-        content = null,
-        messagePicUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-        time = LocalDateTime.parse("2020-10-22T12:22:10"),
-    ),
-    Chat(
-        id = 1,
-        communityId = 1,
-        sender = demoAppUser,
-        content = "A",
-        messagePicUrl = null,
-        time = LocalDateTime.parse("2020-10-22T12:22:10"),
-    ),
-)
-var demoCommunity = Community(
-    id =1,
-    name = "Food in anime",
-    category = Category(1,"Fantasy"),
-    avatarUrl = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-    memberNum = 150000,
-    description = "A group for everyone to talk about food seen in Anime or manga."
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-            + "A group for everyone to talk about food seen in Anime or manga"
-)
-

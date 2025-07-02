@@ -77,12 +77,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewScreenContent2() {
-//    val fakeViewModel = ProfileViewModel(NavigationManager())
-//    ProfileScreen(viewModel = fakeViewModel)
-//}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -90,6 +84,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
     val readLists by viewModel.readLists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val unreadNotificationCount = viewModel.unReadNotificationsCount.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -124,6 +119,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
+                unreadNotificationCount = unreadNotificationCount.value,
                 onLeftClick = { viewModel.onGoToNotificationScreen() },
                 onRightClick = { viewModel.onGoToSetting() }
             )

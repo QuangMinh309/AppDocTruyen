@@ -40,6 +40,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
     val category = viewModel.category.collectAsState()
     val isLoadingHotCommunities= viewModel .isLoadingHotCommunities.collectAsState()
     val isLoadingCommunitiesFollowCategory= viewModel .isLoadingCommunitiesFollowCategory.collectAsState()
+    val unreadNotificationCount = viewModel.unReadNotificationsCount.collectAsState()
 
     ScreenFrame(
         topBar = {
@@ -48,6 +49,7 @@ fun CommunityScreen(viewModel: CommunityViewModel = hiltViewModel()){
                 showBackButton = false,
                 iconType = "Setting",
                 onLeftClick = {viewModel.onGoToNotificationScreen()},
+                unreadNotificationCount = unreadNotificationCount.value,
                 onRightClick = { viewModel.onGoToSetting() }
             )
         }

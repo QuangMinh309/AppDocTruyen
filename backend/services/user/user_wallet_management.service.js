@@ -30,7 +30,7 @@ const WalletManagementService = {
                     admins.map(async (admin) => {
                         await NotificationService.createNotification(
                             'TRANSACTION_PENDING_APPROVAL',
-                            (data.type === 'nạp') ?
+                            (data.type == 'deposit') ?
                                 `Giao dịch nạp tiền của người dùng ${userId} cần được xác thực, vui lòng kiểm tra tài khoản và thực hiện các thao tác cần thiết.`
                                 : `Người dùng ${user.userId} yêu cầu rút tiền về tài khoản: ${data.bankAccountData.accountNumber}-${data.bankAccountData.accountHolder}-${data.bankAccountData.bankName}`,
                             0,

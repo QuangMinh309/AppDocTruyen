@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Beenhere
 import androidx.compose.material3.Icon
@@ -26,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +50,7 @@ import com.example.frontend.ui.components.WithdrawRadioOption
 fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
 
     val amountState = viewmodel.amountState.collectAsState()
+    val amountTextState = rememberSaveable() { mutableStateOf("") }
     val selectedOption by viewmodel.selectedOption.collectAsState()
 
     val accountNumber by viewmodel.accountNumber.collectAsState()
@@ -62,6 +67,11 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
             viewmodel.clearToast()
         }
     }
+
+    LaunchedEffect(amountState.value) {
+        amountTextState.value = viewmodel.formatMoney(amountState.value)
+    }
+
     ScreenFrame(
         topBar = {
             TopBar(
@@ -77,6 +87,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
         Column (
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ){
             //main box
             Column (
@@ -112,19 +123,19 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                     )
                     AnimatedVisibility(
                         visible = selectedOption == "partial",
-                        enter = slideInVertically(
-                            // Slide from top to bottom
-                            initialOffsetY = { -it } // Bắt đầu từ phía trên
-                        ) + fadeIn(), // Thêm hiệu ứng mờ dần
-                        exit = slideOutVertically() + fadeOut() // Thu lại và mờ dần
+                        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                        exit = slideOutVertically() + fadeOut()
                     ) {
                         BasicTextField(
-                            value =  "Enter the amount",
+                            value = amountTextState.value,
                             onValueChange = { newValue ->
-                                // Chuyển đổi chuỗi nhập vào thành Long
-                                val cleanedValue = newValue.replace(",", "").replace("đ", "")
-                                val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                                // Làm sạch chuỗi nhập
+                                val cleaned = newValue.replace("[^\\d]".toRegex(), "")
+                                val newAmount = cleaned.toLongOrNull() ?: 0L
+
+                                // Cập nhật Long và hiển thị format
                                 viewmodel.changeAmount(newAmount)
+                                amountTextState.value = viewmodel.formatMoney(newAmount)
                             },
                             textStyle = TextStyle(
                                 color = Color.Gray,
@@ -136,17 +147,9 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                             singleLine = true,
                             decorationBox = { innerTextField ->
                                 Row(modifier = Modifier.fillMaxWidth()) {
-                                    if (amountState.value == 0L) {
-                                    Text(
-                                        text = viewmodel.formatMoney(amountState.value),
-                                        color = Color.Gray,
-                                        fontSize = 16.sp
-                                    )
-                                    }
+                                    innerTextField()
                                 }
-                                innerTextField()
                             }
-
                         )
                     }
                     WithdrawRadioOption(
@@ -176,12 +179,13 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                            fontWeight = FontWeight.Bold
                        )
                    )
+
                    //account number box
                    BasicTextField(
-                       value =  "Enter account number",
+                       value = accountNumber,
                        onValueChange =  {value -> viewmodel.changeAccountNumber(value)},
                        textStyle = TextStyle(
-                           color = Color.Gray,
+                           color = Color.White,
                            fontSize = 16.sp
                        ),
                        modifier = Modifier
@@ -190,12 +194,13 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                        singleLine = true,
                        decorationBox = { innerTextField ->
                            Row(modifier = Modifier.fillMaxWidth()) {
-                               /*if (value.isEmpty()) {*/
-                               Text(
-                                   text = accountNumber,
-                                   color = Color.Gray,
-                                   fontSize = 16.sp
-                               )
+                               if (accountNumber.isEmpty()) {
+                                   Text(
+                                       text = "Enter account number",
+                                       color = Color.Gray,
+                                       fontSize = 16.sp
+                                   )
+                               }
                            }
                            innerTextField()
                        }
@@ -203,7 +208,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                    )
                    //Account holder name box
                    BasicTextField(
-                       value =  "Account holder name",
+                       value = accountHolderName ,
                        onValueChange =  {viewmodel.changeAccountHolderName(it)},
                        textStyle = TextStyle(
                            color = Color.Gray,
@@ -215,12 +220,13 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                        singleLine = true,
                        decorationBox = { innerTextField ->
                            Row(modifier = Modifier.fillMaxWidth()) {
-                               /*if (value.isEmpty()) {*/
+                               if (accountHolderName.isEmpty()) {
                                Text(
-                                   text = accountHolderName,
+                                   text ="Account holder name" ,
                                    color = Color.Gray,
                                    fontSize = 16.sp
                                )
+                               }
                            }
                            innerTextField()
                        }
@@ -228,7 +234,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                    )
                    //Bank name box
                    BasicTextField(
-                       value =  "Bank name",
+                       value = bankName,
                        onValueChange =  {viewmodel.changeBankName(it)},
                        textStyle = TextStyle(
                            color = Color.Gray,
@@ -240,23 +246,25 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                        singleLine = true,
                        decorationBox = { innerTextField ->
                            Row(modifier = Modifier.fillMaxWidth()) {
-                               /*if (value.isEmpty()) {*/
-                               Text(
-                                   text = bankName,
-                                   color = Color.Gray,
-                                   fontSize = 16.sp
-                               )
+                               if (bankName.isEmpty()) {
+                                   Text(
+                                       text = "Bank name" ,
+                                       color = Color.Gray,
+                                       fontSize = 16.sp
+                                   )
+                               }
                            }
                            innerTextField()
                        }
 
                    )
                }
+
             }
             LinearButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(60.dp)
                     .padding(horizontal = 20.dp),
                 onClick = {
                     if(amountState.value < 20000L) {

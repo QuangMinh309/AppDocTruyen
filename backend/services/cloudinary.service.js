@@ -43,24 +43,30 @@ const uploadImageToCloudinary = async (fileBuffer, des = "") => {
 
 const uploadBase64ToCloudinary = async (base64Image, des = "") => {
   try {
-    // Bỏ phần "data:image/png;base64," nếu có
+    let base64Data = base64Image;
+
+    // Nếu có prefix "data:image/...;base64," → loại bỏ để lấy phần base64 thuần
     const matches = base64Image.match(/^data:(.+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
-      throw new ApiError('Invalid base64 image format', 400);
+    if (matches) {
+      base64Data = matches[2]; // lấy phần sau "base64,"
     }
 
-    const buffer = Buffer.from(matches[2], 'base64');
-    console.log(buffer)
-    const result = await uploadImageToCloudinary(buffer, des);
-    return result;
-  } catch (error) {
-    console.log(error)
-    if (error instanceof ApiError) {
-      throw error;
+    // Kiểm tra nếu vẫn không có dữ liệu
+    if (!base64Data || typeof base64Data !== 'string') {
+      throw new ApiError('Base64 không hợp lệ hoặc bị rút gọn', 400);
     }
+
+    // Tạo buffer từ base64
+    const buffer = Buffer.from(base64Data, 'base64');
+    return await uploadImageToCloudinary(buffer, des);
+
+  } catch (error) {
+    console.error('Lỗi upload base64:', error.message);
+    if (error instanceof ApiError) throw error;
     throw new ApiError('Lỗi upload base64 lên Cloudinary', 500);
   }
 };
+
 
 const deleteImageOnCloudinary = async (publicId) => {
   try {

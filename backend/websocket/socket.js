@@ -3,14 +3,16 @@ import errorHandler from '../middlewares/webSocketErrorHandler.js'
 import commentHandler from './handlers/comment.handler.js';
 import { authenticateWebSocket } from '../middlewares/auth.middleware.js'
 import ApiError from '../utils/api_error.util.js';
+import notificationHandler from './handlers/notification.handler.js';
 
 const routerHandlers = {
     '/ws/chat': chatHandler,
     '/ws/comment': commentHandler,
+    '/ws/notification':notificationHandler
 };
 
 // Map lưu trữ client: userId -> ws
-const clients = new Map();
+export const clients = new Map();
 
 
 const onConnection = async (ws, request) => {
@@ -32,13 +34,17 @@ const onConnection = async (ws, request) => {
         ws.userId = user.userId;
 
         // Kiểm tra xem userId đã có trong clients chưa
-        // Nếu có thì đóng kết nối cũ
-        if (clients.has(ws.userId)) {
-            const oldWs = clients.get(ws.userId);
-            oldWs.close(1000, 'Thiết lập kết nối mới');
+        if (!clients.has(ws.userId)) {
+            clients.set(ws.userId, new Map());
         }
 
-        clients.set(ws.userId, ws);
+        const userSockets = clients.get(ws.userId);
+        // Kiểm tra nếu `ws` đã tồn tại trong tập socket
+        if (userSockets && userSockets.has(pathname)) {
+            const oldWs = userSockets.get(pathname);
+            oldWs.close(1000, 'Thiết lập kết nối mới');
+        }
+        clients.get(ws.userId).set(pathname,ws);
 
         // Lấy handler theo path
 
@@ -61,8 +67,11 @@ const onConnection = async (ws, request) => {
 
         // Xử lý ngắt kết nối
         ws.on('close', () => {
-            clients.delete(ws.userId);
-            console.log(`User ${ws.userId} disconnected.`);
+            const oldWs = userSockets.get(pathname);
+            if (oldWs) {
+                oldWs.close(1000, 'Thiết lập kết nối mới');
+            }
+            console.log(`User ${ws.userId} disconnected with room ${pathname}.`);
         });
     } catch (error) {
         errorHandler(ws, error);

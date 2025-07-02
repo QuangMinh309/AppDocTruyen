@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.frontend.R
 import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.CommunityApiService
+import com.example.frontend.data.api.NotificationApiService
 import com.example.frontend.util.TokenManager
 import com.google.gson.Gson
 import dagger.Module
@@ -108,6 +109,12 @@ object NetworkModule {
     @Singleton
     fun provideCommunityApiService(retrofit: Retrofit): CommunityApiService {
         return retrofit.create(CommunityApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationApiService(retrofit: Retrofit): NotificationApiService {
+        return retrofit.create(NotificationApiService::class.java)
     }
 
     fun createWebSocket(okHttpClient: OkHttpClient, url: String, listener: WebSocketListener): WebSocket {

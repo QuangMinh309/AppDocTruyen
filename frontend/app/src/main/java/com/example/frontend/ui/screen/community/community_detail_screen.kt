@@ -158,9 +158,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
 
                     // Nội dung
                     Text(
-                        text = buildAnnotatedString {
-                            append((community.value?.description?:"No description.").substringBefore("\n"))
-                        },
+                        text =community.value?.description?:"No description.",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 14.sp,
                             lineHeight = 20.sp
@@ -190,7 +188,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                                     .height(120.dp)
                             ){
                                 Text(
-                                    text = "No community found.",
+                                    text = "No members found.",
                                     modifier = Modifier.align(Alignment.Center),
                                     style = TextStyle(
                                         fontSize = 16.sp,

@@ -26,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,12 +42,14 @@ import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.BrightAquamarine
+import java.text.DecimalFormat
 import androidx.compose.foundation.layout.Box as Box1
 
 @Composable
 fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
     // State để lưu giá trị số tiền dưới dạng Long
     val amountState = viewModel.amountState.collectAsState()
+    val amountTextState = rememberSaveable() { mutableStateOf("") }
     val selectedTag by viewModel.selectedTag.collectAsState()
 
     val toast by viewModel.toast.collectAsState()
@@ -59,10 +63,14 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
         }
     }
 
+    LaunchedEffect(amountState.value) {
+        amountTextState.value = viewModel.formatMoney(amountState.value)
+    }
+
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "Deposite money",
+                title = "Deposit money",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -74,13 +82,14 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+
         ) {
             // Deposit info
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(vertical = 66.dp)
             ) {
                 Text(
@@ -95,32 +104,28 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
 
                 // Money enter text box
                 BasicTextField(
-                    value = viewModel.formatMoney(amountState.value), // Hiển thị số tiền đã định dạng
+                    value = amountTextState.value,
                     onValueChange = { newValue ->
-                        // Chuyển đổi chuỗi nhập vào thành Long
-                        val cleanedValue = newValue.replace(",", "").replace("đ", "")
-                        val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                        // Làm sạch chuỗi nhập
+                        val cleaned = newValue.replace("[^\\d]".toRegex(), "")
+                        val newAmount = cleaned.toLongOrNull() ?: 0L
+
+                        // Cập nhật Long và hiển thị format
                         viewModel.changeAmount(newAmount)
+                        amountTextState.value = viewModel.formatMoney(newAmount)
                     },
                     textStyle = TextStyle(
                         color = Color.Gray,
-                        fontSize = 20.sp
+                        fontSize = 16.sp
                     ),
                     modifier = Modifier
-                        .padding(vertical = 5.dp, horizontal = 8.dp),
+                        .background(Color(0xA6747373), shape = RoundedCornerShape(5.dp))
+                        .padding(vertical = 15.dp, horizontal = 8.dp),
                     singleLine = true,
                     decorationBox = { innerTextField ->
                         Row(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = "đ",
-                                color = Color.Gray,
-                                fontSize = 20.sp,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .wrapContentWidth(Alignment.End)
-                            )
+                            innerTextField()
                         }
-                        innerTextField()
                     }
                 )
 
@@ -142,7 +147,7 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                                 .border(1.dp,if(selectedTag == index ) BrightAquamarine else Color.Gray, RoundedCornerShape(5.dp))
                                 .clickable {
                                     viewModel.changeAmount(amount)
-                                    viewModel.changeSeletectedTag(index)
+                                    viewModel.changeSelectedTag(index)
 
                                 }
                         ) {

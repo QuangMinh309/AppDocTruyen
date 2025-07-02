@@ -14,14 +14,19 @@ class DepositViewModel @Inject constructor(
     private val _amountState = MutableStateFlow(0L)
     val amountState : StateFlow<Long> = _amountState
 
-    private val _seletefTag = MutableStateFlow(-1)
-    val selectedTag: StateFlow<Int> = _seletefTag
+    private val _seletedTag = MutableStateFlow(-1)
+    val selectedTag: StateFlow<Int> = _seletedTag
 
     fun changeAmount(amount: Long) {
-        _amountState.value = amount
-        _seletefTag.value=-1
+        if (amount in Int.MIN_VALUE..Int.MAX_VALUE) {
+            _amountState.value = amount
+            _seletedTag.value=-1
+        } else {
+            _toast.value = "The amount is too big.Please enter another number."
+        }
+
     }
-    fun changeSeletectedTag(index:Int) {_seletefTag.value = index}
+    fun changeSelectedTag(index:Int) {_seletedTag.value = index}
 
 
 }

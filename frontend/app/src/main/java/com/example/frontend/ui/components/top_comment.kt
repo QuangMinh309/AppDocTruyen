@@ -16,11 +16,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,12 +39,14 @@ import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.data.model.Comment
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.ui.theme.OrangeRed
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
+fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        items(comments) { comment ->
+        itemsIndexed(comments) { index, comment ->
 
             Card(
                 modifier = Modifier
@@ -83,7 +87,7 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                             )
                         }
 
-                        if (!comment.content.isNullOrEmpty() || comment.commentPicId != null) {
+                        if (!comment.content.isNullOrEmpty() || comment.commentPicUrl != null) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.End
@@ -97,10 +101,10 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                                         overflow = TextOverflow.Ellipsis
                                     )
                                 }
-                                comment.commentPicId?.let {
+                                comment.commentPicUrl?.let {
                                     Spacer(modifier = Modifier.width(12.dp))
                                     AsyncImage(
-                                        model =  comment.commentPicId, // URL của hình ảnh bình luận
+                                        model =  comment.commentPicUrl, // URL của hình ảnh bình luận
                                         contentDescription = "comment image",
                                         modifier = Modifier
                                             .height(110.dp)
@@ -118,7 +122,7 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(text = "chapter ${comment.chapter.ordinalNumber}", color = Color.White, fontSize = 14.5.sp)
+                            Text(text = "chapter ${comment.chapterName}", color = Color.White, fontSize = 14.5.sp)
                             Spacer(modifier = Modifier.height(7.dp))
                             Row {
                                 Text(text = comment.createAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = Color(0xFFFF5722), fontSize = 14.5.sp)
@@ -133,27 +137,25 @@ fun TopComments(comments: List<Comment>, viewModel: BaseViewModel) {
 
                         Spacer(modifier = Modifier.weight(1f))
 
-                        // Icon like and unlike
+                        // Icon like
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.like_icon),
-                                contentDescription = "Likes Icon",
-                                tint = Color.White,
+                            IconButton(
+                                onClick = {
+                                    onClick(index)
+                                },
                                 modifier = Modifier.size(25.dp)
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(id = R.drawable.like_icon),
+                                    contentDescription = "Likes Icon",
+                                    tint = if (comment.isUserLike) OrangeRed else Color.White
+                                )
+                            }
                             Text(text = comment.likeNumber.toString(), color = Color.White, fontSize = 15.sp)
 
-                            Spacer(modifier = Modifier.width(9.dp))
-
-                            Icon(
-                                imageVector = ImageVector.vectorResource(id = R.drawable.unlike_icon),
-                                contentDescription = "Unlikes Icon",
-                                tint = Color.White,
-                                modifier = Modifier.size(25.dp)
-                            )
                         }
                     }
                 }

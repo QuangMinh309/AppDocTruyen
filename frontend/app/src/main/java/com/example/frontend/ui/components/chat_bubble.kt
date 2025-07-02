@@ -44,7 +44,7 @@ fun ChatBubble(message: Chat) {
         androidx.compose.material3.Text(
             text =  if (daysDifference>1)
                         "$dayOfWeek ${message.time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}"
-                     else message.time.format(DateTimeFormatter.ofPattern("hh:MM:ss")),
+                     else message.time.format(DateTimeFormatter.ofPattern("hh:MM a")),
 
             style = TextStyle(
                 fontSize = 12.sp,

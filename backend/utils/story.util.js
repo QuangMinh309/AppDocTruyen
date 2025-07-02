@@ -10,7 +10,11 @@ const validateStory = async (
 ) => {
   const story = await models.Story.findByPk(storyId);
   if (!story) throw new ApiError(errorMessage, 404);
-  if (userId && story.userId !== userId) {
+  if (
+    userId &&
+    story.userId !== userId &&
+    story.user.role.roleName !== 'admin'
+  ) {
     throw new ApiError('Bạn không có quyền thực hiện hành động này', 403);
   }
   return story;
@@ -52,9 +56,4 @@ const publicStory = (roleName) => {
   };
 };
 
-export {
-  validateStory,
-  updateStoryViewNum,
-  validateSortParams,
-  publicStory,
-};
+export { validateStory, updateStoryViewNum, validateSortParams, publicStory };

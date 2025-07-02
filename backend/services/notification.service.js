@@ -1,5 +1,6 @@
 import { sequelize } from '../models/index.js';
 import ApiError from '../utils/api_error.util.js';
+import { notifyUser } from '../utils/notifyUser.util.js';
 
 const Notification = sequelize.models.Notification;
 const User = sequelize.models.User;
@@ -48,7 +49,13 @@ const NotificationService = {
         where: { userId },
         order: [['createAt', 'DESC']],
       });
-      return notifications.map((notification) => notification.toJSON());
+      
+      return  Promise.all(notifications.map(async (notification) =>{
+        await notification.update({status:"READ"})
+        notification.status = "READ"
+        return notification.toJSON();
+      }));
+      
     } catch (error) {
       throw new ApiError('Lỗi khi lấy thông báo của user', 500);
     }
@@ -128,6 +135,8 @@ const NotificationService = {
         }));
 
         await Notification.bulkCreate(notifications, { transaction });
+        const followersId = user.followers.map((user)=> user.userId)
+        notifyUser(followersId)
       }
     } catch (err) {
       throw new ApiError('Lỗi khi gửi thông báo', 500);

@@ -66,15 +66,15 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
         }
     ){
 
-        Column (
-            verticalArrangement = Arrangement.SpaceBetween,
+        Box (
             modifier = Modifier.fillMaxSize()
         ){
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 56.dp),
+                    .padding(top = 56.dp)
+                    .align(Alignment.TopCenter),
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.background_transaction_accept),
@@ -229,7 +229,9 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
             LinearButton(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
+                    .height(100.dp)
+                    .padding(bottom = 30.dp)
+                    .align(Alignment.BottomEnd),
                 onClick = { viewModel.deposit() }
 
             ){
