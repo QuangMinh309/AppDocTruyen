@@ -69,7 +69,7 @@ fun IntroScreen(viewModel: IntroViewModel = hiltViewModel()) {
         { Page1() },
         { Page2() },
         { Page3() },
-        { Page4(onLoginClick = {viewModel.onGoToRegisterScreen()}) }
+        { Page4(onLoginClick = {viewModel.onGoToLoginScreen()}) }
     )
 
     val pagerState = rememberPagerState(pageCount = { pages.size })
@@ -327,7 +327,7 @@ fun Page4(onLoginClick: () -> Unit = {})
                 .fillMaxWidth()
         ) {
             Text(
-                text = "REGISTER to join us!",
+                text = "LOGIN to join us!",
                 style = TextStyle(
                     fontFamily = ReemKufifunFontFamily,
                     fontSize = 32.sp,
@@ -379,7 +379,7 @@ fun Page4(onLoginClick: () -> Unit = {})
                 )
             ) {
                 Text(
-                    text = "REGISTER",
+                    text = "LOGIN",
                     style = TextStyle(
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.reemkufifun_semibold)),

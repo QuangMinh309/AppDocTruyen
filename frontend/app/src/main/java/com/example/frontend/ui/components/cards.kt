@@ -43,6 +43,8 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bookmarks
 
 
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Delete
 
 import androidx.compose.material.icons.filled.Diamond
@@ -1082,35 +1084,42 @@ fun ReadListItem(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
 
-                // Icon 3 chấm dọc
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
-                        tint = Color.White
-                    )
+                Box(
+                    modifier = Modifier.size(20.dp)
+                )
+                {
+                    // Icon 3 chấm dọc
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            tint = Color.White
+                        )
+                    }
+
+                    // Dropdown Menu
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Update Read List") },
+                            onClick = {
+                                onUpdateClick(item)
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete Read List") },
+                            onClick = {
+                                onDeleteClick(item)
+                                showMenu = false
+                            }
+                        )
+                    }
                 }
 
-                // Dropdown Menu
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Update Read List") },
-                        onClick = {
-                            onUpdateClick(item)
-                            showMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete Read List") },
-                        onClick = {
-                            onDeleteClick(item)
-                            showMenu = false
-                        }
-                    )
-                }
+
             }
 
             Text(
