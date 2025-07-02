@@ -195,7 +195,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                            Row(modifier = Modifier.fillMaxWidth()) {
                                if (accountNumber.isEmpty()) {
                                    Text(
-                                       text = "Enter account number",
+                                       text = "",
                                        color = Color.Gray,
                                        fontSize = 16.sp
                                    )

@@ -56,15 +56,7 @@ class ChattingViewModel @Inject constructor(
                     try {
                         _isLoading.value = true
                         connect(id.toInt())
-                        launch {
-                            chatRepository.isConnected.collect { isConnected ->
-                                if (isConnected && _isLoading.value) {
-                                    chatRepository.fetchChats()
-                                    Log.d("ChattingViewModel", "Fetched chats for communityId: $id")
-                                    _isLoading.value = false // Tắt loading sau khi fetch
-                                }
-                            }
-                        }
+                        fetchChats()
                     } catch (err: Exception) {
                         Log.e("ChattingViewModel", "Connection error: ${err.message}")
                         _isLoading.value = false
@@ -72,6 +64,15 @@ class ChattingViewModel @Inject constructor(
                 } else {
                     Log.w("ChattingViewModel", "Invalid communityId: $id")
                 }
+            }
+        }
+    }
+    private suspend fun fetchChats() {
+        chatRepository.isConnected.collect { isConnected ->
+            if (isConnected && _isLoading.value) {
+                chatRepository.fetchChats()
+                Log.d("ChattingViewModel", "Fetched chats for communityId: $id")
+                _isLoading.value = false // Tắt loading sau khi fetch
             }
         }
     }
@@ -85,11 +86,10 @@ class ChattingViewModel @Inject constructor(
         }
     }
 
-    private fun connect(communityId: Int) {
-        viewModelScope.launch {
-            chatRepository.connect(communityId)
-            Log.d("ChattingViewModel", "Connected to communityId: $communityId")
-        }
+    private suspend fun connect(communityId: Int) {
+        chatRepository.connect(communityId)
+        Log.d("ChattingViewModel", "Connected to communityId: $communityId")
+
     }
 
     fun createChat(context: Context) {
@@ -114,7 +114,9 @@ class ChattingViewModel @Inject constructor(
     fun disconnect() {
         viewModelScope.launch {
             chatRepository.disconnect()
+
             Log.d("ChattingViewModel", "Disconnected")
+            onGoBack()
         }
     }
 }

@@ -60,12 +60,8 @@ class ChatRepository @Inject constructor(
         }
     }
 
-    init {
-        // Gán listener cho WebSocketManager
-        webSocketManager. addListener(room = roomName,listener=listener)
-    }
-
     suspend fun connect(communityId: Int) {
+        webSocketManager.addListener(roomName,listener)
         webSocketManager.connect(  room = roomName, bonusQueryString = "community=$communityId" )
         Log.d("ChattingViewModel", "Connecting to communityId: $communityId")
     }
@@ -178,10 +174,12 @@ class ChatRepository @Inject constructor(
 
     // Ngắt kết nối WebSocket
     fun disconnect() {
-        webSocketManager.disconnect(room = roomName)
-        _isConnected.value = false
+
+        scope.launch(Dispatchers.Main) {
+            webSocketManager.disconnect(room = roomName)
+            _isConnected.emit(false)
+        }
         _chatList.value = emptyList()
-        webSocketManager.removeListener(room = roomName, listener = listener)
 
     }
 }
