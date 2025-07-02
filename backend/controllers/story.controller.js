@@ -56,7 +56,8 @@ const StoryController = {
   async getStoryById(req, res, next) {
     try {
       const { storyId } = req.params;
-      const story = await getStoryById(storyId);
+      const userId = req.user ? req.user.userId : null;
+      const story = await getStoryById(storyId, userId);
       return res.status(200).json({ success: true, data: story });
     } catch (error) {
       return next(error);

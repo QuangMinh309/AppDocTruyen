@@ -13,7 +13,7 @@ import {
   validatePurchaseChapter,
 } from '../validators/story.validation.js';
 import validate from '../middlewares/validate.middleware.js';
-import { uploadSingleImage } from '../middlewares/uploadImage.middleware.js'; // Import middleware mới
+import { uploadSingleImage } from '../middlewares/uploadImage.middleware.js';
 
 const router = express.Router();
 

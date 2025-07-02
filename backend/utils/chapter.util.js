@@ -54,10 +54,25 @@ export const checkChapterAccessCore = async (
       return returnDetails ? { purchased: true, isEntireStory: true } : true;
     }
 
+    const parameters = await models.Parameter.findOne();
+    if (!parameters) {
+      throw new ApiError('Không tìm thấy tham số hệ thống', 500);
+    }
+
     const chapterPurchase = await models.Purchase.findOne({
       where: { userId, chapterId },
     });
-    return returnDetails ? { purchased: !!chapterPurchase } : !!chapterPurchase;
+
+    let isStillValid = false;
+    if (chapterPurchase) {
+      const expiryDate = new Date(
+        chapterPurchase.purchasedAt.getTime() +
+          parameters.Chapter_Access_Duration * 24 * 60 * 60 * 1000
+      );
+      isStillValid = expiryDate >= new Date();
+    }
+
+    return returnDetails ? { purchased: isStillValid } : isStillValid;
   } catch (error) {
     throw error instanceof ApiError
       ? error
@@ -72,114 +87,6 @@ export const canUserAccessChapter = async (userId, chapter) => {
     chapter.chapterId,
     false
   );
-};
-
-export const handlePurchaseTransaction = async (
-  userId,
-  chapter,
-  storyId,
-  transaction
-) => {
-  try {
-    const user = await models.User.findByPk(userId, { transaction });
-    if (!user) throw new ApiError('Người dùng không tồn tại', 404);
-
-    if (chapter.storyId !== parseInt(storyId)) {
-      throw new ApiError('Chương không thuộc truyện này', 400);
-    }
-
-    if (chapter.story.userId === userId) {
-      throw new ApiError('Bạn là tác giả, không cần mua chương', 400);
-    }
-
-    if (!chapter.lockedStatus) {
-      throw new ApiError('Chương này không bị khóa', 400);
-    }
-
-    const existingPurchase = await models.Purchase.findOne({
-      where: { userId, chapterId: chapter.chapterId },
-      transaction,
-    });
-    if (existingPurchase) {
-      throw new ApiError('Bạn đã mua chương này rồi', 400);
-    }
-
-    const story = chapter.story;
-    if (!story.pricePerChapter || story.pricePerChapter <= 0) {
-      throw new ApiError('Chương này không có giá bán', 400);
-    }
-
-    if (user.wallet < story.pricePerChapter) {
-      throw new ApiError('Số dư không đủ', 400);
-    }
-
-    await models.Purchase.create(
-      {
-        userId,
-        storyId,
-        chapterId: chapter.chapterId,
-        purchasedAt: new Date(),
-      },
-      { transaction }
-    );
-
-    await user.update(
-      { wallet: sequelize.literal(`wallet - ${story.pricePerChapter}`) },
-      { transaction }
-    );
-
-    await models.Transaction.create(
-      {
-        userId,
-        money: story.pricePerChapter,
-        type: 'CHAPTER_PURCHASE',
-        time: new Date(),
-        status: 'COMPLETED',
-        finishAt: new Date(),
-      },
-      { transaction }
-    );
-
-    const author = await models.User.findByPk(story.userId, { transaction });
-    const authorPayment = story.pricePerChapter * 0.8;
-
-    await author.update(
-      { wallet: sequelize.literal(`wallet + ${authorPayment}`) },
-      { transaction }
-    );
-
-    await models.Transaction.create(
-      {
-        userId: author.userId,
-        money: authorPayment,
-        type: 'CHAPTER_SALE',
-        time: new Date(),
-        status: 'COMPLETED',
-        finishAt: new Date(),
-      },
-      { transaction }
-    );
-
-    await NotificationService.createNotification({
-      type: 'SALE',
-      content: `Chương "${chapter.chapterName}" của truyện "${
-        story.storyName
-      }" đã được bán với giá ${authorPayment.toFixed(2)}`,
-      refId: chapter.chapterId,
-      userId: story.userId,
-      transaction,
-    });
-
-    return {
-      success: true,
-      message: 'Mua chương thành công',
-      purchasedChapterId: chapter.chapterId,
-    };
-  } catch (error) {
-    throw error instanceof ApiError
-      ? error
-      : new ApiError('Lỗi khi mua chương', 500);
-  }
 };
 
 // Hàm phụ trợ để chuẩn hóa tham số sắp xếp

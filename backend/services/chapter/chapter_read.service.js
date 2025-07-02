@@ -3,9 +3,7 @@ import ApiError from '../../utils/api_error.util.js';
 import {
   validateChapter,
   canUserAccessChapter,
-  handlePurchaseTransaction,
 } from '../../utils/chapter.util.js';
-import { validateStory } from '../../utils/story.util.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { formatDate } from '../../utils/date.util.js';
 
