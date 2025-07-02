@@ -3,6 +3,7 @@ import com.example.frontend.data.api.ApiService
 import com.example.frontend.data.api.StoryApproveRequest
 import com.example.frontend.data.api.TransactionApproveRequest
 import com.example.frontend.data.api.TransactionApproveResponse
+import com.example.frontend.data.model.DayRevenue
 import com.example.frontend.data.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -106,6 +107,25 @@ class AdminRepository @Inject constructor(
                 Result.failure(Exception("Failed to approve story: ${response.message()}"))
             }
         } catch (e:Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getReport(year: Int, month: Int) : Result<List<DayRevenue>> {
+        return try {
+            val response = apiService.getReport(year, month)
+            if (response.isSuccessful) {
+                val result = response.body()
+                if (result?.success == true) {
+                    Result.success(result.data)
+                } else {
+                    Result.failure(Exception("API returned success: false"))
+                }
+            } else {
+                Result.failure(Exception("Failed to fetch report: ${response.message()}"))
+            }
+        }
+        catch (e:Exception) {
             Result.failure(e)
         }
     }

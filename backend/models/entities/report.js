@@ -1,8 +1,8 @@
 import { Sequelize, DataTypes } from 'sequelize';
 
 export default (sequelize) => {
-  class DailyRevenue extends Sequelize.Model {}
-  DailyRevenue.init(
+  class Report extends Sequelize.Model {}
+  Report.init(
     {
       reportId: {
         allowNull: false,
@@ -19,16 +19,6 @@ export default (sequelize) => {
         allowNull: false,
         defaultValue: 0,
       },
-      totalExpense: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
-      netRevenue: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-      },
     },
     {
       sequelize,
@@ -38,5 +28,5 @@ export default (sequelize) => {
     }
   );
 
-  return DailyRevenue;
+  return Report;
 };

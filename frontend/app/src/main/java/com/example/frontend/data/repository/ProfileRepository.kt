@@ -7,7 +7,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class   ProfileRepository @Inject constructor(
+class ProfileRepository @Inject constructor(
     private val apiService: ApiService
 ) {
     suspend fun getReadLists(): Result<List<NameList>> {
@@ -22,6 +22,34 @@ class   ProfileRepository @Inject constructor(
                 }
             } else {
                 Result.Failure(Exception("Failed to fetch read lists: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun updateNameList(nameListId: Int, name: String, description: String): Result<Unit> {
+        return try {
+            val request =
+                ApiService.UpdateNameListRequest(nameList = name, description = description)
+            val response = apiService.updateNameList(nameListId, request)
+            if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Failure(Exception("Failed to update read list: ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun deleteNameList(nameListId: Int): Result<Unit> {
+        return try {
+            val response = apiService.deleteNameList(nameListId)
+            if (response.isSuccessful) {
+                Result.Success(Unit)
+            } else {
+                Result.Failure(Exception("Failed to delete read list: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)

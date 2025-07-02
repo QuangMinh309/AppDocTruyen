@@ -16,11 +16,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -43,10 +41,9 @@ import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.TransactionCard
 import com.example.frontend.ui.components.SelectList
 import com.example.frontend.ui.theme.DeepBlue
@@ -63,9 +60,8 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
     val listTypes by viewModel.listTypes.collectAsState()
     val statusTypes by viewModel.statusTypes.collectAsState()
     val transactions by viewModel.displayedTransactions.collectAsState()
-    val showUpdateDialog = remember { mutableStateOf(false) }
-    val showDenyDialog = remember { mutableStateOf(false) }
-    val showDeleteDialog = remember { mutableStateOf(false) }
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
+    val dialogContent by viewModel.dialogContent.collectAsState()
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
         toast?.let {
@@ -73,6 +69,28 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             viewModel.clearToast()
         }
     }
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title=if (viewModel.showDeleteDialog.value) "Confirm Deletion" else if(viewModel.showDenyDialog.value)"Confirm Denial" else "Confirm Approval",
+        text = dialogContent,
+        onConfirm = {
+            if (viewModel.showDeleteDialog.value){
+                viewModel.deleteSelectedTransaction()
+                viewModel.hideDeleteConfirmation()
+            }
+            else if (viewModel.showDenyDialog.value){
+                viewModel.denySelectedTransaction()
+                viewModel.hideDenyConfirmation()
+            }
+            else { viewModel.approveSelectedTransaction() }
+            viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+            if (viewModel.showDeleteDialog.value) viewModel.hideDeleteConfirmation()
+            if (viewModel.showDenyDialog.value) viewModel.hideDenyConfirmation()
+        }
+    )
     ScreenFrame(
         topBar = {
             Row(
@@ -245,7 +263,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
         )
         {//buttons
             Button(
-                onClick = { showUpdateDialog.value = true },
+                onClick = { viewModel.setShowDialogState(true, "Are you sure to approve the transaction?") },
                 enabled = selectedTransaction != null && selectedTransaction!!.status == "pending",
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) Color.Green else Color.LightGray
@@ -261,7 +279,10 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             }
             Spacer(modifier = Modifier.width(10.dp))
             Button(
-                onClick = { showDenyDialog.value = true },
+                onClick = {
+                    viewModel.setShowDialogState(true, "Are you sure to deny the transaction?")
+                    viewModel.showDenyConfirmation()
+                },
                 enabled = selectedTransaction != null && selectedTransaction!!.status == "pending",
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) Color.LightGray else Color(0xAFAF2238)
@@ -277,7 +298,10 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             }
             Spacer(modifier = Modifier.width(10.dp))
             Button(
-                onClick = { showDeleteDialog.value = true },
+                onClick = {
+                    viewModel.setShowDialogState(true, "Are you sure to delete the transaction?")
+                    viewModel.showDeleteConfirmation()
+                },
                 enabled = selectedTransaction != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedTransaction != null) BurntCoral else Color(0xAFAF2238)
@@ -291,93 +315,6 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                     fontFamily = FontFamily(Font(R.font.poppins_bold)),
                 )
             }
-        }
-
-        if(showUpdateDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showUpdateDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showUpdateDialog.value = false
-                            viewModel.approveSelectedTransaction()
-                        }
-                    ) {
-                        Text("Confirm", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showUpdateDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure to approve the transaction?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
-            )
-        }
-
-        if(showDenyDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showDenyDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDenyDialog.value = false
-                            viewModel.denySelectedTransaction()
-                        }
-                    ) {
-                        Text("Confirm", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDenyDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure to deny the transaction?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
-            )
-        }
-
-        if(showDeleteDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDeleteDialog.value = false
-                            viewModel.deleteSelectedTransaction()
-                        }
-                    ) {
-                        Text("Yes", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure you want to delete this transaction?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
-            )
         }
 
         FlowColumn (

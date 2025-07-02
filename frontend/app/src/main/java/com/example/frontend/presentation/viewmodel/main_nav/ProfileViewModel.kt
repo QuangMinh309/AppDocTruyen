@@ -71,7 +71,6 @@ class ProfileViewModel @Inject constructor(
                     _user.value = when (result) {
                         is Result.Success -> result.data
                         is Result.Failure -> {
-                            // Log lỗi nhưng không làm gián đoạn UI
                             println("Error loading user: ${result.exception.message}")
                             null
                         }
@@ -104,4 +103,44 @@ class ProfileViewModel @Inject constructor(
             }
         }
     }
+
+    fun updateReadList(nameListId: Int, name: String, description: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = profileRepository.updateNameList(nameListId, name, description)
+                if (response is Result.Success) {
+                    // Làm mới danh sách sau khi cập nhật
+                    loadReadLists()
+                } else {
+                    println("Error updating read list: ${(response as Result.Failure).exception.message}")
+                }
+            } catch (e: Exception) {
+                println("Exception during updateReadList: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun deleteReadList(nameListId: Int) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = profileRepository.deleteNameList(nameListId)
+                if (response is Result.Success) {
+                    // Làm mới danh sách sau khi xóa
+                    loadReadLists()
+                } else {
+                    println("Error deleting read list: ${(response as Result.Failure).exception.message}")
+                }
+            } catch (e: Exception) {
+                println("Exception during deleteReadList: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
 }

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.ReportUserViewModel
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.ScreenFrame
 
 @Composable
@@ -51,7 +52,7 @@ fun UserReportScreen(viewModel: ReportUserViewModel = hiltViewModel())
     val name by viewModel.name.collectAsState()
     val toast by viewModel.toast.collectAsState()
     val content by viewModel.content.collectAsState()
-    var showDialog by remember { mutableStateOf(false) }
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
 
     LaunchedEffect(toast) {
         toast?.let {
@@ -59,6 +60,19 @@ fun UserReportScreen(viewModel: ReportUserViewModel = hiltViewModel())
             viewModel.clearToast()
         }
     }
+
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Confirmation of Report",
+        text = "Are you sure you want to report this user? We take reports very seriously.",
+        onConfirm = {
+            viewModel.reportUser()
+            viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+        }
+    )
 
     ScreenFrame(
         topBar = {
@@ -152,7 +166,7 @@ fun UserReportScreen(viewModel: ReportUserViewModel = hiltViewModel())
             Button(
                 onClick = {
                     if (!content.isBlank()) {
-                        showDialog = true
+                        viewModel.setShowDialogState(true)
                     } else {
                         Toast.makeText(context,"Please fill in the report field", Toast.LENGTH_SHORT).show()
                     }
@@ -174,35 +188,6 @@ fun UserReportScreen(viewModel: ReportUserViewModel = hiltViewModel())
             }
             Spacer(modifier = Modifier.height(13.dp))
         }
-    }
-    if(showDialog)
-    {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.reportUser()
-                        showDialog = false
-                        viewModel.onGoBack()
-                    }
-                ) {
-                    Text("Yes", color = Color.White)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Cancel", color = Color.White)
-                }
-            },
-            title = {
-                Text("Confirmation of Report", color = Color.White)
-            },
-            text = {
-                Text("Are you sure you want to report this user? We take reports very seriously.", color = Color.LightGray)
-            },
-            containerColor = Color(0xFF1C1C1C)
-        )
     }
 }
 

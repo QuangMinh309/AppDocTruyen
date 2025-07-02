@@ -193,7 +193,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 // Gợi ý cho bạn
                 Column(modifier = Modifier.fillMaxSize()) {
                     SectionTitle(
-                        title = "Gợi ý cho bạn",
+                        title = "Suggested Stories",
                         modifier = Modifier.padding(start = 20.dp),
                         iconResId = R.drawable.dolphins_ic
                     )
@@ -219,7 +219,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 // Truyện mới
                 Column(modifier = Modifier.fillMaxSize()) {
                     SectionTitle(
-                        title = "Truyện mới",
+                        title = "New Arrivals",
                         modifier = Modifier.padding(start = 20.dp),
                         iconResId = R.drawable.firework_ic
                     )
@@ -291,7 +291,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                         story = story,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(start = 14.dp, top = 16.dp)
+                                            .padding(start = 14.dp, top = 16.dp),
+                                        onClick = { viewModel.onGoToStoryScreen(story.id) }
                                     )
                                     if (index < 3) {
                                         val iconColor = when (index) {
@@ -333,7 +334,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 // Chủ đề (Categories)
                 Column(modifier = Modifier.fillMaxSize()) {
                     SectionTitle(
-                        title = "Chủ đề",
+                        title = "Categories",
                         modifier = Modifier.padding(start = 20.dp),
                         iconResId = R.drawable.flower_ic
                     )

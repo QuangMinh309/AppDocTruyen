@@ -4,19 +4,15 @@ import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
 
-const Story = sequelize.models.Story;
+const { Story, User, Notification } = sequelize.models;
 
 const StoryManagerService = {
   async approveStory(storyId, approvalData) {
     return await handleTransaction(async (transaction) => {
       const story = await Story.findByPk(storyId, { transaction });
-      if (!story) {
-        throw new ApiError('Truyện không tồn tại', 404);
-      }
-
-      if (story.status !== 'pending') {
+      if (!story) throw new ApiError('Truyện không tồn tại', 404);
+      if (story.status !== 'pending')
         throw new ApiError('Truyện không ở trạng thái chờ duyệt', 400);
-      }
 
       const finalStatus =
         approvalData.status === 'approved' ? 'update' : 'rejected';
@@ -33,12 +29,24 @@ const StoryManagerService = {
       await NotificationService.createNotification(
         'STORY_APPROVAL',
         `Truyện ${story.storyName} của bạn ${
-          approvalData.status === 'approved' ? 'được chấp nhận' : 'bị từ chối'
+          approvalData.status === 'approved'
+            ? `được chấp nhận với độ tuổi ${story.ageRange}+`
+            : 'bị từ chối'
         }.`,
         story.storyId,
         story.userId,
         transaction
       );
+
+      if (approvalData.status === 'approved') {
+        const message = `Tác giả bạn theo dõi vừa đăng truyện mới: ${story.storyName}`;
+        await NotificationService.notifyFollowers(
+          story.userId,
+          story.storyId,
+          message,
+          transaction
+        );
+      }
 
       const formattedStory = {
         ...story.toJSON(),

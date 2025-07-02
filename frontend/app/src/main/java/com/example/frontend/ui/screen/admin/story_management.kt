@@ -3,6 +3,7 @@ package com.example.frontend.ui.screen.admin
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.text.isDigitsOnly
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.SelectChip
 import com.example.frontend.ui.components.StoryCardCard
 import com.example.frontend.ui.theme.BurntCoral
@@ -72,7 +75,6 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
     val showDialog = remember { mutableStateOf(false) }
     val showApproveDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
-    val showDeleteDialog = remember { mutableStateOf(false) }
     val tbAgeRange = remember { mutableStateOf("") }
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
@@ -172,7 +174,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                     onClick = { viewModel.onSelectSearchType("Name") }
                 )
                 SelectChip(
-                    name = "Author (handle)",
+                    name = "Author",
                     isSelected = "Author" == selectedSearchType,
                     onClick = { viewModel.onSelectSearchType("Author") }
                 )
@@ -238,35 +240,22 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         fontFamily = FontFamily(Font(R.font.poppins_bold)),
                     )
                 }
-                Spacer(modifier = Modifier.width(10.dp))
-                Button(
-                    onClick = { showDeleteDialog.value = true },
-                    enabled = selectedStory != null,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedStory != null) BurntCoral else Color(0xAFAF2238)
-                    ),
-                    modifier = Modifier.weight(1f)
-                )
-                {
-                    Text(
-                        text = "Delete",
-                        color = if (selectedStory != null) DeepBlue else Color.Gray,
-                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
-                    )
-                }
             }
             LazyColumn (
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 contentPadding = PaddingValues(8.dp)
             ){
                 items(stories) { story ->
-                    StoryCardCard(story = story, isSelected = story == selectedStory , onClick = { viewModel.onSelectStory(story) })
+                    StoryCardCard(story = story, isSelected = story == selectedStory , onClick = { viewModel.onSelectStory(story) }, onClick2 = { viewModel.onGoToStoryScreen(story.id) })
                 }
             }
         }
         if(showDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showDialog.value = false },
                 confirmButton = {
                     TextButton(onClick = {
@@ -364,12 +353,15 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         }
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
         if(showApproveDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showApproveDialog.value = false },
                 confirmButton = {
                     TextButton(
@@ -419,12 +411,15 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         )
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
         if(showRejectDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showRejectDialog.value = false },
                 confirmButton = {
                     TextButton(
@@ -474,35 +469,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         )
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
-            )
-        }
-        if(showDeleteDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDeleteDialog.value = false
-                            //viewModel.deleteSelectedTransaction()
-                        }
-                    ) {
-                        Text("Yes", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure you want to delete this story?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
     }

@@ -1,3 +1,4 @@
+
 import { sequelize } from '../../models/index.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { uploadImageToCloudinary } from '../cloudinary.service.js';
@@ -12,6 +13,9 @@ const Role = sequelize.models.Role;
 
 const createStory = async (storyData, userId, file) => {
   return await handleTransaction(async (transaction) => {
+    console.log('createStory - Received storyData:', storyData);
+    console.log('createStory - Received file:', file);
+
     let coverImgId = null;
 
     if (file) {
@@ -20,16 +24,18 @@ const createStory = async (storyData, userId, file) => {
           file.buffer,
           'stories'
         );
+        console.log('createStory - Cloudinary upload result:', uploadResult);
         coverImgId = uploadResult.public_id;
       } catch (error) {
+        console.error('createStory - Cloudinary upload error:', error);
         throw new ApiError('Tải ảnh lên thất bại', 500);
       }
+    } else {
+      console.warn('createStory - No file provided for cover image');
     }
 
-    // Remove ageRange and ensure safeStoryData is an object
     const { ageRange, ...safeStoryData } = storyData || {};
 
-    // Validate required fields
     if (!safeStoryData.storyName) {
       throw new ApiError('Tiêu đề truyện là bắt buộc', 400);
     }
@@ -47,7 +53,6 @@ const createStory = async (storyData, userId, file) => {
       { transaction }
     );
 
-    // Handle categories if provided and valid
     if (
       Array.isArray(safeStoryData.categories) &&
       safeStoryData.categories.length > 0
@@ -78,13 +83,11 @@ const createStory = async (storyData, userId, file) => {
         transaction,
       });
 
-      // Send notification to admin
       if (admins.length > 0) {
         const adminNotifications = admins.map((admin) =>
           NotificationService.createNotification(
             'STORY_PENDING_APPROVAL',
-            `Truyện mới ${story.storyName} của tác giả ${
-              author?.userName || 'Unknown'
+            `Truyện mới ${story.storyName} của tác giả ${author?.userName || 'Unknown'
             } cần được duyệt.`,
             story.storyId,
             admin.userId,

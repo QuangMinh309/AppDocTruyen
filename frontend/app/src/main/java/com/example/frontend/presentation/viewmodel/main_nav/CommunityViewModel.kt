@@ -97,10 +97,4 @@ class CommunityViewModel @Inject constructor(
             _isLoadingCommunitiesFollowCategory.value=false
         }
     }
-
-    fun onGoToCommunityDetailScreen(id : Int) {
-        viewModelScope.launch {
-            navigationManager.navigate(Screen.Community.Detail.createRoute(id.toString()))
-        }
-    }
 }

@@ -161,7 +161,7 @@ fun SelectChip(
             text = name,
             color = Color.Black,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            fontFamily = FontFamily(Font(R.font.poppins_bold))
+            fontFamily = FontFamily(Font(R.font.reemkufifun_semibold))
         )
     }
 }

@@ -56,7 +56,8 @@ const StoryController = {
   async getStoryById(req, res, next) {
     try {
       const { storyId } = req.params;
-      const story = await getStoryById(storyId);
+      const userId = req.user ? req.user.userId : null;
+      const story = await getStoryById(storyId, userId);
       return res.status(200).json({ success: true, data: story });
     } catch (error) {
       return next(error);
@@ -80,12 +81,22 @@ const StoryController = {
               : [];
           }
         }
-
         if (!Array.isArray(storyData.categories)) {
           storyData.categories = [Number(storyData.categories)];
         }
       } else {
         storyData.categories = [];
+      }
+
+      // Xử lý status nếu được gửi
+      if (storyData.status) {
+        storyData.status = storyData.status.toLowerCase();
+        if (!['update', 'full'].includes(storyData.status)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid status. Must be "update" or "full"',
+          });
+        }
       }
 
       const story = await updateStory(storyId, storyData, userId, file);
@@ -147,6 +158,7 @@ const StoryController = {
 
   async getStoriesByCategoryAndStatus(req, res, next) {
     try {
+      const roleName = req.user.role?.roleName || 'user';
       const { categoryId, status } = req.params;
       const { limit, lastId, orderBy, sort } = req.query;
       const result = await getStoriesByCategoryAndStatus(categoryId, status, {
@@ -154,6 +166,7 @@ const StoryController = {
         lastId,
         orderBy,
         sort,
+        role: roleName,
       });
       return res.status(200).json({ success: true, data: result });
     } catch (error) {
@@ -269,20 +282,6 @@ const StoryController = {
       const { storyId } = req.params;
       const result = await checkVoteStatus(userId, storyId);
       return res.status(200).json(result);
-    } catch (error) {
-      return next(error);
-    }
-  },
-
-  async purchaseEntireStory(req, res, next) {
-    try {
-      const userId = req.user.userId;
-      const { storyId } = req.params;
-      const result = await StoryPurchaseService.purchaseEntireStory(
-        userId,
-        storyId
-      );
-      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
     }

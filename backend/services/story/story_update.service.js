@@ -1,3 +1,4 @@
+
 import { sequelize } from '../../models/index.js';
 import { validateStory } from '../../utils/story.util.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
@@ -36,15 +37,21 @@ const updateStory = async (storyId, storyData, userId, file) => {
       }
     }
 
-    const { ageRange, categories, ...safeStoryData } = storyData || {};
+    const { ageRange, categories, status, ...safeStoryData } = storyData || {};
 
     if (safeStoryData.storyName && !safeStoryData.storyName.trim()) {
       throw new ApiError('Tiêu đề truyện là bắt buộc', 400);
     }
 
+    // Xử lý status nếu được cung cấp
+    if (status && !['update', 'full'].includes(status.toLowerCase())) {
+      throw new ApiError('Invalid status. Must be "update" or "full"', 400);
+    }
+
     await story.update(
       {
         ...safeStoryData,
+        status: status ? status.toLowerCase() : story.status,
         coverImgId,
       },
       { transaction }
@@ -53,7 +60,6 @@ const updateStory = async (storyId, storyData, userId, file) => {
     if (Array.isArray(categories) && categories.length > 0) {
       await StoryCategory.destroy({ where: { storyId }, transaction });
 
-      // Create new category associations
       const categoryAssociations = categories.map((categoryId) => ({
         storyId,
         categoryId: Number(categoryId),

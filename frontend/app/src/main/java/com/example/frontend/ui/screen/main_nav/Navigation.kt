@@ -37,6 +37,7 @@ import com.example.frontend.presentation.viewmodel.main_nav.AppNavigationViewMod
 import com.example.frontend.services.navigation.NavigationCommand
 import com.example.frontend.services.navigation.Screen
 import com.example.frontend.ui.components.BottomNavigationBar
+import com.example.frontend.ui.screen.AddStoryToNameListScreen
 import com.example.frontend.ui.screen.CustomSplashScreen
 import com.example.frontend.ui.screen.NotificationScreen
 import com.example.frontend.ui.screen.SettingScreen
@@ -44,6 +45,7 @@ import com.example.frontend.ui.screen.UserReportScreen
 import com.example.frontend.ui.screen.admin.AdminScreen
 import com.example.frontend.ui.screen.admin.CategoryManagementScreen
 import com.example.frontend.ui.screen.admin.CommunityManagementScreen
+import com.example.frontend.ui.screen.admin.RevenueManagementScreen
 import com.example.frontend.ui.screen.admin.StoryManagementScreen
 import com.example.frontend.ui.screen.admin.TransactionManagementScreen
 import com.example.frontend.ui.screen.admin.UserManagementScreen
@@ -64,6 +66,7 @@ import com.example.frontend.ui.screen.story.StoryDetailScreen
 import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.UpdateChapterScreen
+import com.example.frontend.ui.screen.story.UpdateStoryScreen
 import com.example.frontend.ui.screen.story.WriteScreen
 import com.example.frontend.ui.screen.story.YourStoryDetailScreen
 import com.example.frontend.ui.screen.transaction.DepositScreen
@@ -269,6 +272,19 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
 
             composable(Screen.Story.TopRanking.route) { TopRankingStoryListScreen()  }
             composable(Screen.Story.CreateStory.route) { CreateStoryScreen()  }
+            composable(
+                route = Screen.Story.UpdateStory.route,
+                arguments = listOf(
+                    navArgument("storyId") { type = NavType.IntType }
+                )
+            ) {  UpdateStoryScreen() }
+
+            composable(
+                route = Screen.Story.AddStoryToNameList.route,
+                arguments = listOf(
+                    navArgument("storyId") { type = NavType.IntType }
+                )
+            ){ AddStoryToNameListScreen() }
 
             composable(
                 route = Screen.Community.Chat.route,
@@ -334,6 +350,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.Admin.User.route) { UserManagementScreen() }
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
             composable(Screen.Admin.Community.route) { CommunityManagementScreen() }
+            composable(Screen.Admin.Revenue.route) { RevenueManagementScreen() }
             composable(
                 route = Screen.Admin.StoryDetail.route,
                 arguments = listOf(

@@ -98,7 +98,7 @@ export const canAccessChapter = async (req, res, next) => {
       where: { userId, chapterId },
     });
     if (chapterPurchase) {
-      const purchaseDate = new Date(chapterPurchase.createdAt);
+      const purchaseDate = new Date(chapterPurchase.purchasedAt);
       const expiryDate = new Date(
         purchaseDate.getTime() +
           parameters.Chapter_Access_Duration * 24 * 60 * 60 * 1000

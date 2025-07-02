@@ -36,7 +36,7 @@ fun NameListStoryScreen(
     ScreenFrame(
         topBar = {
             TopBar(
-                title = nameListName, // Sử dụng tên từ nameList
+                title = nameListName,
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -64,9 +64,11 @@ fun NameListStoryScreen(
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
                     items(stories) { story ->
-                        StoryCard3(story = story, onClick = {
-                         //   viewModel.onGoToStoryScreen(story.storyId)
-                        })
+                        StoryCard3(
+                            story = story,
+                            onClick = { viewModel.onGoToStoryScreen(story.id) },
+                            onDeleteClick = { viewModel.deleteStoryInNameList(story.id) }
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }

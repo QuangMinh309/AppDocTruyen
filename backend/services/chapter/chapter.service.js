@@ -9,6 +9,7 @@ import { validateStory } from '../../utils/story.util.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { formatDate } from '../../utils/date.util.js';
 import { Op } from 'sequelize';
+import NotificationService from '../notification.service.js';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
@@ -25,11 +26,17 @@ const ChapterService = {
     );
 
     return await handleTransaction(async (transaction) => {
-      const shouldLock = await Story.findOne({
+      const story = await Story.findOne({
         where: { storyId },
-        attributes: ['pricePerChapter'],
+        attributes: ['pricePerChapter', 'storyName', 'userId'],
         transaction,
-      }).then((story) => story.pricePerChapter > 0);
+      });
+
+      if (!story) {
+        throw new ApiError('Không tìm thấy truyện', 404);
+      }
+
+      const shouldLock = story.pricePerChapter > 0;
 
       // Lấy danh sách ordinalNumber hiện có
       const ordinals = await Chapter.findAll({
@@ -63,6 +70,14 @@ const ChapterService = {
         where: { storyId },
         transaction,
       });
+
+      const message = `Tác giả bạn theo dõi vừa đăng chương mới cho truyện: ${story.storyName}`;
+      await NotificationService.notifyFollowers(
+        story.userId, // tác giả
+        storyId,
+        message,
+        transaction
+      );
 
       const chapterResult = chapter.toJSON();
       chapterResult.storyId = parseInt(chapterResult.storyId);
@@ -105,11 +120,11 @@ const ChapterService = {
 
       const where = lastId
         ? {
-          storyId,
-          chapterId: {
-            [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
-          },
-        }
+            storyId,
+            chapterId: {
+              [finalSort === 'DESC' ? Op.lt : Op.gt]: lastId,
+            },
+          }
         : { storyId };
 
       const chapters = await Chapter.findAll({
@@ -206,7 +221,11 @@ const ChapterService = {
           { ordinalNumber: ch.ordinalNumber - 1 },
           { transaction }
         );
-        console.log(`Updated ordinalNumber for chapter ${ch.chapterId} to ${ch.ordinalNumber - 1}`);
+        console.log(
+          `Updated ordinalNumber for chapter ${ch.chapterId} to ${
+            ch.ordinalNumber - 1
+          }`
+        );
       }
 
       // Xóa cache nếu có (giả định sử dụng Redis)

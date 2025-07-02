@@ -6,43 +6,27 @@ import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CreateStoryRepository @Inject constructor(
-    private val apiService: ApiService,
-    private val gson: Gson
+    private val apiService: ApiService
 ) {
+
     data class CreateStoryRequest(
         val storyName: String,
         val description: String?,
         val categories: List<Int>,
-        val pricePerChapter: Float? = null // Tùy chọn để khớp với backend hiện tại
+        val pricePerChapter: Float?,
+        val status: String?
     )
-
-    suspend fun getCategories(): Result<List<Category>> {
-        Log.d("CreateStoryRepository", "Fetching categories")
-        return try {
-            val response = apiService.getCategories()
-            Log.d("CreateStoryRepository", "GetCategories Response - Code: ${response.code()}, Body: ${response.body()}")
-            if (response.isSuccessful) {
-                response.body()?.let { Result.Success(it) }
-                    ?: Result.Failure(Exception("No categories data in response"))
-            } else {
-                val errorBody = response.errorBody()?.string()
-                val errorResponse = gson.fromJson(errorBody, com.example.frontend.data.api.ApiError::class.java)
-                Result.Failure(Exception("Failed to fetch categories: ${errorResponse.message}"))
-            }
-        } catch (e: Exception) {
-            Log.e("CreateStoryRepository", "Exception during getCategories: ${e.message}", e)
-            Result.Failure(e)
-        }
-    }
 
     suspend fun createStory(
         storyName: String,
@@ -51,40 +35,87 @@ class CreateStoryRepository @Inject constructor(
         pricePerChapter: Float?,
         coverImage: File?
     ): Result<Story> {
-        Log.d("CreateStoryRepository", "Creating story: $storyName, categories: $categories")
+        Log.d("CreateStoryRepository", "Creating story: name=$storyName, categories=$categories, coverImage=${coverImage?.name}")
         return try {
-            var coverImgId: String? = null
-            if (coverImage != null) {
-                val mediaType = "image/*".toMediaTypeOrNull()
-                val requestBody = coverImage.asRequestBody(mediaType)
-                val imagePart = MultipartBody.Part.createFormData("image", coverImage.name, requestBody)
-                val uploadResponse = apiService.uploadImage(imagePart)
-                if (uploadResponse.isSuccessful) {
-                    coverImgId = uploadResponse.body()?.publicId
+            val categoriesJson = if (categories.isNotEmpty()) {
+                GsonBuilder().create().toJson(categories)
+            } else {
+                "[]"
+            }
+            val categoriesRequestBody = categoriesJson.toRequestBody("application/json".toMediaTypeOrNull())
+            val storyNameRequestBody = storyName.toRequestBody("text/plain".toMediaTypeOrNull())
+            val descriptionRequestBody = description?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val pricePerChapterRequestBody = pricePerChapter?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val coverImagePart = coverImage?.let {
+                if (!it.exists()) {
+                    Log.e("CreateStoryRepository", "Cover image file does not exist: ${it.absolutePath}")
+                    null
                 } else {
-                    Log.e("CreateStoryRepository", "Image upload failed: ${uploadResponse.code()}")
-                    return Result.Failure(Exception("Image upload failed: ${uploadResponse.message()}"))
+                    Log.d("CreateStoryRepository", "Cover image file exists: ${it.absolutePath}, size: ${it.length()}")
+                    val requestBody = it.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("coverImgId", it.name, requestBody)
                 }
             }
 
-            val request = CreateStoryRequest(
-                storyName = storyName,
-                description = description,
-                categories = categories,
-                pricePerChapter = pricePerChapter
+            Log.d("CreateStoryRepository", "Sending create request: storyName=$storyName, description=$description, " +
+                    "categories=$categoriesJson, pricePerChapter=$pricePerChapter, coverImage=${coverImage?.name}")
+
+            val response = apiService.createStory(
+                storyName = storyNameRequestBody,
+                description = descriptionRequestBody,
+                categories = categoriesRequestBody,
+                pricePerChapter = pricePerChapterRequestBody,
+                coverImage = coverImagePart
             )
-            val response = apiService.createStory(request)
-            Log.d("CreateStoryRepository", "CreateStory Response - Code: ${response.code()}, Body: ${response.body()}")
+
+            Log.d("CreateStoryRepository", "CreateStory Request URL: https://062d-116-110-41-191.ngrok-free.app/api/stories")
+            Log.d("CreateStoryRepository", "CreateStory Response - Code: ${response.code()}, Body: ${response.body()?.data}")
             if (response.isSuccessful) {
-                response.body()?.data?.let { Result.Success(it) }
-                    ?: Result.Failure(Exception("No story data in response"))
+                response.body()?.data?.let { story ->
+                    Log.d("CreateStoryRepository", "Created story: name=${story.name}, coverImgId=${story.coverImgId}")
+                    Result.Success(story)
+                } ?: run {
+                    Log.e("CreateStoryRepository", "No story data in response")
+                    Result.Failure(Exception("No story data in response"))
+                }
             } else {
                 val errorBody = response.errorBody()?.string()
-                val errorResponse = gson.fromJson(errorBody, com.example.frontend.data.api.ApiError::class.java)
-                Result.Failure(Exception("Failed to create story: ${errorResponse.message}"))
+                Log.e("CreateStoryRepository", "Failed to create story: Code=${response.code()}, Error=$errorBody")
+              //  val errorResponse = errorBody?.let { GsonBuilder().create().fromJson(it, ApiService.ApiError::class.java) }
+                Result.Failure(Exception("Failed to create story: "
+                ))
             }
         } catch (e: Exception) {
             Log.e("CreateStoryRepository", "Exception during createStory: ${e.message}", e)
+            Result.Failure(e)
+        }
+    }
+
+    suspend fun getCategories(): Result<List<Category>> {
+        Log.d("CreateStoryRepository", "Fetching categories")
+        return try {
+            val response = apiService.getCategories()
+            Log.d("CreateStoryRepository", "GetCategories Request URL: https://062d-116-110-41-191.ngrok-free.app/api/categories")
+            Log.d("CreateStoryRepository", "GetCategories Response - Code: ${response.code()}, Body: ${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.let { categories ->
+                    Log.d("CreateStoryRepository", "Loaded categories: ${categories.map { it.name }}")
+                    Result.Success(categories)
+                } ?: run {
+                    Log.e("CreateStoryRepository", "No categories data in response")
+                    Result.Failure(Exception("No categories data in response"))
+                }
+            } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("CreateStoryRepository", "Failed to fetch categories: Code=${response.code()}, Error=$errorBody")
+                Log.e("CreateStoryRepository", "Failed to create story: Code=${response.code()}, Error=$errorBody")
+                //  val errorResponse = errorBody?.let { GsonBuilder().create().fromJson(it, ApiService.ApiError::class.java) }
+                Result.Failure(Exception("Failed to create story: "
+                ))
+            }
+        } catch (e: Exception) {
+            Log.e("CreateStoryRepository", "Exception during getCategories: ${e.message}", e)
             Result.Failure(e)
         }
     }

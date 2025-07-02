@@ -1,7 +1,9 @@
 package com.example.frontend.data.api
 
+import android.media.MediaDescription
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.DayRevenue
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
@@ -35,9 +37,14 @@ interface ApiService {
     suspend fun getImageUrl(
         @Path("id") id: String
     ): Response<ImageUrlResponse>
+    @Multipart
     @POST("api/stories")
     suspend fun createStory(
-        @Body request: CreateStoryRepository.CreateStoryRequest
+        @Part("storyName") storyName: RequestBody,
+        @Part("description") description: RequestBody?,
+        @Part("categories") categories: RequestBody?,
+        @Part("pricePerChapter") pricePerChapter: RequestBody?,
+        @Part coverImage: MultipartBody.Part?
     ): Response<StoryResponse>
 
     @GET("api/stories")
@@ -52,14 +59,23 @@ interface ApiService {
     @GET("api/nameLists/user")
     suspend fun getUserReadingLists(): Response<NameListData>
 
+
     @GET("api/stories/{storyId}")
     suspend fun getStoryById(
         @Path("storyId") storyId:Int
     ): Response<StoryResponse>
 
+    @DELETE("api/stories/{storyId}")
+    suspend fun deleteStory(@Path("storyId") storyId:Int) : Response<StoryDeleteResponse>
+
     data class StoryResponse(
         val success: Boolean,
         val data: Story
+    )
+
+    data class StoryDeleteResponse(
+        val success: Boolean,
+        val message: String
     )
 
 
@@ -98,10 +114,31 @@ interface ApiService {
     ) : Response<CategoryStoriesResponse>
 
     @PUT("api/stories/{storyId}")
-    suspend fun updateStory(
+    suspend fun updateStatusStory(
         @Path("storyId") storyId: Int,
         @Body request: StoryUpdateRequest
     ): Response<UpdateStoryResponse>
+
+    @Multipart
+    @PUT("api/stories/{storyId}")
+    suspend fun updateStory(
+        @Path("storyId") storyId: Int,
+        @Part("storyName") storyName: RequestBody?,
+        @Part("description") description: RequestBody?,
+        @Part("categories") categories: RequestBody?,
+        @Part("pricePerChapter") pricePerChapter: RequestBody?,
+        @Part("status") status: RequestBody?,
+        @Part coverImage: MultipartBody.Part?
+    ): Response<UpdateStoryResponse>
+
+
+    data class UpdateStoryRequest(
+        val storyName: String?,
+        val description: String?,
+        val categories: List<Int>,
+        val pricePerChapter: Float?
+    )
+
 
     data class StoryUpdateRequest(
         val status: String
@@ -214,10 +251,81 @@ interface ApiService {
         val hasMore: Boolean
     )
 
+
+    @POST("api/nameLists")
+    suspend fun createNameList(
+        @Body createNameListRequest:CreateNameListRequest
+    ):Response<CreateNameListResponse>
+
+    data class CreateNameListRequest(
+        val nameList: String,
+        val description: String
+    )
+
+    data class CreateNameListResponse(
+        val nameListId: Int,
+        val nameList: String,
+        val userId: Int,
+        val description: String
+    )
+
+    @PUT("api/nameLists/{nameListId}")
+    suspend fun updateNameList(
+        @Path("nameList") nameListId: Int,
+        @Body updateNameListRequest: UpdateNameListRequest
+    ):Response<UpdateNameListReponse>
+
+    data class UpdateNameListRequest(
+        val nameList:String,
+        val description: String
+    )
+
+    data class UpdateNameListReponse(
+        val nameListId: Int,
+        val nameList: String,
+        val userId: Int,
+        val description: String
+    )
+
+    @DELETE("api/nameLists/{nameListId}")
+    suspend fun deleteNameList(
+        @Path("nameListId") nameListId:Int
+    ) :Response<DeleteNameListResponse>
+
+    data class DeleteNameListResponse(
+        val message: String
+    )
+
     @GET("api/nameLists/{nameListsId}")
     suspend fun getNameListById (
         @Path("nameListsId") nameListsId:Int
     ): Response<NameListResponse>
+
+    @DELETE("api/nameLists/{nameListId}/stories/{storyId}")
+    suspend fun deleteStoryInNameList(
+        @Path("nameListId") nameListId: Int,
+        @Path("storyId") storyId:Int
+    ):Response<DeleteStoryInNameListResponse>
+
+    data class  DeleteStoryInNameListResponse(
+        val storyId: Int,
+        val nameListId: Int
+    )
+
+    @POST("api/nameLists/{nameListId}/stories")
+    suspend fun addStoryToNameList(
+        @Path ("nameListId") nameListId: Int,
+        @Body addStoryToNameListRequest: AddStoryToNameListRequest
+    ) :Response<AddStoryToNameListResponse>
+
+    data class AddStoryToNameListRequest(
+        val storyId: Int
+    )
+
+    data class AddStoryToNameListResponse(
+        val storyId: Int,
+        val nameListId: Int
+    )
 
     data class NameListResponse(
        val nameList: NameListStory,
@@ -360,11 +468,21 @@ interface ApiService {
     @POST("api/admins/unlock/{userId}")
     suspend fun unlockUser(@Path("userId") userId: Int): Response<LockUserResponse>
 
+    @GET("api/admins/revenue/daily")
+    suspend fun getReport(
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): Response<RevenueResponse>
+
     data class LockUserResponse(
         val success: Boolean,
         val message: String
     )
 
+    data class RevenueResponse(
+        val success: Boolean,
+        val data: List<DayRevenue>
+    )
 
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>

@@ -27,30 +27,44 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
+<<<<<<< HEAD
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckBox
+=======
+import androidx.compose.material.icons.filled.Delete
+>>>>>>> 51e1565d67746b2a5c64e0bc076798f09cedb37c
 import androidx.compose.material.icons.filled.Diamond
 import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +91,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material3.IconButton
 import androidx.window.layout.WindowMetricsCalculator
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
@@ -84,6 +99,7 @@ import com.example.frontend.R
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.DayRevenue
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
@@ -100,6 +116,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.collections.forEach
 
 //region community Card
 @Composable
@@ -486,48 +503,65 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
 
 @Composable
 fun StoryCard4(
-    modifier: Modifier = Modifier, story: Story, onClick: () -> Unit = {},
+    modifier: Modifier = Modifier,
+    story: Story,
+    onClick: () -> Unit = {},
+    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .padding(8.dp)
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         AsyncImage(
-            model= story.coverImgUrl,
+            model = story.coverImgUrl,
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp, 160.dp),
-            contentScale = ContentScale.Crop
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.width(13.dp))
 
         Column(modifier = Modifier.weight(1f)) {
-            //name
+            // name
             Text(
-                story.name?:"",
+                story.name ?: "",
                 color = Color.White,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             )
             Spacer(modifier = Modifier.height(7.dp))
-            Text("@${story.author.name}", color = Color.LightGray, fontSize = 14.sp)
+            Text(
+                "@${story.author.name}",
+                color = Color.LightGray,
+                fontSize = 14.sp
+            )
 
             Spacer(modifier = Modifier.height(13.dp))
 
-            //genre tags
-            SmallGenreTags(story.categories?: emptyList())
+            // genre tags
+            SmallGenreTags(story.categories ?: emptyList())
             Spacer(modifier = Modifier.height(27.dp))
 
-            //updated time
+            // updated time
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Last Updated: ", color = Color.White, fontSize = 11.sp)
+                Text(
+                    "Last Updated: ",
+                    color = Color.White,
+                    fontSize = 11.sp
+                )
                 Spacer(modifier = Modifier.width(2.dp))
-                Text(story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), color = OrangeRed, fontSize = 11.sp)
+                Text(
+                    story.updateAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    color = OrangeRed,
+                    fontSize = 11.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(11.dp))
@@ -541,7 +575,11 @@ fun StoryCard4(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("${story.viewNum}", color = Color.White, fontSize = 12.5.sp)
+                Text(
+                    "${story.viewNum}",
+                    color = Color.White,
+                    fontSize = 12.5.sp
+                )
 
                 Spacer(modifier = Modifier.width(25.dp))
 
@@ -552,10 +590,42 @@ fun StoryCard4(
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(7.dp))
-                Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
+                Text(
+                    "${story.chapterNum}",
+                    color = Color.White,
+                    fontSize = 12.5.sp
+                )
+            }
+        }
+
+        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
+        if (onDeleteClick != null) {
+            IconButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Story",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }
+
+    // Dialog xác nhận xóa
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = "Delete Story",
+        text = "Are you sure you want to delete '${story.name}'? This action cannot be undone.",
+        onConfirm = {
+            onDeleteClick?.invoke()
+            showDeleteDialog = false
+        },
+        onDismiss = { showDeleteDialog = false }
+    )
+
     Spacer(Modifier.height(11.dp))
 }
 
@@ -740,14 +810,18 @@ fun StoryCard2(
 fun StoryCard3(
     story: Story,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Log.d("StoryCard3", "Rendering story: ${story.name}")
-    // Hàng 1: Ảnh bìa + Thông tin cơ bản
+
     Row(
         modifier = modifier
+            .padding(8.dp)
             .clickable { onClick() },
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         // Ảnh bìa (tỉ lệ 3:4)
         Box(
@@ -763,6 +837,8 @@ fun StoryCard3(
             )
         }
 
+        Spacer(modifier = Modifier.width(16.dp))
+
         // Thông tin chi tiết
         Column(
             modifier = Modifier.weight(1f),
@@ -770,18 +846,19 @@ fun StoryCard3(
         ) {
             // Tiêu đề
             Text(
-                text = story.name?:"",
+                text = story.name ?: "",
                 color = Color.White,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                maxLines = 2
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Ngày cập nhật
             Text(
-                buildAnnotatedString {
+                text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
                             fontFamily = FontFamily(Font(R.font.poppins_regular)),
@@ -800,7 +877,7 @@ fun StoryCard3(
                     ) {
                         append(story.updateAt?.toString() ?: "N/A")
                     }
-                },
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -816,7 +893,10 @@ fun StoryCard3(
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
+            // Số lượt xem
             Row(
                 verticalAlignment = Alignment.Bottom
             ) {
@@ -834,9 +914,35 @@ fun StoryCard3(
                 )
             }
         }
-    }
-}
 
+        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
+        if (onDeleteClick != null) {
+            IconButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Story",
+                    tint = OrangeRed,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+
+    // Dialog xác nhận xóa
+    ConfirmationDialog(
+        showDialog = showDeleteDialog,
+        title = "Remove Story",
+        text = "Are you sure you want to remove '${story.name}' from this list? This action cannot be undone.",
+        onConfirm = {
+            onDeleteClick?.invoke()
+            showDeleteDialog = false
+        },
+        onDismiss = { showDeleteDialog = false }
+    )
+}
 // Định dạng số lượt xem (167800 -> 167.8K)
 internal fun formatViews(views: Long): String {
     return when {
@@ -892,8 +998,12 @@ fun PreviewReadListItem(){
 fun ReadListItem(
     item: NameList,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onUpdateClick: (NameList) -> Unit = {}, // Thêm tham số cho Update
+    onDeleteClick: (NameList) -> Unit = {} // Thêm tham số cho Delete
 ) {
+    var showMenu by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -941,6 +1051,7 @@ fun ReadListItem(
         // Phần thông tin
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.weight(1f)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -961,7 +1072,7 @@ fun ReadListItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
-                    modifier = modifier
+                    modifier = Modifier
                         .widthIn(max = halfWidth)
                         .background(
                             brush = Brush.horizontalGradient(
@@ -971,6 +1082,36 @@ fun ReadListItem(
                         )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
+
+                // Icon 3 chấm dọc
+                IconButton(onClick = { showMenu = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options",
+                        tint = Color.White
+                    )
+                }
+
+                // Dropdown Menu
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Update Read List") },
+                        onClick = {
+                            onUpdateClick(item)
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete Read List") },
+                        onClick = {
+                            onDeleteClick(item)
+                            showMenu = false
+                        }
+                    )
+                }
             }
 
             Text(
@@ -978,13 +1119,11 @@ fun ReadListItem(
                 color = Color.White,
                 fontSize = 14.sp,
                 maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }
-
 }
-
 @Composable
 fun RowSelectItem(
     name: String,
@@ -1005,9 +1144,10 @@ fun RowSelectItem(
                 .padding(vertical = 20.dp)
         )
         {
-            Image(
+            Icon(
                 painter = image,
                 contentDescription = "select button icon",
+                tint = Color.White,
                 modifier = Modifier
                     .size(30.dp)
             )
@@ -1206,7 +1346,7 @@ fun UserCard(
             {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = if(item.avatarUrl != "")item.avatarUrl else R.drawable.intro_page1_bg
+                        model = item.avatarUrl.takeIf {it != null} ?: R.drawable.intro_page1_bg
                     ),
                     contentDescription = "pfp",
                     contentScale = ContentScale.Crop,
@@ -1226,7 +1366,7 @@ fun UserCard(
                         ),
                     )
                     Text(
-                        text = "Handle: " + item.dName,
+                        text = "Author: @" + item.dName,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 13.sp,
@@ -1270,27 +1410,33 @@ fun UserCard(
 
 @Composable
 fun StoryCardCard(
-    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {},
+    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {}, onClick2: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .padding(8.dp)
-            .background(if(isSelected) Color.DarkGray else Color.Transparent)
-            .clickable { onClick() },
+            .background(if(isSelected) Color.DarkGray else Color.Transparent),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model= story.coverImgUrl,
+            model= story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
             contentDescription = null,
             modifier = Modifier
-                .size(100.dp, 160.dp),
-            contentScale = ContentScale.Crop
+                .size(100.dp, 160.dp)
+                .clickable { onClick() },
+            contentScale = ContentScale.Crop,
         )
 
-        Spacer(modifier = Modifier.width(13.dp))
+        Spacer(modifier = Modifier
+            .width(13.dp)
+            .clickable { onClick() })
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .clickable { onClick() }
+        )
+        {
             //name
             Text(
                 story.name?:"",
@@ -1347,6 +1493,14 @@ fun StoryCardCard(
                 Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
             }
         }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = ">",
+            fontSize = 30.sp,
+            fontFamily = FontFamily(Font(R.font.poppins_bold)),
+            color = Color.White,
+            modifier = Modifier.clickable{ onClick2() }
+        )
     }
 }
 
@@ -1354,13 +1508,14 @@ fun StoryCardCard(
 fun CommunityCardCard(
     item : Community,
     isSelected : Boolean,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onClick2: () -> Unit = {}
 )
 {
     Box (
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(130.dp)
             .padding(vertical = 10.dp)
             .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
             .clickable{ onClick() },
@@ -1369,10 +1524,14 @@ fun CommunityCardCard(
     {
         Column(
             modifier = Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 10.dp, vertical = 10.dp)
         )
         {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = item.name,
                     color = Color.White,
@@ -1390,11 +1549,20 @@ fun CommunityCardCard(
                         fontFamily = FontFamily(Font(R.font.poppins_bold))
                     ),
                 )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = " visit >",
+                    color = OrangeRed,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                    modifier = Modifier.clickable{ onClick2() }
+                )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(IntrinsicSize.Min)
+                verticalAlignment = Alignment.CenterVertically
             )
             {
                 Image(
@@ -1445,6 +1613,86 @@ fun CommunityCardCard(
                         )
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun RevenueTable(data: List<DayRevenue>) {
+    val totalIncome = data.sumOf { it.totalIncome }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        // Header Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = "Date",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "Income",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Divider(color = Color.LightGray)
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            // Data Rows
+            data.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = item.date,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${item.totalIncome}đ",//${"%.2f".format(item.totalIncome)}
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            Divider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
+
+            // Total Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            ) {
+                Text(
+                    text = "Total",
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${totalIncome}đ",
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
