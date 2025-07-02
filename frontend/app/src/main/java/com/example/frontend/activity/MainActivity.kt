@@ -6,11 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-<<<<<<< HEAD
 import androidx.lifecycle.lifecycleScope
-=======
 import androidx.core.view.WindowCompat
->>>>>>> 51e1565d67746b2a5c64e0bc076798f09cedb37c
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.data.repository.NotificationRepository

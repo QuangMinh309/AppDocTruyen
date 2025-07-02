@@ -55,6 +55,9 @@ class StoryMgmtViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
     init{
         loadStories()
         loadCategories()
@@ -228,6 +231,7 @@ class StoryMgmtViewModel @Inject constructor(
                 result.onSuccess { data ->
                     _toast.value = data.message
                 }.onFailure { error ->
+                    _toast.value = "Error: ${error.message}"
                     Log.e("apiError", "Error: ${error.message}")
                 }
             }
@@ -239,5 +243,10 @@ class StoryMgmtViewModel @Inject constructor(
                 loadStories()
             }
         }
+    }
+
+    fun setShowDialogState(state: Boolean)
+    {
+        _isShowDialog.value = state
     }
 }

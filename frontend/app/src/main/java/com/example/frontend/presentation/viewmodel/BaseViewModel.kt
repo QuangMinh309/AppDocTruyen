@@ -33,7 +33,6 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         return formatter.format(money)
     }
 
-<<<<<<< HEAD
     fun uriToBase64(context: Context, uri: Uri): String? {
         return try {
             val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
@@ -46,13 +45,11 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         }
     }
 
-=======
     fun onGoToCommunityDetailScreen(id : Int) {
         viewModelScope.launch {
             navigationManager.navigate(Screen.Community.Detail.createRoute(id.toString()))
         }
     }
->>>>>>> 51e1565d67746b2a5c64e0bc076798f09cedb37c
 
     fun onGoToSetting() {
         viewModelScope.launch {

@@ -72,6 +72,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
     val selectedStates by viewModel.selectedStates.collectAsState()
     val selectedCategories by viewModel.selectedCategories.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
     val showDialog = remember { mutableStateOf(false) }
     val showApproveDialog = remember { mutableStateOf(false) }
     val showRejectDialog = remember { mutableStateOf(false) }
@@ -83,6 +84,18 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
             viewModel.clearToast()
         }
     }
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Confirm Deletion",
+        text = "Are you sure you want to delete this story?",
+        onConfirm = {
+            viewModel.deleteSelectedStory()
+            viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+        }
+    )
     ScreenFrame(
         topBar = {
             Row(
@@ -237,6 +250,22 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                     Text(
                         text = "Reject",
                         color = if (selectedStory != null && selectedStory!!.status == "pending") DeepBlue else Color.Gray,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(
+                    onClick = { viewModel.setShowDialogState(true) },
+                    enabled = selectedStory != null,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                {
+                    Text(
+                        text = "Delete",
+                        color = if (selectedStory != null) DeepBlue else Color.Gray,
                         fontFamily = FontFamily(Font(R.font.poppins_bold)),
                     )
                 }
