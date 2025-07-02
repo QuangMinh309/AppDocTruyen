@@ -31,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -112,7 +113,8 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                     contentPadding = PaddingValues(vertical = 7.dp),
                     modifier = Modifier
-                        .weight(if (isAuthor) 0.45f else 0.7f),
+                        .weight(if (isAuthor) 0.45f else 0.7f)
+                        .padding(end=if(isAuthor) 10.dp else 0.dp),
                     enabled = !isLoading
                 ) {
                     if (isLoading) {

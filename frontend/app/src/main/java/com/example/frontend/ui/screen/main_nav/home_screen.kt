@@ -36,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,6 +69,9 @@ import com.example.frontend.ui.components.StoryCard3
 import com.example.frontend.ui.screen.story.ExamplStory
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
@@ -90,15 +94,28 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     // State để kiểm soát làm mới
     var isRefreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
-            isRefreshing = true
-            viewModel.loadUser()
-            viewModel.loadStories()
-            viewModel.loadCategories()
-            viewModel.loadReadLists()
-            isRefreshing = false
+            scope.launch {
+                isRefreshing = true
+                try {
+                    // Gọi các hàm tải dữ liệu từ ViewModel song song
+                    listOf(
+                        async { viewModel.loadUser() },
+                        async { viewModel.loadStories() },
+                        async { viewModel.loadCategories() },
+                        async { viewModel.loadReadLists() }
+                    ).awaitAll()
+                } catch (e: Exception) {
+                    // Xử lý lỗi
+                    Log.e("HomeScreen", "Error refreshing data: ${e.message}")
+                    // TODO: Có thể thêm Toast hoặc Snackbar để thông báo lỗi
+                } finally {
+                    isRefreshing = false
+                }
+            }
         }
     )
 
@@ -111,7 +128,11 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     }
 
     ScreenFrame {
-        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -373,12 +394,16 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             }
                         } else {
                             LazyColumn(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .heightIn(max = 200.dp),
                                 verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 items(readLists) { list ->
-                                    ReadListItem(item = list, onClick = { viewModel.onGoToNameListStoryScreen(list.id) })
+                                    ReadListItem(
+                                        item = list,
+                                        onClick = { viewModel.onGoToNameListStoryScreen(list.id) }
+                                    )
                                 }
                             }
                         }
@@ -388,12 +413,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             PullRefreshIndicator(
                 refreshing = isRefreshing,
                 state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = Color(0xFFF28C38),
+                backgroundColor = Color.White
             )
         }
     }
 }
-
 val categories: List<Category> = listOf(
     Category(
         id = 1,

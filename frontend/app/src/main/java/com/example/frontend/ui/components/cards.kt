@@ -424,7 +424,9 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                     modifier = Modifier
                         .height(184.dp)
                         .fillMaxWidth(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.placeholder_cover),
+                    error = painterResource(R.drawable.placeholder_cover)
                 )
                 Spacer(modifier = Modifier.height(11.dp))
 
@@ -494,7 +496,8 @@ fun StoryCard4(
     modifier: Modifier = Modifier,
     story: Story,
     onClick: () -> Unit = {},
-    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
+    onDeleteClick: (() -> Unit)? = null,
+    showDeleteButton: Boolean = false // Thêm tham số để kiểm soát hiển thị nút xóa
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -510,7 +513,9 @@ fun StoryCard4(
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp, 160.dp),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+            placeholder = painterResource(R.drawable.placeholder_cover),
+            error = painterResource(R.drawable.placeholder_cover)
         )
 
         Spacer(modifier = Modifier.width(13.dp))
@@ -586,8 +591,8 @@ fun StoryCard4(
             }
         }
 
-        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
-        if (onDeleteClick != null) {
+        // Nút xóa (chỉ hiển thị nếu showDeleteButton = true và onDeleteClick được cung cấp)
+        if (showDeleteButton && onDeleteClick != null) {
             IconButton(
                 onClick = { showDeleteDialog = true },
                 modifier = Modifier.size(40.dp)
@@ -602,17 +607,19 @@ fun StoryCard4(
         }
     }
 
-    // Dialog xác nhận xóa
-    ConfirmationDialog(
-        showDialog = showDeleteDialog,
-        title = "Delete Story",
-        text = "Are you sure you want to delete '${story.name}'? This action cannot be undone.",
-        onConfirm = {
-            onDeleteClick?.invoke()
-            showDeleteDialog = false
-        },
-        onDismiss = { showDeleteDialog = false }
-    )
+    // Dialog xác nhận xóa (chỉ hiển thị nếu showDeleteButton = true)
+    if (showDeleteButton && showDeleteDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteDialog,
+            title = "Delete Story",
+            text = "Are you sure you want to delete '${story.name}'? This action cannot be undone.",
+            onConfirm = {
+                onDeleteClick?.invoke()
+                showDeleteDialog = false
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
 
     Spacer(Modifier.height(11.dp))
 }
@@ -723,7 +730,9 @@ fun StoryCard2(
                 .fillMaxWidth()
                 .height(120.dp)
                 .clip(RoundedCornerShape(8.dp)),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.placeholder_cover),
+            error = painterResource(R.drawable.placeholder_cover)
         )
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -799,7 +808,8 @@ fun StoryCard3(
     story: Story,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onDeleteClick: (() -> Unit)? = null // Tham số tùy chọn cho xóa
+    onDeleteClick: (() -> Unit)? = null,
+    showDeleteButton: Boolean = false // Thêm tham số để kiểm soát hiển thị nút xóa
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -821,7 +831,9 @@ fun StoryCard3(
                 model = story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
                 contentDescription = story.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                placeholder = painterResource(R.drawable.placeholder_cover),
+                error = painterResource(R.drawable.placeholder_cover)
             )
         }
 
@@ -903,8 +915,8 @@ fun StoryCard3(
             }
         }
 
-        // Nút xóa (chỉ hiển thị nếu onDeleteClick được cung cấp)
-        if (onDeleteClick != null) {
+        // Nút xóa (chỉ hiển thị nếu showDeleteButton = true và onDeleteClick được cung cấp)
+        if (showDeleteButton && onDeleteClick != null) {
             IconButton(
                 onClick = { showDeleteDialog = true },
                 modifier = Modifier.size(40.dp)
@@ -919,19 +931,20 @@ fun StoryCard3(
         }
     }
 
-    // Dialog xác nhận xóa
-    ConfirmationDialog(
-        showDialog = showDeleteDialog,
-        title = "Remove Story",
-        text = "Are you sure you want to remove '${story.name}' from this list? This action cannot be undone.",
-        onConfirm = {
-            onDeleteClick?.invoke()
-            showDeleteDialog = false
-        },
-        onDismiss = { showDeleteDialog = false }
-    )
-}
-// Định dạng số lượt xem (167800 -> 167.8K)
+    // Dialog xác nhận xóa (chỉ hiển thị nếu showDeleteButton = true)
+    if (showDeleteButton && showDeleteDialog) {
+        ConfirmationDialog(
+            showDialog = showDeleteDialog,
+            title = "Remove Story",
+            text = "Are you sure you want to remove '${story.name}' from this list? This action cannot be undone.",
+            onConfirm = {
+                onDeleteClick?.invoke()
+                showDeleteDialog = false
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
+    }
+}// Định dạng số lượt xem (167800 -> 167.8K)
 internal fun formatViews(views: Long): String {
     return when {
         views >= 1000000 -> "${views / 1000000}M"
@@ -952,11 +965,12 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
         AsyncImage(
             model = model.avatarUrl, // URL của avatar
             contentDescription = "avatar",
-            placeholder = painterResource(id = R.drawable.avt_img),
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
-            contentScale = ContentScale.Crop // fill mode
+            contentScale = ContentScale.Crop ,// fill mode
+            placeholder = painterResource(R.drawable.broken_image),
+            error = painterResource(R.drawable.broken_image)
         )
         Column {
             Text(
@@ -986,8 +1000,9 @@ fun ReadListItem(
     item: NameList,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onUpdateClick: (NameList) -> Unit = {}, // Thêm tham số cho Update
-    onDeleteClick: (NameList) -> Unit = {} // Thêm tham số cho Delete
+    showMoreOptions: Boolean = false, // Thêm tham số để kiểm soát hiển thị icon 3 chấm
+    onUpdateClick: (NameList) -> Unit = {},
+    onDeleteClick: (NameList) -> Unit = {}
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -1070,34 +1085,36 @@ fun ReadListItem(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
 
-                // Icon 3 chấm dọc
-                IconButton(onClick = { showMenu = true }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
-                        tint = Color.White
-                    )
-                }
+                // Hiển thị icon 3 chấm chỉ khi showMoreOptions = true
+                if (showMoreOptions) {
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            tint = Color.White
+                        )
+                    }
 
-                // Dropdown Menu
-                DropdownMenu(
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Update Read List") },
-                        onClick = {
-                            onUpdateClick(item)
-                            showMenu = false
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete Read List") },
-                        onClick = {
-                            onDeleteClick(item)
-                            showMenu = false
-                        }
-                    )
+                    // Dropdown Menu
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Update Read List") },
+                            onClick = {
+                                onUpdateClick(item)
+                                showMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete Read List") },
+                            onClick = {
+                                onDeleteClick(item)
+                                showMenu = false
+                            }
+                        )
+                    }
                 }
             }
 
@@ -1413,6 +1430,8 @@ fun StoryCardCard(
                 .size(100.dp, 160.dp)
                 .clickable { onClick() },
             contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.placeholder_cover),
+            error = painterResource(R.drawable.placeholder_cover)
         )
 
         Spacer(modifier = Modifier

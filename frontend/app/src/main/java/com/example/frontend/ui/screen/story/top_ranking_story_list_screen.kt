@@ -70,7 +70,7 @@ fun TopRankingStoryListScreen(viewModel:TopRankingStoryListViewModel= hiltViewMo
                 ) {
                     items(topRankingStories) { story ->
                         StoryCard3(story = story, onClick = {
-                           // viewModel.onGoToStoryScreen(1)
+                          viewModel.onGoToStoryScreen(story.id)
                         })
                         Spacer(modifier = Modifier.height(8.dp))
                     }

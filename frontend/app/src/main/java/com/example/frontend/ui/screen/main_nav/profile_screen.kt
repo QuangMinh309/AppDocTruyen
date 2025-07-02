@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,9 @@ import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 
 //@Preview(showBackground = true)
 //@Composable
@@ -88,13 +92,25 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val isLoading by viewModel.isLoading.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
-            isRefreshing = true
-            viewModel.loadUserData()
-            viewModel.loadReadLists()
-            isRefreshing = false
+            scope.launch {
+                isRefreshing = true
+                try {
+                    // Gọi đồng thời loadUserData và loadReadLists
+                    listOf(
+                        async { viewModel.loadUserData() },
+                        async { viewModel.loadReadLists() }
+                    ).awaitAll()
+                } catch (e: Exception) {
+                    // Xử lý lỗi (có thể thay bằng Toast hoặc Snackbar sau này)
+                    println("Error refreshing ProfileScreen: ${e.message}")
+                } finally {
+                    isRefreshing = false
+                }
+            }
         }
     )
 
@@ -113,7 +129,11 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             )
         }
     ) {
-        Box(modifier = Modifier.pullRefresh(pullRefreshState)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(pullRefreshState)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -143,7 +163,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                     .height(180.dp)
                                     .clip(RoundedCornerShape(20.dp)),
                                 placeholder = painterResource(id = R.drawable.broken_image),
-                                error = ColorPainter(Color(0xFFBDBDBD))
+                                error = painterResource(R.drawable.broken_image)
                             )
 
                             // Profile content
@@ -194,7 +214,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                                 modifier = Modifier.fillMaxSize(),
                                                 contentScale = ContentScale.Crop,
                                                 placeholder = painterResource(id = R.drawable.avt_img),
-                                                error = ColorPainter(Color(0xFFE0E0E0))
+                                                error = painterResource(id=R.drawable.broken_image)
                                             )
                                         }
                                     }
@@ -304,6 +324,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
                                             ReadListItem(
                                                 item = list,
                                                 onClick = { viewModel.onGoToNameListStoryScreen(list.id) },
+                                                showMoreOptions = true,
                                                 onUpdateClick = { selectedReadList = it; showUpdateDialog = true },
                                                 onDeleteClick = { selectedReadList = it; showDeleteDialog = true }
                                             )
@@ -318,7 +339,9 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             PullRefreshIndicator(
                 refreshing = isRefreshing,
                 state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
+                contentColor = Color(0xFFF28C38),
+                backgroundColor = Color.White
             )
         }
 
@@ -327,6 +350,8 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             InputDialog(
                 showDialog = showUpdateDialog,
                 title = "Update Read List",
+                initialReadListName = selectedReadList!!.name,
+                initialDescription = selectedReadList!!.description,
                 onConfirm = { name, description ->
                     viewModel.updateReadList(selectedReadList!!.id, name, description)
                     showUpdateDialog = false

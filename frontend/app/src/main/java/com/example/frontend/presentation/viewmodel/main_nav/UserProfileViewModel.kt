@@ -42,6 +42,7 @@ class UserProfileViewModel @Inject constructor(
 
     val isLoading = mutableStateOf(false)
     val isLoadingStories = mutableStateOf(false)
+    val isLoadingFollow = mutableStateOf(false) // Thêm biến để kiểm soát trạng thái loading của Follow/Unfollow
 
     init {
         viewModelScope.launch {
@@ -53,75 +54,119 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadUserProfile() {
-        val result = userProfileRepository.getUserById(userId.value)
-        when (result) {
-            is Result.Success -> {
-                _user.value = result.data
-                Log.d("UserProfileViewModel", "Loaded user: ${result.data.name}")
-            }
-            is Result.Failure -> {
-                _toast.value = "Failed to load user: ${result.exception.message}"
+    fun loadUserProfile() {
+        viewModelScope.launch {
+            isLoading.value = true
+            try {
+                val result = userProfileRepository.getUserById(userId.value)
+                when (result) {
+                    is Result.Success -> {
+                        _user.value = result.data
+                        Log.d("UserProfileViewModel", "Loaded user: ${result.data.name}")
+                    }
+                    is Result.Failure -> {
+                        _toast.value = "Failed to load user: ${result.exception.message}"
+                        Log.e("UserProfileViewModel", "Failed to load user: ${result.exception.message}", result.exception)
+                    }
+                }
+            } catch (e: Exception) {
+                _toast.value = "Error loading user: ${e.message}"
+                Log.e("UserProfileViewModel", "Exception during loadUserProfile: ${e.message}", e)
+            } finally {
+                isLoading.value = false
             }
         }
     }
 
-    private suspend fun checkFollowStatus() {
-        val result = userProfileRepository.checkFollowUser(userId.value)
-        when (result) {
-            is Result.Success -> {
-                _isFollowing.value = result.data
-                Log.d("UserProfileViewModel", "Follow status: ${result.data}")
-            }
-            is Result.Failure -> {
-                _toast.value = "Failed to check follow status: ${result.exception.message}"
+    fun checkFollowStatus() {
+        viewModelScope.launch {
+            try {
+                val result = userProfileRepository.checkFollowUser(userId.value)
+                when (result) {
+                    is Result.Success -> {
+                        _isFollowing.value = result.data
+                        Log.d("UserProfileViewModel", "Follow status: ${result.data}")
+                    }
+                    is Result.Failure -> {
+                        _toast.value = "Failed to check follow status: ${result.exception.message}"
+                        _isFollowing.value = false
+                        Log.e("UserProfileViewModel", "Failed to check follow status: ${result.exception.message}", result.exception)
+                    }
+                }
+            } catch (e: Exception) {
+                _toast.value = "Error checking follow status: ${e.message}"
                 _isFollowing.value = false
+                Log.e("UserProfileViewModel", "Exception during checkFollowStatus: ${e.message}", e)
             }
         }
     }
 
-    private suspend fun loadStories() {
-        isLoadingStories.value = true
-        val result = userProfileRepository.getStoriesByUser(userId.value)
-        when (result) {
-            is Result.Success -> {
-                _stories.value = result.data
-                Log.d("UserProfileViewModel", "Loaded stories: ${result.data.size}")
-            }
-            is Result.Failure -> {
-                _toast.value = "Failed to load stories: ${result.exception.message}"
+    fun loadStories(refresh: Boolean = false) {
+        viewModelScope.launch {
+            isLoadingStories.value = true
+            try {
+                if (refresh) {
+                    _stories.value = emptyList()
+                }
+                val result = userProfileRepository.getStoriesByUser(userId.value)
+                when (result) {
+                    is Result.Success -> {
+                        _stories.value = result.data
+                        Log.d("UserProfileViewModel", "Loaded stories: ${result.data.size}")
+                    }
+                    is Result.Failure -> {
+                        _toast.value = "Failed to load stories: ${result.exception.message}"
+                        Log.e("UserProfileViewModel", "Failed to load stories: ${result.exception.message}", result.exception)
+                    }
+                }
+            } catch (e: Exception) {
+                _toast.value = "Error loading stories: ${e.message}"
+                Log.e("UserProfileViewModel", "Exception during loadStories: ${e.message}", e)
+            } finally {
+                isLoadingStories.value = false
             }
         }
-        isLoadingStories.value = false
     }
 
     fun toggleFollow() {
         viewModelScope.launch {
-            isLoading.value = true
-            if (_isFollowing.value == true) {
-                val result = userProfileRepository.unFollowUser(userId.value)
-                when (result) {
-                    is Result.Success -> {
-                        _isFollowing.value = false
-                        _toast.value = result.data
+            isLoadingFollow.value = true // Sử dụng isLoadingFollow thay vì isLoading
+            try {
+                if (_isFollowing.value == true) {
+                    val result = userProfileRepository.unFollowUser(userId.value)
+                    when (result) {
+                        is Result.Success -> {
+                            _isFollowing.value = false
+                            _toast.value = result.data
+                            Log.d("UserProfileViewModel", "Unfollowed user: ${userId.value}")
+                        }
+                        is Result.Failure -> {
+                            _toast.value = "Failed to unfollow: ${result.exception.message}"
+                            Log.e("UserProfileViewModel", "Failed to unfollow: ${result.exception.message}", result.exception)
+                        }
                     }
-                    is Result.Failure -> {
-                        _toast.value = "Failed to unfollow: ${result.exception.message}"
+                } else {
+                    val result = userProfileRepository.followUser(userId.value)
+                    when (result) {
+                        is Result.Success -> {
+                            _isFollowing.value = true
+                            _toast.value = result.data
+                            Log.d("UserProfileViewModel", "Followed user: ${userId.value}")
+                        }
+                        is Result.Failure -> {
+                            _toast.value = "Failed to follow: ${result.exception.message}"
+                            Log.e("UserProfileViewModel", "Failed to follow: ${result.exception.message}", result.exception)
+                        }
                     }
                 }
-            } else {
-                val result = userProfileRepository.followUser(userId.value)
-                when (result) {
-                    is Result.Success -> {
-                        _isFollowing.value = true
-                        _toast.value = result.data
-                    }
-                    is Result.Failure -> {
-                        _toast.value = "Failed to follow: ${result.exception.message}"
-                    }
-                }
+            } catch (e: Exception) {
+                _toast.value = "Error toggling follow: ${e.message}"
+                Log.e("UserProfileViewModel", "Exception during toggleFollow: ${e.message}", e)
+            } finally {
+                isLoadingFollow.value = false // Đặt lại isLoadingFollow
             }
-            isLoading.value = false
         }
     }
+
+
 }
