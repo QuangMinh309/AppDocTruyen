@@ -21,9 +21,6 @@ const notificationValidation = {
     }),
   }),
   update: Joi.object({
-    notificationId: Joi.number().integer().min(1).required().messages({
-      'number.min': 'ID thông báo phải là số nguyên không âm.',
-    }),
     status: Joi.string().optional().max(255).messages({
       'string.max': 'Trạng thái không được vượt quá 255 ký tự.',
       'string.base': 'Trạng thái phải là chuỗi.',

@@ -1,6 +1,6 @@
 package com.example.frontend.ui.components
 
-
+import coil.compose.AsyncImage
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -34,7 +34,12 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Diamond
+import androidx.compose.material.icons.filled.DoNotDisturbOn
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalAtm
 import androidx.compose.material.icons.filled.Payments
@@ -232,22 +237,25 @@ fun MemberCard(model : User, onClick: () -> Unit = {}){
 @Composable
 fun
         NotificationCard(content:String = "",
-                     type: String = "notification",
-                     time: LocalDateTime
+                         type: String = "notification",
+                         time: LocalDateTime
 ){
-    val typeList = listOf("purchase","withdraw","deposit","premium")
+    val typeList = listOf("purchase","withdraw","deposit","premium","TRANSACTION_APPROVAL","USER_REPORT","STORY_APPROVAL")
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 15.dp)
     ){
-        if(type in typeList)
+        if(type in typeList){
             Icon(
                 imageVector = when (type) {
                     "withdraw" -> Icons.Filled.LocalAtm
                     "deposit"-> Icons.Filled.AccountBalance
                     "purchase" -> Icons.Filled.Payments
                     "premium" -> Icons.Filled.Diamond
+                    "TRANSACTION_APPROVAL" -> Icons.Filled.AccountBalanceWallet
+                    "USER_REPORT" -> Icons.Filled.DoNotDisturbOn
+                    "STORY_APPROVAL" -> Icons.Filled.Bookmarks
                     else -> Icons.Filled.QuestionMark
                 },
                 contentDescription = "transaction icon" ,
@@ -256,9 +264,10 @@ fun
                     .size(50.dp)
                     .padding(horizontal = 5.dp)
             )
+        }
         else{
             Image(
-                painter = painterResource(id = R.drawable.intro_page1_bg),
+                painter = painterResource(R.drawable.avt_img),
                 contentDescription =null,
                 modifier = Modifier
                     .size(50.dp)
@@ -844,7 +853,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             model = model.avatarUrl, // URL của avatar
@@ -863,6 +872,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(bottom = 7.dp)
+                    .padding(horizontal = 16.dp)
             )
             Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp)
         }
@@ -1076,7 +1086,7 @@ fun TransactionCard(
             )
             {
                 AsyncImage(
-                    model = if(!item.user?.avatarUrl.isNullOrEmpty())item.user.avatarUrl else R.drawable.intro_page1_bg,
+                    model = if(!item.user?.avatarUrl.isNullOrEmpty()) item.user?.avatarUrl else R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
                     placeholder = painterResource(R.drawable.broken_image),
                     contentScale = ContentScale.Crop,

@@ -70,12 +70,6 @@ import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewScreenContent2() {
-//    val fakeViewModel = ProfileViewModel(NavigationManager())
-//    ProfileScreen(viewModel = fakeViewModel)
-//}
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -83,6 +77,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
     val readLists by viewModel.readLists.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val unreadNotificationCount = viewModel.unReadNotificationsCount.collectAsState()
 
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullRefreshState(
@@ -101,6 +96,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = hiltViewModel()) {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
+                unreadNotificationCount = unreadNotificationCount.value,
                 onLeftClick = { viewModel.onGoToNotificationScreen() },
                 onRightClick = { viewModel.onGoToSetting() }
             )

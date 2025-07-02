@@ -2,9 +2,12 @@ package com.example.frontend.di
 
 import android.content.Context
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.NotificationApiService
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.data.repository.HomeRepository
+import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.services.navigation.NavigationManager
+import com.example.frontend.services.websocket.WebSocketManager
 import com.example.frontend.util.TokenManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -65,7 +68,23 @@ object AppModule {
     fun provideTokenManager(@ApplicationContext context: Context): TokenManager {
         return TokenManager(context)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(
+        apiService: NotificationApiService,
+        webSocketManager: WebSocketManager,
+        @ApplicationContext context: Context,
+        gson: Gson
+    ): NotificationRepository {
+        return NotificationRepository(apiService, webSocketManager,context, gson)
+    }
 }
+
+
+
+
+
 class LocalDateTimeTypeAdapter : TypeAdapter<LocalDateTime>() {
     override fun write(out: JsonWriter, value: LocalDateTime?) {
         if (value == null) {

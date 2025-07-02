@@ -40,6 +40,7 @@ import com.example.frontend.ui.components.LinearButton
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.theme.BrightAquamarine
+import java.text.DecimalFormat
 import androidx.compose.foundation.layout.Box as Box1
 
 @Composable
@@ -62,7 +63,7 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
     ScreenFrame(
         topBar = {
             TopBar(
-                title = "Deposite money",
+                title = "Deposit money",
                 showBackButton = true,
                 iconType = "Setting",
                 onLeftClick = { viewModel.onGoBack() },
@@ -74,13 +75,14 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+
         ) {
             // Deposit info
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
                     .padding(vertical = 66.dp)
             ) {
                 Text(
@@ -94,8 +96,9 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                 )
 
                 // Money enter text box
+                val formatter = DecimalFormat("#,###")
                 BasicTextField(
-                    value = viewModel.formatMoney(amountState.value), // Hiển thị số tiền đã định dạng
+                    value = formatter.format(amountState.value), // Hiển thị số tiền đã định dạng
                     onValueChange = { newValue ->
                         // Chuyển đổi chuỗi nhập vào thành Long
                         val cleanedValue = newValue.replace(",", "").replace("đ", "")
@@ -142,7 +145,7 @@ fun DepositScreen(viewModel: DepositViewModel = hiltViewModel()) {
                                 .border(1.dp,if(selectedTag == index ) BrightAquamarine else Color.Gray, RoundedCornerShape(5.dp))
                                 .clickable {
                                     viewModel.changeAmount(amount)
-                                    viewModel.changeSeletectedTag(index)
+                                    viewModel.changeSelectedTag(index)
 
                                 }
                         ) {

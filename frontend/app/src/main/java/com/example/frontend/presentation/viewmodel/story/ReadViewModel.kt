@@ -1,11 +1,16 @@
 package com.example.frontend.presentation.viewmodel.story
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.Chat
+import com.example.frontend.data.model.Comment
+import com.example.frontend.data.repository.CommentRepository
 import com.example.frontend.data.repository.ReadRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -20,6 +25,7 @@ import javax.inject.Inject
 class ReadViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val readRepository: ReadRepository,
+    private val commentRepository: CommentRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -39,9 +45,36 @@ class ReadViewModel @Inject constructor(
     // State cho loading
     val isLoading = mutableStateOf(false)
 
+    private val _comments = MutableStateFlow<List<Comment>>(emptyList())
+    val comments: StateFlow<List<Comment>> = _comments
+
+    private val _yourChat = MutableStateFlow("")
+    val yourChat: StateFlow<String> = _yourChat
+
+    private val _selectedPicUri = MutableStateFlow<Uri?>(null)
+    val selectedPicUri: StateFlow<Uri?> = _selectedPicUri
+
+
     init {
         viewModelScope.launch {
+            observeCState()
             loadChapter()
+            try {
+                isLoading.value = true
+                connect(_chapterId.value)
+                launch {
+                    commentRepository.isConnected.collect { isConnected ->
+                        if (isConnected && isLoading.value) {
+                            commentRepository.fetchComments()
+                            Log.d("ReadViewModel", "Fetched comment for chapterId: ${_chapterId.value}")
+                            isLoading.value = false // Tắt loading sau khi fetch
+                        }
+                    }
+                }
+            } catch (err: Exception) {
+                Log.e("ReadViewModel", "Connection error: ${err.message}")
+                isLoading.value = false
+            }
         }
     }
 
@@ -75,6 +108,77 @@ class ReadViewModel @Inject constructor(
                 }
             }
             isLoading.value = false
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            observeCState()
+            _chapterId.collect { id ->
+
+                try {
+                    isLoading.value = true
+                    connect(id)
+                    launch {
+                        commentRepository.isConnected.collect { isConnected ->
+                            if (isConnected && isLoading.value) {
+                                commentRepository.fetchComments()
+                                Log.d("ReadViewModel", "Fetched comment for chapterId: $id")
+                                isLoading.value = false // Tắt loading sau khi fetch
+                            }
+                        }
+                    }
+                } catch (err: Exception) {
+                    Log.e("ReadViewModel", "Connection error: ${err.message}")
+                    isLoading.value = false
+                }
+
+            }
+        }
+    }
+
+    fun setCommentUri(uri: Uri?) {
+        _selectedPicUri.value = uri
+    }
+
+
+    private suspend  fun observeCState() {
+    commentRepository.commentList.collect { chats ->
+            _comments.value = chats
+            Log.d("ChattingViewModel", "Collected chats: ${chats.size}")
+        }
+
+    }
+
+    private suspend fun connect(communityId: Int) {
+
+        commentRepository.connect(communityId)
+            Log.d("ChattingViewModel", "Connected to communityId: $communityId")
+
+    }
+
+    suspend fun  createComment(context: Context) {
+            try {
+                val commentPicData = selectedPicUri.value?.let { uri ->
+                    uriToBase64(context, uri)
+                }
+                commentRepository.createComment(
+                    if (_yourChat.value.isBlank()) null else _yourChat.value.trim(),commentPicData)
+
+                _yourChat.value = ""
+                _selectedPicUri.value = null // reset sau khi gửi
+                Log.d("ChattingViewModel", "Chat created successfully")
+            } catch (err: Exception) {
+                Log.e("ChattingViewModel", "Create chat error: ${err.message}")
+            }
+
+    }
+
+
+    fun disconnect() {
+        viewModelScope.launch {
+            commentRepository.disconnect()
+            Log.d("ChattingViewModel", "Disconnected")
         }
     }
 }

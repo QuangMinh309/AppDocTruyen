@@ -3,6 +3,7 @@ package com.example.frontend.presentation.viewmodel.main_nav
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.NameList
@@ -10,6 +11,7 @@ import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.User
 import com.example.frontend.data.repository.AuthRepository
 import com.example.frontend.data.repository.HomeRepository
+import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,10 +23,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+   private val  notificationRepository: NotificationRepository,
     private val homeRepository: HomeRepository,
+
     private val authRepository: AuthRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
+
+    private val _unReadNotificationsCount = MutableStateFlow(0)
+    val unReadNotificationsCount: StateFlow<Int> = _unReadNotificationsCount.asStateFlow()
+
     private val _suggestedStories = MutableStateFlow<List<Story>>(emptyList())
     val suggestedStories: StateFlow<List<Story>> = _suggestedStories.asStateFlow()
 
@@ -66,6 +74,26 @@ class HomeViewModel @Inject constructor(
         loadStories()
         loadCategories()
         loadReadLists()
+
+        viewModelScope.launch {
+            if(!notificationRepository.isConnected.value)
+                notificationRepository.connect()
+
+            try {
+                    val result = notificationRepository.getUnreadNotificationCount()
+                    _unReadNotificationsCount.value = when (result) {
+                        is Result.Success -> result.data
+                        is Result.Failure -> {
+                            Log.e("HomeViewModel", "Error loading user", result.exception)
+                            0
+                        }
+                    }
+            } catch (e: Exception) {
+                _unReadNotificationsCount.value =0
+                     Log.e("HomeViewModel", "Exception during load notificationscount", e)
+            } finally {
+            }
+        }
     }
 
     fun loadUser() {

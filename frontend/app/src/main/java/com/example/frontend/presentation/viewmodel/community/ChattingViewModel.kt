@@ -23,7 +23,6 @@ class ChattingViewModel @Inject constructor(
     navigationManager: NavigationManager,
     private val chatRepository: ChatRepository
 ) : BaseViewModel(navigationManager) {
-    //val communityName = savedStateHandle.getStateFlow("name", "")
 
     private val _id = savedStateHandle.getStateFlow("communityId", "")
     val id: StateFlow<String> = _id
@@ -110,17 +109,7 @@ class ChattingViewModel @Inject constructor(
             }
         }
     }
-    private fun uriToBase64(context: Context, uri: Uri): String? {
-        return try {
-            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-            val bytes = inputStream?.readBytes()
-            inputStream?.close()
-            bytes?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
+
 
     fun disconnect() {
         viewModelScope.launch {

@@ -61,13 +61,7 @@ import com.example.frontend.ui.screen.main_nav.genreDemoList
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.launch
 
-@Preview
-@Composable
-fun PreviewYourStoryDetailScreen()
-{
-    val fakeviewmodel= YourStoryDetailViewModel(NavigationManager())
-    YourStoryDetailScreen(fakeviewmodel)
-}
+
 @Composable
 fun YourStoryDetailScreen(viewModel: YourStoryDetailViewModel= hiltViewModel()) {
     val listState = rememberLazyListState()

@@ -56,7 +56,6 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
     val messages = viewModel.messages.collectAsState()
     val toast by viewModel.toast.collectAsState()
     val commentUri by viewModel.selectedPicUri.collectAsState()
-    //val name by viewModel.communityName.collectAsState()
 
     val context = LocalContext.current
     val listState = rememberLazyListState()
@@ -155,7 +154,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
-                                .size(100.dp)
+                                .size(60.dp)
                                 .background(Color.Gray, RoundedCornerShape(8.dp))
                         )
                     }
@@ -189,6 +188,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                         }
                     ) {
                         Icon(
+
                             painter = if(yourChat == "") painterResource(id = R.drawable.icon_add_img) else painterResource(id = R.drawable.popular_icon),
                             contentDescription = "Add Image",
                             tint = Color.Black,

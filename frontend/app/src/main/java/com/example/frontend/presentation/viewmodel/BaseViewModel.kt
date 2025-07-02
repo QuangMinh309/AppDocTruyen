@@ -1,5 +1,8 @@
 package com.example.frontend.presentation.viewmodel
 
+import android.content.Context
+import android.net.Uri
+import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.text.DecimalFormat
 import javax.inject.Inject
 
@@ -24,8 +28,21 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
     }
 
     fun formatMoney(money: Long): String {
+        if(money<0L) return ""
         val formatter = DecimalFormat("#,###"+"đ")
         return formatter.format(money)
+    }
+
+    fun uriToBase64(context: Context, uri: Uri): String? {
+        return try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val bytes = inputStream?.readBytes()
+            inputStream?.close()
+            bytes?.let { Base64.encodeToString(it, Base64.NO_WRAP) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
 

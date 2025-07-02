@@ -60,7 +60,7 @@ const NotificationController = {
 
       res.status(200).json({
         success: true,
-        unreadCount: count,
+        data: count,
       });
     } catch (error) {
       next(error);

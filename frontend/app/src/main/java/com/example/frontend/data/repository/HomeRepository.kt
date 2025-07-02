@@ -10,6 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 class HomeRepository @Inject constructor(
+
     private val apiService: ApiService
 ) {
     suspend fun getAllStories(): Result<List<Story>> {

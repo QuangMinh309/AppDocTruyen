@@ -23,7 +23,7 @@ class WithDrawViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
-    private val _amountState = MutableStateFlow(0L)
+    private val _amountState = MutableStateFlow(-1L)
     val amountState : StateFlow<Long> = _amountState
 
 
@@ -83,7 +83,7 @@ class WithDrawViewModel @Inject constructor(
                     _toast.value = success.message
                     onGoToWalletDetailScreen()
                 }.onFailure { fail ->
-                    _toast.value = fail.message
+                    _toast.value =      fail.message
                 }
             }catch (err:Exception){
                 _toast.value = "Can not withdraw now.Please try again later!"

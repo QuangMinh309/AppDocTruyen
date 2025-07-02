@@ -70,10 +70,7 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
     implementation(libs.symbol.processing.api)
-    ksp(libs.androidx.room.compiler)
     implementation(libs.coil.compose)
     implementation(libs.glide)
     implementation(libs.accompanist.pager)
@@ -81,7 +78,6 @@ dependencies {
     implementation(libs.accompanist.flowlayout)
     implementation(libs.core)
     implementation(libs.gson)
-    //implementation(libs.firebase.firestore.ktx)
     implementation(libs.androidx.paging.runtime)
 
     testImplementation(libs.junit)

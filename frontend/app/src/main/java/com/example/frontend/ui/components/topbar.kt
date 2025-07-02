@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -31,6 +33,7 @@ import com.example.frontend.R
 fun TopBar(title: String = "",
               showBackButton: Boolean = true,
               iconType: String = "",
+           unreadNotificationCount:Int=0,
               onLeftClick: () -> Unit = {},
               onRightClick: () -> Unit = {}){
     Row(
@@ -63,7 +66,7 @@ fun TopBar(title: String = "",
         }
         else{
             Icon(
-                imageVector = Icons.Outlined.NotificationsActive,
+                painter = painterResource(if (unreadNotificationCount == 0) R.drawable.notification_ic else R.drawable.notification) ,
                 contentDescription = "Custom notification Icon",
                 tint = Color.White,
                 modifier = Modifier

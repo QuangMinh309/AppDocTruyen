@@ -72,12 +72,7 @@ import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.SteelBlue
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PreviewUserScreenContent2() {
-//    val fakeViewModel = UserProfileViewModel(NavigationManager())
-//    UserProfileScreen(viewModel = fakeViewModel)
-//}
+
 @Composable
 fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel()) {
     val user by viewModel.user.collectAsState()
@@ -87,12 +82,14 @@ fun UserProfileScreen(viewModel: UserProfileViewModel = hiltViewModel()) {
     val stories by viewModel.Stories.collectAsState()
     val storyList = viewModel.storyList
     val expanded = remember { mutableStateOf(false) }
+    val unreadNotificationCount = viewModel.unReadNotificationsCount.collectAsState()
 
     ScreenFrame(
         topBar = {
             TopBar(
                 showBackButton = false,
                 iconType = "Setting",
+                unreadNotificationCount = unreadNotificationCount.value,
                 onLeftClick = { viewModel.onGoToNotificationScreen() },
                 onRightClick = { viewModel.onGoToSetting() }
             )

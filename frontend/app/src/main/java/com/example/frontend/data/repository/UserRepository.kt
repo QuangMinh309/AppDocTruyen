@@ -64,7 +64,7 @@ class UserRepository @Inject constructor(
     suspend fun walletChange(money: Int, type: String,bankAccountData: BankAccountData?=null): Result<NoDataResponse> {
         return try {
             val response = apiService.walletChange(
-                TransactionRequest(money,type,bankAccountData)
+                TransactionRequest(money,type,bankAccountData?:BankAccountData("","",""))
             )
             if (response.isSuccessful) {
                 Result.Success( response.body() ?: throw Exception("transaction failed"))

@@ -1,23 +1,28 @@
 package com.example.frontend.presentation.viewmodel.main_nav
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.repository.CategoryProvider
 import com.example.frontend.data.repository.CommunityProvider
+import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.services.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.frontend.data.model.Result
 
 @HiltViewModel
 class CommunityViewModel @Inject constructor(
     navigationManager: NavigationManager,
     private val communityProvider: CommunityProvider,
+    private val notificationRepository: NotificationRepository,
     private val categoryProvider: CategoryProvider
 ) : BaseViewModel(navigationManager) {
     private val _isLoadingCommunitiesFollowCategory = MutableStateFlow(false) // Thêm trạng thái loading cho CommunitiesFollowCategory
@@ -35,6 +40,9 @@ class CommunityViewModel @Inject constructor(
     private val _category = MutableStateFlow<List<Category>>(emptyList())
     val category: StateFlow<List<Category>> = _category
 
+    private val _unReadNotificationsCount = MutableStateFlow(0)
+    val unReadNotificationsCount: StateFlow<Int> = _unReadNotificationsCount.asStateFlow()
+
     init {
         viewModelScope.launch {
            _category.value = categoryProvider.fetchAllCategory()
@@ -49,6 +57,28 @@ class CommunityViewModel @Inject constructor(
             _isLoadingHotCommunities.value = true
             fetchHotCommunities()
             _isLoadingHotCommunities.value = false
+        }
+    }
+    init{
+
+        viewModelScope.launch {
+            if(!notificationRepository.isConnected.value)
+                notificationRepository.connect()
+
+            try {
+                val result = notificationRepository.getUnreadNotificationCount()
+                _unReadNotificationsCount.value = when (result) {
+                    is Result.Success -> result.data
+                    is Result.Failure -> {
+                        Log.e("HomeViewModel", "Error loading user", result.exception)
+                        0
+                    }
+                }
+            } catch (e: Exception) {
+                _unReadNotificationsCount.value =0
+                Log.e("HomeViewModel", "Exception during load notificationscount", e)
+            } finally {
+            }
         }
     }
 
