@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +50,7 @@ import com.example.frontend.ui.components.WithdrawRadioOption
 fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
 
     val amountState = viewmodel.amountState.collectAsState()
+    val amountTextState = rememberSaveable() { mutableStateOf("") }
     val selectedOption by viewmodel.selectedOption.collectAsState()
 
     val accountNumber by viewmodel.accountNumber.collectAsState()
@@ -64,6 +67,11 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
             viewmodel.clearToast()
         }
     }
+
+    LaunchedEffect(amountState.value) {
+        amountTextState.value = viewmodel.formatMoney(amountState.value)
+    }
+
     ScreenFrame(
         topBar = {
             TopBar(
@@ -115,19 +123,19 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                     )
                     AnimatedVisibility(
                         visible = selectedOption == "partial",
-                        enter = slideInVertically(
-                            // Slide from top to bottom
-                            initialOffsetY = { -it } // Bắt đầu từ phía trên
-                        ) + fadeIn(), // Thêm hiệu ứng mờ dần
-                        exit = slideOutVertically() + fadeOut() // Thu lại và mờ dần
+                        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                        exit = slideOutVertically() + fadeOut()
                     ) {
                         BasicTextField(
-                            value = viewmodel.formatMoney(amountState.value),
+                            value = amountTextState.value,
                             onValueChange = { newValue ->
-                                // Chuyển đổi chuỗi nhập vào thành Long
-                                val cleanedValue = newValue.replace(",", "").replace("đ", "")
-                                val newAmount = cleanedValue.toLongOrNull() ?: amountState.value
+                                // Làm sạch chuỗi nhập
+                                val cleaned = newValue.replace("[^\\d]".toRegex(), "")
+                                val newAmount = cleaned.toLongOrNull() ?: 0L
+
+                                // Cập nhật Long và hiển thị format
                                 viewmodel.changeAmount(newAmount)
+                                amountTextState.value = viewmodel.formatMoney(newAmount)
                             },
                             textStyle = TextStyle(
                                 color = Color.Gray,
@@ -139,16 +147,9 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
                             singleLine = true,
                             decorationBox = { innerTextField ->
                                 Row(modifier = Modifier.fillMaxWidth()) {
-                                    Text(
-                                        text =  if(amountState.value == 0L)"Enter the amount" else "",
-                                        color = Color.Gray,
-                                        fontSize = 16.sp
-                                    )
-
+                                    innerTextField()
                                 }
-                                innerTextField()
                             }
-
                         )
                     }
                     WithdrawRadioOption(
