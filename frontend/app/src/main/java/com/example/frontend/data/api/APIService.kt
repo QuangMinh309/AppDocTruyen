@@ -271,7 +271,7 @@ interface ApiService {
 
     @PUT("api/nameLists/{nameListId}")
     suspend fun updateNameList(
-        @Path("nameList") nameListId: Int,
+        @Path("nameListId") nameListId: Int,
         @Body updateNameListRequest: UpdateNameListRequest
     ):Response<UpdateNameListReponse>
 
