@@ -56,7 +56,8 @@ const StoryController = {
   async getStoryById(req, res, next) {
     try {
       const { storyId } = req.params;
-      const story = await getStoryById(storyId);
+      const userId = req.user ? req.user.userId : null;
+      const story = await getStoryById(storyId, userId);
       return res.status(200).json({ success: true, data: story });
     } catch (error) {
       return next(error);
@@ -281,20 +282,6 @@ const StoryController = {
       const { storyId } = req.params;
       const result = await checkVoteStatus(userId, storyId);
       return res.status(200).json(result);
-    } catch (error) {
-      return next(error);
-    }
-  },
-
-  async purchaseEntireStory(req, res, next) {
-    try {
-      const userId = req.user.userId;
-      const { storyId } = req.params;
-      const result = await StoryPurchaseService.purchaseEntireStory(
-        userId,
-        storyId
-      );
-      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       return next(error);
     }

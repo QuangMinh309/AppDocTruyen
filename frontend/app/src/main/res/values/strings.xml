@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Reavel</string>
 
-    <string name="base_url">https://0023-14-169-18-157.ngrok-free.app/</string>
-    <string name="ws_base_url">ws://0023-14-169-18-157.ngrok-free.app/ws</string>
+    <string name="base_url">https://appdoctruyen.onrender.com/</string>
+    <string name="ws_base_url">ws://appdoctruyen.onrender.com/ws</string>
 
 </resources>

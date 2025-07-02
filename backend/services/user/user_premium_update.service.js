@@ -13,7 +13,7 @@ const userPremiumService = {
 
             const premium = await Premium.findOne({
                 where: { userId },
-                order: [['createdAt', 'DESC']]
+                order: [['CreatedAt', 'DESC']]
             });
 
             if (!premium) throw new ApiError("người dùng này chưa đăng kí Premium")

@@ -119,6 +119,11 @@ fun AdminScreen(viewModel: AdminViewModel = hiltViewModel())
                 painterResource(R.drawable.people),
                 { viewModel.onGoToCommunityMgmtScreen() }
             )
+            RowSelectItem(
+                "Revenue Report",
+                painterResource(R.drawable.file),
+                { viewModel.onGoToRevenueMgmtScreen() }
+            )
         }
     }
 }

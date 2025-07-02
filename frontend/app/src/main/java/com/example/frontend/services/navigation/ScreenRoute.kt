@@ -103,6 +103,7 @@ sealed class Screen(var route: String) {
         data object User : Admin("Admin/UserMgmt")
         data object Story : Admin("Admin/Story")
         data object Community : Admin("Admin/Community")
+        data object Revenue : Admin("Admin/Revenue")
         data object StoryDetail : Admin("Admin/StoryDetail/{id}") {
             fun createRoute(id: String) = "Admin/StoryDetail/$id"
         }

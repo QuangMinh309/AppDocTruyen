@@ -27,8 +27,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Divider
@@ -89,6 +91,7 @@ import com.example.frontend.R
 import com.example.frontend.data.model.Author
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Community
+import com.example.frontend.data.model.DayRevenue
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.model.Transaction
@@ -105,6 +108,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import kotlin.collections.forEach
 
 //region community Card
 @Composable
@@ -1127,9 +1131,10 @@ fun RowSelectItem(
                 .padding(vertical = 20.dp)
         )
         {
-            Image(
+            Icon(
                 painter = image,
                 contentDescription = "select button icon",
+                tint = Color.White,
                 modifier = Modifier
                     .size(30.dp)
             )
@@ -1595,6 +1600,86 @@ fun CommunityCardCard(
                         )
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun RevenueTable(data: List<DayRevenue>) {
+    val totalIncome = data.sumOf { it.totalIncome }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        // Header Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            Text(
+                text = "Date",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "Income",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Divider(color = Color.LightGray)
+
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ) {
+            // Data Rows
+            data.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = item.date,
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = "${item.totalIncome}đ",//${"%.2f".format(item.totalIncome)}
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
+            Divider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.padding(vertical = 8.dp))
+
+            // Total Row
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+            ) {
+                Text(
+                    text = "Total",
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "${totalIncome}đ",
+                    modifier = Modifier.weight(1f),
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }

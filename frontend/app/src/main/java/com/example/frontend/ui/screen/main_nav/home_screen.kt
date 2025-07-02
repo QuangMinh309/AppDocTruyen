@@ -280,7 +280,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                         story = story,
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(start = 14.dp, top = 16.dp)
+                                            .padding(start = 14.dp, top = 16.dp),
+                                        onClick = { viewModel.onGoToStoryScreen(story.id) }
                                     )
                                     if (index < 3) {
                                         val iconColor = when (index) {
