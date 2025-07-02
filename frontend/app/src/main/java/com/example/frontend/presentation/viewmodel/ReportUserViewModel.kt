@@ -26,6 +26,9 @@ class ReportUserViewModel  @Inject constructor(
     private val _userId = MutableStateFlow<Int?>(checkNotNull(savedStateHandle.get<Int>("userId")))
     val userId: MutableStateFlow<Int?> = _userId
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
     fun reportUser()
     {
         if(_userId.value == null || _content.value.isEmpty())
@@ -49,5 +52,9 @@ class ReportUserViewModel  @Inject constructor(
 
     fun onContentChange(content: String) {
         _content.value = content
+    }
+
+    fun setShowDialogState(state: Boolean) {
+        _isShowDialog.value = state
     }
 }

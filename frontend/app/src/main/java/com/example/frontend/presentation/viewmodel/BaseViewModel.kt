@@ -191,6 +191,12 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
         }
     }
 
+    fun onGoToRevenueMgmtScreen() {
+        viewModelScope.launch {
+            navigationManager.navigate(Screen.Admin.Revenue.route)
+        }
+    }
+
     fun onGoToChangePasswordScreen(){
         viewModelScope.launch {
             navigationManager.navigate(Screen.Authentication.ChangePassword.route)

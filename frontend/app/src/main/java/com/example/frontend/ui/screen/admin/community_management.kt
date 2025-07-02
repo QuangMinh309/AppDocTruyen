@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -276,6 +278,9 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
         if(showCreateDialog.value) //create dialog
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showCreateDialog.value = false },
                 confirmButton = {
                     TextButton(
@@ -381,13 +386,16 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                         )
                     }
                 },
-                containerColor = Color(0xFA171717)
+                containerColor = Color.Black
             )
         }
         if(showUpdateDialog.value) //update dialog
         {
             viewModel.updateFields()
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = {
                     viewModel.clearFields()
                     showUpdateDialog.value = false },
@@ -499,7 +507,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                         )
                     }
                 },
-                containerColor = Color(0xFA171717)
+                containerColor = Color.Black
             )
         }
 

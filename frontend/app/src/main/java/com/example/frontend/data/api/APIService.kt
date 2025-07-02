@@ -2,6 +2,7 @@ package com.example.frontend.data.api
 
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Chapter
+import com.example.frontend.data.model.DayRevenue
 import com.example.frontend.data.model.NameList
 import com.example.frontend.data.model.Role
 import com.example.frontend.data.model.Story
@@ -394,11 +395,21 @@ interface ApiService {
     @POST("api/admins/unlock/{userId}")
     suspend fun unlockUser(@Path("userId") userId: Int): Response<LockUserResponse>
 
+    @GET("api/admins/revenue/daily")
+    suspend fun getReport(
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): Response<RevenueResponse>
+
     data class LockUserResponse(
         val success: Boolean,
         val message: String
     )
 
+    data class RevenueResponse(
+        val success: Boolean,
+        val data: List<DayRevenue>
+    )
 
     @GET("api/nameLists")
     suspend fun getNameLists(): Response<List<NameList>>

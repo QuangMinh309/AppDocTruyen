@@ -3,6 +3,7 @@ package com.example.frontend.ui.screen.admin
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -251,6 +253,9 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
         if(showDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showDialog.value = false },
                 confirmButton = {
                     TextButton(onClick = {
@@ -348,12 +353,15 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         }
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
         if(showApproveDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showApproveDialog.value = false },
                 confirmButton = {
                     TextButton(
@@ -403,12 +411,15 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         )
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
         if(showRejectDialog.value)
         {
             AlertDialog(
+                modifier = Modifier.fillMaxWidth()
+                    .padding(8.dp)
+                    .border(1.dp, BurntCoral, shape = RoundedCornerShape(25.dp)),
                 onDismissRequest = { showRejectDialog.value = false },
                 confirmButton = {
                     TextButton(
@@ -458,7 +469,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                         )
                     }
                 },
-                containerColor = Color(0xFF1C1C1C)
+                containerColor = Color.Black
             )
         }
     }
