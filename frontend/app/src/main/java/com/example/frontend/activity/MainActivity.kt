@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.frontend.ui.screen.main_nav.AppNavigation
@@ -16,6 +17,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Cho phép Compose xử lý hệ thống insets (bàn phím, thanh điều hướng,...)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContent {
             FrontendTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
