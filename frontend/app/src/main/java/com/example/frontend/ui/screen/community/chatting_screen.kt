@@ -181,21 +181,33 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
 
                     IconButton(
                         onClick = {
-                            if(yourChat=="")
-                                showImagePicker = true
-                            else
+                            showImagePicker = true
+                        }
+                    ) {
+                        Icon(
+                            painter =  painterResource(id = R.drawable.icon_add_img) ,
+                            contentDescription = "Add Image",
+                            tint = Color.Black,
+                            modifier = Modifier
+                                .size(28.dp),
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            if(yourChat != "" || (commentUri != null))
                                 viewModel.createChat(context)
                         }
                     ) {
                         Icon(
 
-                            painter = if(yourChat == "" && (commentUri == null)) painterResource(id = R.drawable.icon_add_img) else painterResource(id = R.drawable.popular_icon),
+                            painter = painterResource(id = R.drawable.popular_icon),
                             contentDescription = "Add Image",
                             tint = Color.Black,
                             modifier = Modifier
                                 .size(28.dp),
 
-                        )
+                            )
                     }
                 }
             }

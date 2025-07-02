@@ -9,6 +9,7 @@ import ReportService from '../admin/report_turnover.service.js';
 
 const Parameter = sequelize.models.Parameter;
 const Purchase = sequelize.models.Purchase
+const User = sequelize.models.User
 
 
 const PurchaseChapterService = {
@@ -32,10 +33,14 @@ const PurchaseChapterService = {
             }
 
             const purchase = await Purchase.findOne({
-                where: { chapterId, userId },
+                where: { chapterId },
                 order: [['purchasedAt', 'DESC']]
             });
+            
+            await user.update({ wallet: user.wallet - story.pricePerChapter });
 
+            const author = User.findPk(story.userId)
+            author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
 
             if (purchase) {
 
@@ -46,21 +51,15 @@ const PurchaseChapterService = {
                     throw new ApiError('Bạn đã mua chapter này rồi!', 400);
             }
 
-            await user.update({
-                wallet: user.wallet - story.pricePerChapter,
-            });
-
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
-            const transaction = await TransactionService.createTransaction({
+            await TransactionService.createTransaction({
                 userId,
                 type: "purchase",
                 money: story.pricePerChapter,
                 status: 'success',
                 finishAt: new Date(),
             });
-
-            await ReportService.updateDailyRevenue(sequelize, transaction);
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {
