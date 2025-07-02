@@ -119,7 +119,7 @@ const NotificationService = {
 
       if (user && user.followers && user.followers.length > 0) {
         const notifications = user.followers.map((follower) => ({
-          type: 'NEW_STORY',
+          type: 'NEW_STORY_CHAPTER',
           content: message,
           refId: storyId,
           status: 'UNREAD',

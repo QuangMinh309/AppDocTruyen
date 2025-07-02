@@ -33,8 +33,15 @@ class CategoryMgmtViewModel @Inject constructor(
     private val _isCategoriesLoading = MutableStateFlow(false)
     val isCategoriesLoading : StateFlow<Boolean> = _isCategoriesLoading
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
     init {
         loadCategories()
+    }
+
+    fun setShowDialogState(isShow: Boolean) {
+        _isShowDialog.value = isShow
     }
 
     private fun loadCategories()
@@ -57,7 +64,7 @@ class CategoryMgmtViewModel @Inject constructor(
             }
             finally {
                 _isCategoriesLoading.value = false
-                _toast.value = "Loaded ${_categories.value.size} categories"
+                //_toast.value = "Loaded ${_categories.value.size} categories"
             }
         }
     }

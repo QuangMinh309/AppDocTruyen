@@ -57,9 +57,17 @@ interface ApiService {
         @Path("storyId") storyId:Int
     ): Response<StoryResponse>
 
+    @DELETE("api/stories/{storyId}")
+    suspend fun deleteStory(@Path("storyId") storyId:Int) : Response<StoryDeleteResponse>
+
     data class StoryResponse(
         val success: Boolean,
         val data: Story
+    )
+
+    data class StoryDeleteResponse(
+        val success: Boolean,
+        val message: String
     )
 
 

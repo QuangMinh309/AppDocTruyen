@@ -60,6 +60,9 @@ class CommunityMgmtViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
     init{
         loadCommunities()
         loadCategories()
@@ -234,6 +237,10 @@ class CommunityMgmtViewModel @Inject constructor(
 
     fun setAvatarUri(uri: Uri?) {
         selectedAvatarUri.value = uri
+    }
+
+    fun setShowDialogState(isShow: Boolean) {
+        _isShowDialog.value = isShow
     }
 }
 

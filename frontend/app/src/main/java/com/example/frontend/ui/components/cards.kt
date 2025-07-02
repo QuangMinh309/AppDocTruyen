@@ -1196,7 +1196,7 @@ fun UserCard(
             {
                 Image(
                     painter = rememberAsyncImagePainter(
-                        model = if(item.avatarUrl != "")item.avatarUrl else R.drawable.intro_page1_bg
+                        model = item.avatarUrl.takeIf {it != null} ?: R.drawable.intro_page1_bg
                     ),
                     contentDescription = "pfp",
                     contentScale = ContentScale.Crop,
@@ -1216,7 +1216,7 @@ fun UserCard(
                         ),
                     )
                     Text(
-                        text = "Handle: " + item.dName,
+                        text = "Author: @" + item.dName,
                         color = Color.White,
                         style = TextStyle(
                             fontSize = 13.sp,
@@ -1260,27 +1260,33 @@ fun UserCard(
 
 @Composable
 fun StoryCardCard(
-    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {},
+    modifier: Modifier = Modifier, story: Story,isSelected: Boolean, onClick: () -> Unit = {}, onClick2: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
             .padding(8.dp)
-            .background(if(isSelected) Color.DarkGray else Color.Transparent)
-            .clickable { onClick() },
+            .background(if(isSelected) Color.DarkGray else Color.Transparent),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model= story.coverImgUrl,
+            model= story.coverImgUrl.takeIf { it.isNotEmpty() } ?: R.drawable.placeholder_cover,
             contentDescription = null,
             modifier = Modifier
-                .size(100.dp, 160.dp),
-            contentScale = ContentScale.Crop
+                .size(100.dp, 160.dp)
+                .clickable { onClick() },
+            contentScale = ContentScale.Crop,
         )
 
-        Spacer(modifier = Modifier.width(13.dp))
+        Spacer(modifier = Modifier
+            .width(13.dp)
+            .clickable { onClick() })
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .clickable { onClick() }
+        )
+        {
             //name
             Text(
                 story.name?:"",
@@ -1337,6 +1343,14 @@ fun StoryCardCard(
                 Text("${story.chapterNum}", color = Color.White, fontSize = 12.5.sp)
             }
         }
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = ">",
+            fontSize = 30.sp,
+            fontFamily = FontFamily(Font(R.font.poppins_bold)),
+            color = Color.White,
+            modifier = Modifier.clickable{ onClick2() }
+        )
     }
 }
 
@@ -1344,13 +1358,14 @@ fun StoryCardCard(
 fun CommunityCardCard(
     item : Community,
     isSelected : Boolean,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onClick2: () -> Unit = {}
 )
 {
     Box (
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .height(130.dp)
             .padding(vertical = 10.dp)
             .background(if(isSelected) Color.Gray else Color.DarkGray, RoundedCornerShape(10.dp))
             .clickable{ onClick() },
@@ -1359,10 +1374,14 @@ fun CommunityCardCard(
     {
         Column(
             modifier = Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = 10.dp, vertical = 10.dp)
         )
         {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = item.name,
                     color = Color.White,
@@ -1380,11 +1399,20 @@ fun CommunityCardCard(
                         fontFamily = FontFamily(Font(R.font.poppins_bold))
                     ),
                 )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = " visit >",
+                    color = OrangeRed,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                    modifier = Modifier.clickable{ onClick2() }
+                )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.height(IntrinsicSize.Min)
+                verticalAlignment = Alignment.CenterVertically
             )
             {
                 Image(

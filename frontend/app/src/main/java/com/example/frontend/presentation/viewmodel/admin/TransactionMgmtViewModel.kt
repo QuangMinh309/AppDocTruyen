@@ -1,6 +1,7 @@
 package com.example.frontend.presentation.viewmodel.admin
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.api.TransactionUpdateRequest
@@ -59,6 +60,16 @@ class TransactionMgmtViewModel @Inject constructor(
 
     private val _statusTypes = MutableStateFlow<List<String>>(dummyStatuses)
     val statusTypes: StateFlow<List<String>> = _statusTypes
+
+    private val _dialogContent = MutableStateFlow("")
+    val dialogContent: StateFlow<String> = _dialogContent
+
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog: StateFlow<Boolean> = _isShowDialog
+
+    val showDenyDialog = mutableStateOf(false)
+
+    val showDeleteDialog = mutableStateOf(false)
 
     fun loadDisplayedTransactions() {
         if(_userId.value == "" && (_transactionId.value == "" || _transactionId.value == "0"))
@@ -260,6 +271,26 @@ class TransactionMgmtViewModel @Inject constructor(
                 else if(_transactionId.value != "") onTransactionIdChange(_transactionId.value)
                 loadDisplayedTransactions()
             }
+
+
         }
+    }
+    fun hideDenyConfirmation() {
+        showDenyDialog.value = false
+    }
+    fun showDenyConfirmation() {
+        showDenyDialog.value = true
+    }
+
+    fun hideDeleteConfirmation() {
+        showDeleteDialog.value = false
+    }
+    fun showDeleteConfirmation() {
+        showDeleteDialog.value = true
+    }
+
+    fun setShowDialogState(isShow: Boolean,content:String="") {
+        _dialogContent.value = content
+        _isShowDialog.value = isShow
     }
 }

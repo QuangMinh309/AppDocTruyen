@@ -50,15 +50,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.admin.CommunityMgmtViewModel
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.CategoryList
-import com.example.frontend.ui.components.CommunityCard
 import com.example.frontend.ui.components.CommunityCardCard
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.DarkDenim
@@ -78,7 +77,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
     var showImagePicker by remember { mutableStateOf(false) }
     val showCreateDialog = remember { mutableStateOf(false) }
     val showUpdateDialog = remember { mutableStateOf(false) }
-    val showDeleteDialog = remember { mutableStateOf(false) }
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
     val context = LocalContext.current
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
@@ -94,6 +93,19 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                 viewModel.setAvatarUri(uri)
             }
             showImagePicker = false
+        }
+    )
+
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Confirm Deletion",
+        text = "Are you sure you want to delete this community?",
+        onConfirm = {
+                viewModel.deleteSelectedCommunity()
+                viewModel.setShowDialogState(false)
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
         }
     )
     ScreenFrame(
@@ -219,7 +231,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Button(
-                onClick = { showDeleteDialog.value = true },
+                onClick = { viewModel.setShowDialogState(true) },
                 enabled = selectedCommunity != null,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (selectedCommunity != null) BurntCoral else Color(0xAFAF2238)
@@ -255,7 +267,8 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                     CommunityCardCard(
                         community,
                         isSelected = community == selectedCommunity,
-                        onClick = { viewModel.onSelectCommunity(community) }
+                        onClick = { viewModel.onSelectCommunity(community) },
+                        onClick2 = { viewModel.onGoToCommunityDetailScreen(community.id) }
                     )
                 }
             }
@@ -487,34 +500,6 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                     }
                 },
                 containerColor = Color(0xFA171717)
-            )
-        }
-        if(showDeleteDialog.value)
-        {
-            AlertDialog(
-                onDismissRequest = { showDeleteDialog.value = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            viewModel.deleteSelectedCommunity()
-                            showDeleteDialog.value = false
-                        }
-                    ) {
-                        Text("Yes", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog.value = false }) {
-                        Text("Cancel", color = Color.White)
-                    }
-                },
-                title = {
-                    Text("Warning", color = Color.White)
-                },
-                text = {
-                    Text("Are you sure you want to delete this community?", color = Color.LightGray)
-                },
-                containerColor = Color(0xFF1C1C1C)
             )
         }
 
