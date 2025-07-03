@@ -51,12 +51,12 @@ const PurchaseChapterService = {
                 wallet: user.wallet - story.pricePerChapter,
             });
             
-            const author = User.findByPk(story.userId)
-            await author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
+            const author = await User.findByPk(story.userId)
+            await author.update({ wallet: author.wallet + story.pricePerChapter * 0.8 })
 
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
-            const transaction = await TransactionService.createTransaction({
+            await TransactionService.createTransaction({
                 userId,
                 type: "purchase",
                 money: story.pricePerChapter,
@@ -64,7 +64,13 @@ const PurchaseChapterService = {
                 finishAt: new Date(),
             });
 
-            await ReportService.updateDailyRevenue(sequelize, transaction);
+            await ReportService.updateDailyRevenue(sequelize, {
+                userId,
+                type: "purchase",
+                money: story.pricePerChapter * 0.2,
+                status: 'success',
+                finishAt: new Date(),
+            });
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {
