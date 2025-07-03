@@ -13,7 +13,7 @@ class YourStoryRepository @Inject constructor(
 ) {
     suspend fun getStoriesByUser(userId: Int, limit: Int = 20, lastId: Int? = null): Result<List<Story>> {
         return try {
-            val response = apiService.getStoriesByUser(userId, limit, lastId)
+            val response = apiService.getStoriesByUser(userId, lastId)
             Log.d("YourStoryRepository", "getStoriesByUser - Request URL: https://062d-116-110-41-191.ngrok-free.app/api/stories/user/$userId?limit=$limit&lastId=$lastId")
             Log.d("YourStoryRepository", "getStoriesByUser - Response Code: ${response.code()}, Body: ${response.body()}")
             if (response.isSuccessful) {

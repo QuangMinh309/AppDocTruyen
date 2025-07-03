@@ -125,7 +125,7 @@ const CommentService = {
                 commentJson.isUserLike = (userLike)? true : false;
                 // Convert time to UTC+7 instead of UTC
                 commentJson.time = moment(commentJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-
+                console.log('commentJson',commentJson)
                 return getCommentImageData(commentJson);
             });
             return await Promise.all(commentPromises);

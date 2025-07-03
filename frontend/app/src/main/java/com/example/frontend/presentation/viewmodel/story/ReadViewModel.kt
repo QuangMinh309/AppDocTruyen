@@ -142,7 +142,7 @@ class ReadViewModel @Inject constructor(
                 result.onSuccess {
                     val updatedList = _messages.value.map { com ->
                         if (com.id == comment.id) {
-                            com.copy(isUserLike = !comment.isUserLike)
+                            com.copy(likeNumber = if (comment.isUserLike) com.likeNumber - 1 else com.likeNumber + 1,isUserLike = !comment.isUserLike)
                         } else {
                             com
                         }

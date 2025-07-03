@@ -4,12 +4,9 @@
 
 
 <!--    >https://appdoctruyen.onrender.com/-->
-<<<<<<< HEAD
+
     <string name="base_url">http://10.0.2.2:20268/</string>
     <string name="ws_base_url">ws://10.0.2.2:20268/ws</string>
-=======
-    <string name="base_url">https://49f3-14-169-18-157.ngrok-free.app/</string>
-    <string name="ws_base_url">ws://49f3-14-169-18-157.ngrok-free.app/ws</string>
->>>>>>> 0196a2b2fe6926930d35c179c7eddc8bc6ff8401
+
 
 </resources>

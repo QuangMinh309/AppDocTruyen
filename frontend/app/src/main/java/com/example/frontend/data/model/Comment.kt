@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.time.LocalDateTime
 
 data class Comment (
-    @SerializedName("chatId") val id: Int,
+    @SerializedName("commentId") val id: Int,
     val chapter: Chapter,
     val user: User,
     val content: String?="",

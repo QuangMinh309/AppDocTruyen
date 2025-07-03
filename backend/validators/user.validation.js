@@ -188,7 +188,7 @@ const WalletChangeSchema = Joi.object({
 
 // Schema validation cho follow/unfollow user
 const followUserSchema = Joi.object({
-  followedId: Joi.number()
+  id: Joi.number()
     .integer()
     .min(1)
     .required()
@@ -200,7 +200,7 @@ const followUserSchema = Joi.object({
 
 // Schema validation cho like/unlike comment
 const commentSchema = Joi.object({
-  commentId: Joi.number()
+  id: Joi.number()
     .integer()
     .min(1)
     .required()
