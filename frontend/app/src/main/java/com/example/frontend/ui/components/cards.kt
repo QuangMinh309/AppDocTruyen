@@ -488,7 +488,7 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    
+
                 }
             }
         }

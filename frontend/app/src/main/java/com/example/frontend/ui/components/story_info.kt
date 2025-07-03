@@ -196,17 +196,7 @@ fun StoryInfo(viewModel:StoryDetailViewModel) {
                 Spacer(modifier = Modifier.width(4.dp))
             }
         }
-        // Button start read
-        LinearButton(modifier = Modifier.weight(0.4f).height(35.dp),
-            onClick = { viewModel.onGoToChapterScreen(viewModel.firstChapterId.value?:0,viewModel.finalChapterId.value?:0,viewModel.storyId.value,viewModel.isAuthor.value) }){
-            Text(
-                text = "Start  reading",
-                color = Color.Black,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
-            )
-        }
+        Spacer(modifier = Modifier.width(10.dp))
     }
 }
 

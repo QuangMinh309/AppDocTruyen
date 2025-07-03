@@ -112,7 +112,7 @@ class UserRepository @Inject constructor(
         return try {
             if(id==null) return Result.Failure(Exception("id is null"))
 
-            val response = apiService.getAllUserTransaction(id,lastId?:20)
+            val response = apiService.getAllUserTransaction(id)
             if (response.isSuccessful) {
                 Result.Success( response.body() ?:  throw Exception("transaction failed"))
             } else {

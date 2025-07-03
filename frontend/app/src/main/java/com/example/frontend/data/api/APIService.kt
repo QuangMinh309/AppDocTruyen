@@ -523,7 +523,6 @@ interface ApiService {
     @GET("/api/transactions/user/{userId}")
     suspend fun getAllUserTransaction(
         @Path("userId") userId: Int,
-        @Query("lastId") lastId: Int,
     ): Response<ListTransactionResponse>
 
 

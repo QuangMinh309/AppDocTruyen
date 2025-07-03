@@ -14,12 +14,12 @@ const broadcastToClients = (ws, action, data, clients) => {
     clients.forEach((client) => {
         const clientWs = client?.get('/ws/chat');
         if (!clientWs || clientWs.readyState !== clientWs.OPEN) return; // Kiểm tra kết nối
+        
         if (clientWs.communityId !== ws.communityId) return; // Chỉ gửi đến những client trong cùng community
-
+ 
         const dataToSend = { ...data };
         dataToSend.isUser = data.sender?.userId === clientWs.userId;
-        if( dataToSend.isUser==clientWs.userId)
-            
+console.log('broadcastToClients', dataToSend)
         clientWs.send(JSON.stringify({
             action: `BRC_${action}`,
             payload: dataToSend,
@@ -69,7 +69,7 @@ async function onMessage(ws, message, clients) {
             case 'CREATE_CHAT':
                 validateMessage(createChatSchema, data); // Validate trước khi xử lý
                 const newChat = await ChatService.createChat({ ...payload, senderId: ws.userId, communityId: ws.communityId }, ws.userId);
-                // console.log(' chat data:', newChat);
+               
                 ws.send(JSON.stringify({ success: true, action, payload: newChat }));
                 broadcastToClients(ws, action, newChat, clients);
                 break;

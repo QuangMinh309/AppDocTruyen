@@ -170,7 +170,7 @@ fun MyChatBubble(message: Chat) {
                     }
                 }
                     AsyncImage(
-                        model = message.messagePicUrl.takeIf { it!="no picture." }?:R.drawable.broken_image,
+                        model = message.messagePicUrl.takeIf { it =="no picture." }?:R.drawable.broken_image,
                         contentDescription = "message pic",
                         placeholder = painterResource(id = R.drawable.broken_image),
                         modifier = Modifier

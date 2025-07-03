@@ -93,7 +93,7 @@ fun WithdrawScreen(viewmodel: WithDrawViewModel= hiltViewModel()){
             Column (
                 verticalArrangement = Arrangement.spacedBy(40.dp),
                 modifier = Modifier
-                    .padding(vertical = 66.dp, horizontal = 20.dp)
+                    .padding(vertical = 20.dp, horizontal = 20.dp)
                     .background(Color(0xA6747373), shape = RoundedCornerShape(15.dp))
                     .padding(20.dp)
             ){

@@ -55,8 +55,12 @@ const TransactionService = {
     }
   },
 
-  async getUserTransactions(userId, { limit = 20, lastId = null } = {}) {
+  async getUserTransactions(userId, { limit = 20, lastId =null } = {}) {
     try {
+      console.log('getUserTransactions', userId, limit, lastId)
+      if (!userId) {
+        throw new ApiError('Thiếu thông tin người dùng', 400);
+      }
       const where = {
         userId,
         ...(lastId
@@ -94,6 +98,7 @@ const TransactionService = {
         transactions.length > 0
           ? transactions[0].transactionId
           : null;
+      console.log(transactions)
       return {
         transactions,
         nextLastId,

@@ -75,13 +75,13 @@ router.post(
 router.post(
   '/like-comment',
   validate(validators.comment),
-  UserController.followUser
+  UserController.likeComment
 )
 
 router.post(
   '/unlike-comment',
   validate(validators.comment),
-  UserController.unfollowUser
+  UserController.unlikeComment
 )
 
 router.get('/follow/status/:followedId', UserController.getFollowStatus)

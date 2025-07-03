@@ -168,7 +168,7 @@ const UserController = {
 
   async followUser(req, res, next) {
     try {
-      const { followedId } = req.body;
+      const  followedId  = req.body.id;
       const followerId = req.user.userId;
 
       const result = await followUser(followerId, parseInt(followedId));
@@ -184,7 +184,7 @@ const UserController = {
 
   async unlikeComment(req, res, next) {
     try {
-      const { commentId } = req.body;
+      const commentId = req.body.id;
       const userId = req.user.userId;
 
       const result = await CommentService.unlikeComment(parseInt(commentId),userId);
@@ -200,8 +200,9 @@ const UserController = {
 
   async likeComment(req, res, next) {
     try {
-       const { commentId } = req.body;
+       const commentId = req.body.id;
       const userId = req.user.userId;
+      console.log('likeComment', commentId, userId)
 
       const result = await CommentService.likeComment(parseInt(commentId),userId);
 

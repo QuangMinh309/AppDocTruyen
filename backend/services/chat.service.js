@@ -39,7 +39,6 @@ const ChatService = {
 
                     { model: sequelize.models.User, as: 'sender', attributes: ['userId', 'dUserName', 'avatarId'] },
                 ],
-                order: [['time', 'DESC']],
             });
             const chatPromises = chats.map(chat => {
                 const chatJson = chat.toJSON();
