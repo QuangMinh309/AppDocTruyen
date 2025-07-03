@@ -38,7 +38,7 @@ const PurchaseChapterService = {
                 attributes: ['purchasedId', 'chapterId', 'purchasedAt']
             });
             
-            console.log(purchase)
+            // console.log(purchase)
 
 
             if (purchase) {

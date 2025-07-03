@@ -7,7 +7,7 @@ import ApiError from '../utils/api_error.util.js'
 
 export const getImageUrl = async (req, res) => {
   try {
-    console.log('Received request to get image URL for imageId:', req.params.imageId);
+    // console.log('Received request to get image URL for imageId:', req.params.imageId);
     const imageId = req.params.imageId
     const imageUrl = await getImageUrlFromCloudinary(imageId)
     res.json({ url: imageUrl })
