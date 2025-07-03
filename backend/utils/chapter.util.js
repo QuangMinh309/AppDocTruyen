@@ -52,13 +52,6 @@ export const checkChapterAccessCore = async (
       return returnDetails ? { purchased: true, isPremium: true } : true;
     }
 
-    const storyPurchase = await models.Purchase.findOne({
-      where: { userId, storyId, chapterId: null },
-    });
-    if (storyPurchase) {
-      return returnDetails ? { purchased: true, isEntireStory: true } : true;
-    }
-
     const parameters = await models.Parameter.findOne();
     if (!parameters) {
       throw new ApiError('Không tìm thấy tham số hệ thống', 500);
@@ -66,6 +59,7 @@ export const checkChapterAccessCore = async (
 
     const chapterPurchase = await models.Purchase.findOne({
       where: { userId, chapterId },
+      attributes: ['purchasedId', 'userId', 'chapterId', 'purchasedAt'],
     });
 
     let isStillValid = false;
@@ -85,13 +79,17 @@ export const checkChapterAccessCore = async (
   }
 };
 
-export const canUserAccessChapter = async (userId, chapter) => {
+export const canUserAccessChapter = async (
+  userId,
+  chapter,
+  isPremium = false
+) => {
   return await checkChapterAccessCore(
     userId,
     chapter.storyId,
     chapter.chapterId,
     false,
-    req.user.isPremium
+    isPremium
   );
 };
 
