@@ -96,9 +96,9 @@ open class BaseViewModel @Inject constructor(protected val navigationManager: Na
             navigationManager.back()
         }
     }
-    fun onGoToChapterScreen(chapterId: Int,storyId: Int,isAuthor:Boolean) {
+    fun onGoToChapterScreen(chapterId: Int,finalChapterId :Int,storyId: Int,isAuthor:Boolean) {
         viewModelScope.launch {
-            navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId,storyId,isAuthor))
+            navigationManager.navigate(Screen.Story.Chapter.Read.createRoute(chapterId,finalChapterId,storyId,isAuthor))
         }
     }
     open fun onGoToSearchingMemberScreen(id: Int) {

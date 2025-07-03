@@ -44,8 +44,8 @@ sealed class Screen(var route: String) {
         }
         sealed class Chapter(route: String) : Story(route) {
 
-            data object Read : Chapter("Chapter/Read/{chapterId}/{storyId}/{isAuthor}") {
-                fun createRoute(chapterId: Int,storyId: Int,isAuthor:Boolean): String = "Chapter/Read/$chapterId/$storyId/$isAuthor"
+            data object Read : Chapter("Chapter/Read/{chapterId}/{finalChapterId}/{storyId}/{isAuthor}") {
+                fun createRoute(chapterId: Int,finalChapterId:Int,storyId: Int,isAuthor:Boolean): String = "Chapter/Read/$chapterId/$finalChapterId/$storyId/$isAuthor"
             }
 
             data object Write : Chapter("Chapter/Write/{storyId}") {

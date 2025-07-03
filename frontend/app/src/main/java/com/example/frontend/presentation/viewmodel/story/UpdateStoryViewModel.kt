@@ -59,6 +59,8 @@ class UpdateStoryViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
+    val finalChapterId= mutableStateOf<Int?>(null)
+
     val isAuthor = mutableStateOf(true)
     val isLoading = mutableStateOf(false)
 
@@ -120,6 +122,9 @@ class UpdateStoryViewModel @Inject constructor(
                 _chapters.value = story.chapters ?: emptyList()
                 _coverImgId.value = story.coverImgId
                 _coverImgUrl.value = story.coverImgUrl
+
+                finalChapterId.value=chapters?.value?.maxByOrNull { it.ordinalNumber }?.chapterId
+
                 Log.d("UpdateStoryViewModel", "Loaded story: name=${story.name}, " +
                         "description=${story.description}, categories=${story.categories?.map { it.id }}, " +
                         "pricePerChapter=${story.pricePerChapter}, chapters=${story.chapters?.size}, " +

@@ -513,6 +513,40 @@ interface ApiService {
     @POST("api/users/login")
     suspend fun login(@Body loginRequest: LoginRequest): Response<LoginResponse>
 
+
+    data class LoginRequest(
+        val mail: String,
+        val password: String
+    )
+
+    data class LoginResponse(
+        val success: Boolean,
+        val message: String,
+        val data: LoginData
+    )
+
+    data class LoginData(
+        val user: User,
+        val accessToken: String,
+        val refreshToken: String
+    )
+
+
+    @POST("api/users/refresh-token")
+    suspend fun refreshToken(
+        @Body refreshToken: String
+    ):Response<RefreshTokenResponse>
+
+    data class RefreshTokenResponse(
+        val success: Boolean,
+        val message: String,
+        val data : RefreshTokenData
+    )
+
+    data class RefreshTokenData(
+        val accessToken: String
+    )
+
     @POST("api/users/register")
     suspend fun register(@Body registerRequest: RegisterRequest): Response<RegisterResponse>
 
@@ -612,23 +646,6 @@ data class RegisterResponse(
 )
 
 data class RegisterData(
-    val user: User,
-    val accessToken: String,
-    val refreshToken: String
-)
-
-data class LoginRequest(
-    val mail: String,
-    val password: String
-)
-
-data class LoginResponse(
-    val success: Boolean,
-    val message: String,
-    val data: LoginData
-)
-
-data class LoginData(
     val user: User,
     val accessToken: String,
     val refreshToken: String

@@ -32,6 +32,9 @@ class ReadViewModel @Inject constructor(
     private val _isAuthor = MutableStateFlow(checkNotNull(savedStateHandle.get<Boolean>("isAuthor")))
     val isAuthor: StateFlow<Boolean> = _isAuthor.asStateFlow()
 
+    private val _finalChapterId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("finalChapterId")))
+    val finalChapterId: StateFlow<Int> = _finalChapterId.asStateFlow()
+
     // State để lưu chapter hiện tại
     private val _currentChapter = MutableStateFlow<Chapter?>(null)
     val currentChapter: StateFlow<Chapter?> = _currentChapter.asStateFlow()
@@ -54,7 +57,11 @@ class ReadViewModel @Inject constructor(
                 Log.d("ReadViewModel", "Loaded chapter: ${result.data.chapterName}")
             }
             is Result.Failure -> {
-                _toast.value = "Failed to load chapter: ${result.exception.message}"
+                _toast.value = result.exception.message ?: "Failed to load chapter"
+                Log.e("ReadViewModel", "Failed to load chapter: ${result.exception.message}")
+                if (result.exception.message == "Bạn cần mua chương này để truy cập") {
+                    onGoBack()
+                }
             }
         }
         isLoading.value = false
@@ -71,11 +78,13 @@ class ReadViewModel @Inject constructor(
                     Log.d("ReadViewModel", "Loaded next chapter: ${result.data.chapterName}")
                 }
                 is Result.Failure -> {
-                    _toast.value = "Failed to load next chapter: ${result.exception.message}"
+                    _toast.value = result.exception.message ?: "Failed to load next chapter"
+                    Log.e("ReadViewModel", "Failed to load next chapter: ${result.exception.message}")
                 }
             }
             isLoading.value = false
         }
     }
-}
 
+
+}

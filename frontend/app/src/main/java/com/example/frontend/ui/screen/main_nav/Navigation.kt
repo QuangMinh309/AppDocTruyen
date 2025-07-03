@@ -218,6 +218,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 route = Screen.Story.Chapter.Read.route,
                 arguments = listOf(
                     navArgument("chapterId") { type = NavType.IntType },
+                    navArgument("finalChapterId") {type=NavType.IntType},
                     navArgument("storyId"){type=NavType.IntType},
                     navArgument("isAuthor"){type=NavType.BoolType}
                 )

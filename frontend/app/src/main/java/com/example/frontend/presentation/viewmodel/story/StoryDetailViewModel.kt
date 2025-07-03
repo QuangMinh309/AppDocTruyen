@@ -43,6 +43,7 @@ class StoryDetailViewModel @Inject constructor(
     val voteCount: StateFlow<Int> = _voteCount.asStateFlow()
 
     val firstChapterId = mutableStateOf<Int?>(null)
+    val finalChapterId= mutableStateOf<Int?>(null)
 
     init {
         viewModelScope.launch {
@@ -77,6 +78,7 @@ class StoryDetailViewModel @Inject constructor(
                 Log.d("StoryDetailViewModel", "Loaded story: ${result.data}")
                 Log.d("StoryDetailViewModel", "Chapters: ${result.data.chapters}")
                 firstChapterId.value = result.data.chapters?.minByOrNull { it.ordinalNumber }?.chapterId
+                finalChapterId.value=result.data.chapters?.maxByOrNull { it.ordinalNumber }?.chapterId
                 checkIsAuthor()
             }
             is Result.Failure -> {
