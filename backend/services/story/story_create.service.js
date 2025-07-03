@@ -4,6 +4,7 @@ import { uploadImageToCloudinary } from '../cloudinary.service.js';
 import { formatDate } from '../../utils/date.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
+import { notifyUser } from '../../utils/notify_user.util.js';
 
 const Story = sequelize.models.Story;
 const StoryCategory = sequelize.models.StoryCategory;

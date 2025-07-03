@@ -182,12 +182,11 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                     ) {
                         SectionTitle(title = "Mô tả")
                         Text(
-                            text = community?.description.takeIf { !it.isNullOrEmpty() } ?: "Không có mô tả.",
-                            style = MaterialTheme.typography.bodyMedium.copy(
+                            text = "Không có mô tả.",
+                            style = TextStyle(
                                 fontSize = 14.sp,
-                                lineHeight = 20.sp
-                            ),
-                            color = Color.White
+                                fontWeight = FontWeight.Bold
+                            )
                         )
                     }
                     // Members list

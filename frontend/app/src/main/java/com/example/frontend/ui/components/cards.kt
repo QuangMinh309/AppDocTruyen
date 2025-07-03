@@ -989,7 +989,7 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
             placeholder = painterResource(R.drawable.broken_image),
             error = painterResource(R.drawable.broken_image)
         )
-        Column {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(
                 text = model.name,
                 color = Color.White,
@@ -997,9 +997,8 @@ fun AuthorInfoCard(model: Author, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .padding(bottom = 7.dp)
-                    .padding(horizontal = 16.dp)
             )
-            Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp)
+            Text(text = "@${model.dName}", color = Color.White, fontSize = 13.sp,)
         }
         Spacer(modifier = Modifier.weight(1f))
         TextButton(onClick = onClick) {

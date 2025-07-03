@@ -67,6 +67,11 @@ class ChattingViewModel @Inject constructor(
             }
         }
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        disconnect()
+    }
     private suspend fun fetchChats() {
         chatRepository.isConnected.collect { isConnected ->
             if (isConnected && _isLoading.value) {
@@ -116,7 +121,7 @@ class ChattingViewModel @Inject constructor(
             chatRepository.disconnect()
 
             Log.d("ChattingViewModel", "Disconnected")
-            onGoBack()
+
         }
     }
 }

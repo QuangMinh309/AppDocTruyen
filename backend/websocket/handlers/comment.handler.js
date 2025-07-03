@@ -66,7 +66,7 @@ async function onMessage(ws, message, clients) {
         switch (action) {
             case 'CREATE_COMMENT':
                 validateMessage(createCommentSchema, data); // Validate trước khi xử lý
-                const newComment = await CommentService.createComment({ ...payload, senderId: ws.userId, chapterId: ws.chapterId }, ws.userId);
+                const newComment = await CommentService.createComment({ ...payload, userId: ws.userId, chapterId: ws.chapterId }, ws.userId);
                 console.log(' comment data:', newComment);
                 ws.send(JSON.stringify({ success: true, action, payload: newComment }));
                 broadcastToClients(ws, action, newComment, clients);

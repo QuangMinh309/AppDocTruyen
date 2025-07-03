@@ -49,7 +49,7 @@ const CommentService = {
                 model: sequelize.models.Chapter,
                 as: 'chapter',
                 where: { storyId: id },
-                attributes: []
+                attributes: ['chapterName']
                 },
                 {
                 model: sequelize.models.User,
@@ -89,12 +89,16 @@ const CommentService = {
             const chapter = ChapterService.getChapterById(id)
             if (!chapter) throw new ApiError(`chap này không tồn tại!`, 500);;
 
-            const comments = await sequelize.models.Comment.findAll({
-                limit:20,
-                  where: { communityId: id },
+           const comments = await sequelize.models.Comment.findAll({
+                limit: 20,
+                where: { chapterId: id },
                 attributes: {
                     include: [
-                    [fn('COUNT', col('likedBy.userId')), 'likeNum']
+                    [sequelize.literal(`(
+                        SELECT COUNT(*)
+                        FROM like_comment AS lc
+                        WHERE lc.commentId = Comment.commentId
+                    )`), 'likeNum']
                     ]
                 },
                 include: [
@@ -104,16 +108,15 @@ const CommentService = {
                     attributes: ['userId', 'dUserName', 'avatarId']
                     },
                     {
-                    model: sequelize.models.User,
-                    as: 'likedBy',
-                    attributes: [], // Không cần dữ liệu, chỉ cần đếm
-                    through: { attributes: [] } // Không cần thông tin bảng trung gian
+                    model: sequelize.models.Chapter,
+                    as: 'chapter',
+                    attributes: ['chapterName']
                     }
-            ],
-            group: ['Comment.commentId', 'user.userId'],
-            order: [[fn('COUNT', col('likedBy.userId')), 'DESC']]
+                ],
+                order: [[sequelize.literal('likeNum'), 'DESC']]
             });
 
+            console.log(comments)
 
             const commentPromises = comments.map(comment => {
                 const commentJson = comment.toJSON();
