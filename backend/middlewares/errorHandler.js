@@ -1,5 +1,5 @@
 const errorHandler = (err, req, res, next) => {
-  // console.error(err.stack)
+  console.error(err.stack)
 
   // Mặc định mã trạng thái và thông điệp
   let statusCode = err.statusCode || 500
