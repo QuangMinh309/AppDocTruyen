@@ -22,7 +22,7 @@ export default {
         type: Sequelize.STRING,
       },
       description: {
-        type: Sequelize.STRING(1500),
+        type: Sequelize.TEXT("long"),
       },
       ageRange: {
         type: Sequelize.INTEGER,

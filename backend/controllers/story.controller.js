@@ -203,8 +203,8 @@ const StoryController = {
   async getStoriesByUser(req, res, next) {
     try {
       const { userId } = req.params;
-      const roleName = req.user.role?.roleName || 'user';
-      const currentUserId = req.user.userId;
+      const roleName = req.user?.role?.roleName;
+      const currentUserId = req.user?.userId;
       const { limit, lastId, includeAll } = req.query;
 
       const result = await getStoriesByUser(userId, {
