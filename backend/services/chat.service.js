@@ -82,7 +82,7 @@ const ChatService = {
             chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
             // Convert time to UTC+7 instead of UTC
             chatJson.time = moment(chatJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-            console.log('Full chat data:', chatJson);
+            // console.log('Full chat data:', chatJson);
             return getChatImageData(chatJson);
         } catch (err) {
             if (err instanceof ApiError) throw err;
@@ -118,7 +118,7 @@ const ChatService = {
             chatJson.isUser = (chatJson.sender.userId == userId) ? true : false
             // Convert time to UTC+7 instead of UTC
             chatJson.time = moment(chatJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-            console.log('Full chat data:', chatJson);
+            // console.log('Full chat data:', chatJson);
             return getChatImageData(chatJson);
         } catch (err) {
             if (err instanceof ApiError) throw err;

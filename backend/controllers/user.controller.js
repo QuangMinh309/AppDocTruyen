@@ -245,7 +245,7 @@ const UserController = {
     try {
       const userId = req.user.userId;
       const data = req.body
-      console.log(data)
+      // console.log(data)
       const result = await WalletManagementService.walletChange(userId, data);
 
       res.status(200).json({

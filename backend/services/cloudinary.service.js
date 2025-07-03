@@ -13,8 +13,8 @@ const getImageUrlFromCloudinary = async (imageId) => {
       quality: 'auto',
     });
   } catch (error) {
-    console.log(error )
-    console.log(`không thể lấy ảnh từ cloudinary!`, 500)
+    // console.log(error )
+    // console.log(`không thể lấy ảnh từ cloudinary!`, 500)
     return ""
   }
 };
@@ -22,7 +22,7 @@ const getImageUrlFromCloudinary = async (imageId) => {
 
 const uploadImageToCloudinary = async (fileBuffer, des = "") => {
   try {
-    console.log('Received fileBuffer:', fileBuffer); // Debug log
+    // console.log('Received fileBuffer:', fileBuffer);
     const streamUpload = () => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
@@ -72,7 +72,7 @@ const uploadBase64ToCloudinary = async (base64Image, des = "") => {
 const deleteImageOnCloudinary = async (publicId) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId);
-    console.log('Deleted image result:', result);
+    // console.log('Deleted image result:', result);
     return result;
   } catch (error) {
     console.error('Error deleting image from Cloudinary:', error);

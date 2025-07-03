@@ -101,7 +101,7 @@ const CommunityService = {
         try {
             const community = await Community.findByPk(communityId)
             const user = await User.findByPk(userId)
-            console.log("aada",JoinCommunity)
+            // console.log("aada",JoinCommunity)
             const hasJoin = await JoinCommunity.findOne({
                 where: {
                     userId,
@@ -143,7 +143,7 @@ const CommunityService = {
             }
             result.avatarUrl = await getImageUrlFromCloudinary(community.avatarId);
             await Promise.all(result.members.map(async (data) => {
-                console.log("id: ", data.avatarId)
+                // console.log("id: ", data.avatarId)
                 data.avatarUrl = await getImageUrlFromCloudinary(data.avatarId);
 
                 const existingFollow = await Follow.findOne({
@@ -157,7 +157,7 @@ const CommunityService = {
             }));
             delete result.avatarId;
             delete result.categoryId;
-            console.log(result)
+            // console.log(result)
             return result;
         } catch (err) {
             console.error('Lỗi khi lấy cộng đồng:', err)
@@ -207,7 +207,7 @@ const CommunityService = {
                     return userData;
                 })
             );
-            console.log(result)
+            // console.log(result)
             return result;
         } catch (err) {
             console.error('Lỗi khi tìm kiếm thành viên cộng đồng:', err);

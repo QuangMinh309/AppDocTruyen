@@ -27,6 +27,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -79,6 +80,7 @@ fun SearchBar(
                 textStyle = TextStyle(
                     color = Color.Gray
                 ),
+                cursorBrush = SolidColor(Color.White),
                 singleLine = true,
                 decorationBox = { innerTextField ->
                     Row(modifier = Modifier.fillMaxWidth()) {
@@ -163,6 +165,7 @@ fun SearchBarv2(
                     onValueChange(it)
                     if (!isSearching) onSearchClick()
                 },
+                cursorBrush = SolidColor(Color.White),
                 textStyle = TextStyle(color = Color.Gray),
                 singleLine = true,
                 modifier = Modifier

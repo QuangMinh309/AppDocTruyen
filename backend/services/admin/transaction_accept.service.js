@@ -43,7 +43,7 @@ const TransactionManagerService = {
                 transaction
             );
             notifyUser(trans.userId)
-            console.log('notifiUsser')
+            // console.log('notifiUsser')
             
 
             return {

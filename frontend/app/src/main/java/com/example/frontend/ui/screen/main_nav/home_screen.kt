@@ -484,9 +484,15 @@ val categories: List<Category> = listOf(
 
 
 val bannerItems = listOf(
-    BannerItem(R.drawable.banner1, "Truyen hot"),
-    BannerItem(R.drawable.banner2, "Khuyen mai"),
-    BannerItem(R.drawable.banner3, "Moi cap nhat")
+    BannerItem(R.drawable.banner_005, "Truyen hot"),
+    BannerItem(R.drawable.banner_006, "Khuyen mai"),
+    BannerItem(R.drawable.banner007, "Moi cap nhat"),
+    BannerItem(R.drawable.banner_008, "Moi cap nhat"),
+    BannerItem(R.drawable.banner09, "Moi cap nhat"),
+    BannerItem(R.drawable.banner10, "Moi cap nhat"),
+    BannerItem(R.drawable.banner11, "Moi cap nhat"),
+    BannerItem(R.drawable.banner12, "Moi cap nhat")
+
 )
 val genreDemoList: List<Category> = listOf(Category(id =1,name ="Adventure"),Category(id =2,name ="Autobiography"),
     Category(id =3,name ="Mystery"),Category(id =4,name ="Romantic"))

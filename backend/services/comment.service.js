@@ -85,7 +85,7 @@ const CommentService = {
     },
      async getAllCommentsOfChapter(id,userId) {
         try {
-            console.log(id)
+            // console.log(id)
             const chapter = ChapterService.getChapterById(id)
             if (!chapter) throw new ApiError(`chap này không tồn tại!`, 500);;
 

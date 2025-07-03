@@ -556,6 +556,7 @@ fun StoryCard4(
             Spacer(modifier = Modifier.height(13.dp))
 
             // genre tags
+
             SmallGenreTags(story.categories ?: emptyList())
             Spacer(modifier = Modifier.height(27.dp))
 
@@ -759,10 +760,12 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = story.name?:"",
+                text = story.name ?: "",
                 color = Color.White,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1, // Giới hạn tối đa 1 dòng
+                overflow = TextOverflow.Ellipsis // Hiển thị dấu ba chấm khi bị cắt
             )
             if (isPremium) { // Chỉ hiển thị biểu tượng khóa nếu truyện là premium
                 Icon(
@@ -790,7 +793,7 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Filled.Favorite,
+                painter = painterResource(R.drawable.popular_icon),
                 contentDescription = "Likes",
                 modifier = Modifier
                     .size(18.dp)
@@ -900,22 +903,42 @@ fun StoryCard3(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Các thể loại (Chips)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Box(
+                modifier = Modifier
+                    .height(48.dp) // Giả định: mỗi dòng ~24.dp → 2 dòng là 48.dp
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(Color.Transparent)
             ) {
-                story.categories?.forEach { genre ->
-                    genre.name?.let { name ->
-                        Chip(text = name)
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    story.categories?.forEach { genre ->
+                        genre.name?.let { name ->
+                            Chip(text = name)
+                        }
                     }
                 }
+
+                // Optional: Fade khi overflow, để tạo hiệu ứng "..."
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f))
+                            )
+                        )
+                )
             }
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Số lượt xem
             Row(
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(R.drawable.popular_icon),
