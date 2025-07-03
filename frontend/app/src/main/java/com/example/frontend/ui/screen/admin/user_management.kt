@@ -215,7 +215,8 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
                     UserCard(
                         item = user,
                         isSelected = user == selectedUser,
-                        onClick = { viewModel.onSelectedUserChange(user) }
+                        onClick = { viewModel.onSelectedUserChange(user) },
+                        onClick2 = { viewModel.onGoToUserProfileScreen(user.id) }
                     )
                 }
             }
