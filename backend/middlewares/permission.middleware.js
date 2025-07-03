@@ -95,7 +95,11 @@ export const canAccessChapter = async (req, res, next) => {
 
     // Kiểm tra nếu người dùng đã mua chương này
     const chapterPurchase = await models.Purchase.findOne({
-      where: { userId, chapterId },
+      attributes: ['purchasedId', 'userId', 'chapterId', 'purchasedAt'],
+      where: {
+        userId,
+        chapterId,
+      },
     });
     if (chapterPurchase) {
       const purchaseDate = new Date(chapterPurchase.purchasedAt);
