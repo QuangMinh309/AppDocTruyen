@@ -32,9 +32,6 @@ const getStoriesByUser = async (
       ],
     };
 
-    console.log('isOwnerOrAdmin:', isOwnerOrAdmin);
-    console.log('where:', JSON.stringify(where, null, 2));
-
     const stories = await Story.findAll({
       where,
       limit: parseInt(limit),
