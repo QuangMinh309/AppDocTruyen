@@ -94,7 +94,8 @@ fun StoryStatusAction(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier
                     .height(35.dp)
-                    .weight(1f)
+                    .weight(1f),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
                     text = "Add chapter",
@@ -195,8 +196,6 @@ fun StoryStatusAction(
                     modifier = Modifier.size(16.dp),
                     tint = Color.Black
                 )
-                Spacer(modifier = Modifier.width(5.dp))
-
             }
         }
     }

@@ -1237,6 +1237,22 @@ fun TransactionCard(
                     ),
 
                 )
+                Spacer(modifier = Modifier.width(5.dp))
+                Divider(
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .height(17.dp)
+                        .width(1.dp)
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = "wallet: ${item.user?.wallet}",
+                    color = Color.White,
+                    style = TextStyle(
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    )
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "Time: " + item.time,
@@ -1329,7 +1345,8 @@ fun TransactionCard(
 fun UserCard(
     item : User,
     isSelected : Boolean,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onClick2: () -> Unit = {}
 )
 {
     Box (
@@ -1347,7 +1364,9 @@ fun UserCard(
                 .padding(horizontal = 10.dp)
         )
         {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     text = "ID: " + item.id,
                     color = Color.White,
@@ -1364,6 +1383,16 @@ fun UserCard(
                         fontSize = 11.sp,
                         fontFamily = FontFamily(Font(R.font.poppins_bold))
                     ),
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = " view >",
+                    color = OrangeRed,
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.poppins_bold))
+                    ),
+                    modifier = Modifier.clickable{ onClick2() }
                 )
             }
 
