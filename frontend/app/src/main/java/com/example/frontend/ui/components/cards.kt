@@ -488,20 +488,7 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(id = R.drawable.popular_icon),
-                            contentDescription = null,
-                            modifier = Modifier.size(15.dp),
-                            tint = OrangeRed
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = formatViews(novel.voteNum.toLong()), // Sử dụng voteNum từ Story
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                    }
+                    
                 }
             }
         }
