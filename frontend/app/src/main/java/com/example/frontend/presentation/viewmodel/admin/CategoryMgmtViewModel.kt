@@ -184,7 +184,7 @@ class CategoryMgmtViewModel @Inject constructor(
                         _selectedItem.value = null
                     }
                     is Result.Failure -> {
-                        _toast.value = "Failed to delete category: ${result.exception.message}"
+                        _toast.value = "Error: ${result.exception.message}"
                     }
                 }
             }

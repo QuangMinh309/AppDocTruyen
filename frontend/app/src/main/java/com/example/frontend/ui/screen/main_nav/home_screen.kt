@@ -390,7 +390,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 if (readLists.isNotEmpty() || isReadListsLoading) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         SectionTitle(
-                            title = "Danh sách truyện",
+                            title = "Read Lists",
                             modifier = Modifier.padding(start = 20.dp),
                             iconResId = R.drawable.book_ic
                         )

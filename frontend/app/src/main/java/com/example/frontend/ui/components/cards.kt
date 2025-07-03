@@ -1099,35 +1099,41 @@ fun ReadListItem(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
 
-                // Hiển thị icon 3 chấm chỉ khi showMoreOptions = true
-                if (showMoreOptions) {
-                    IconButton(onClick = { showMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options",
-                            tint = Color.White
-                        )
-                    }
+                Box(
+                    modifier = Modifier.size(20.dp)
+                )
+                {
+                    // Hiển thị icon 3 chấm chỉ khi showMoreOptions = true
+                    // thằng ngu lol đéo bt sửa bug↑↑↑
+                    if (showMoreOptions) {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options",
+                                tint = Color.White
+                            )
+                        }
 
-                    // Dropdown Menu
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Update Read List") },
-                            onClick = {
-                                onUpdateClick(item)
-                                showMenu = false
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Delete Read List") },
-                            onClick = {
-                                onDeleteClick(item)
-                                showMenu = false
-                            }
-                        )
+                        // Dropdown Menu
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Update Read List") },
+                                onClick = {
+                                    onUpdateClick(item)
+                                    showMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete Read List") },
+                                onClick = {
+                                    onDeleteClick(item)
+                                    showMenu = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -1362,11 +1368,11 @@ fun UserCard(
                 modifier = Modifier.height(IntrinsicSize.Min)
             )
             {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = item.avatarUrl.takeIf {it != null} ?: R.drawable.intro_page1_bg
-                    ),
+                AsyncImage(
+                    model = item.avatarUrl.takeIf { it.isNotEmpty() } ?: R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
+                    placeholder = painterResource(R.drawable.intro_page1_bg),
+                    error = painterResource(R.drawable.placeholder_cover),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(50.dp, 50.dp)

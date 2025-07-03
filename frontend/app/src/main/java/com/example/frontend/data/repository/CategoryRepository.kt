@@ -1,8 +1,10 @@
 package com.example.frontend.data.repository
 
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.DeleteCategoryResponse
 import com.example.frontend.data.model.Category
 import com.example.frontend.data.model.Result
+import com.google.gson.Gson
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +18,18 @@ class CategoryRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.Success(response.body() ?: emptyList())
             } else {
-                Result.Failure(Exception("Failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -42,7 +55,18 @@ class CategoryRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.Success(response.body() ?: throw Exception("Creation failed"))
             } else {
-                Result.Failure(Exception("Failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        "Unknown error"
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -55,20 +79,43 @@ class CategoryRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.Success(response.body() ?: throw Exception("Update failed"))
             } else {
-                Result.Failure(Exception("Failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        "Unknown error"
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
         }
     }
 
-    suspend fun deleteCategory(id: Int): Result<Unit> {
+    suspend fun deleteCategory(id: Int): Result<String> {
         return try {
             val response = apiService.deleteCategory(id)
+            val res = response.body()
             if (response.isSuccessful) {
-                Result.Success(Unit)
+                Result.Success(res?.message ?: "Successfully deleted category")
             } else {
-                Result.Failure(Exception("Failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        "Unknown error"
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)

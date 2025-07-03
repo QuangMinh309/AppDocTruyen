@@ -2,9 +2,11 @@ package com.example.frontend.data.repository
 
 import com.example.frontend.data.api.CommunityApiService
 import com.example.frontend.data.api.CommunityRequest
+import com.example.frontend.data.api.DeleteCategoryResponse
 import com.example.frontend.data.model.Community
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class CommunityRepository @Inject constructor(
@@ -82,9 +84,19 @@ class CommunityRepository @Inject constructor(
             if (response.isSuccessful) {
                 createdCommunity?.avatarUrl = imageInfo?.second?:""
                 Result.Success( createdCommunity ?: throw Exception("Creation community failed"))
-
             } else {
-                Result.Failure(Exception("Create community failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -108,7 +120,18 @@ class CommunityRepository @Inject constructor(
                 updatedCommunity?.avatarUrl = imageInfo?.second?:community.avatarUrl
                 Result.Success( updatedCommunity?: throw Exception("Update community failed"))
             } else {
-                Result.Failure(Exception("Update community failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -121,7 +144,18 @@ class CommunityRepository @Inject constructor(
             if (response.isSuccessful) {
                 Result.Success(Unit)
             } else {
-                Result.Failure(Exception("Delete community failed with code: ${response.code()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
