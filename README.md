@@ -21,14 +21,7 @@ Dự án được xây dựng nhằm cung cấp nền tảng đọc truyện ti�
 - **Joi**: Xác thực dữ liệu đầu vào
 - **WebSocket (ws)**: Hỗ trợ chat/bình luận thời gian thực
 
-### Frontend:
-- **React (CRA)**: Giao diện người dùng
-- **TailwindCSS**: Thiết kế giao diện nhanh gọn
-- **Axios**: Gửi yêu cầu HTTP
-- **React Router**: Điều hướng trang
-- **React Query / Redux Toolkit (nếu dùng)**: Quản lý state và caching
-
-### Mobile (nếu có):
+### Mobile:
 - **Kotlin + Jetpack Compose**: Giao diện mobile
 - **MVVM + Clean Architecture**: Tổ chức code dễ bảo trì
 
