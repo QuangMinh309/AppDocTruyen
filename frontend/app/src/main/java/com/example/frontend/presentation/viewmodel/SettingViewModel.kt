@@ -24,10 +24,10 @@ class SettingViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
     private val _isVisible = MutableStateFlow(false)
-    val isVisible : StateFlow<Boolean> = _isVisible
+    val isVisible: StateFlow<Boolean> = _isVisible
     val isEditMode = mutableStateOf(false)
     private val _user = MutableStateFlow<User?>(null)
-    val user:StateFlow<User?> = _user // Khởi tạo null, sẽ tải từ API
+    val user: StateFlow<User?> = _user
     val selectedAvatarUri = mutableStateOf<Uri?>(null)
     val selectedBackgroundUri = mutableStateOf<Uri?>(null)
     val displayName = mutableStateOf("")
@@ -35,7 +35,7 @@ class SettingViewModel @Inject constructor(
     val username = mutableStateOf("")
     val mail = mutableStateOf<String?>(null)
     val password = mutableStateOf("")
-    val about= mutableStateOf("")
+    val about = mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
     val showDeleteDialog = mutableStateOf(false)
 
@@ -45,27 +45,37 @@ class SettingViewModel @Inject constructor(
     private val _dialogContent = MutableStateFlow("")
     val dialogContent = _dialogContent
 
-
     init {
-        loadUserData() // Tải dữ liệu người dùng từ API khi khởi tạo
+        loadUserData()
     }
 
-    private fun loadUserData() {
+    fun loadUserData() {
         viewModelScope.launch {
-            val currentUser = authRepository.getCurrentUser()
-            if (currentUser != null) {
-                if(currentUser.role!!.roleName == "admin")
-                    _isVisible.value = true
-                val result = authRepository.getUserById(currentUser.id)
-                when (result) {
-                    is Result.Success -> {
-                        _user.value = result.data
-                        updateFieldsFromUser()
+            try {
+                val currentUser = authRepository.getCurrentUser()
+                if (currentUser != null) {
+                    if (currentUser.role?.roleName == "admin") {
+                        _isVisible.value = true
                     }
-                    is Result.Failure -> {
-                        Log.e("SettingViewModel", "Failed to load user: ${result.exception.message}")
+                    val result = authRepository.getUserById(currentUser.id)
+                    when (result) {
+                        is Result.Success -> {
+                            _user.value = result.data
+                            updateFieldsFromUser()
+                            Log.d("SettingViewModel", "User data loaded successfully: ${result.data}")
+                        }
+                        is Result.Failure -> {
+                            Log.e("SettingViewModel", "Failed to load user: ${result.exception.message}")
+                            showToast("Failed to load user data: ${result.exception.message}")
+                        }
                     }
+                } else {
+                    Log.e("SettingViewModel", "No current user found")
+                    showToast("No current user found")
                 }
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Error loading user data: ${e.message}", e)
+                showToast("Error loading user data: ${e.message}")
             }
         }
     }
@@ -76,6 +86,7 @@ class SettingViewModel @Inject constructor(
             dateOfBirth.value = it.dob ?: ""
             username.value = it.name ?: ""
             mail.value = it.mail
+            about.value = it.about ?: ""
         }
     }
 
@@ -99,31 +110,38 @@ class SettingViewModel @Inject constructor(
 
     private fun saveChanges() {
         viewModelScope.launch {
-            val updateRequest = ApiService.UpdateUserRequest(
-                dUserName = displayName.value.takeIf { it.isNotEmpty() },
-                DOB = dateOfBirth.value.takeIf { it.isNotEmpty() },
-                userName = username.value.takeIf { it.isNotEmpty() },
-                mail = mail.value.takeIf { it?.isNotEmpty() == true },
-                password = password.value.takeIf { it.isNotEmpty() },
-                about = about.value.takeIf { it.isNotEmpty()  }
-            )
-            Log.d("SettingViewModel", "Update request: $updateRequest")
+            try {
+                val updateRequest = ApiService.UpdateUserRequest(
+                    dUserName = displayName.value.takeIf { it.isNotEmpty() },
+                    DOB = dateOfBirth.value.takeIf { it.isNotEmpty() },
+                    userName = username.value.takeIf { it.isNotEmpty() },
+                    mail = mail.value.takeIf { it?.isNotEmpty() == true },
+                    password = password.value.takeIf { it.isNotEmpty() },
+                    about = about.value.takeIf { it.isNotEmpty() }
+                )
+                Log.d("SettingViewModel", "Update request: $updateRequest")
 
-            val avatarFile = selectedAvatarUri.value?.let { authRepository.prepareImageFile(it, "avatarId") }
-            val backgroundFile = selectedBackgroundUri.value?.let { authRepository.prepareImageFile(it, "backgroundId") }
-            Log.d("SettingViewModel", "Avatar file: $avatarFile, Background file: $backgroundFile")
+                val avatarFile = selectedAvatarUri.value?.let { authRepository.prepareImageFile(it, "avatarId") }
+                val backgroundFile = selectedBackgroundUri.value?.let { authRepository.prepareImageFile(it, "backgroundId") }
+                Log.d("SettingViewModel", "Avatar file: $avatarFile, Background file: $backgroundFile")
 
-            val result = authRepository.updateUser(user.value?.id ?: 0, updateRequest, avatarFile, backgroundFile)
-            when (result) {
-                is Result.Success -> {
-                    _user.value = result.data // Cập nhật user với dữ liệu mới từ API
-                    updateFieldsFromUser() // Đồng bộ các trường
-                    isEditMode.value = false
-                    Log.d("SettingViewModel", "Update successful: ${result.data}")
+                val result = authRepository.updateUser(user.value?.id ?: 0, updateRequest, avatarFile, backgroundFile)
+                when (result) {
+                    is Result.Success -> {
+                        _user.value = result.data
+                        updateFieldsFromUser()
+                        isEditMode.value = false
+                        Log.d("SettingViewModel", "Update successful: ${result.data}")
+                        showToast("Profile updated successfully")
+                    }
+                    is Result.Failure -> {
+                        Log.e("SettingViewModel", "Update failed: ${result.exception.message}")
+                        showToast("Failed to update profile: ${result.exception.message}")
+                    }
                 }
-                is Result.Failure -> {
-                    Log.e("SettingViewModel", "Update failed: ${result.exception.message}")
-                }
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Error updating profile: ${e.message}", e)
+                showToast("Error updating profile: ${e.message}")
             }
         }
     }
@@ -139,29 +157,37 @@ class SettingViewModel @Inject constructor(
     fun hideDeleteConfirmation() {
         showDeleteDialog.value = false
     }
+
     fun showDeleteConfirmation() {
         showDeleteDialog.value = true
     }
+
     fun deleteUser() {
         viewModelScope.launch {
-            val userId = authRepository.getCurrentUser()?.id ?: return@launch
-            val result = authRepository.deleteUser()
-            when (result) {
-                is Result.Success -> {
-                    authRepository.clearToken()
-                    onGoToLoginScreen()
-                //    navigateTo("login") // Chuyển về LoginScreen sau khi xóa thành công
+            try {
+                val userId = authRepository.getCurrentUser()?.id ?: return@launch
+                val result = authRepository.deleteUser()
+                when (result) {
+                    is Result.Success -> {
+                        authRepository.clearToken()
+                        onGoToLoginScreen()
+                        Log.d("SettingViewModel", "User deleted successfully")
+                        showToast("Account deleted successfully")
+                    }
+                    is Result.Failure -> {
+                        Log.e("SettingViewModel", "Failed to delete user: ${result.exception.message}")
+                        showToast("Failed to delete user: ${result.exception.message}")
+                    }
                 }
-                is Result.Failure -> {
-                    _toast.value = "Xóa người dùng thất bại: ${result.exception.message}"
-                }
+            } catch (e: Exception) {
+                Log.e("SettingViewModel", "Error deleting user: ${e.message}", e)
+                showToast("Error deleting user: ${e.message}")
             }
         }
     }
 
-    fun setShowDialogState(isShow: Boolean,content:String="") {
+    fun setShowDialogState(isShow: Boolean, content: String = "") {
         _dialogContent.value = content
         _isShowDialog.value = isShow
-
     }
 }

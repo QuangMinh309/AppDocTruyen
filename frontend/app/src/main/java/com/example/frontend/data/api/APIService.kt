@@ -104,7 +104,7 @@ interface ApiService {
     @GET("api/stories/user/{userId}")
     suspend fun getStoriesByUser(
         @Path("userId") userId: Int,
-        @Query("limit") limit: Int = 20,
+
        @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 

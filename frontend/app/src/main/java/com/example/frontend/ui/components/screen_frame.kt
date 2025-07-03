@@ -25,7 +25,7 @@ fun ScreenFrame(
             .fillMaxSize()
             .background(DeepSpace)
             .imePadding()
-            .padding(top = 27.dp),
+            .padding(top = 0.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
