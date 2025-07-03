@@ -25,23 +25,37 @@ fun GenreTags(
     mainAxisSpacing: Int = 1,
     crossAxisSpacing: Int = 1,
     cornerRadius: Int = 30
-
-
 ) {
+    val maxTags = 1 // Giả sử tối đa 6 thẻ để gần đúng 2 dòng (3 thẻ mỗi dòng)
     FlowRow(
         mainAxisSpacing = mainAxisSpacing.dp,
         crossAxisSpacing = crossAxisSpacing.dp
     ) {
-        genres.forEach { tag ->
+        val displayedGenres = genres.take(maxTags)
+        displayedGenres.forEach { tag ->
             Box(
                 modifier = Modifier
                     .background(OrangeRed, RoundedCornerShape(cornerRadius.dp))
                     .padding(horizontal = horizontalPadding.dp, vertical = verticalPadding.dp)
-                    .clickable {  }
-
+                    .clickable { }
             ) {
                 Text(
-                    text = tag.name?: "",
+                    text = tag.name ?: "",
+                    color = Color.Black,
+                    fontSize = fontSize.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+        if (genres.size > maxTags) {
+            Box(
+                modifier = Modifier
+                    .background(OrangeRed, RoundedCornerShape(cornerRadius.dp))
+                    .padding(horizontal = horizontalPadding.dp, vertical = verticalPadding.dp)
+                    .clickable { }
+            ) {
+                Text(
+                    text = "...",
                     color = Color.Black,
                     fontSize = fontSize.sp,
                     fontWeight = FontWeight.SemiBold
