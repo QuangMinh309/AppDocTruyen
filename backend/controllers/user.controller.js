@@ -217,7 +217,7 @@ const UserController = {
 
   async unfollowUser(req, res, next) {
     try {
-      const { followedId } = req.body;
+      const  followedId  = req.body.id;
       const followerId = req.user.userId;
 
       const result = await unfollowUser(followerId, parseInt(followedId));

@@ -9,6 +9,7 @@ import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.data.repository.UserProfileRepository
+import com.example.frontend.data.repository.UserRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 
@@ -25,6 +26,7 @@ class UserProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val notificationRepository: NotificationRepository,
     private val userProfileRepository: UserProfileRepository,
+    private val userRepository: UserRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
@@ -158,11 +160,11 @@ class UserProfileViewModel @Inject constructor(
             isLoadingFollow.value = true // Sử dụng isLoadingFollow thay vì isLoading
             try {
                 if (_isFollowing.value == true) {
-                    val result = userProfileRepository.unFollowUser(userId.value)
+                    val result = userRepository.unFollow(user.value)
                     when (result) {
                         is Result.Success -> {
                             _isFollowing.value = false
-                            _toast.value = result.data
+                            _toast.value = result.data.message
                             Log.d("UserProfileViewModel", "Unfollowed user: ${userId.value}")
                         }
                         is Result.Failure -> {
@@ -171,11 +173,11 @@ class UserProfileViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    val result = userProfileRepository.followUser(userId.value)
+                    val result =  userRepository.follow(user.value)
                     when (result) {
                         is Result.Success -> {
                             _isFollowing.value = true
-                            _toast.value = result.data
+                            _toast.value = result.data.message
                             Log.d("UserProfileViewModel", "Followed user: ${userId.value}")
                         }
                         is Result.Failure -> {

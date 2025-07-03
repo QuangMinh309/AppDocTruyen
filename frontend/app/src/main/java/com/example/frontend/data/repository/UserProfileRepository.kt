@@ -47,40 +47,6 @@ class UserProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun followUser(userId: Int): Result<String> {
-        Log.d("UserProfileRepository", "Following user with userId: $userId")
-        return try {
-            val request = ApiService.FollowRequest(userId.toString())
-            val response = apiService.followUser(request)
-            Log.d("UserProfileRepository", "FollowUser Response - Code: ${response.code()}, Body: ${response.body()}")
-            if (response.isSuccessful) {
-                response.body()?.let { Result.Success(it.message) } ?: Result.Failure(Exception("No message in response"))
-            } else {
-                Result.Failure(Exception("Failed to follow user: ${response.code()} - ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            Log.e("UserProfileRepository", "Exception during followUser: ${e.message}", e)
-            Result.Failure(e)
-        }
-    }
-
-    suspend fun unFollowUser(userId: Int): Result<String> {
-        Log.d("UserProfileRepository", "Unfollowing user with userId: $userId")
-        return try {
-            val request = ApiService.FollowRequest(userId.toString())
-            val response = apiService.unFollowUser(request)
-            Log.d("UserProfileRepository", "UnFollowUser Response - Code: ${response.code()}, Body: ${response.body()}")
-            if (response.isSuccessful) {
-                response.body()?.let { Result.Success(it.message) } ?: Result.Failure(Exception("No message in response"))
-            } else {
-                Result.Failure(Exception("Failed to unfollow user: ${response.code()} - ${response.message()}"))
-            }
-        } catch (e: Exception) {
-            Log.e("UserProfileRepository", "Exception during unFollowUser: ${e.message}", e)
-            Result.Failure(e)
-        }
-    }
-
     suspend fun getStoriesByUser(userId: Int): Result<List<Story>> {
         Log.d("UserProfileRepository", "Fetching stories for userId: $userId")
         return try {

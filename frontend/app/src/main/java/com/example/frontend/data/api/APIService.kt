@@ -258,7 +258,7 @@ interface ApiService {
     )
 
 
-    @POST("api/nameLists")
+        @POST("api/nameLists")
     suspend fun createNameList(
         @Body createNameListRequest:CreateNameListRequest
     ):Response<CreateNameListResponse>
@@ -344,25 +344,6 @@ interface ApiService {
         @SerializedName("nameList") val name: String,
         @SerializedName("userId") val userId: Int,
         @SerializedName("description") val description: String
-    )
-
-    @POST("api/users/follow")
-    suspend fun followUser(
-        @Body followRequest:FollowRequest
-    ): Response<FollowResponse>
-
-    @POST("api/users/unfollow")
-    suspend fun unFollowUser(
-        @Body followRequest:FollowRequest
-    ): Response<FollowResponse>
-
-    data class FollowRequest(
-        val followedId:String
-    )
-
-    data class FollowResponse(
-        val status: Int,
-        val message: String
     )
 
 

@@ -14,14 +14,14 @@ data class User(
    @SerializedName("DOB") val dob: String? = null,
     var followerNum: Int? = null,
    @SerializedName("storyCount") val novelsNum: Int? = null,
-    val readListNum: Int? = null,
+    @SerializedName("nameListCount") val readListNum: Int? = null,
     val avatarId: String? = null,
     val backgroundId: String? = null,
     val wallet: BigDecimal? = null,
     val isPremium: Boolean? = null,
     @SerializedName("avatarUrl") val avatarUrls: String?=null,
     var isFollowed : Boolean = false,
-    var status : String? = null
+    var status : String? = null,
 ){
     val avatarUrl: String
         get() = "https://res.cloudinary.com/dpqv7ag5w/image/upload/$avatarId"

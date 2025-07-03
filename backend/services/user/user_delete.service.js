@@ -32,7 +32,7 @@ const deleteUser = async (userId) => {
     });
     for (const comment of comments) {
       await CommentService.deleteComment(comment.commentId, { transaction: t });
-    }
+    }                         
 
     const chats = await sequelize.models.Chat.findAll({
       where: { senderId: userId },
@@ -70,7 +70,8 @@ const deleteUser = async (userId) => {
     return { message: 'Xóa người dùng thành công' };
   } catch (err) {
     await t.rollback();
-    if (err instanceof ApiError) throw err;
+    console.log(err)
+    if (err instanceof ApiError){ ;throw err;}
     throw new ApiError('Lỗi khi xóa người dùng', 500);
   }
 };
