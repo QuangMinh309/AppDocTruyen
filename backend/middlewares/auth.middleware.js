@@ -61,7 +61,7 @@ export const authenticate = async (req, res, next) => {
     if (error instanceof jwt.TokenExpiredError) {
       return next(new ApiError('Token đã hết hạn', 401));
     }
-    console.error('Lỗi xác thực:', error);
+    // console.error('Lỗi xác thực:', error);
     return next(new ApiError(`Lỗi xác thực: ${error.message}`, 500));
   }
 };
@@ -101,7 +101,7 @@ export const authenticateRefreshToken = async (req, res, next) => {
     if (error instanceof jwt.TokenExpiredError) {
       return next(new ApiError('Refresh token đã hết hạn', 401))
     }
-    console.error('Lỗi xác thực refresh token:', error)
+    // console.error('Lỗi xác thực refresh token:', error)
     return next(
       new ApiError(`Lỗi xác thực refresh token: ${error.message}`, 500)
     )
@@ -112,7 +112,7 @@ export const authenticateRefreshToken = async (req, res, next) => {
 export const authorizeRoles = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !req.user.role) {
-      console.log("User info in middleware:", req.user);
+      // console.log("User info in middleware:", req.user);
       return next(new ApiError('Không có quyền truy cập', 403))
     }
 

@@ -20,7 +20,7 @@ const NotificationService = {
         { transaction }
       );
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       throw new ApiError('Lỗi khi tạo thông báo', 500);
     }
   },

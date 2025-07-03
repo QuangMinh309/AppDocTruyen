@@ -181,7 +181,7 @@ const ChapterService = {
 
   async deleteChapter(chapterId, userId) {
     return await handleTransaction(async (transaction) => {
-      console.log(`Attempting to delete chapter with ID: ${chapterId}`);
+      // console.log(`Attempting to delete chapter with ID: ${chapterId}`);
       const chapter = await validateChapter(chapterId, true);
       await validateStory(
         chapter.story.storyId,
@@ -197,14 +197,14 @@ const ChapterService = {
 
       // Xóa chapter
       await chapter.destroy({ transaction });
-      console.log(`Chapter ${chapterId} deleted from database`);
+      // console.log(`Chapter ${chapterId} deleted from database`);
 
       // Giảm chapterNum trong Story
       await Story.decrement('chapterNum', {
         where: { storyId: chapter.story.storyId },
         transaction,
       });
-      console.log(`Decremented chapterNum for story ${chapter.story.storyId}`);
+      // console.log(`Decremented chapterNum for story ${chapter.story.storyId}`);
 
       // Cập nhật ordinalNumber cho các chapter còn lại
       const remainingChapters = await Chapter.findAll({
@@ -221,11 +221,11 @@ const ChapterService = {
           { ordinalNumber: ch.ordinalNumber - 1 },
           { transaction }
         );
-        console.log(
-          `Updated ordinalNumber for chapter ${ch.chapterId} to ${
-            ch.ordinalNumber - 1
-          }`
-        );
+        // console.log(
+        //   `Updated ordinalNumber for chapter ${ch.chapterId} to ${
+        //     ch.ordinalNumber - 1
+        //   }`
+        // );
       }
 
       // Xóa cache nếu có (giả định sử dụng Redis)
@@ -233,7 +233,7 @@ const ChapterService = {
         const redis = sequelize.models.redis; // Giả định bạn có Redis client trong sequelize.models
         if (redis) {
           await redis.del(`story:${chapter.story.storyId}`);
-          console.log(`Cleared cache for story ${chapter.story.storyId}`);
+          // console.log(`Cleared cache for story ${chapter.story.storyId}`);
         }
       } catch (cacheError) {
         console.warn(`Failed to clear cache: ${cacheError.message}`);

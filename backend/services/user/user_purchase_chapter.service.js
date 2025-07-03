@@ -37,11 +37,6 @@ const PurchaseChapterService = {
                 order: [['purchasedAt', 'DESC']],
                 attributes: ['purchasedId', 'chapterId', 'purchasedAt']
             });
-            
-            await user.update({ wallet: user.wallet - story.pricePerChapter });
-
-            const author = await User.findByPk(story.userId)
-            await author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
 
             if (purchase) {
 
@@ -56,8 +51,8 @@ const PurchaseChapterService = {
                 wallet: user.wallet - story.pricePerChapter,
             });
             
-            const author = User.findPk(story.userId)
-            author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
+            const author = User.findByPk(story.userId)
+            await author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
 
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
@@ -73,7 +68,7 @@ const PurchaseChapterService = {
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             if (err instanceof ApiError) throw err;
             throw new ApiError('Lỗi khi mua chapter', 500);
         }

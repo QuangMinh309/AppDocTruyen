@@ -12,8 +12,8 @@ const Role = sequelize.models.Role;
 
 const createStory = async (storyData, userId, file) => {
   return await handleTransaction(async (transaction) => {
-    console.log('createStory - Received storyData:', storyData);
-    console.log('createStory - Received file:', file);
+    // console.log('createStory - Received storyData:', storyData);
+    // console.log('createStory - Received file:', file);
 
     let coverImgId = null;
 
@@ -23,7 +23,7 @@ const createStory = async (storyData, userId, file) => {
           file.buffer,
           'stories'
         );
-        console.log('createStory - Cloudinary upload result:', uploadResult);
+        // console.log('createStory - Cloudinary upload result:', uploadResult);
         coverImgId = uploadResult.public_id;
       } catch (error) {
         console.error('createStory - Cloudinary upload error:', error);
