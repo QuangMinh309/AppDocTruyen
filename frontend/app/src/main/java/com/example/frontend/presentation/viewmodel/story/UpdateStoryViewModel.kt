@@ -59,8 +59,7 @@ class UpdateStoryViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
 
-    val finalChapterId= mutableStateOf<Int?>(null)
-
+    val finalChapterId = mutableStateOf<Int?>(null)
     val isAuthor = mutableStateOf(true)
     val isLoading = mutableStateOf(false)
 
@@ -71,7 +70,6 @@ class UpdateStoryViewModel @Inject constructor(
             Log.e("UpdateStoryViewModel", "Invalid storyId: $storyIdFromHandle")
             showToast("Invalid story ID")
             _errorMessage.value = "Invalid story ID"
-
         }
         _storyId.value = storyIdFromHandle
         viewModelScope.launch {
@@ -86,25 +84,27 @@ class UpdateStoryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadData() {
-        Log.d("UpdateStoryViewModel", "Starting loadData for storyId: ${_storyId.value}")
-        if (_storyId.value == null) {
-            Log.e("UpdateStoryViewModel", "Cannot load data: storyId is null")
-            showToast("Cannot load data: Invalid story ID")
-            _errorMessage.value = "Cannot load data: Invalid story ID"
-            return
-        }
-        isLoading.value = true
-        try {
-            loadCategories()
-            loadStoryDetails()
-        } catch (e: Exception) {
-            Log.e("UpdateStoryViewModel", "Error in loadData: ${e.message}", e)
-            showToast("Error loading data: ${e.message}")
-            _errorMessage.value = "Error loading data: ${e.message}"
-        } finally {
-            isLoading.value = false
-            Log.d("UpdateStoryViewModel", "Finished loadData")
+    fun loadData() {
+        viewModelScope.launch {
+            Log.d("UpdateStoryViewModel", "Starting loadData for storyId: ${_storyId.value}")
+            if (_storyId.value == null) {
+                Log.e("UpdateStoryViewModel", "Cannot load data: storyId is null")
+                showToast("Cannot load data: Invalid story ID")
+                _errorMessage.value = "Cannot load data: Invalid story ID"
+                return@launch
+            }
+            isLoading.value = true
+            try {
+                loadCategories()
+                loadStoryDetails()
+            } catch (e: Exception) {
+                Log.e("UpdateStoryViewModel", "Error in loadData: ${e.message}", e)
+                showToast("Error loading data: ${e.message}")
+                _errorMessage.value = "Error loading data: ${e.message}"
+            } finally {
+                isLoading.value = false
+                Log.d("UpdateStoryViewModel", "Finished loadData")
+            }
         }
     }
 
@@ -122,16 +122,21 @@ class UpdateStoryViewModel @Inject constructor(
                 _chapters.value = story.chapters ?: emptyList()
                 _coverImgId.value = story.coverImgId
                 _coverImgUrl.value = story.coverImgUrl
-
-                finalChapterId.value=chapters?.value?.maxByOrNull { it.ordinalNumber }?.chapterId
-
-                Log.d("UpdateStoryViewModel", "Loaded story: name=${story.name}, " +
-                        "description=${story.description}, categories=${story.categories?.map { it.id }}, " +
-                        "pricePerChapter=${story.pricePerChapter}, chapters=${story.chapters?.size}, " +
-                        "coverImgId=${story.coverImgId}, coverImgUrl=${story.coverImgUrl}")
+                finalChapterId.value = chapters.value.maxByOrNull { it.ordinalNumber }?.chapterId
+                Log.d(
+                    "UpdateStoryViewModel",
+                    "Loaded story: name=${story.name}, " +
+                            "description=${story.description}, categories=${story.categories?.map { it.id }}, " +
+                            "pricePerChapter=${story.pricePerChapter}, chapters=${story.chapters?.size}, " +
+                            "coverImgId=${story.coverImgId}, coverImgUrl=${story.coverImgUrl}"
+                )
             }
             is Result.Failure -> {
-                Log.e("UpdateStoryViewModel", "Failed to load story: ${result.exception.message}", result.exception)
+                Log.e(
+                    "UpdateStoryViewModel",
+                    "Failed to load story: ${result.exception.message}",
+                    result.exception
+                )
                 showToast("Failed to load story: ${result.exception.message}")
                 _errorMessage.value = "Failed to load story: ${result.exception.message}"
             }
@@ -144,10 +149,17 @@ class UpdateStoryViewModel @Inject constructor(
         when (result) {
             is Result.Success -> {
                 _availableCategories.value = result.data
-                Log.d("UpdateStoryViewModel", "Loaded ${result.data.size} categories: ${result.data.map { it.name }}")
+                Log.d(
+                    "UpdateStoryViewModel",
+                    "Loaded ${result.data.size} categories: ${result.data.map { it.name }}"
+                )
             }
             is Result.Failure -> {
-                Log.e("UpdateStoryViewModel", "Failed to load categories: ${result.exception.message}", result.exception)
+                Log.e(
+                    "UpdateStoryViewModel",
+                    "Failed to load categories: ${result.exception.message}",
+                    result.exception
+                )
                 showToast("Failed to load categories: ${result.exception.message}")
                 _errorMessage.value = "Failed to load categories: ${result.exception.message}"
             }
@@ -191,9 +203,12 @@ class UpdateStoryViewModel @Inject constructor(
                 return@launch
             }
             val storyId = _storyId.value ?: return@launch
-            Log.d("UpdateStoryViewModel", "Updating story with: name=${_storyName.value}, " +
-                    "description=${_description.value}, categories=${_categories.value}, " +
-                    "pricePerChapter=${_pricePerChapter.value}, coverImage=${_coverImage.value?.absolutePath}")
+            Log.d(
+                "UpdateStoryViewModel",
+                "Updating story with: name=${_storyName.value}, " +
+                        "description=${_description.value}, categories=${_categories.value}, " +
+                        "pricePerChapter=${_pricePerChapter.value}, coverImage=${_coverImage.value?.absolutePath}"
+            )
             isLoading.value = true
             val result = updateStoryRepository.updateStory(
                 storyId = storyId,
@@ -212,7 +227,11 @@ class UpdateStoryViewModel @Inject constructor(
                     onGoBack()
                 }
                 is Result.Failure -> {
-                    Log.e("UpdateStoryViewModel", "Failed to update story: ${result.exception.message}", result.exception)
+                    Log.e(
+                        "UpdateStoryViewModel",
+                        "Failed to update story: ${result.exception.message}",
+                        result.exception
+                    )
                     showToast("Failed to update story: ${result.exception.message}")
                 }
             }
@@ -228,11 +247,17 @@ class UpdateStoryViewModel @Inject constructor(
                     val result = updateStoryRepository.deleteChapter(chapterId)
                     when (result) {
                         is Result.Success -> {
-                            Log.d("UpdateStoryViewModel", "Deleted chapter $chapterId: ${result.data.message}")
+                            Log.d(
+                                "UpdateStoryViewModel",
+                                "Deleted chapter $chapterId: ${result.data.message}"
+                            )
                             showToast(result.data.message)
                         }
                         is Result.Failure -> {
-                            Log.e("UpdateStoryViewModel", "Failed to delete chapter $chapterId: ${result.exception.message}")
+                            Log.e(
+                                "UpdateStoryViewModel",
+                                "Failed to delete chapter $chapterId: ${result.exception.message}"
+                            )
                             showToast("Failed to delete chapter $chapterId: ${result.exception.message}")
                             throw result.exception
                         }

@@ -35,7 +35,6 @@ class CategoryStoryListViewModel @Inject constructor(
     val categoryName: StateFlow<String> = _categoryName.asStateFlow()
 
     init {
-        // Khởi tạo coroutine để thu thập thay đổi từ savedStateHandle
         viewModelScope.launch {
             savedStateHandle.getStateFlow("categoryId", 0).collect { newCategoryId ->
                 if (_categoryId.value != newCategoryId) {
@@ -51,11 +50,10 @@ class CategoryStoryListViewModel @Inject constructor(
                 }
             }
         }
-        // Gọi loadStories lần đầu
         loadStories()
     }
 
-    private fun loadStories() {
+    fun loadStories() {
         viewModelScope.launch {
             _isCategoryStoriesLoading.value = true
             try {
@@ -63,19 +61,21 @@ class CategoryStoryListViewModel @Inject constructor(
                 _categoryStories.value = when (categoryStoryListResult) {
                     is Result.Success -> {
                         categoryStoryListResult.data.forEach { story ->
-                            if (story.name == null) Log.w("CategoryStoryListViewModel", "Story with id ${story.id} has null name")
+                            if (story.name == null) Log.w("CategoryStoryListViewModel", "Truyện với id ${story.id} có tên null")
                         }
-                        Log.d("CategoryStoryListViewModel", "Stories loaded: ${categoryStoryListResult.data.size}")
+                        Log.d("CategoryStoryListViewModel", "Đã tải ${categoryStoryListResult.data.size} truyện")
                         categoryStoryListResult.data
                     }
                     is Result.Failure -> {
-                        Log.e("CategoryStoryListViewModel", "Error loading stories", categoryStoryListResult.exception)
+                        Log.e("CategoryStoryListViewModel", "Lỗi khi tải danh sách truyện: ${categoryStoryListResult.exception.message}", categoryStoryListResult.exception)
+                        showToast("Lỗi khi tải danh sách truyện: ${categoryStoryListResult.exception.message}")
                         emptyList()
                     }
                 }
             } catch (e: Exception) {
                 _categoryStories.value = emptyList()
-                Log.e("CategoryStoryListViewModel", "Exception during loadStories", e)
+                Log.e("CategoryStoryListViewModel", "Lỗi khi tải danh sách truyện: ${e.message}", e)
+                showToast("Lỗi khi tải danh sách truyện: ${e.message}")
             } finally {
                 _isCategoryStoriesLoading.value = false
             }

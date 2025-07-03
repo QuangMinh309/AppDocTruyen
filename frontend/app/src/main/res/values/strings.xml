@@ -2,14 +2,9 @@
     <string name="app_name">Reavel</string>
 
  
-<<<<<<< HEAD
+
 <!--    >https://appdoctruyen.onrender.com/-->
     <string name="base_url">http://10.0.2.2:20268/</string>
     <string name="ws_base_url">ws://10.0.2.2:20268/ws</string>
-=======
-<!--  http://192.168.100.175:20268/  >-->
-    <string name="base_url">https://appdoctruyen.onrender.com/</string>
-    <string name="ws_base_url">ws:/appdoctruyen.onrender.com/ws</string>
->>>>>>> 0ea67b82a290872e3adafab69f6e9269738441cf
 
 </resources>
