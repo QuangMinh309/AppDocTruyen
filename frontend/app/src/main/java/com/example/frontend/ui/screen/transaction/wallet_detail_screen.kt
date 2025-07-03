@@ -180,6 +180,7 @@ fun WalletDetailScreen(viewModel: WalletDetailViewModel= hiltViewModel()){
                                 "purchase" ->{
                                     "You successfully purchased a chapter with ${viewModel.formatMoney(transactionList[index].money.toLong())}. "
                                 }
+                                "premium" -> "you have join premium at ${transactionList[index].time}"
                                 else -> "Unknown transaction."
 
                             },
