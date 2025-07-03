@@ -12,17 +12,21 @@ const Chapter = sequelize.models.Chapter;
 const History = sequelize.models.History;
 
 const ChapterReadingService = {
-  async readChapter(chapterId, userId) {
+  async readChapter(chapterId, userId, isPremium = false) {
     return await handleTransaction(async (transaction) => {
       const chapter = await validateChapter(chapterId, true);
 
       if (chapter.lockedStatus && userId !== chapter.story.userId) {
-        const canAccess = await canUserAccessChapter(userId, chapter);
+        const canAccess = await canUserAccessChapter(
+          userId,
+          chapter,
+          isPremium
+        );
         if (!canAccess) {
           throw new ApiError('Bạn cần mua chương này để đọc', 403);
         }
       }
-      
+
       if (userId !== chapter.story.userId) {
         await Promise.all([
           History.upsert(
@@ -39,12 +43,12 @@ const ChapterReadingService = {
 
       const chapterResult = chapter.toJSON();
       chapterResult.updatedAt = formatDate(chapter.updatedAt);
-
+      chapterResult.canAccess = true;
       return chapterResult;
     });
   },
 
-  async readNextChapter(currentChapterId, userId) {
+  async readNextChapter(currentChapterId, userId, isPremium = false) {
     const currentChapter = await validateChapter(currentChapterId, true);
 
     const nextChapter = await Chapter.findOne({
@@ -65,7 +69,11 @@ const ChapterReadingService = {
     }
 
     if (nextChapter.lockedStatus && userId !== nextChapter.story.userId) {
-      const canAccess = await canUserAccessChapter(userId, nextChapter);
+      const canAccess = await canUserAccessChapter(
+        userId,
+        nextChapter,
+        isPremium
+      );
       if (!canAccess) {
         throw new ApiError('Bạn cần mua chương này để đọc', 403);
       }

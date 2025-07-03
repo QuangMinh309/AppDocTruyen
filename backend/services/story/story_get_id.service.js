@@ -10,7 +10,7 @@ const Chapter = sequelize.models.Chapter;
 const User = sequelize.models.User;
 const Category = sequelize.models.Category;
 
-const getStoryById = async (storyId, userId) => {
+const getStoryById = async (storyId, userId, isPremium = false) => {
   try {
     const story = await Story.findByPk(storyId, {
       include: [
@@ -55,7 +55,8 @@ const getStoryById = async (storyId, userId) => {
           userId,
           storyId,
           chapter.chapterId,
-          isPremiumUser
+          false,
+          isPremium
         );
         if (canAccess) {
           chapter.dataValues.lockedStatus = false;
