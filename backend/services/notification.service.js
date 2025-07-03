@@ -1,6 +1,6 @@
 import { sequelize } from '../models/index.js';
 import ApiError from '../utils/api_error.util.js';
-import { notifyUser } from '../utils/notifyUser.util.js';
+import { notifyUser } from '../utils/notify_user.util.js';
 
 const Notification = sequelize.models.Notification;
 const User = sequelize.models.User;

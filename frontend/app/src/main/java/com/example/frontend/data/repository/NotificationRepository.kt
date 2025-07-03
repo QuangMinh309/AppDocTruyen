@@ -32,7 +32,6 @@ class NotificationRepository @Inject constructor(
 ) {
 
     private val roomName = "notification"
-
     private val _isConnected = MutableStateFlow(false)
     val isConnected  : StateFlow<Boolean> = _isConnected
 
@@ -63,6 +62,7 @@ class NotificationRepository @Inject constructor(
     }
 
     suspend fun connect() {
+
         webSocketManager.connect(  room = roomName, bonusQueryString = "" )
     }
 

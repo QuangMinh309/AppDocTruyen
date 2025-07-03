@@ -10,18 +10,13 @@ const Category = sequelize.models.Category;
 
 const getStoriesByUser = async (
   targetUserId,
-  {
-    limit = 20,
-    lastId = null,
-    includeAll = false,
-    role,
-    currentUserId,
-  } = {}
+  { limit = 20, lastId = null, includeAll = false, role, currentUserId } = {}
 ) => {
   try {
     await validateUser(targetUserId);
 
-    const isOwnerOrAdmin = role === 'admin' || targetUserId === currentUserId;
+    const isOwnerOrAdmin =
+      Number(targetUserId) === Number(currentUserId) || role === 'admin';
 
     const where = {
       [Op.and]: [

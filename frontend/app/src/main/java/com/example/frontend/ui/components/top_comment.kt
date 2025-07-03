@@ -64,7 +64,7 @@ fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
                                 .clickable {  }
                         ) {
                             AsyncImage(
-                                model = comment.user?.avatarUrl, // URL của hình ảnh avatar
+                                model = comment.user.avatarUrl, // URL của hình ảnh avatar
                                 contentDescription = "avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier

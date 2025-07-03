@@ -3,7 +3,7 @@ import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { validateUser } from '../../utils/user.util.js';
 import ApiError from '../../utils/api_error.util.js';
 import NotificationService from '../notification.service.js';
-import { notifyUser } from '../../utils/notifyUser.util.js';
+import { notifyUser } from '../../utils/notify_user.util.js';
 
 
 const Transaction = sequelize.models.Transaction

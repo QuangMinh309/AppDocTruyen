@@ -81,6 +81,10 @@ class ReadViewModel @Inject constructor(
             }
         }
     }
+    override fun onCleared() {
+        super.onCleared()
+        disconnect()
+    }
     private suspend fun fetchComments() {
         commentRepository.isConnected.collect { isConnected ->
             if (isConnected && isLoading.value) {
@@ -130,7 +134,6 @@ class ReadViewModel @Inject constructor(
             commentRepository.disconnect()
 
             Log.d("CommenttingViewModel", "Disconnected")
-            onGoBack()
         }
     }
 
