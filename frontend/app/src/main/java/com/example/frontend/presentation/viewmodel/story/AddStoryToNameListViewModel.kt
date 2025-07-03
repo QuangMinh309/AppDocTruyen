@@ -71,7 +71,7 @@ class AddStoryToNameListViewModel @Inject constructor(
                     onGoBack()
                 }
                 is Result.Failure -> {
-                    setToast("Failed to add story to reading list: ${result.exception.message}")
+                    setToast("${result.exception.message}")
                     Log.e("AddStoryToNameListViewModel", "Failed to add story: ${result.exception.message}")
                 }
             }

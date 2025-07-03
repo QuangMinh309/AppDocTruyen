@@ -46,7 +46,7 @@ class AddStoryToNameListRepository @Inject constructor(
             } else {
                 val errorBody = response.errorBody()?.string()
                 val errorResponse = gson.fromJson(errorBody, com.example.frontend.data.api.ApiError::class.java)
-                Result.Failure(Exception("Failed to add story to name list: ${errorResponse.message}"))
+                Result.Failure(Exception("${errorResponse.message}"))
             }
         } catch (e: Exception) {
             Log.e("AddStoryToNameListRepository", "Exception during addStoryToNameList: ${e.message}", e)

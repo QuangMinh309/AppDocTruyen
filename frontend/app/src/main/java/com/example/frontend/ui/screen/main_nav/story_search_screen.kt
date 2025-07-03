@@ -162,7 +162,7 @@ fun StorySearchScreen(viewModel: StorySearchViewModel = hiltViewModel()) {
                         contentPadding = PaddingValues(vertical = 8.dp)
                     ) {
                         items(stories) { story ->
-                            StoryCard3(story = story)
+                            StoryCard3(story = story, onClick ={ viewModel.onGoToStoryScreen(story.id)})
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                     }

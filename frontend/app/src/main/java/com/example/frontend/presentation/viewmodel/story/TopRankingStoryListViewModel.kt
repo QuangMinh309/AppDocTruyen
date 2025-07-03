@@ -30,35 +30,32 @@ class TopRankingStoryListViewModel @Inject constructor(
         loadStories()
     }
 
-
-    private fun loadStories() {
+    fun loadStories() {
         viewModelScope.launch {
-
             _isTopRankingLoading.value = true
             try {
                 val topRankingResult = topRankingRepository.getStoriesByVote()
                 _topRankingStories.value = when (topRankingResult) {
                     is Result.Success -> {
                         topRankingResult.data.forEach { story ->
-                            if (story.name == null) Log.w("HomeViewModel", "Story with id ${story.id} has null name")
+                            if (story.name == null) Log.w("TopRankingStoryListViewModel", "Truyện với id ${story.id} có tên null")
                         }
-                        Log.d("HomeViewModel", "Suggested stories: ${topRankingResult.data.size}")
+                        Log.d("TopRankingStoryListViewModel", "Đã tải ${topRankingResult.data.size} truyện xếp hạng")
                         topRankingResult.data
                     }
                     is Result.Failure -> {
-                        Log.e("HomeViewModel", "Error loading top ranking stories", topRankingResult.exception)
+                        Log.e("TopRankingStoryListViewModel", "Lỗi khi tải danh sách truyện xếp hạng: ${topRankingResult.exception.message}", topRankingResult.exception)
+                        showToast("Lỗi khi tải danh sách truyện xếp hạng: ${topRankingResult.exception.message}")
                         emptyList()
                     }
                 }
             } catch (e: Exception) {
                 _topRankingStories.value = emptyList()
-                Log.e("HomeViewModel", "Exception during loadStories", e)
+                Log.e("TopRankingStoryListViewModel", "Lỗi khi tải danh sách truyện: ${e.message}", e)
+                showToast("Lỗi khi tải danh sách truyện: ${e.message}")
             } finally {
                 _isTopRankingLoading.value = false
             }
         }
     }
-
-
-
 }
