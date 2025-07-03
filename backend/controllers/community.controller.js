@@ -54,8 +54,9 @@ export const createCommunity = async (req, res, next) => {
         if (req.user.role.roleName !== 'admin') {
             throw new ApiError("Bạn không có quyền tạo cộng đồng")
         }
+        const file = req.file;
         const data = req.body;
-        const community = await CommunityService.createCommunity(data);
+        const community = await CommunityService.createCommunity(data, file);
         res.status(201).json(community);
     } catch (error) {
         next(error);
@@ -69,9 +70,10 @@ export const updateCommunity = async (req, res, next) => {
         if (req.user.role.roleName !== 'admin') {
             throw new ApiError("Bạn không có quyền cập nhật cộng đồng")
         }
+        const file = req.file;
         const communityId = req.params.communityId;
         const data = req.body;
-        const community = await CommunityService.updateCommunity(communityId, data);
+        const community = await CommunityService.updateCommunity(communityId, data, file);
         res.status(200).json(community);
     } catch (error) {
         next(error);
