@@ -2,23 +2,26 @@ package com.example.frontend.ui.screen.admin
 
 import com.example.frontend.presentation.viewmodel.admin.RevenueViewModel
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,22 +34,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.ui.components.ScreenFrame
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.setValue
 import com.example.frontend.ui.theme.DeepSpace
 import com.example.frontend.ui.theme.OrangeRed
 import com.example.frontend.ui.theme.ReemKufifunFontFamily
-import java.time.Instant
-import java.time.ZoneId
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import com.example.frontend.ui.components.MonthYearPicker
 import com.example.frontend.ui.components.RevenueTable
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,11 +54,9 @@ import com.example.frontend.ui.components.RevenueTable
 fun RevenueManagementScreen(viewModel: RevenueViewModel = hiltViewModel())
 {
     val context = LocalContext.current
-    val datePickerState = rememberDatePickerState()
     val revenueData by viewModel.revenueData.collectAsState()
     val selectedMonth by viewModel.selectedMonth.collectAsState()
     val selectedYear by viewModel.selectedYear.collectAsState()
-    val openDialog = remember { mutableStateOf(false) }
     val toast by viewModel.toast.collectAsState()
     LaunchedEffect(toast) {
         toast?.let {
@@ -122,79 +120,23 @@ fun RevenueManagementScreen(viewModel: RevenueViewModel = hiltViewModel())
                 .padding(top = 30.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+        MonthYearPicker(
+            selectedMonth = selectedMonth,
+            selectedYear = selectedYear,
+            onMonthChange = { viewModel.onUpdateMonth(it) },
+            onYearChange = { viewModel.onUpdateYear(it) }
+        )
+        Button(
+            modifier = Modifier.padding(start = 16.dp),
+            onClick = {
+                viewModel.fetchData()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = OrangeRed
+            )
         ) {
-            Button(
-                onClick = {
-                    openDialog.value = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = OrangeRed
-                )
-            ) {
-                Text("Select month", color = DeepSpace, fontFamily = ReemKufifunFontFamily, fontSize = 16.sp, fontWeight = FontWeight.Normal)
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Text(
-                text = "Date picked:  ",
-                style = TextStyle(
-                    textAlign = TextAlign.Center,
-                    fontFamily = ReemKufifunFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    color = Color.Gray,
-                ),
-            )
-            Text(
-                text = "$selectedMonth/$selectedYear",
-                style = TextStyle(
-                    textAlign = TextAlign.Center,
-                    fontFamily = ReemKufifunFontFamily,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    color = Color.White,
-                ),
-            )
-        }
+        Text("Select month", color = DeepSpace, fontFamily = ReemKufifunFontFamily, fontSize = 16.sp, fontWeight = FontWeight.Normal)
+    }
         RevenueTable(data = revenueData)
     }
-    if (openDialog.value) {
-        DatePickerDialog(
-            onDismissRequest = { openDialog.value = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val millis = datePickerState.selectedDateMillis
-                    if (millis != null) {
-                        val date = Instant.ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-
-                        viewModel.onUpdateMonth(date.monthValue.toString())
-                        viewModel.onUpdateYear(date.year.toString())
-                    }
-                    viewModel.fetchData()
-                    openDialog.value = false
-                }) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { openDialog.value = false }) {
-                    Text("Cancel")
-                }
-            }
-        ) {
-            DatePicker(state = datePickerState)
-        }
-    }
 }
-
-//@SuppressLint("ViewModelConstructorInComposable")
-//@Preview(showBackground = true)
-//@Composable
-//private fun PreviewScreenContent() {
-//    val fakeViewModel = RevenueViewModel (NavigationManager())
-//    RevenueManagementScreen(fakeViewModel)
-//}
