@@ -1,5 +1,8 @@
 package com.example.frontend.ui.screen.story
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -31,8 +35,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,25 +46,48 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.ReadViewModel
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
-
-//@Preview
-//@Composable
-//fun PreviewReadScreen() {
-//    val fakeViewModel = ReadViewModel(NavigationManager())
-//    ReadScreen(fakeViewModel)
-//}
+import com.example.frontend.ui.components.TopComments
 
 @Composable
 fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
-    var comment by remember { mutableStateOf("") }
     val currentChapter by viewModel.currentChapter.collectAsState()
     val isLoading by viewModel.isLoading
     val isAuthor by viewModel.isAuthor.collectAsState()
+    val yourComment by viewModel.yourComment.collectAsState()
+    val messages = viewModel.messages.collectAsState()
+    val toast by viewModel.toast.collectAsState()
+    val commentUri by viewModel.selectedPicUri.collectAsState()
+    val context = LocalContext.current
+    var showImagePicker by remember { mutableStateOf(false) }
+
+    // Launcher để chọn ảnh từ gallery
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) {
+                viewModel.setCommentUri(uri)
+            }
+            showImagePicker = false
+        }
+    )
+    if (showImagePicker) {
+        LaunchedEffect(Unit) {
+            launcher.launch("image/*")
+        }
+    }
+    //toast thông báo chung
+    LaunchedEffect(toast) {
+        toast?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearToast()
+        }
+    }
 
     ScreenFrame(
         topBar = {
@@ -156,34 +185,49 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                     }
                 }
             }
+            TopComments(comments = messages.value, onClick = {})
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Comment input field
+            // chat input field
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(vertical = 20.dp)
                     .background(Color(0xFF4B4A4A), shape = RoundedCornerShape(50))
                     .padding(horizontal = 20.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 val scrollState = rememberScrollState()
-                LaunchedEffect(comment) {
+                LaunchedEffect(yourComment) {
                     scrollState.scrollTo(scrollState.maxValue)
                 }
+
+                commentUri?.let { uri ->
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .size(60.dp)
+                            .background(Color.Gray, RoundedCornerShape(8.dp))
+                    )
+                }
                 BasicTextField(
-                    value = comment,
-                    onValueChange = { comment = it },
+                    value = yourComment,
+                    onValueChange = {  viewModel.updateComment(it) },
                     singleLine = true,
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
+                    textStyle = TextStyle(color = Color.White),
                     decorationBox = { innerTextField ->
-                        if (comment.isEmpty()) {
+                        if (yourComment.isEmpty()) {
                             Text(
                                 text = "Your Comment...",
                                 color = Color.LightGray,
                                 fontSize = 16.sp,
+                                modifier = Modifier.padding(bottom = 5.dp)
                             )
                         }
                         innerTextField()
@@ -191,14 +235,34 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                 )
 
                 IconButton(
-                    onClick = {},
+                    onClick = {
+                        showImagePicker = true
+                    }
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_add_img),
+                        painter =  painterResource(id = R.drawable.icon_add_img) ,
                         contentDescription = "Add Image",
                         tint = Color.Black,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier
+                            .size(28.dp),
                     )
+                }
+
+                IconButton(
+                    onClick = {
+                        if(yourComment != "" || (commentUri != null))
+                            viewModel.createComment(context)
+                    }
+                ) {
+                    Icon(
+
+                        painter = painterResource(id = R.drawable.popular_icon),
+                        contentDescription = "Add Image",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .size(28.dp),
+
+                        )
                 }
             }
 

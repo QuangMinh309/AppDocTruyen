@@ -211,6 +211,12 @@ interface ApiService {
         @Body updateChapterRequest:UpdateChapterRequest
     ):Response<ChapterResponse>
 
+    @POST("api/users/purchase-chapter/{chapterId}")
+    suspend fun purchaseChapter(
+        @Path("chapterId") chapterId:Int,
+    ):Response<NoDataResponse>
+
+
     data class UpdateChapterRequest(
         val chapterName: String,
         val content:String

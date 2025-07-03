@@ -2,8 +2,10 @@ package com.example.frontend.data.repository
 
 import android.util.Log
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.DeleteCategoryResponse
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Chapter
+import com.google.gson.Gson
 
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -46,4 +48,7 @@ class UpdateChapterRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+
+
+
 }
