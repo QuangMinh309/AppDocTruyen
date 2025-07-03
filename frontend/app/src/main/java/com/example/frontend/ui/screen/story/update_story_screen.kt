@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -57,10 +58,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -435,6 +438,33 @@ fun UpdateStoryScreen(viewModel: UpdateStoryViewModel = hiltViewModel()) {
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
                             )
+
+                            // Add button
+                            Button(
+                                onClick = {viewModel.onGoToWriteScreen(viewModel.storyId.value?:0)},
+                                colors = ButtonDefaults.buttonColors(Color.Green),
+                                shape = RoundedCornerShape(30.dp),
+                                modifier = Modifier
+                                    .height(35.dp)
+                                    .widthIn(min = 95.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                                        contentDescription = "Add",
+                                        modifier = Modifier.size(16.dp),
+                                        tint = Color.Black
+                                    )
+                                    Text(text = "Add Chapter")
+
+
+                                    Spacer(modifier = Modifier.width(5.dp))
+
+                                }
+                            }
                             Spacer(modifier = Modifier.height(8.dp))
 
                             // Nút xóa khi có chapter được chọn

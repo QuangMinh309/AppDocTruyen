@@ -1,12 +1,15 @@
 package com.example.frontend.ui.screen.story
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +38,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.frontend.R
 import com.example.frontend.presentation.viewmodel.story.UpdateChapterViewModel
 import com.example.frontend.ui.components.ScreenFrame
-
 @Composable
 fun UpdateChapterScreen(viewModel: UpdateChapterViewModel = hiltViewModel()) {
     val chapterName by viewModel.chapterName.collectAsState()
@@ -53,78 +55,92 @@ fun UpdateChapterScreen(viewModel: UpdateChapterViewModel = hiltViewModel()) {
     }
 
     ScreenFrame {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(bottom = 16.dp) // Đảm bảo nút không bị sát cạnh dưới
         ) {
-            Spacer(modifier = Modifier.height(35.dp))
-            // Chapter name
-            BasicTextField(
-                value = chapterName,
-                onValueChange = { viewModel.updateChapterName(it) },
+            // Nội dung chính với thanh cuộn
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                textStyle = LocalTextStyle.current.copy(
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                cursorBrush = SolidColor(Color.White),
-                decorationBox = { innerTextField ->
-                    if (chapterName.isEmpty()) {
-                        Text(
-                            text = "Enter Chapter Name...",
-                            color = Color.Gray,
-                            fontSize = 20.sp,
-                        )
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 60.dp) // Đệm dưới để nút Update không bị che
+            ) {
+                Spacer(modifier = Modifier.height(35.dp))
+                // Chapter name
+                BasicTextField(
+                    value = chapterName,
+                    onValueChange = { viewModel.updateChapterName(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(Color(0xFF1E1E1E), RoundedCornerShape(8.dp))
+                        .padding(16.dp),
+                    textStyle = LocalTextStyle.current.copy(
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    cursorBrush = SolidColor(Color.White),
+                    decorationBox = { innerTextField ->
+                        if (chapterName.isEmpty()) {
+                            Text(
+                                text = "Enter Chapter Name...",
+                                color = Color.Gray,
+                                fontSize = 20.sp
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
-                }
-            )
-            Spacer(modifier = Modifier.height(35.dp))
-            // Content
-            BasicTextField(
-                value = content,
-                onValueChange = { viewModel.updateContent(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(650.dp)
-                    .verticalScroll(rememberScrollState()),
-                textStyle = LocalTextStyle.current.copy(
-                    color = Color.White,
-                    fontSize = 16.sp
-                ),
-                cursorBrush = SolidColor(Color.White),
-                decorationBox = { innerTextField ->
-                    if (content.isEmpty()) {
-                        Text(
-                            text = "Create your story...",
-                            color = Color.Gray,
-                            fontSize = 16.sp,
-                        )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                // Content
+                BasicTextField(
+                    value = content,
+                    onValueChange = { viewModel.updateContent(it) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 300.dp, max = 650.dp)
+                        .padding(horizontal = 16.dp)
+                        .background(Color(0xFF1E1E1E), RoundedCornerShape(8.dp))
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState()),
+                    textStyle = LocalTextStyle.current.copy(
+                        color = Color.White,
+                        fontSize = 16.sp
+                    ),
+                    cursorBrush = SolidColor(Color.White),
+                    decorationBox = { innerTextField ->
+                        if (content.isEmpty()) {
+                            Text(
+                                text = "Create your story...",
+                                color = Color.Gray,
+                                fontSize = 16.sp
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
-                }
-            )
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-            Spacer(modifier = Modifier.height(19.dp))
-
-            Spacer(modifier = Modifier.weight(1f, fill = true))
-
+            // Nút Update cố định ở dưới cùng
             Button(
                 onClick = {
                     if (chapterName.isNotEmpty() && content.isNotEmpty()) {
                         viewModel.updateChapter(chapterName, content)
                     } else {
-                       viewModel.showToast("Please fill in both chapter name and content")
+                        viewModel.showToast("Please fill in both chapter name and content")
                     }
                 },
                 shape = RoundedCornerShape(30.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 modifier = Modifier
-                    .heightIn(39.dp)
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally),
+                    .height(48.dp)
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.BottomCenter),
                 enabled = !isLoading
             ) {
                 if (isLoading) {
@@ -139,8 +155,6 @@ fun UpdateChapterScreen(viewModel: UpdateChapterViewModel = hiltViewModel()) {
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(13.dp))
         }
     }
 }
