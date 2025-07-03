@@ -86,6 +86,7 @@ class StoryDetailViewModel @Inject constructor(
             when (val result = storyDetailRepository.purchaseChapter(_selectedBuyChapter.value?.chapterId?:0)) {
                 is Result.Success -> {
                      _toast.value = result.data
+                    setShowDialogState(false)
                         onGoToChapterScreen( _selectedBuyChapter.value?.chapterId?:0,finalChapterId.value?:0,
                             _selectedBuyChapter.value?.storyId?:0,
                             isAuthor.value)

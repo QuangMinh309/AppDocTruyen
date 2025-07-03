@@ -94,7 +94,7 @@ async function onMessage(ws, message, clients) {
 
             case 'FETCH_COMMENT_BY_CHAPTER':
                 validateMessage(fetchCommentByChapterSchema, data); // Validate trước khi xử lý
-                const allComments = await CommentService.getAllCommentsOfChapter(ws.chapterId);
+                const allComments = await CommentService.getAllCommentsOfChapter(ws.chapterId,ws.userId);
                 console.log(allComments)
                 ws.send(JSON.stringify({ success: true, action: action, payload: allComments }));
                 break;

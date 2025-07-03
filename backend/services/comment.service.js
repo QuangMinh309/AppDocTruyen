@@ -83,7 +83,7 @@ const CommentService = {
             throw new ApiError(`Lỗi khi lấy danh sách comment: ${err.message}`, 500);
         }
     },
-     async getAllCommentsOfChapter(id) {
+     async getAllCommentsOfChapter(id,userId) {
         try {
             console.log(id)
             const chapter = ChapterService.getChapterById(id)
@@ -107,20 +107,22 @@ const CommentService = {
                     as: 'user',
                     attributes: ['userId', 'dUserName', 'avatarId']
                     },
-                    {
+                  {
                     model: sequelize.models.Chapter,
-                    as: 'chapter',
-                    attributes: ['chapterName']
+                    as: 'chapter', attributes: ['chapterId', 'chapterName', 'storyId','ordinalNumber','lockedStatus'],
+
                     }
                 ],
                 order: [[sequelize.literal('likeNum'), 'DESC']]
             });
 
-            console.log(comments)
 
-            const commentPromises = comments.map(comment => {
+            const commentPromises = comments.map(async(comment) => {
                 const commentJson = comment.toJSON();
-
+                const userLike = await sequelize.models.LikeComment.findOne({
+                    where: {userId: userId, commentId: commentJson.commentId}
+                    });
+                commentJson.isUserLike = (userLike)? true : false;
                 // Convert time to UTC+7 instead of UTC
                 commentJson.time = moment(commentJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
 
@@ -147,59 +149,66 @@ const CommentService = {
                 commentPicUrl = result.secure_url;
 
             }
-            data.time = new Date()
+            data.createAt = new Date()
             const commentData = await sequelize.models.Comment.create({ ...data, commentPicId: publicId });
             const fullComment = await sequelize.models.Comment.findByPk(commentData.commentId, {
                 include: [
 
                     { model: sequelize.models.User, as: 'user', attributes: ['userId', 'dUserName', 'avatarId'] },
+                    {
+                    model: sequelize.models.Chapter,
+                    as: 'chapter', attributes: ['chapterId', 'chapterName', 'storyId','ordinalNumber','lockedStatus'],
+
+                    }
                 ],
+                
             });
             const commentJson = fullComment.toJSON();
+             const userLike = await sequelize.models.LikeComment.findOne({
+                    where: {userId: userId, commentId: commentJson.commentId}
+                    });
+            commentJson.isUserLike = (userLike)? true : false;
+            commentData.likeNum = 0;
             // Convert time to UTC+7 instead of UTC
             commentJson.time = moment(commentJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-            console.log('Full comment data:', commentJson);
             return getCommentImageData(commentJson);
         } catch (err) {
             if (err instanceof ApiError) throw err;
             throw new ApiError(`Lỗi khi tạo comment: ${err.message}`, 500);
         }
     },
-
-    async updateComment(commentId, data, userId) {
+     async unlikeComment(commentId,userId) {
         try {
-            if (!data.content && !data.commentPicData) {
-                throw new ApiError('Không có nội dng cần cập nhật!', 400);
-            }
             const commentData = await sequelize.models.Comment.findByPk(commentId);
             if (!commentData) {
                 throw new ApiError('comment không tồn tại', 404);
             }
-            let publicId = null;
-            let commentPicUrl = null;
-            if (data.commentPicData) {
-                const result = await uploadBase64ToCloudinary(data.commentPicData, "user/story/comment");
-                publicId = result.public_id;
-                commentPicUrl = result.secure_url;
+           const like_comment = await sequelize.models.LikeComment.findOne({
+                where: { commentId: commentId, userId: userId 
 
+                }});
+            if (like_comment) {
+                await like_comment.destroy();
             }
-            await commentData.update({ ...data, commentPicId: publicId });
-            const updatedComment = await sequelize.models.Comment.findByPk(commentId, {
-                include: [
-                    { model: sequelize.models.User, as: 'user', attributes: ['userId', 'dUserName', 'avatarId'] },
-                ],
-            });
-
-            const commentJson = fullComment.toJSON();
-            // Convert time to UTC+7 instead of UTC
-            commentJson.time = moment(commentJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-            console.log('Full comment data:', commentJson);
-            return getCommentImageData(commentJson);
+            return { message: 'unlike comment thành công', commentId };
         } catch (err) {
             if (err instanceof ApiError) throw err;
-            throw new ApiError(`Lỗi khi cập nhật comment: ${err.message}`, 500);
+            throw new ApiError(`Lỗi khi unlike comment: ${err.message}`, 500);
         }
-    },
+     },
+        async likeComment(commentId,userId) {
+        try {
+            const commentData = await sequelize.models.Comment.findByPk(commentId);
+            if (!commentData) {
+                throw new ApiError('comment không tồn tại', 404);
+            }
+           const like_comment = await sequelize.models.LikeComment.create({commentId: commentId, userId: userId });
+            return { message: 'like comment thành công', commentId };
+        } catch (err) {
+            if (err instanceof ApiError) throw err;
+            throw new ApiError(`Lỗi khi like comment: ${err.message}`, 500);
+        }
+     },
 
     async deleteComment(commentId) {
         try {

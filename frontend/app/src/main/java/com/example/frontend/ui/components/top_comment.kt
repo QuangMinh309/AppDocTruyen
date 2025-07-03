@@ -39,12 +39,13 @@ import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.data.model.Comment
 import com.example.frontend.presentation.viewmodel.BaseViewModel
+import com.example.frontend.presentation.viewmodel.story.ReadViewModel
 import com.example.frontend.ui.theme.OrangeRed
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
+fun TopComments(comments: List<Comment>, viewModel: ReadViewModel) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
         itemsIndexed(comments) { index, comment ->
 
@@ -64,12 +65,11 @@ fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
                                 .clickable {  }
                         ) {
                             AsyncImage(
-                                model = comment.user.avatarUrl, // URL của hình ảnh avatar
+                                model = comment.user.avatarUrls, // URL của hình ảnh avatar
                                 contentDescription = "avatar",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                    .heightIn(50.dp)
-                                    .widthIn(50.dp)
+                                    .size(50.dp)
                                     .border(
                                         width = 3.dp,
                                         color = Color(0xFF4E7AFF),
@@ -122,7 +122,7 @@ fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text(text = "chapter ${comment.chapterName}", color = Color.White, fontSize = 14.5.sp)
+                            Text(text = comment.chapter.chapterName, color = Color.White, fontSize = 14.5.sp)
                             Spacer(modifier = Modifier.height(7.dp))
                             Row {
                                 Text(text = comment.createAt.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")), color = Color(0xFFFF5722), fontSize = 14.5.sp)
@@ -144,7 +144,7 @@ fun TopComments(comments: List<Comment>, onClick : (index:Int)->Unit={}) {
                         ) {
                             IconButton(
                                 onClick = {
-                                    onClick(index)
+                                    viewModel.changeLikeState(comment)
                                 },
                                 modifier = Modifier.size(25.dp)
                             ) {

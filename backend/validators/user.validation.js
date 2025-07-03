@@ -198,6 +198,19 @@ const followUserSchema = Joi.object({
     }),
 }).options({ stripUnknown: true });
 
+// Schema validation cho like/unlike comment
+const commentSchema = Joi.object({
+  commentId: Joi.number()
+    .integer()
+    .min(1)
+    .required()
+    .messages({
+      ...messages,
+      'number.min': 'ID comment không hợp lệ',
+    }),
+}).options({ stripUnknown: true });
+
+
 // Schema validation cho refresh token
 const refreshTokenSchema = Joi.object({
   refreshToken: Joi.string()
