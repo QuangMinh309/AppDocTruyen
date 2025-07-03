@@ -26,7 +26,7 @@ const createStory = async (storyData, userId, file) => {
         // console.log('createStory - Cloudinary upload result:', uploadResult);
         coverImgId = uploadResult.public_id;
       } catch (error) {
-        console.error('createStory - Cloudinary upload error:', error);
+        // console.error('createStory - Cloudinary upload error:', error);
         throw new ApiError('Tải ảnh lên thất bại', 500);
       }
     } else {
@@ -91,7 +91,7 @@ const createStory = async (storyData, userId, file) => {
           NotificationService.createNotification(
             'STORY_PENDING_APPROVAL',
             `Truyện mới ${story.storyName} của tác giả ${author?.userName || 'Unknown'
-            } cần được duyệt.`,
+            } cần được duyệt (vui lòng viết truyện phù hợp độ tuổi).`,
             story.storyId,
             admin.userId,
             transaction
