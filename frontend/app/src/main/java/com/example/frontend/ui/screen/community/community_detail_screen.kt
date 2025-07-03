@@ -183,7 +183,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                     ) {
                         SectionTitle(title = "Mô tả")
                         Text(
-                            text = "Không có mô tả.",
+                            community?.description.takeIf { !it.isNullOrEmpty() } ?: "Không có mô tả.",
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold
