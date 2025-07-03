@@ -27,7 +27,7 @@ const userPremiumService = {
 
             return true
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             if (err instanceof ApiError) throw err;
             throw new ApiError('Lỗi khi cập nhật trạng thái premium', 500);
         }

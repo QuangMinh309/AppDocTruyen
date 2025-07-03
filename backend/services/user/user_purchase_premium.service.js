@@ -52,7 +52,7 @@ const purchasePremium = async (userId) => {
 
     return { message: 'Mua premium thành công' };
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     if (err instanceof ApiError) throw err;
     throw new ApiError('Lỗi khi mua premium', 500);
   }

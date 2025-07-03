@@ -68,7 +68,7 @@ const PurchaseChapterService = {
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             if (err instanceof ApiError) throw err;
             throw new ApiError('Lỗi khi mua chapter', 500);
         }
