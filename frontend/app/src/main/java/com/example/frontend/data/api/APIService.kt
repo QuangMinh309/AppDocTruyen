@@ -89,7 +89,7 @@ interface ApiService {
     @GET("api/stories/search")
     suspend fun searchStories(
         @Query("searchTerm") searchTerm: String,
-      
+
         @Query("lastId") lastId: Int? = null
     ): Response<StoriesResponse>
 
