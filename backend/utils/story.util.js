@@ -1,22 +1,36 @@
 import { models, sequelize } from '../models/index.js';
 import { Op } from 'sequelize';
 import ApiError from './api_error.util.js';
-import NotificationService from '../services/notification.service.js';
 
 const validateStory = async (
   storyId,
   userId = null,
   errorMessage = 'Truyện không tồn tại'
 ) => {
-  const story = await models.Story.findByPk(storyId);
+  const story = await models.Story.findByPk(storyId, {
+    include: [
+      {
+        model: models.User,
+        as: 'author',
+      },
+    ],
+  });
+
   if (!story) throw new ApiError(errorMessage, 404);
-  if (
-    userId &&
-    story.userId !== userId &&
-    story.user.role.roleName !== 'admin'
-  ) {
+
+  if (!userId) return story;
+
+  const currentUser = await models.User.findByPk(userId, {
+    include: [{ model: models.Role, as: 'role' }],
+  });
+
+  const isAdmin = currentUser?.role?.roleName === 'admin';
+  const isOwner = story.userId === userId;
+
+  if (!isOwner && !isAdmin) {
     throw new ApiError('Bạn không có quyền thực hiện hành động này', 403);
   }
+
   return story;
 };
 

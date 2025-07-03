@@ -69,7 +69,7 @@ fun StoryStatusAction(
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .height(35.dp)
-                .widthIn(min = 95.dp),
+                .weight(1f),
             enabled = !viewModel.isLoadingStatus.value // Vô hiệu hóa button khi loading
         ) {
             if (viewModel.isLoadingStatus.value) {
@@ -94,7 +94,7 @@ fun StoryStatusAction(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 95.dp)
+                    .weight(1f)
             ) {
                 Text(
                     text = "Add chapter",
@@ -120,7 +120,7 @@ fun StoryStatusAction(
                 },
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 115.dp)
+                    .weight(1f)
                     .then(
                         if (!isVoted) Modifier.drawBehind {
                             val strokeWidth = 3.5.dp.toPx()
@@ -183,7 +183,7 @@ fun StoryStatusAction(
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .height(35.dp)
-                .widthIn(min = 95.dp)
+                .weight(1f)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -231,7 +231,7 @@ fun StoryStatusActionAdmin(
             shape = RoundedCornerShape(30.dp),
             modifier = Modifier
                 .height(35.dp)
-                .widthIn(min = 95.dp)
+                .weight(1f)
         ) {
             Text(
                 text = storyStatus.value,
@@ -247,7 +247,7 @@ fun StoryStatusActionAdmin(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 95.dp)
+                    .weight(1f)
             ) {
                 Text(
                     text = "Edit status",
@@ -261,7 +261,7 @@ fun StoryStatusActionAdmin(
                 shape = RoundedCornerShape(30.dp),
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 95.dp)
+                    .weight(1f)
             ) {
                 Text(
                     text = "Delete",
@@ -287,7 +287,7 @@ fun StoryStatusActionAdmin(
                 },
                 modifier = Modifier
                     .height(35.dp)
-                    .widthIn(min = 115.dp)
+                    .weight(1f)
                     .then(
                         if (!isVoted) Modifier.drawBehind {
                             val strokeWidth = 3.5.dp.toPx()

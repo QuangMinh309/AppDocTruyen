@@ -20,7 +20,8 @@ const ChapterController = {
       const userId = req.user ? req.user.userId : null;
       const chapter = await ChapterReadingService.readChapter(
         chapterId,
-        userId
+        userId,
+        req.user.isPremium
       );
       return res.status(200).json({ success: true, data: chapter });
     } catch (error) {
@@ -34,7 +35,8 @@ const ChapterController = {
       const userId = req.user ? req.user.userId : null;
       const chapter = await ChapterReadingService.readNextChapter(
         chapterId,
-        userId
+        userId,
+        req.user.isPremium
       );
       return res.status(200).json({ success: true, data: chapter });
     } catch (error) {
