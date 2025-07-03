@@ -94,6 +94,12 @@ class ReadViewModel @Inject constructor(
     fun updateComment(newText: String) {
         _yourComment.value = newText
     }
+    fun back() {
+        viewModelScope.launch {
+            onCleared()
+            onGoBack()
+        }
+    }
 
     init {
         viewModelScope.launch {
