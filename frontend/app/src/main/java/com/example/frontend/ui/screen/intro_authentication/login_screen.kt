@@ -76,7 +76,8 @@ import kotlinx.coroutines.launch
 fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
     val tbMailValue by viewModel.mail.collectAsState()
     val tbPasswordValue by viewModel.password.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState() // Thêm trạng thái loading
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
     var rememberLogin by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -119,7 +120,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                 alignment = Alignment.BottomCenter
             )
     ) {
-        if (isLoading) { // Hiển thị loading
+        if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -198,7 +199,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                     .padding(top = 20.dp)
             ) {
                 Text(
-                    text = "Mail",
+                    text = "Email",
                     style = TextStyle(
                         textAlign = TextAlign.Start,
                         fontFamily = ReemKufifunFontFamily,
@@ -268,7 +269,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                 )
                 TextField(
                     value = tbPasswordValue,
-                    onValueChange = { viewModel.onPasswordChange(it)},
+                    onValueChange = { viewModel.onPasswordChange(it) },
                     singleLine = true,
                     placeholder = {
                         Text("Enter your password", style = TextStyle(color = Color.Gray))
@@ -346,8 +347,21 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                     text = "Forgot password?",
                     color = Color.LightGray,
                     modifier = Modifier.clickable {
-                         viewModel.onGoToResetPassWordScreen()
+                        viewModel.onGoToResetPassWordScreen()
                     }
+                )
+            }
+            // Hiển thị thông báo lỗi
+            if (errorMessage.isNotEmpty()) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp, bottom = 10.dp)
                 )
             }
             Button(
@@ -357,7 +371,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
                     }
                 },
                 modifier = Modifier
-                    .padding(top = 40.dp)
+                    .padding(top = 10.dp)
                     .height(50.dp)
                     .fillMaxWidth(0.7f),
                 shape = RoundedCornerShape(50),

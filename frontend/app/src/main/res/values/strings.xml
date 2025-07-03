@@ -3,7 +3,7 @@
 
  
 <!--    >https://appdoctruyen.onrender.com/-->
-    <string name="base_url">http://10.0.2.2:20268</string>
-    <string name="ws_base_url">ws://10.0.2.2:20268/ws</string>
+    <string name="base_url">https://49f3-14-169-18-157.ngrok-free.app</string>
+    <string name="ws_base_url">ws://49f3-14-169-18-157.ngrok-free.app/ws</string>
 
 </resources>
