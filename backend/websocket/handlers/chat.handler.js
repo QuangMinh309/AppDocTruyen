@@ -69,7 +69,7 @@ async function onMessage(ws, message, clients) {
             case 'CREATE_CHAT':
                 validateMessage(createChatSchema, data); // Validate trước khi xử lý
                 const newChat = await ChatService.createChat({ ...payload, senderId: ws.userId, communityId: ws.communityId }, ws.userId);
-                console.log(' chat data:', newChat);
+                // console.log(' chat data:', newChat);
                 ws.send(JSON.stringify({ success: true, action, payload: newChat }));
                 broadcastToClients(ws, action, newChat, clients);
                 break;
@@ -98,7 +98,7 @@ async function onMessage(ws, message, clients) {
                 validateMessage(fetchChatByCommunitySchema, data); // Validate trước khi xử lý
             
                 const allChats = await ChatService.getAllChatsOfCommunity(ws.communityId, ws.userId);
-                console.log(allChats)
+                // console.log(allChats)
                 ws.send(JSON.stringify({ success: true, action: action, payload: allChats }));
                 break;
 

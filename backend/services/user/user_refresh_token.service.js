@@ -21,7 +21,7 @@ const refreshTokenUser = async (refreshToken) => {
     return { accessToken };
   } catch (err) {
     if (err instanceof jwt.JsonWebTokenError) {
-      console.log(err);
+      // console.log(err);
       throw new ApiError('Refresh token không hợp lệ', 401);
     }
     if (err instanceof jwt.TokenExpiredError) {

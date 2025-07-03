@@ -2,7 +2,7 @@ import Joi from 'joi';
 
 // Validation cho upload ảnh
 const uploadImageValidation = (req, res, next) => {
-    console.log('req.file in validation:', req.file); // Debug
+    // console.log('req.file in validation:', req.file);
     if (!req.file) {
         return res.status(400).json({ message: 'File ảnh là bắt buộc' });
     }
