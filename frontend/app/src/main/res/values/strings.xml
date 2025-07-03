@@ -2,8 +2,8 @@
     <string name="app_name">Reavel</string>
 
  
-<!--    >https://appdoctruyen.onrender.com/-->
-    <string name="base_url">https://49f3-14-169-18-157.ngrok-free.app</string>
-    <string name="ws_base_url">ws://49f3-14-169-18-157.ngrok-free.app/ws</string>
+<!--  http://192.168.100.175:20268/  >-->
+    <string name="base_url">https://appdoctruyen.onrender.com/</string>
+    <string name="ws_base_url">ws:/appdoctruyen.onrender.com/ws</string>
 
 </resources>
