@@ -10,6 +10,7 @@ import com.example.frontend.services.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,6 +40,16 @@ class RevenueViewModel @Inject constructor(
         if(_selectedYear.value.isBlank() || _selectedMonth.value.isBlank() || !_selectedYear.value.isDigitsOnly() || !_selectedMonth.value.isDigitsOnly())
         {
             _toast.value = "Invalid input"
+            return
+        }
+        if(_selectedYear.value > LocalDateTime.now().year.toString() || _selectedYear.value.toInt() < 0)
+        {
+            _toast.value = "Invalid year input"
+            return
+        }
+        if(_selectedMonth.value.toInt() > 12 || _selectedMonth.value.toInt() < 0)
+        {
+            _toast.value = "Invalid month input"
             return
         }
         viewModelScope.launch {

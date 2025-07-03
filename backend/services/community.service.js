@@ -11,8 +11,7 @@ const Category = sequelize.models.Category
 const History = sequelize.models.History
 const User = sequelize.models.User
 const Follow = sequelize.models.Follow
-const JoinCommunity = sequelize.model.JoinCommunity
-
+const JoinCommunity = sequelize.models.JoinCommunity
 
 export function normalizeString(str) {
     return str
@@ -102,6 +101,7 @@ const CommunityService = {
         try {
             const community = await Community.findByPk(communityId)
             const user = await User.findByPk(userId)
+            console.log("aada",JoinCommunity)
             const hasJoin = await JoinCommunity.findOne({
                 where: {
                     userId,
@@ -111,7 +111,8 @@ const CommunityService = {
             if (!community || !user) throw new ApiError('community hoặc user khoogn tồn tại', 404)
             if (hasJoin) return true
 
-            const join = await JoinCommunity.create({ userId, communityId });
+             await JoinCommunity.create({ userId, communityId });
+            await   community.update({memberNum: community.memberNum+1})
             return true
         } catch (err) {
             console.error('Lỗi khi lấy danh sách cộng đồng:', err)

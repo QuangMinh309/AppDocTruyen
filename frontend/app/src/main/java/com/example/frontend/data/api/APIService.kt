@@ -271,7 +271,7 @@ interface ApiService {
 
     @PUT("api/nameLists/{nameListId}")
     suspend fun updateNameList(
-        @Path("nameList") nameListId: Int,
+        @Path("nameListId") nameListId: Int,
         @Body updateNameListRequest: UpdateNameListRequest
     ):Response<UpdateNameListReponse>
 
@@ -439,7 +439,7 @@ interface ApiService {
     suspend fun updateCategory(@Path("id") id: Int, @Body categoryName: CategoryRequest): Response<Category>
 
     @DELETE("api/categories/{id}")
-    suspend fun deleteCategory(@Path("id") id: Int): Response<Unit>
+    suspend fun deleteCategory(@Path("id") id: Int): Response<DeleteCategoryResponse>
 
     @GET("api/transactions/{transactionId}")
     suspend fun getTransactionById(@Path("transactionId") transactionId: Int): Response<Transaction>
@@ -543,6 +543,11 @@ data class UserFollowRequest (
 
 data class CategoryRequest(
     val categoryName: String
+)
+
+data class DeleteCategoryResponse(
+    val status: Int,
+    val message: String
 )
 
 // Data classes cho password reset

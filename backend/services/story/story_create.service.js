@@ -1,4 +1,3 @@
-
 import { sequelize } from '../../models/index.js';
 import { handleTransaction } from '../../utils/handle_transaction.util.js';
 import { uploadImageToCloudinary } from '../cloudinary.service.js';
@@ -34,8 +33,10 @@ const createStory = async (storyData, userId, file) => {
       console.warn('createStory - No file provided for cover image');
     }
 
+    // Remove ageRange and ensure safeStoryData is an object
     const { ageRange, ...safeStoryData } = storyData || {};
 
+    // Validate required fields
     if (!safeStoryData.storyName) {
       throw new ApiError('Tiêu đề truyện là bắt buộc', 400);
     }
@@ -53,6 +54,7 @@ const createStory = async (storyData, userId, file) => {
       { transaction }
     );
 
+    // Handle categories if provided and valid
     if (
       Array.isArray(safeStoryData.categories) &&
       safeStoryData.categories.length > 0
@@ -83,6 +85,7 @@ const createStory = async (storyData, userId, file) => {
         transaction,
       });
 
+      // Send notification to admin
       if (admins.length > 0) {
         const adminNotifications = admins.map((admin) =>
           NotificationService.createNotification(
@@ -96,6 +99,10 @@ const createStory = async (storyData, userId, file) => {
         );
 
         await Promise.all(adminNotifications);
+
+        const notificationIds = adminNotifications.map(noti => noti.userId);
+        notifyUser(notificationIds);
+
       }
     }
 

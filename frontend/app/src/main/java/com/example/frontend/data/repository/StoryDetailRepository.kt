@@ -2,8 +2,10 @@ package com.example.frontend.data.repository
 
 import android.util.Log
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.DeleteCategoryResponse
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
@@ -22,7 +24,18 @@ class StoryDetailRepository @Inject constructor(
                     Result.Success(story)
                 } ?: Result.Failure(Exception("No story data in response"))
             } else {
-                Result.Failure(Exception("Failed to fetch story: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -37,7 +50,18 @@ class StoryDetailRepository @Inject constructor(
                     Result.Success(stories)
                 } ?: Result.Failure(Exception("No stories data in response"))
             } else {
-                Result.Failure(Exception("Failed to fetch stories: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -63,7 +87,18 @@ class StoryDetailRepository @Inject constructor(
                     Result.Success(story)
                 } ?: Result.Failure(Exception("No story data in response"))
             } else {
-                Result.Failure(Exception("Failed to update story: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during API call: ${e.message}", e)
@@ -79,7 +114,18 @@ class StoryDetailRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No vote data in response"))
             } else {
-                Result.Failure(Exception("Failed to check vote: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during checkVote: ${e.message}", e)
@@ -95,7 +141,18 @@ class StoryDetailRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No vote response data"))
             } else {
-                Result.Failure(Exception("Failed to vote: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during voteStory: ${e.message}", e)
@@ -111,7 +168,18 @@ class StoryDetailRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No delete response data"))
             } else {
-                Result.Failure(Exception("Failed to delete chapter: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during deleteChapter: ${e.message}", e)
@@ -129,7 +197,18 @@ class StoryDetailRepository @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.let { Result.Success(it) } ?: Result.Failure(Exception("No delete response data"))
                 } else {
-                Result.Failure(Exception("Failed to delete story: ${response.code()} - ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Log.e("StoryDetailRepository", "Exception during deleteStory: ${e.message}", e)

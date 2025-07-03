@@ -52,6 +52,13 @@ const PurchaseChapterService = {
                     throw new ApiError('Bạn đã mua chapter này rồi!', 400);
             }
 
+            await user.update({
+                wallet: user.wallet - story.pricePerChapter,
+            });
+            
+            const author = User.findPk(story.userId)
+            author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
+
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
             const transaction = await TransactionService.createTransaction({

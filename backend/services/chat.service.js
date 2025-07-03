@@ -27,31 +27,13 @@ const getChatImageData = async (chatJson) => {
 }
 
 const ChatService = {
-    async getChatById(chatId) {
-        try {
-            const chatData = await sequelize.models.Chat.findOne({
-                where: { chatId },
-                include: [
-
-                    { model: sequelize.models.User, as: 'sender', attributes: ['userId', 'dUserName', 'avatarId'] },
-                ],
-            });
-            if (!chatData) {
-                throw new ApiError('Không tìm thấy cuộc trò chuyện', 404);
-            }
-            const chatJson = chatData.toJSON();
-            return getChatImageData(chatJson);
-        } catch (err) {
-            if (err instanceof ApiError) throw err;
-            throw new ApiError(`Lỗi khi lấy cuộc trò chuyện: ${err.message}`, 500);
-        }
-    },
 
     async getAllChatsOfCommunity(id, userId) {
         try {
             const joinChat = CommunityService.addMember(id, userId)
             if (!joinChat) throw new ApiError(`Bạn chưa thể tham gia cộng đồng này!`, 500);
             const chats = await sequelize.models.Chat.findAll({
+                limit:50,
                 where: { communityId: id },
                 include: [
 

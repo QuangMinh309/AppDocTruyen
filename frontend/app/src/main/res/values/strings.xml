@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Reavel</string>
+
+ 
 <!--    >https://appdoctruyen.onrender.com/-->
     <string name="base_url">https://appdoctruyen.onrender.com/</string>
     <string name="ws_base_url">ws://appdoctruyen.onrender.com/ws</string>
