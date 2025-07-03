@@ -107,7 +107,7 @@ class CreateStoryViewModel @Inject constructor(
             when (result) {
                 is Result.Success -> {
 
-                    showToast("Story created successfully")
+                    showToast("Truyện của bạn đã được tạo. Vui lòng chờ Admin duyệt truyện ")
                     Log.d("CreateStoryViewModel", "Created story: ${result.data.name}")
                   onGoBack()
                 }

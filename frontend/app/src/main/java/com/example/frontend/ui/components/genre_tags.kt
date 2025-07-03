@@ -26,7 +26,7 @@ fun GenreTags(
     crossAxisSpacing: Int = 1,
     cornerRadius: Int = 30
 ) {
-    val maxTags = 1 // Giả sử tối đa 6 thẻ để gần đúng 2 dòng (3 thẻ mỗi dòng)
+    val maxTags = 4 // Giả sử tối đa 6 thẻ để gần đúng 2 dòng (3 thẻ mỗi dòng)
     FlowRow(
         mainAxisSpacing = mainAxisSpacing.dp,
         crossAxisSpacing = crossAxisSpacing.dp

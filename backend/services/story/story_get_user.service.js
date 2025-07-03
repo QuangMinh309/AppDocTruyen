@@ -10,7 +10,7 @@ const Category = sequelize.models.Category;
 
 const getStoriesByUser = async (
   targetUserId,
-  { limit = 20, lastId = null, includeAll = false, role, currentUserId } = {}
+  { limit = 80, lastId = null, includeAll = false, role, currentUserId } = {}
 ) => {
   try {
     await validateUser(targetUserId);
