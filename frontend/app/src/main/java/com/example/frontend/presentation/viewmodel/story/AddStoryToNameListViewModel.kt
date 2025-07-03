@@ -35,7 +35,7 @@ class AddStoryToNameListViewModel @Inject constructor(
         viewModelScope.launch {
             _storyId.value = savedStateHandle.get<Int>("storyId")
             if (_storyId.value == null) {
-                setToast("Invalid story ID")
+                showToast("Invalid story ID")
                 onGoBack()
             } else {
                 loadReadingLists()
@@ -52,7 +52,7 @@ class AddStoryToNameListViewModel @Inject constructor(
                 Log.d("AddStoryToNameListViewModel", "Loaded ${result.data.size} reading lists")
             }
             is Result.Failure -> {
-                setToast("Failed to load reading lists: ${result.exception.message}")
+                showToast("Failed to load reading lists: ${result.exception.message}")
                 Log.e("AddStoryToNameListViewModel", "Failed to load reading lists: ${result.exception.message}")
             }
         }
@@ -66,12 +66,12 @@ class AddStoryToNameListViewModel @Inject constructor(
             val result = repository.addStoryToNameList(nameListId, storyIdValue)
             when (result) {
                 is Result.Success -> {
-                    setToast("Story added to reading list successfully")
+                    showToast("Story added to reading list successfully")
                     Log.d("AddStoryToNameListViewModel", "Added story $storyIdValue to nameList $nameListId")
                     onGoBack()
                 }
                 is Result.Failure -> {
-                    setToast("${result.exception.message}")
+                    showToast("${result.exception.message}")
                     Log.e("AddStoryToNameListViewModel", "Failed to add story: ${result.exception.message}")
                 }
             }
@@ -82,19 +82,19 @@ class AddStoryToNameListViewModel @Inject constructor(
     fun createNameList(nameList: String, description: String) {
         viewModelScope.launch {
             if (nameList.isBlank()) {
-                setToast("Reading list name cannot be empty")
+                showToast("Reading list name cannot be empty")
                 return@launch
             }
             isLoading.value = true
             val result = repository.createNameList(nameList, description)
             when (result) {
                 is Result.Success -> {
-                    setToast("Reading list created successfully")
+                    showToast("Reading list created successfully")
                     Log.d("AddStoryToNameListViewModel", "Created nameList: $nameList")
                     loadReadingLists() // Làm mới danh sách reading lists
                 }
                 is Result.Failure -> {
-                    setToast("Failed to create reading list: ${result.exception.message}")
+                    showToast("Failed to create reading list: ${result.exception.message}")
                     Log.e("AddStoryToNameListViewModel", "Failed to create nameList: ${result.exception.message}")
                 }
             }
@@ -102,9 +102,6 @@ class AddStoryToNameListViewModel @Inject constructor(
         }
     }
 
-    fun setToast(message: String) {
-        _toast.value = message
-    }
 
     fun showCreateDialog() {
         showCreateDialog.value = true
