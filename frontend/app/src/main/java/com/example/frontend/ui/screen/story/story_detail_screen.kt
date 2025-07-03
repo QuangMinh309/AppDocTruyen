@@ -33,18 +33,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
-import com.example.frontend.data.model.Author
-import com.example.frontend.data.model.Category
-import com.example.frontend.data.model.Chapter
-import com.example.frontend.data.model.Comment
-import com.example.frontend.data.model.Story
-import com.example.frontend.data.model.User
-import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.StoryDetailViewModel
 import com.example.frontend.ui.components.AuthorInfoCard
 import com.example.frontend.ui.components.ChapterItemCard
@@ -57,13 +50,12 @@ import com.example.frontend.ui.components.SimilarNovelsCard
 import com.example.frontend.ui.components.StoryInfo
 import com.example.frontend.ui.components.StoryStatusAction
 import com.example.frontend.ui.components.TopBar
-import com.example.frontend.ui.screen.main_nav.demoAppUser
-import com.example.frontend.ui.screen.main_nav.genreDemoList
+
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -125,8 +117,6 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         text = "Are you sure to buy this chapter with ${viewModel.story.value?.pricePerChapter} ?",
         onConfirm = {
             viewModel.purchaseChapter()
-            viewModel.setShowDialogState(false)
-
         },
         onDismiss = {
                 viewModel.setShowDialogState(false)
@@ -217,7 +207,7 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                                             viewModel.setShowDialogState(true,chapter)
                                         }
                                         else
-                                             viewModel.onGoToChapterScreen(chapter.chapterId,viewModel.storyId.value,viewModel.isAuthor.value) },
+                                             viewModel.onGoToChapterScreen(chapter.chapterId, viewModel.finalChapterId.value?:chapter.chapterId,viewModel.storyId.value,viewModel.isAuthor.value) },
                                     onLongClick = {
                                         isSelectionMode = true
                                         selectedChapters = selectedChapters + chapter.chapterId
@@ -299,73 +289,4 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
         }
     }
 }
-val ExampleChapter: Chapter=Chapter (
-    chapterId = 1,
-    chapterName = "The Beginning",
-    ordinalNumber = 1,
-    storyId = 1,
-    content = "The hero embarks on a journey to find the lost artifact...",
-    viewNum = 500, commentNumber = 10,
-    updatedAtString = "2025-07-15T07:30:00.000Z",
-    lockedStatus = false
-)
-
-val Examplechapters: List<Chapter> = listOf(
-    ExampleChapter,
-    ExampleChapter,
-    ExampleChapter,
-    ExampleChapter,
-    ExampleChapter
-)
-
-val ExamplStory=Story(
-    id=1,
-    name ="Alibaba",
-    coverImgId = "https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-    description = "fgfssdf",
-    author = Author(id = 1,
-        name = "peneloped",
-        avatarId ="https://photo.znews.vn/w660/Uploaded/ngogtn/2020_10_20/avatar_thenextshadow_comiccover.jpg",
-        dName = null,
-    ),
-    voteNum = 100,
-    chapterNum = 10,
-    viewNum = 100,
-    categories = genreDemoList,
-    createdAt = "2024-12-12",//LocalDate.parse("2024-12-12"),
-    updateAt = "2024-12-12",//LocalDate.parse("2024-12-12"),
-    status = "Full",
-    ageRange = 13,
-    pricePerChapter = BigDecimal(200),
-    chapters = null
-
-)
-
-val ExampleCategories = listOf(
-    Category(1, "Fantasy"),
-    Category(2, "Adventure")
-)
-
-val Examplestories = listOf(
-    ExamplStory
-)
-
-
-
-//val comments: List<Comment> = listOf(
-//
-//    Comment(
-//        commentId = 2,
-//        user = demoAppUser, // tran_reader
-//        chapter= ExampleChapter,
-//        content = "I love the dragon fight scene!",
-//        commentPicId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-//        createAt = LocalDateTime.of(2025, 5, 10, 10, 0), // 2025-05-11 14:30
-//        likeNumber = 10,
-//        disLikeNumber = 0
-//    )
-//
-//
-//
-//)
 

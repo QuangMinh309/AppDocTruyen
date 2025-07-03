@@ -139,7 +139,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
             text = "Find transactions",
             color = Color.White,
             style = TextStyle(
-                fontSize = 33.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             ),
@@ -154,7 +154,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 text = "Find by user ID",
                 color = Color.LightGray,
                 style = TextStyle(
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily(Font(R.font.poppins_regular))
                 ),
@@ -216,7 +216,7 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
         }
-        Spacer(modifier = Modifier.padding(vertical = 10.dp))
+        Spacer(modifier = Modifier.padding(vertical = 30.dp))
         Column ( // sort by type
         )
         {
@@ -348,10 +348,3 @@ fun TransactionManagementScreen(viewModel: TransactionMgmtViewModel = hiltViewMo
     }
 }
 
-//@SuppressLint("ViewModelConstructorInComposable")
-//@Preview(showBackground = true)
-//@Composable
-//private fun PreviewScreenContent() {
-//    val fakeViewModel = TransactionMgmtViewModel (NavigationManager())
-//    TransactionManagementScreen(fakeViewModel)
-//}

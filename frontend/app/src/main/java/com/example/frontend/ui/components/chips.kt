@@ -154,7 +154,7 @@ fun SelectChip(
         color = background,
         shape = RoundedCornerShape(50),
         modifier = Modifier
-            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable { onClick() }
     ) {
         Text(

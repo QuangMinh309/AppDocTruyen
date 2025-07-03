@@ -11,7 +11,7 @@ import com.example.frontend.data.repository.NotificationRepository
 import com.example.frontend.data.repository.UserProfileRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
-import com.example.frontend.ui.screen.main_nav.ExampleList
+
 import com.example.frontend.ui.screen.main_nav.demoUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +42,7 @@ class UserProfileViewModel @Inject constructor(
     private val _stories = MutableStateFlow<List<Story>>(emptyList())
     val Stories: StateFlow<List<Story>> = _stories.asStateFlow()
 
-    val storyList = ExampleList
+    val storyList = emptyList<Story>()
 
     val isLoading = mutableStateOf(false)
     val isLoadingStories = mutableStateOf(false)

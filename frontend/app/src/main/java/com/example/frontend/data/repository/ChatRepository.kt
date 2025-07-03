@@ -180,6 +180,5 @@ class ChatRepository @Inject constructor(
             _isConnected.emit(false)
         }
         _chatList.value = emptyList()
-
     }
 }

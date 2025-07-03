@@ -193,7 +193,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //transaction message
                             Text(
-                                text= "Message: Mã người dùng-${user?.id} nạp ${viewModel.formatMoney(amountState.value.toLong())}",
+                                text= "Message: Mã người dùng - ${user?.id} nạp ${viewModel.formatMoney(amountState.value.toLong())}",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,

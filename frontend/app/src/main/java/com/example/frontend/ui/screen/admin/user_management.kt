@@ -110,7 +110,7 @@ fun UserManagementScreen(viewModel : UserMgmtViewModel = hiltViewModel())
             text = "Find users",
             color = Color.White,
             style = TextStyle(
-                fontSize = 33.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             ),

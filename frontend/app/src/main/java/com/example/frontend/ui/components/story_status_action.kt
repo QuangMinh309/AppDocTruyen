@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -190,7 +192,7 @@ fun StoryStatusAction(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.vote_icon),
+                    imageVector =Icons.Outlined.Add,
                     contentDescription = "Add",
                     modifier = Modifier.size(16.dp),
                     tint = Color.Black

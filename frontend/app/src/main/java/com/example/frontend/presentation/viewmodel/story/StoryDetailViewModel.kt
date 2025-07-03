@@ -86,11 +86,10 @@ class StoryDetailViewModel @Inject constructor(
             when (val result = storyDetailRepository.purchaseChapter(_selectedBuyChapter.value?.chapterId?:0)) {
                 is Result.Success -> {
                      _toast.value = result.data
-                    if( _selectedBuyChapter.value!=null){
-                        onGoToChapterScreen( _selectedBuyChapter.value?.chapterId?:0,
+                        onGoToChapterScreen( _selectedBuyChapter.value?.chapterId?:0,finalChapterId.value?:0,
                             _selectedBuyChapter.value?.storyId?:0,
                             isAuthor.value)
-                    }
+
                 }
                 is Result.Failure -> {
                     _toast.value = result.exception.message

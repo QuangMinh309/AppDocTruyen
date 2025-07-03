@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.NotificationsNone
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,7 +41,7 @@ fun TopBar(title: String = "",
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, end = 25.dp),
+            .padding(horizontal = 10.dp,vertical = 30.dp),
         verticalAlignment = Alignment.CenterVertically
     ){
         // Back button
@@ -89,22 +91,36 @@ fun TopBar(title: String = "",
                 .align(Alignment.CenterVertically)
         )
 
-
-        val drawableId = if (iconType == "Setting") {
-            R.drawable.setting_config
-        } else {
-            R.drawable.search_normal
+        if(iconType == "Plus") {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Custom Icon",
+                tint = Color.White,
+                modifier = Modifier
+                    .weight(0.33f)
+                    .size(22.dp)
+                    .wrapContentWidth(Alignment.End)
+                    .clickable { onRightClick() }
+            )
         }
-        Icon(
-            painter = painterResource(id = drawableId),
-            contentDescription = "Custom Icon",
-            tint = Color.White,
-            modifier = Modifier
-                .weight(0.33f)
-                .size(22.dp)
-                .wrapContentWidth(Alignment.End)
-                .clickable { onRightClick() }
-        )
+        else{
+            val drawableId= if (iconType == "Setting") {
+                R.drawable.setting_config
+            } else {
+                R.drawable.search_normal
+            }
+            Icon(
+                painter = painterResource(id = drawableId),
+                contentDescription = "Custom Icon",
+                tint = Color.White,
+                modifier = Modifier
+                    .weight(0.33f)
+                    .size(22.dp)
+                    .wrapContentWidth(Alignment.End)
+                    .clickable { onRightClick() }
+            )
+
+        }
 
 
     }

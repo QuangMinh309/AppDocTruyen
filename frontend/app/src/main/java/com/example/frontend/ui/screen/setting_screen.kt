@@ -276,7 +276,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 24.sp,
                                 brush = Brush.linearGradient(
-                                    colors = if (user.value?.isPremium == true) listOf(
+                                    colors = if (user.value?.role?.roleName == "admin") listOf(
                                         BurntCoral,
                                         OrangeRed
                                     ) else listOf(Color.White, Color.White),

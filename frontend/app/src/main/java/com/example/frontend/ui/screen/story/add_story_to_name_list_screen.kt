@@ -1,12 +1,18 @@
 package com.example.frontend.ui.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +30,13 @@ import com.example.frontend.ui.components.TopBar
 import com.example.frontend.presentation.viewmodel.AddStoryToNameListViewModel
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.example.frontend.R
 
 @Composable
 fun AddStoryToNameListScreen(viewModel: AddStoryToNameListViewModel = hiltViewModel()) {
@@ -37,16 +50,17 @@ fun AddStoryToNameListScreen(viewModel: AddStoryToNameListViewModel = hiltViewMo
     LaunchedEffect(toastMessage) {
         toastMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            viewModel.setToast("") // Xóa toast sau khi hiển thị
+           viewModel.clearToast()
         }
     }
 
     ScreenFrame(
         topBar = {
+
             TopBar(
                 title = "Add to Reading List",
                 showBackButton = true,
-                iconType = "Setting",
+                iconType = "Plus",
                 onLeftClick = { viewModel.onGoBack() },
                 onRightClick = { viewModel.showCreateDialog() }
             )

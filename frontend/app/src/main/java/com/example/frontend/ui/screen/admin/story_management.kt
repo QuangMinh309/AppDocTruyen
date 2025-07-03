@@ -150,7 +150,7 @@ fun StoryManagementScreen(viewModel: StoryMgmtViewModel = hiltViewModel())
                 text = "Find stories",
                 color = Color.White,
                 style = TextStyle(
-                    fontSize = 30.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
                 )

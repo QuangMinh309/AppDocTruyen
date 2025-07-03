@@ -120,7 +120,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
             text = "Create or update categories",
             color = Color.White,
             style = TextStyle(
-                fontSize = 35.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             ),
@@ -135,7 +135,7 @@ fun CategoryManagementScreen(viewModel: CategoryMgmtViewModel = hiltViewModel())
                 text = "Find category",
                 color = Color.LightGray,
                 style = TextStyle(
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 ),
             )

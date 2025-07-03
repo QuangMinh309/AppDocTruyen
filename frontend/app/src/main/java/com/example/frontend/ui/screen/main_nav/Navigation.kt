@@ -63,12 +63,11 @@ import com.example.frontend.ui.screen.story.CreateStoryScreen
 import com.example.frontend.ui.screen.story.NameListStoryScreen
 import com.example.frontend.ui.screen.story.ReadScreen
 import com.example.frontend.ui.screen.story.StoryDetailScreen
-import com.example.frontend.ui.screen.story.StoryViewManagementScreen
 import com.example.frontend.ui.screen.story.TopRankingStoryListScreen
 import com.example.frontend.ui.screen.story.UpdateChapterScreen
 import com.example.frontend.ui.screen.story.UpdateStoryScreen
 import com.example.frontend.ui.screen.story.WriteScreen
-import com.example.frontend.ui.screen.story.YourStoryDetailScreen
+
 import com.example.frontend.ui.screen.transaction.DepositScreen
 import com.example.frontend.ui.screen.transaction.PremiumScreen
 import com.example.frontend.ui.screen.transaction.TransactionAcceptScreen
@@ -308,13 +307,6 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
                 )
             ) { TransactionAcceptScreen() }
 
-            composable(
-                route = Screen.YourStoryDetail.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
-                )
-            ) { YourStoryDetailScreen() }
-
             composable(Screen.Notification.route) { NotificationScreen() }
             composable(Screen.Setting.route) { SettingScreen() }
             composable(
@@ -340,12 +332,7 @@ fun AppNavigation(navController: NavHostController, viewModel: AppNavigationView
             composable(Screen.Admin.Story.route) { StoryManagementScreen() }
             composable(Screen.Admin.Community.route) { CommunityManagementScreen() }
             composable(Screen.Admin.Revenue.route) { RevenueManagementScreen() }
-            composable(
-                route = Screen.Admin.StoryDetail.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.StringType },
-                )
-            ) { StoryViewManagementScreen() }
+
         }
     }
 }

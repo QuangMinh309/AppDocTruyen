@@ -59,7 +59,9 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
     val currentChapter by viewModel.currentChapter.collectAsState()
     val isLoading by viewModel.isLoading
     val isAuthor by viewModel.isAuthor.collectAsState()
-<<<<<<< HEAD
+    val chapterId by viewModel.chapterId.collectAsState()
+    val finalChapterId by viewModel.finalChapterId.collectAsState()
+
     val yourComment by viewModel.yourComment.collectAsState()
     val messages = viewModel.messages.collectAsState()
     val toast by viewModel.toast.collectAsState()
@@ -87,20 +89,6 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
         toast?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             viewModel.clearToast()
-=======
-    val chapterId by viewModel.chapterId.collectAsState()
-    val finalChapterId by viewModel.finalChapterId.collectAsState()
-    val toast by viewModel.toast.collectAsState()
-    val context = LocalContext.current
-
-    // Hiển thị Toast
-    LaunchedEffect(toast) {
-        toast?.let {
-            if (it.isNotEmpty()) {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                viewModel.showToast("") // Xóa toast sau khi hiển thị
-            }
->>>>>>> 0ea67b82a290872e3adafab69f6e9269738441cf
         }
     }
 

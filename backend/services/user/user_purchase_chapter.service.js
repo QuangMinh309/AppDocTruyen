@@ -33,11 +33,12 @@ const PurchaseChapterService = {
             }
 
             const purchase = await Purchase.findOne({
-                where: { chapterId },
+                where: { chapterId, userId },
                 order: [['purchasedAt', 'DESC']],
                 attributes: ['purchasedId', 'chapterId', 'purchasedAt']
             });
             
+            console.log(purchase)
 
 
             if (purchase) {

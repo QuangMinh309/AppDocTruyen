@@ -158,12 +158,12 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
             text = "Manage community",
             color = Color.White,
             style = TextStyle(
-                fontSize = 30.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.reemkufifun_wght))
             ),
             modifier = Modifier
-                .padding(top = 30.dp)
+                .padding(vertical = 30.dp)
         )
         Spacer(modifier = Modifier.height(10.dp))
         Text(
@@ -198,7 +198,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 10.dp)
+                .padding(top = 40.dp, bottom = 10.dp)
         )
         {
             Button(

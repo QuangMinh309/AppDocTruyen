@@ -75,7 +75,7 @@ import com.example.frontend.ui.components.SectionTitle
 import com.example.frontend.ui.components.StoryCard
 import com.example.frontend.ui.components.StoryCard2
 import com.example.frontend.ui.components.StoryCard3
-import com.example.frontend.ui.screen.story.ExamplStory
+
 import com.example.frontend.ui.theme.BurntCoral
 import com.example.frontend.ui.theme.OrangeRed
 import kotlinx.coroutines.async
@@ -164,7 +164,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         contentDescription = "Notification",
                         tint = Color.White,
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(50.dp)
                             .clickable { viewModel.onGoToNotificationScreen() }
                     )
 
@@ -183,7 +183,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         contentDescription = "Settings",
                         tint = Color.White,
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(50.dp)
                             .clickable { viewModel.onGoToSetting() }
                     )
                 }
@@ -491,15 +491,6 @@ val bannerItems = listOf(
 val genreDemoList: List<Category> = listOf(Category(id =1,name ="Adventure"),Category(id =2,name ="Autobiography"),
     Category(id =3,name ="Mystery"),Category(id =4,name ="Romantic"))
 
-val ExampleList: List<Story> = listOf(
-
-    ExamplStory,
-    ExamplStory,
-    ExamplStory,
-    ExamplStory
-
-
-)
 
 var ExampleNameListStory= NameListStory(
     coverImgId = "02"
@@ -541,20 +532,4 @@ val demoUser = com.example.frontend.data.model.User(
 
 )
 
-val demoAppUser = com.example.frontend.data.model.User(
-    id = 2, name = "Peneloped Lyne",
-    role = Role(1, "User"),
-    dName = "tolapenelopee",
-    backgroundId = "https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=apYgDs9tYQiwn7pcDOGbNg",
-    mail = "peneloped@gmail.com",
-    followerNum = 200,
-    novelsNum = 50,
-    readListNum = 3,
-    about = "Your membership starts as soon as you set up payment and subscribe. " +
-            "Your monthly charge will occur on the last day of the current billing period. " +
-            "We'll renew your membership for you can manage your subscription or turn off " +
-            "auto-renewal under accounts setting.\n" +
-            "By continuing, you are agreeing to these terms. See the private statement and restrictions.",
-    wallet = BigDecimal(0),
-    dob = "2020-03-12",
-)
+

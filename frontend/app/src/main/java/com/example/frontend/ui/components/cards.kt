@@ -477,14 +477,13 @@ fun SimilarNovelsCard(novels: List<Story>, viewModel: BaseViewModel) {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         val formatter = DecimalFormat("#,###"+"đ")
-                        if(novel.pricePerChapter != null)
-                        {
-                            Text(
-                                text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
+
+                        Text(
+                            text = "${formatter.format(novel.pricePerChapter.toLong())}/Chapter ", // Sử dụng price từ Story
+                            color = Color.White,
+                            fontSize = 12.sp
+                        )
+
                     }
 
                     Spacer(modifier = Modifier.weight(1f))
@@ -1176,14 +1175,14 @@ fun RowSelectItem(
             Icon(
                 painter = image,
                 contentDescription = "select button icon",
-                tint = Color.White,
+                tint = OrangeRed,
                 modifier = Modifier
                     .size(30.dp)
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
                 text = name,
-                fontSize = 25.sp,
+                fontSize = 22.sp,
                 fontFamily = FontFamily(Font(R.font.poppins_regular)),
                 color = Color.White
             )
