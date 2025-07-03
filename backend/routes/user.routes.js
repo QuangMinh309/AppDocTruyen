@@ -71,6 +71,19 @@ router.post(
   UserController.unfollowUser
 )
 
+
+router.post(
+  '/like-comment',
+  validate(validators.comment),
+  UserController.followUser
+)
+
+router.post(
+  '/unlike-comment',
+  validate(validators.comment),
+  UserController.unfollowUser
+)
+
 router.get('/follow/status/:followedId', UserController.getFollowStatus)
 
 router.post('/purchase-premium', UserController.purchasePremium)
