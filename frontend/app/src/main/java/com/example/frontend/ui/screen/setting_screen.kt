@@ -352,6 +352,12 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                     isEditable = viewModel.isEditMode.value,
                     onValueChange = { viewModel.username.value = it }
                 )
+                EditableField(
+                    label = "About",
+                    value = viewModel.about.value,
+                    isEditable = viewModel.isEditMode.value,
+                    onValueChange = { viewModel.about.value = it }
+                )
 
                 // Mail
                 EditableField(

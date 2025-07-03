@@ -384,6 +384,7 @@ interface ApiService {
         @Part("userName") userName: RequestBody? = null,
         @Part("mail") mail: RequestBody? = null,
         @Part("password") password: RequestBody? = null,
+        @Part("about") about: RequestBody?=null,
         @Part avatarFile: MultipartBody.Part? = null,
         @Part backgroundFile: MultipartBody.Part? = null
     ): Response<UpdateUserResponse>
@@ -393,7 +394,8 @@ interface ApiService {
         val DOB: String? = null,
         val userName: String? = null,
         val mail: String? = null,
-        val password: String? = null
+        val password: String? = null,
+        val about: String?=null
     )
 
     data class UpdateUserResponse(

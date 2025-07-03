@@ -12,6 +12,7 @@ import com.example.frontend.util.UserPreferences
 import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.json.JSONObject
 import java.io.File
@@ -162,6 +163,7 @@ class AuthRepository @Inject constructor(
             val userName: RequestBody? = data.userName?.toRequestBody("text/plain".toMediaTypeOrNull())
             val mail: RequestBody? = data.mail?.toRequestBody("text/plain".toMediaTypeOrNull())
             val password: RequestBody? = data.password?.toRequestBody("text/plain".toMediaTypeOrNull())
+            val about:RequestBody? = data.about?.toRequestBody("text/plain".toMediaTypeOrNull())
 
             val response = apiService.updateUser(
                 userId,
@@ -170,6 +172,7 @@ class AuthRepository @Inject constructor(
                 userName,
                 mail,
                 password,
+                about ,
                 avatarFile,
                 backgroundFile
             )

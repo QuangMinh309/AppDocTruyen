@@ -12,7 +12,7 @@ class SearchStoryRepository @Inject constructor(private val apiService: ApiServi
 
     suspend fun searchStories(searchTerm: String, limit: Int = 20, lastId: Int? = null): Result<List<Story>> {
         return try {
-            val response = apiService.searchStories(searchTerm, limit, lastId)
+            val response = apiService.searchStories(searchTerm,  lastId)
             if (response.isSuccessful && response.body()?.success == true) {
                 Result.Success(response.body()?.data?.stories ?: emptyList())
             } else {

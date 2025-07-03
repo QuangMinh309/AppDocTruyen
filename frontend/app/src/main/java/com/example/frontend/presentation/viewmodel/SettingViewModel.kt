@@ -35,6 +35,7 @@ class SettingViewModel @Inject constructor(
     val username = mutableStateOf("")
     val mail = mutableStateOf<String?>(null)
     val password = mutableStateOf("")
+    val about= mutableStateOf("")
     val showDatePicker = mutableStateOf(false)
     val showDeleteDialog = mutableStateOf(false)
 
@@ -103,7 +104,8 @@ class SettingViewModel @Inject constructor(
                 DOB = dateOfBirth.value.takeIf { it.isNotEmpty() },
                 userName = username.value.takeIf { it.isNotEmpty() },
                 mail = mail.value.takeIf { it?.isNotEmpty() == true },
-                password = password.value.takeIf { it.isNotEmpty() }
+                password = password.value.takeIf { it.isNotEmpty() },
+                about = about.value.takeIf { it.isNotEmpty()  }
             )
             Log.d("SettingViewModel", "Update request: $updateRequest")
 
