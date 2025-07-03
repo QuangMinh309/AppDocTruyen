@@ -94,7 +94,7 @@ fun ChattingScreen(viewModel: ChattingViewModel = hiltViewModel())
                 showBackButton = true,
                 iconType = "Searching",
                 onLeftClick = {
-                    viewModel.onGoBack()
+                    viewModel.back()
                    },
                 onRightClick = {
                     viewModel.onGoToSearchingMemberScreen(communityId.value.toInt())

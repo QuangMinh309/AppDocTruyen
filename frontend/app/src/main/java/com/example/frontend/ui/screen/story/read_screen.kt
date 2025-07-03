@@ -110,7 +110,7 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                 title = currentChapter?.chapterName ?: "Chapter",
                 showBackButton = true,
                 iconType = "Setting",
-                onLeftClick = { viewModel.onGoBack() },
+                onLeftClick = { viewModel.back() },
                 onRightClick = { viewModel.onGoToSetting() }
             )
         }

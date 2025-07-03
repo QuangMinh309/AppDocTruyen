@@ -6,6 +6,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.frontend.data.model.Chat
 import com.example.frontend.data.repository.ChatRepository
 import com.example.frontend.presentation.viewmodel.BaseViewModel
@@ -122,6 +123,13 @@ class ChattingViewModel @Inject constructor(
 
             Log.d("ChattingViewModel", "Disconnected")
 
+        }
+    }
+
+    fun back() {
+        viewModelScope.launch {
+            onCleared()
+            onGoBack()
         }
     }
 }
