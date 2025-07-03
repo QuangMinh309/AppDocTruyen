@@ -2,11 +2,11 @@ export async function up(queryInterface, Sequelize) {
   await queryInterface.bulkInsert('role', [
     {
       roleId: 1,
-      roleName: 'user',
+      roleName: 'admin',
     },
     {
       roleId: 2,
-      roleName: 'admin',
+      roleName: 'user',
     },
   ]);
 }
