@@ -19,7 +19,7 @@ const broadcastToClients = (ws, action, data, clients) => {
         const dataToSend = { ...data };
         dataToSend.isUser = data.sender?.userId === clientWs.userId;
         if( dataToSend.isUser==clientWs.userId)
-
+            
         clientWs.send(JSON.stringify({
             action: `BRC_${action}`,
             payload: dataToSend,

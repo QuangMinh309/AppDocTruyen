@@ -244,5 +244,6 @@ export default {
   followUser: followUserSchema,
   refreshToken: refreshTokenSchema,
   userId: userIdSchema,
-  walletChange: WalletChangeSchema
+  walletChange: WalletChangeSchema,
+  comment: commentSchema,
 };

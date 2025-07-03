@@ -13,6 +13,7 @@ import reportUser from '../services/user/user_report.service.js';
 import checkFollowStatus from '../services/user/user_check_follow.service.js';
 import PurchaseChapterService from '../services/user/user_purchase_chapter.service.js';
 import WalletManagementService from '../services/user/user_wallet_management.service.js';
+import CommentService from '../services/comment.service.js';
 
 const UserController = {
   async register(req, res, next) {
@@ -181,6 +182,38 @@ const UserController = {
     }
   },
 
+  async unlikeComment(req, res, next) {
+    try {
+      const { commentId } = req.body;
+      const userId = req.user.userId;
+
+      const result = await CommentService.unlikeComment(parseInt(commentId),userId);
+
+      res.status(200).json({
+        status: 200,
+        message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  async likeComment(req, res, next) {
+    try {
+       const { commentId } = req.body;
+      const userId = req.user.userId;
+
+      const result = await CommentService.likeComment(parseInt(commentId),userId);
+
+      res.status(200).json({
+        status: 200,
+        message: result.message,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async unfollowUser(req, res, next) {
     try {
       const { followedId } = req.body;
@@ -245,7 +278,7 @@ const UserController = {
     try {
       const userId = req.user.userId;
       const data = req.body
-      // console.log(data)
+      console.log(data)
       const result = await WalletManagementService.walletChange(userId, data);
 
       res.status(200).json({
