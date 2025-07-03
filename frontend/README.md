@@ -18,6 +18,7 @@
 
 ## 🧭 Sơ đồ kiến trúc
 
+```
           UI (Jetpack Compose)
                  │
        ViewModel (State holder)
@@ -28,10 +29,13 @@
     │ API │
     │ (Retrofit) │
     └────────────────────────────┘
-  
+```  
+
 ---
 
 ## 🧱 Cấu trúc thư mục
+
+```
 app/
 ├── java/
 │   └── com.example.appname/
@@ -56,5 +60,5 @@ app/
 |       └── MyApplication.kt               # Lớp Application custom, dùng khởi tạo Hilt, cấu hình toàn cục
 ├── res/
 ├── AndroidManifest.xml
-
+```
 
