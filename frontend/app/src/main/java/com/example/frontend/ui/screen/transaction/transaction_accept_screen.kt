@@ -169,7 +169,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //account number
                             Text(
-                                text= "Account Number: 5811666400",
+                                text= "Account Number: 37101010995044",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -177,7 +177,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //Account Holder
                             Text(
-                                text= "Account Holder: Nguyen Minh Thien",
+                                text= "Account Holder: Pham Ngoc Quang Minh",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -185,7 +185,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //Bank name
                             Text(
-                                text= "Bank: BIDV",
+                                text= "Bank: MSB",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -193,7 +193,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
                             )
                             //transaction message
                             Text(
-                                text= "Message: Mã người dùng - ${user?.id} nạp ${viewModel.formatMoney(amountState.value.toLong())}",
+                                text= "Message: Mã người dùng ${user?.id} nạp ${viewModel.formatMoney(amountState.value.toLong())}",
                                 style = TextStyle(
                                     color = Color.LightGray,
                                     fontSize = 16.sp,
@@ -215,7 +215,7 @@ fun TransactionAcceptScreen(viewModel: TransactionAcceptViewModel= hiltViewModel
 
                     //QR code
                     Image(
-                        painter = painterResource(id = R.drawable.intro_page1_bg),
+                        painter = painterResource(id = R.drawable.qr),
                         contentDescription = "community avatar",
                         modifier = Modifier
                             .size(160.dp),

@@ -354,7 +354,7 @@ fun SettingScreen(viewModel: SettingViewModel = hiltViewModel()) {
                 )
                 EditableField(
                     label = "About",
-                    value = viewModel.about.value,
+                    value = if(viewModel.about.value.isEmpty()) user.value?.about ?: "" else viewModel.about.value,
                     isEditable = viewModel.isEditMode.value,
                     onValueChange = { viewModel.about.value = it }
                 )
