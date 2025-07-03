@@ -33,12 +33,16 @@ const PurchaseChapterService = {
             }
 
             const purchase = await Purchase.findOne({
-                where: { chapterId, userId },
-                order: [['purchasedAt', 'DESC']]
+                where: { chapterId },
+                order: [['purchasedAt', 'DESC']],
+                attributes: ['purchasedId', 'chapterId', 'purchasedAt']
             });
-    
+            
+            await user.update({ wallet: user.wallet - story.pricePerChapter });
 
-           
+            const author = await User.findByPk(story.userId)
+            await author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
+
             if (purchase) {
 
                 const expirateAt = new Date(

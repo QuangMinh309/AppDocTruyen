@@ -9,12 +9,6 @@ export default (sequelize, DataTypes) => {
         as: 'user',
       })
 
-      // Purchase belongs to Story
-      Purchase.belongsTo(models.Story, {
-        foreignKey: 'storyId',
-        as: 'story',
-      })
-
       // Purchase belongs to Chapter
       Purchase.belongsTo(models.Chapter, {
         foreignKey: 'chapterId',

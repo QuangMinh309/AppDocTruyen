@@ -3,6 +3,7 @@ import ApiError from '../../utils/api_error.util.js';
 import { updateStoryViewNum } from '../../utils/story.util.js';
 import { formatDate } from '../../utils/date.util.js';
 import { checkChapterAccessCore } from '../../utils/chapter.util.js';
+import { isPremiumUser } from '../../middlewares/auth.middleware.js';
 
 const Story = sequelize.models.Story;
 const Chapter = sequelize.models.Chapter;
@@ -53,7 +54,8 @@ const getStoryById = async (storyId, userId) => {
         const canAccess = await checkChapterAccessCore(
           userId,
           storyId,
-          chapter.chapterId
+          chapter.chapterId,
+          isPremiumUser
         );
         if (canAccess) {
           chapter.dataValues.lockedStatus = false;
