@@ -42,14 +42,14 @@ class RevenueViewModel @Inject constructor(
             _toast.value = "Invalid input"
             return
         }
-        if(_selectedYear.value > LocalDateTime.now().year.toString())
+        if(_selectedYear.value > LocalDateTime.now().year.toString() || _selectedYear.value.toInt() < 0)
         {
-            _toast.value = "Year must not be greater than current year"
+            _toast.value = "Invalid year input"
             return
         }
-        if(_selectedMonth.value.toInt() > 12)
+        if(_selectedMonth.value.toInt() > 12 || _selectedMonth.value.toInt() < 0)
         {
-            _toast.value = "Month must not be greater than 12"
+            _toast.value = "Invalid month input"
             return
         }
         viewModelScope.launch {
