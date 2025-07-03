@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -58,7 +59,11 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -1099,35 +1104,41 @@ fun ReadListItem(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 )
 
-                // Hiển thị icon 3 chấm chỉ khi showMoreOptions = true
-                if (showMoreOptions) {
-                    IconButton(onClick = { showMenu = true }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options",
-                            tint = Color.White
-                        )
-                    }
+                Box(
+                    modifier = Modifier.size(20.dp)
+                )
+                {
+                    // Hiển thị icon 3 chấm chỉ khi showMoreOptions = true
+                    // thằng ngu lol đéo bt sửa bug↑↑↑
+                    if (showMoreOptions) {
+                        IconButton(onClick = { showMenu = true }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options",
+                                tint = Color.White
+                            )
+                        }
 
-                    // Dropdown Menu
-                    DropdownMenu(
-                        expanded = showMenu,
-                        onDismissRequest = { showMenu = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Update Read List") },
-                            onClick = {
-                                onUpdateClick(item)
-                                showMenu = false
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Delete Read List") },
-                            onClick = {
-                                onDeleteClick(item)
-                                showMenu = false
-                            }
-                        )
+                        // Dropdown Menu
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Update Read List") },
+                                onClick = {
+                                    onUpdateClick(item)
+                                    showMenu = false
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Delete Read List") },
+                                onClick = {
+                                    onDeleteClick(item)
+                                    showMenu = false
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -1362,11 +1373,11 @@ fun UserCard(
                 modifier = Modifier.height(IntrinsicSize.Min)
             )
             {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = item.avatarUrl.takeIf {it != null} ?: R.drawable.intro_page1_bg
-                    ),
+                AsyncImage(
+                    model = item.avatarUrl.takeIf { it.isNotEmpty() } ?: R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
+                    placeholder = painterResource(R.drawable.intro_page1_bg),
+                    error = painterResource(R.drawable.placeholder_cover),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(50.dp, 50.dp)
@@ -1713,6 +1724,73 @@ fun RevenueTable(data: List<DayRevenue>) {
                     modifier = Modifier.weight(1f),
                     fontWeight = FontWeight.Bold
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MonthYearPicker(
+    selectedMonth: String,
+    selectedYear: String,
+    onMonthChange: (String) -> Unit,
+    onYearChange: (String) -> Unit
+) {
+    val months = listOf(
+        "01", "02", "03", "04", "05", "06",
+        "07", "08", "09", "10", "11", "12"
+    )
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(modifier = Modifier.padding(16.dp)) {
+        // Year input
+        OutlinedTextField(
+            value = selectedYear,
+            onValueChange = { onYearChange(it.filter { c -> c.isDigit() }) },
+            label = { Text("Year") },
+            modifier = Modifier.weight(1f)
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        // Month dropdown
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            OutlinedTextField(
+                value = selectedMonth,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Month") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .menuAnchor()
+                    .weight(1f)
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .heightIn(max = 600.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                months.forEach { month ->
+                    DropdownMenuItem(
+                        text = { Text(month) },
+                        onClick = {
+                            onMonthChange(month)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }

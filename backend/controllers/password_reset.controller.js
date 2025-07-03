@@ -66,8 +66,8 @@ async function getPasswordResetById(req, res, next) {
 async function resetPassword(req, res, next) {
   try {
     const { otp, newPassword, confirmPassword, userId } = req.body;
-    console.log('Received newPassword:', newPassword);
-    console.log('Received confirmPassword:', confirmPassword);
+    // console.log('Received newPassword:', newPassword);
+    // console.log('Received confirmPassword:', confirmPassword);
     if (newPassword !== confirmPassword) {
       return next(new ApiError('Mật khẩu mới và mật khẩu xác nhận không khớp', 400));
     }
