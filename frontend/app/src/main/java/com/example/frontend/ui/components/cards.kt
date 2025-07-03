@@ -759,10 +759,12 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = story.name?:"",
+                text = story.name ?: "",
                 color = Color.White,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1, // Giới hạn tối đa 1 dòng
+                overflow = TextOverflow.Ellipsis // Hiển thị dấu ba chấm khi bị cắt
             )
             if (isPremium) { // Chỉ hiển thị biểu tượng khóa nếu truyện là premium
                 Icon(
@@ -790,7 +792,7 @@ fun StoryCard2(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                imageVector = Icons.Filled.Favorite,
+                painter = painterResource(R.drawable.popular_icon),
                 contentDescription = "Likes",
                 modifier = Modifier
                     .size(18.dp)
@@ -901,7 +903,7 @@ fun StoryCard3(
 
             // Các thể loại (Chips)
             FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 story.categories?.forEach { genre ->
@@ -915,7 +917,7 @@ fun StoryCard3(
 
             // Số lượt xem
             Row(
-                verticalAlignment = Alignment.Bottom
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     painter = painterResource(R.drawable.popular_icon),

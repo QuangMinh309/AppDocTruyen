@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -194,6 +195,7 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                     BasicTextField(
                         value = storyName,
                         onValueChange = { viewModel.updateStoryName(it) },
+                        cursorBrush = SolidColor(Color.White),
                         textStyle = LocalTextStyle.current.copy(
                             color = Color.White,
                             fontSize = 21.sp,
@@ -205,7 +207,7 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                             if (storyName.isEmpty()) {
                                 Text(
                                     text = "+ Title",
-                                    color = Color.White,
+                                    color =  Color.White.copy(alpha = 0.6f),
                                     overflow = TextOverflow.Ellipsis,
                                     maxLines = 1,
                                     fontSize = 21.sp,
@@ -270,6 +272,7 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                     BasicTextField(
                         value = description ?: "",
                         onValueChange = { viewModel.updateDescription(it) },
+                        cursorBrush = SolidColor(Color.White),
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 130.dp),
@@ -337,6 +340,7 @@ fun CreateStoryScreen(viewModel: CreateStoryViewModel = hiltViewModel()) {
                         onValueChange = {
                             viewModel.updatePricePerChapter(it)
                         },
+                        cursorBrush = SolidColor(Color.White),
                         singleLine = true,
                         modifier = Modifier
                             .fillMaxWidth()

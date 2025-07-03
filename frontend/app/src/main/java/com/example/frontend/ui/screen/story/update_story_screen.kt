@@ -62,6 +62,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -302,6 +303,7 @@ fun UpdateStoryScreen(viewModel: UpdateStoryViewModel = hiltViewModel()) {
                                 BasicTextField(
                                     value = storyName,
                                     onValueChange = { viewModel.updateStoryName(it) },
+                                    cursorBrush = SolidColor(Color.White),
                                     textStyle = LocalTextStyle.current.copy(
                                         color = Color.White,
                                         fontSize = 21.sp,
@@ -381,6 +383,7 @@ fun UpdateStoryScreen(viewModel: UpdateStoryViewModel = hiltViewModel()) {
                                 BasicTextField(
                                     value = description ?: "",
                                     onValueChange = { viewModel.updateDescription(it) },
+                                    cursorBrush = SolidColor(Color.White),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .heightIn(min = 130.dp),

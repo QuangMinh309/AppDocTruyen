@@ -112,7 +112,7 @@ class CreateStoryViewModel @Inject constructor(
                   onGoBack()
                 }
                 is Result.Failure -> {
-                    showToast("Failed to create story: ${result.exception.message}")
+                    showToast(" ${result.exception.message}")
                     Log.e("CreateStoryViewModel", "Failed to create story: ${result.exception.message}")
                 }
             }
