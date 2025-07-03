@@ -12,8 +12,8 @@ data class Chapter(
     @SerializedName("ordinalNumber") val ordinalNumber: Int,
     @SerializedName("storyId") val storyId: Int,
     @SerializedName("content") val content: String?,
-    @SerializedName("viewNum") val viewNum: Int,
-    @SerializedName("commentNumber") val commentNumber: Int,
+    @SerializedName("viewNum") val viewNum: Int=0,
+    @SerializedName("commentNumber") val commentNumber: Int=0,
     @SerializedName("updatedAt") val updatedAtString: String?, // Nhận chuỗi từ JSON
     @SerializedName("lockedStatus") val lockedStatus: Boolean
 ) {

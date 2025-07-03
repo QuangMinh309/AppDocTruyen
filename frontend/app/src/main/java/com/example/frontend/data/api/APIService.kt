@@ -494,9 +494,19 @@ interface ApiService {
     suspend fun getNameLists(): Response<List<NameList>>
 
     @POST("api/users/follow")
-    suspend fun follow(@Body followRequest: UserFollowRequest): Response<NoDataResponse>
+    suspend fun follow(@Body followRequest: IdRequest): Response<NoDataResponse>
     @POST("api/users/unfollow")
-    suspend fun unFollow(@Body unFollowRequest: UserFollowRequest): Response<NoDataResponse>
+    suspend fun unFollow(@Body unFollowRequest:IdRequest): Response<NoDataResponse>
+
+    @POST("api/users/like-comment")
+    suspend fun likeComment(
+        @Body request:IdRequest
+    ): Response<NoDataResponse>
+
+    @POST("api/users/unlike-comment")
+    suspend fun unlikeComment(
+        @Body request:IdRequest
+    ): Response<NoDataResponse>
 
     @POST("api/users/purchase-premium")
     suspend fun purchasePremium(): Response<NoDataResponse>
@@ -577,8 +587,9 @@ class ListTransactionResponse(
     val nextLastId: Int?=-1
 )
 
-data class UserFollowRequest (
-    val followedId: Int
+
+data class IdRequest (
+    val id: Int
 )
 
 data class CategoryRequest(

@@ -9,8 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Comment
+
+import com.example.frontend.data.model.onFailure
+import com.example.frontend.data.model.onSuccess
 import com.example.frontend.data.repository.CommentRepository
 import com.example.frontend.data.repository.ReadRepository
+import com.example.frontend.data.repository.StoryDetailRepository
+import com.example.frontend.data.repository.UserRepository
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +28,15 @@ import javax.inject.Inject
 @HiltViewModel
 class ReadViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val userRepository: UserRepository,
     private val readRepository: ReadRepository,
+    private val storyDetailRepository: StoryDetailRepository,
     private val commentRepository: CommentRepository,
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
     private val _chapterId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("chapterId")))
     val chapterId: StateFlow<Int> = _chapterId.asStateFlow()
 
@@ -55,11 +64,32 @@ class ReadViewModel @Inject constructor(
 
     private val _yourComment = MutableStateFlow("")
     val yourComment: StateFlow<String> = _yourComment
-
+    private val _selectedBuyChapter = MutableStateFlow<Chapter?>(null)
+    val selectedBuyChapter: StateFlow<Chapter?> = _selectedBuyChapter.asStateFlow()
     fun setCommentUri(uri: Uri?) {
         _selectedPicUri.value = uri
     }
 
+    fun purchaseChapter() {
+        viewModelScope.launch {
+            when (val result = storyDetailRepository.purchaseChapter(_selectedBuyChapter.value?.chapterId?:0)) {
+                is Result.Success -> {
+                    _toast.value = result.data
+                    setShowDialogState(false)
+                    _currentChapter.value = selectedBuyChapter.value
+                    _chapterId.value = selectedBuyChapter.value?.chapterId?:0 // Cập nhật chapterId hiện tại
+
+                }
+                is Result.Failure -> {
+                    _toast.value = result.exception.message
+                }
+            }
+        }
+    }
+    fun setShowDialogState(state :Boolean,selectedChapter:Chapter?=null) {
+        _isShowDialog.value = state
+        _selectedBuyChapter.value = selectedChapter
+    }
     // Cập nhật tin nhắn
     fun updateComment(newText: String) {
         _yourComment.value = newText
@@ -91,6 +121,34 @@ class ReadViewModel @Inject constructor(
                 commentRepository.fetchComments()
                 Log.d("ReadViewModel", "Fetched comments for communityId: ${chapterId.value}")
                 isLoading.value = false // Tắt loading sau khi fetch
+            }
+        }
+    }
+    fun  changeLikeState(comment:Comment){
+        viewModelScope.launch {
+            try {
+
+                val result = if (comment.isUserLike) {
+                    userRepository.unlike(comment.id)
+                } else {
+                    userRepository.like(comment.id)
+                }
+                result.onSuccess {
+                    val updatedList = _messages.value.map { com ->
+                        if (com.id == comment.id) {
+                            com.copy(isUserLike = !comment.isUserLike)
+                        } else {
+                            com
+                        }
+                    }
+                    _messages.value=updatedList
+                }.onFailure { error ->
+                    Log.e("apiError","Error: ${error.message}")
+                }
+
+            }catch (err:Exception){
+                _toast.value = "Can not like/unllike tis comment this user!"
+                Log.e("From VM Error","Error: ${err.message}")
             }
         }
     }
@@ -162,8 +220,13 @@ class ReadViewModel @Inject constructor(
             val result = readRepository.getNextChapter(chapterId.value)
             when (result) {
                 is Result.Success -> {
-                    _currentChapter.value = result.data
-                    _chapterId.value = result.data.chapterId // Cập nhật chapterId hiện tại
+                    if(result.data.lockedStatus){
+                        setShowDialogState(true,result.data)
+                    }
+                    else{
+                        _currentChapter.value = result.data
+                        _chapterId.value = result.data.chapterId // Cập nhật chapterId hiện tại
+                    }
                     Log.d("ReadViewModel", "Loaded next chapter: ${result.data.chapterName}")
                 }
                 is Result.Failure -> {

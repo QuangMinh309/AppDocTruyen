@@ -386,7 +386,7 @@ fun ChapterItemCard(
                         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
                         val dateTime = LocalDateTime.parse(dateStr.trim(), formatter)
                         "${dateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"))} " +
-                                "${dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))}"
+                                dateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                     } catch (e: Exception) {
                         "N/A"
                     }

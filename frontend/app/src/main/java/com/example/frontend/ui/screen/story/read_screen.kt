@@ -50,6 +50,7 @@ import coil.compose.AsyncImage
 import com.example.frontend.R
 import com.example.frontend.services.navigation.NavigationManager
 import com.example.frontend.presentation.viewmodel.story.ReadViewModel
+import com.example.frontend.ui.components.ConfirmationDialog
 import com.example.frontend.ui.components.ScreenFrame
 import com.example.frontend.ui.components.TopBar
 import com.example.frontend.ui.components.TopComments
@@ -61,7 +62,7 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
     val isAuthor by viewModel.isAuthor.collectAsState()
     val chapterId by viewModel.chapterId.collectAsState()
     val finalChapterId by viewModel.finalChapterId.collectAsState()
-
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
     val yourComment by viewModel.yourComment.collectAsState()
     val messages = viewModel.messages.collectAsState()
     val toast by viewModel.toast.collectAsState()
@@ -92,6 +93,17 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
         }
     }
 
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Buy chapter",
+        text = "Are you sure to buy the next chapter ?",
+        onConfirm = {
+            viewModel.purchaseChapter()
+        },
+        onDismiss = {
+            viewModel.setShowDialogState(false)
+        }
+    )
     ScreenFrame(
         topBar = {
             TopBar(
@@ -195,7 +207,7 @@ fun ReadScreen(viewModel: ReadViewModel = hiltViewModel()) {
                     }
                 }
             }
-            TopComments(comments = messages.value, onClick = {})
+            TopComments(comments = messages.value, viewModel = viewModel)
 
             Spacer(modifier = Modifier.height(24.dp))
 

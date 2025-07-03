@@ -2,10 +2,10 @@ package com.example.frontend.data.repository
 
 import com.example.frontend.data.api.ApiError
 import com.example.frontend.data.api.ApiService
+import com.example.frontend.data.api.IdRequest
 import com.example.frontend.data.api.ListTransactionResponse
 import com.example.frontend.data.api.NoDataResponse
 import com.example.frontend.data.api.TransactionRequest
-import com.example.frontend.data.api.UserFollowRequest
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
 import com.example.frontend.presentation.viewmodel.transaction.BankAccountData
@@ -18,7 +18,7 @@ class UserRepository @Inject constructor(
 ) {
     suspend fun follow(user: User): Result<NoDataResponse> {
         return try {
-            val request = UserFollowRequest(followedId=user.id)
+            val request = IdRequest(user.id)
 
             val response = apiService.follow(request)
             if (response.isSuccessful) {
@@ -33,7 +33,7 @@ class UserRepository @Inject constructor(
     }
     suspend fun unFollow(user: User): Result<NoDataResponse> {
         return try {
-            val request = UserFollowRequest(followedId=user.id)
+            val request = IdRequest(user.id)
 
             val response = apiService.unFollow(request)
             if (response.isSuccessful) {
@@ -41,6 +41,36 @@ class UserRepository @Inject constructor(
 
             } else {
                 Result.Failure(Exception("UnFollow user failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+    suspend fun like(commentId:Int): Result<NoDataResponse> {
+        return try {
+            val request = IdRequest(commentId)
+
+            val response = apiService.likeComment(request)
+            if (response.isSuccessful) {
+                Result.Success( response.body() ?: throw Exception("like failed"))
+
+            } else {
+                Result.Failure(Exception("Like comment failed with code: ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.Failure(e)
+        }
+    }
+    suspend fun unlike(commentId: Int): Result<NoDataResponse> {
+        return try {
+            val request = IdRequest(commentId)
+
+            val response = apiService.unlikeComment(request)
+            if (response.isSuccessful) {
+                Result.Success( response.body() ?: throw Exception("Unlike failed"))
+
+            } else {
+                Result.Failure(Exception("Unlike user failed with code: ${response.code()}"))
             }
         } catch (e: Exception) {
             Result.Failure(e)
