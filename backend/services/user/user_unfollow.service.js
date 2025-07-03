@@ -24,6 +24,7 @@ const unfollowUser = async (followerId, followedId) => {
 
     return { message: 'Bỏ theo dõi người dùng thành công' }
   } catch (err) {
+   
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi bỏ theo dõi người dùng', 500)
   }

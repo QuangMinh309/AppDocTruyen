@@ -82,7 +82,6 @@ const createStory = async (storyData, userId, file) => {
     if (adminRole) {
       const admins = await User.findAll({
         where: { roleId: adminRole.roleId },
-        attributes: ['userId'],
         transaction,
       });
 

@@ -125,7 +125,7 @@ const CommentService = {
                 commentJson.isUserLike = (userLike)? true : false;
                 // Convert time to UTC+7 instead of UTC
                 commentJson.time = moment(commentJson.time).tz('Asia/Ho_Chi_Minh').format(); // e.g., 2025-06-26T15:24:45+07:00
-                console.log('commentJson',commentJson)
+           
                 return getCommentImageData(commentJson);
             });
             return await Promise.all(commentPromises);
@@ -196,7 +196,7 @@ const CommentService = {
             throw new ApiError(`Lỗi khi unlike comment: ${err.message}`, 500);
         }
      },
-        async likeComment(commentId,userId) {
+     async likeComment(commentId,userId) {
         try {
             const commentData = await sequelize.models.Comment.findByPk(commentId);
             if (!commentData) {
@@ -224,6 +224,13 @@ const CommentService = {
                     console.error(`Lỗi khi xoá hình ảnh từ Cloudinary: ${cloudinaryErr.message}`);
                     throw new ApiError(`Lỗi khi xoá hình ảnh: ${cloudinaryErr.message}`, 500);
                 }
+            }
+            const likeComments = await sequelize.models.LikeComment.findAll({
+                where: { commentId: commentId }
+            });
+            // Xoá tất cả like liên quan đến comment này
+            for (const likeComment of likeComments) {
+                await likeComment.destroy();
             }
             await commentData.destroy();
             return { message: 'Xoá comment thành công', commentId };
