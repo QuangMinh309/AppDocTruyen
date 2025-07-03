@@ -1,21 +1,16 @@
 /** @type {import('sequelize-cli').Migration} */
-import { sequelize } from '../models';
-
 export default {
   async up(queryInterface, Sequelize) {
-    const Chapter = sequelize.models.Chapter;
-    const Story = sequelize.models.Story;
-    const userIds = [6, 8, 9, 10];
+    const [chapters] = await queryInterface.sequelize.query(
+      'SELECT chapterId, storyId FROM chapter'
+    );
+    const [stories] = await queryInterface.sequelize.query(
+      'SELECT storyId, pricePerChapter FROM story'
+    );
 
+    const userIds = [6, 8, 9, 10];
     const startDate = new Date('2025-03-01T00:00:00.000Z');
     const endDate = new Date();
-
-    const chapters = await Chapter.findAll({
-      attributes: ['chapterId', 'storyId'],
-    });
-    const stories = await Story.findAll({
-      attributes: ['storyId', 'pricePerChapter'],
-    });
 
     const priceMap = {};
     stories.forEach((s) => (priceMap[s.storyId] = s.pricePerChapter));
@@ -26,8 +21,8 @@ export default {
       );
 
     const purchases = [];
-    const reports = {};
     const transactions = [];
+    const reports = {};
 
     for (let i = 0; i < 100; i++) {
       const { chapterId, storyId } =
@@ -53,14 +48,22 @@ export default {
       reports[dateStr] = (reports[dateStr] || 0) + income;
     }
 
-    const reportList = Object.entries(reports).map(([date, total]) => ({
+    const reportList = Object.entries(reports).map(([date, totalIncome]) => ({
       date,
-      totalIncome: Math.round(total),
+      totalIncome: Math.round(totalIncome),
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }));
 
-    await queryInterface.bulkInsert('purchase', purchases);
-    await queryInterface.bulkInsert('transaction', transactions);
-    await queryInterface.bulkInsert('report', reportList);
+    await queryInterface.bulkInsert('purchase', purchases, {
+      timestamps: false,
+    });
+    await queryInterface.bulkInsert('transaction', transactions, {
+      timestamps: false,
+    });
+    await queryInterface.bulkInsert('report', reportList, {
+      timestamps: false,
+    });
   },
 
   async down(queryInterface, Sequelize) {
