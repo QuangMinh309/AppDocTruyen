@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -176,7 +177,7 @@ fun CommunityDetailScreen(viewModel: CommunityDetailViewModel = hiltViewModel())
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
+                            .wrapContentHeight(),
                         horizontalAlignment = Alignment.Start,
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
