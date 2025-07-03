@@ -9,6 +9,7 @@ import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.User
 import com.example.frontend.util.TokenManager
 import com.example.frontend.util.UserPreferences
+import com.google.gson.Gson
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -23,13 +24,14 @@ import okhttp3.RequestBody.Companion.toRequestBody
 class AuthRepository @Inject constructor(
     private val apiService: ApiService,
     private val tokenManager: TokenManager,
-    private val context: Context
+    private val context: Context,
+  //  private val gson: Gson
 ) {
     private var currentUser: User? = null
 
     suspend fun login(mail: String, password: String, rememberLogin: Boolean): Result<String> {
         return try {
-            val response = apiService.login(com.example.frontend.data.api.LoginRequest(mail, password))
+            val response = apiService.login(ApiService.LoginRequest(mail, password))
             if (response.isSuccessful) {
                 val loginResponse = response.body()
                 if (loginResponse?.success == true) {
@@ -39,13 +41,24 @@ class AuthRepository @Inject constructor(
                     } else {
                         UserPreferences.clearUserData(context)
                     }
-                    currentUser = loginResponse.data.user // Cập nhật currentUser từ JSON trả về
+                    currentUser = loginResponse.data.user
                     Result.Success("Login successful")
                 } else {
                     Result.Failure(Exception("Invalid email or password"))
                 }
             } else {
-                Result.Failure(Exception("Login failed: ${response.message()}"))
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (!errorBody.isNullOrEmpty()) {
+                    try {
+                        val errorJson = JSONObject(errorBody)
+                        errorJson.getString("message")
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+                } else {
+                    response.message()
+                }
+                Result.Failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
             Result.Failure(e)
@@ -163,7 +176,6 @@ class AuthRepository @Inject constructor(
             if (response.isSuccessful) {
                 val updatedUser = response.body()?.data
                 if (updatedUser != null) {
-                    // Gọi getUserById để đồng bộ dữ liệu mới
                     val refreshedUserResult = getUserById(userId)
                     if (refreshedUserResult is Result.Success) {
                         currentUser = refreshedUserResult.data
@@ -182,6 +194,7 @@ class AuthRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+
     fun prepareImageFile(uri: Uri, partName: String): MultipartBody.Part? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
@@ -198,6 +211,7 @@ class AuthRepository @Inject constructor(
             null
         }
     }
+
     suspend fun getUserById(userId: Int): Result<User> {
         return try {
             val response = apiService.getUserById(userId)
@@ -233,6 +247,7 @@ class AuthRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+
     suspend fun deleteUser(): Result<String> {
         return try {
             val userId = currentUser?.id ?: throw Exception("No current user found")

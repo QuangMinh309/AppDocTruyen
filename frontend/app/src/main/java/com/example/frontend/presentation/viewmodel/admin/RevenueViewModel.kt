@@ -52,6 +52,11 @@ class RevenueViewModel @Inject constructor(
             _toast.value = "Invalid month input"
             return
         }
+        if(_selectedYear.value.toInt() <= 2000)
+        {
+            _toast.value = "Reports prior to 2001 aren't available"
+            return
+        }
         viewModelScope.launch {
             try {
                 val result = adminRepository.getReport(_selectedYear.value.toInt(), _selectedMonth.value.toInt())

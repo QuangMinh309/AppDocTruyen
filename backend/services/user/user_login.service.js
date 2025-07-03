@@ -38,7 +38,7 @@ const loginUser = async (email, password) => {
 
 
     if (user.isPremium) {
-      console.log(`user premium ${user.isPremium}`)
+      // console.log(`user premium ${user.isPremium}`)
       await userPremiumService.UpdateUserPremiumInfo(user.userId)
       user = await User.findByPk(user.userId)
     }
@@ -67,7 +67,7 @@ const loginUser = async (email, password) => {
       refreshToken,
     }
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     if (err instanceof ApiError) throw err
     throw new ApiError('Lỗi khi đăng nhập', 500)
   }

@@ -4,7 +4,7 @@ import ApiError from '../../utils/api_error.util.js';
 
 const ReportService = {
   async updateDailyRevenue(sequelize, transaction, options = {}) {
-    const { time, money, type, status } = transaction;
+    const { finishAt: time, money, type, status } = transaction;
 
     // Chỉ cập nhật nếu giao dịch hoàn tất và là premium hoặc purchase
     if (

@@ -58,7 +58,7 @@ const PurchaseChapterService = {
 
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 
-            const transaction = await TransactionService.createTransaction({
+            await TransactionService.createTransaction({
                 userId,
                 type: "purchase",
                 money: story.pricePerChapter,
@@ -66,11 +66,17 @@ const PurchaseChapterService = {
                 finishAt: new Date(),
             });
 
-            await ReportService.updateDailyRevenue(sequelize, transaction);
+            await ReportService.updateDailyRevenue(sequelize, {
+                userId,
+                type: "purchase",
+                money: story.pricePerChapter * 0.2,
+                status: 'success',
+                finishAt: new Date(),
+            });
 
             return { message: 'Mua chapter thành công' };
         } catch (err) {
-            console.log(err)
+            // console.log(err)
             if (err instanceof ApiError) throw err;
             throw new ApiError('Lỗi khi mua chapter', 500);
         }

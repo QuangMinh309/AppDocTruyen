@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -30,18 +31,23 @@ class LoginViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _errorMessage = MutableStateFlow("")
+    val errorMessage: StateFlow<String> = _errorMessage
+
     fun onMailChange(mail: String) {
         _mail.value = mail
+        _errorMessage.value = "" // Xóa thông báo lỗi khi thay đổi email
     }
 
     fun onPasswordChange(password: String) {
         _password.value = password
+        _errorMessage.value = "" // Xóa thông báo lỗi khi thay đổi mật khẩu
     }
 
     fun checkingLogin(context: Context, rememberLogin: Boolean) {
         viewModelScope.launch {
             if (_mail.value.isEmpty() || _password.value.isEmpty()) {
-                _toast.value = "Please fill in all fields"
+                _errorMessage.value = "Please fill in all fields"
                 Log.d("LoginViewModel", "Empty fields: mail=${_mail.value}, password=${_password.value}")
                 return@launch
             }
@@ -52,27 +58,25 @@ class LoginViewModel @Inject constructor(
                 result.onSuccess {
                     viewModelScope.launch {
                         _toast.value = it
-                        val token = authRepository.getToken() // Gọi getToken trong coroutine
+                        val token = authRepository.getToken()
                         Log.d("LoginViewModel", "Token retrieved: $token")
                         navigationManager.navigate(Screen.MainNav.Home.route) {
-                            popUpTo(Screen.Intro.route) { inclusive = true } // Xóa Intro và Login
-                            launchSingleTop = true // Tránh tạo mới HomeScreen
+                            popUpTo(Screen.Intro.route) { inclusive = true }
+                            launchSingleTop = true
                         }
                     }
                 }.onFailure {
                     viewModelScope.launch {
-                        _toast.value = "Login failed: ${it.message}"
+                        _errorMessage.value = it.message ?: "Login failed"
                         Log.d("LoginViewModel", "Login failed: ${it.message}")
                     }
                 }
             } catch (e: Exception) {
-                _toast.value = "Error: ${e.message}"
+                _errorMessage.value = "Error: ${e.message}"
                 Log.e("LoginViewModel", "Network error: ${e.message}", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
-
-
 }

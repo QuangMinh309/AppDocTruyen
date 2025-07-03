@@ -24,7 +24,7 @@ const TransactionService = {
       });
       return transaction;
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       throw error instanceof ApiError
         ? error
         : new ApiError('Lỗi khi tạo giao dịch', 500);

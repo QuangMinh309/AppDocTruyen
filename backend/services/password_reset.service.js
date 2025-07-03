@@ -50,10 +50,10 @@ const PasswordResetService = {
         text: `Mã OTP của bạn là: ${OTP}. Mã này có hiệu lực trong ${parameters.OTP_Valid_Period} phút.`,
       };
 
-      console.log('Sending email to:', email);
-      console.log('Mail options:', mailOptions);
+      // console.log('Sending email to:', email);
+      // console.log('Mail options:', mailOptions);
       const info = await transporter.sendMail(mailOptions);
-      console.log('Email sent:', info.response);
+      // console.log('Email sent:', info.response);
 
       return { userId: user.userId, email: user.mail };
     } catch (error) {

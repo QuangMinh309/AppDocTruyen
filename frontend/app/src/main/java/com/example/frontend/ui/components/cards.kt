@@ -926,7 +926,7 @@ fun StoryCard3(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = formatViews(story.viewNum.toLong()),
+                    text = formatViews(story.voteNum.toLong()),
                     color = Color.White,
                     fontSize = 14.sp
                 )
