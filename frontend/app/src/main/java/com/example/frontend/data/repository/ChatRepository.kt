@@ -63,7 +63,7 @@ class ChatRepository @Inject constructor(
     suspend fun connect(communityId: Int) {
         webSocketManager.addListener(roomName,listener)
         webSocketManager.connect(  room = roomName, bonusQueryString = "community=$communityId" )
-        Log.d("ChattingViewModel", "Connecting to communityId: $communityId")
+        Log.d("ChatRepository", "Connecting to communityId: $communityId")
     }
 
     private suspend fun reconnect(communityId: Int) {

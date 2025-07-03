@@ -37,6 +37,8 @@ const PurchaseChapterService = {
                 order: [['purchasedAt', 'DESC']],
                 attributes: ['purchasedId', 'chapterId', 'purchasedAt']
             });
+            
+
 
             if (purchase) {
 
@@ -50,9 +52,9 @@ const PurchaseChapterService = {
             await user.update({
                 wallet: user.wallet - story.pricePerChapter,
             });
-            
+
             const author = await User.findByPk(story.userId)
-            await author.update({ wallet: author.wallet + story.pricePerChapter * 0.8 })
+            await author.update({ wallet: user.wallet + story.pricePerChapter*0.8 })
 
             await Purchase.create({ userId, chapterId, purchasedAt: new Date() })
 

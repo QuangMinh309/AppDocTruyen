@@ -18,8 +18,7 @@ import javax.inject.Singleton
 
 
 
-
-// Repository để quản lý kết nối WebSocket và dữ liệu chat
+// Repository để quản lý kết nối WebSocket và dữ liệu comment
 @Singleton
 class CommentRepository @Inject constructor(
     private val webSocketManager:WebSocketManager,
@@ -46,25 +45,21 @@ class CommentRepository @Inject constructor(
         }
 
         override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-            Log.w("ChatRepository", "WebSocket closing: $reason, code: $code")
+            Log.w("CommentRepository", "WebSocket closing: $reason, code: $code")
             webSocket.close(1000, null)
         }
     }
 
-    init {
-        // Gán listener cho WebSocketManager
-        webSocketManager. addListener(room = roomName,listener=listener)
+    suspend fun connect(chapterId: Int) {
+        webSocketManager.addListener(roomName,listener)
+        webSocketManager.connect(  room = roomName, bonusQueryString = "chapter=$chapterId" )
+        Log.d("ChapterRepository", "Connecting to chapterId: $chapterId")
     }
 
-    suspend fun connect(communityId: Int) {
-        webSocketManager.connect(  room = roomName, bonusQueryString = "community=$communityId" )
-        Log.d("ChattingViewModel", "Connecting to communityId: $communityId")
-    }
-
-    private suspend fun reconnect(communityId: Int) {
+    private suspend fun reconnect(chapterId: Int) {
         // Logic reconnect (tùy thuộc vào WebSocketManager)
         delay(2000) // Delay trước khi reconnect
-        connect(communityId)
+        connect(chapterId)
     }
 
     // Xử lý tin nhắn từ WebSocket
@@ -86,36 +81,36 @@ class CommentRepository @Inject constructor(
                 when (wsMessage.action) {
                     "FETCH_COMMENT_BY_CHAPTER" -> {
                         if (wsMessage.success == true) {
-                            val chatMessages = gson.fromJson(
+                            val commentMessages = gson.fromJson(
                                 gson.toJson(wsMessage.payload),
                                 Array<Comment>::class.java
                             ).toList()
 
 
                             scope.launch(Dispatchers.Main) {
-                                _commentList.emit(chatMessages )
+                                _commentList .emit(commentMessages )
                             }
                         }
                     }
                     "BRC_CREATE_COMMENT"-> {
-                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
+                        val commentMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
                         scope.launch(Dispatchers.Main) {
 
-                            _commentList .emit(_commentList .value + chatMessage)
+                            _commentList .emit(_commentList .value + commentMessage)
                         }
                     }
                     "BRC_UPDATE_COMMENT" -> {
-                        val chatMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
+                        val commentMessage = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
 
                         scope.launch(Dispatchers.Main) {
-                            _commentList .emit(_commentList.value.map {chat->
-                                if(chat.id == chatMessage.id) chatMessage else chat })
+                            _commentList .emit(_commentList.value.map {comment->
+                                if(comment.id == commentMessage.id) commentMessage else comment })
                         }
                     }
                     "BRC_DELETE_COMMENT" -> {
-                        val deletedChat = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
+                        val deletedComment = gson.fromJson(gson.toJson(wsMessage.payload), Comment::class.java)
                         scope.launch(Dispatchers.Main) {
-                            _commentList.emit(_commentList .value.filter { it.id != deletedChat.id })
+                            _commentList.emit(_commentList .value.filter { it.id != deletedComment.id })
                         }
                     }
                 }
@@ -125,7 +120,7 @@ class CommentRepository @Inject constructor(
         }
     }
 
-    // Gửi tin nhắn tạo chat
+    // Gửi tin nhắn tạo comment
     fun createComment(content: String?, commentPicData: String?) {
         var newCommentPicData = commentPicData
         if(commentPicData?.isEmpty()==true) newCommentPicData = null
@@ -136,10 +131,21 @@ class CommentRepository @Inject constructor(
         sendMessage("CREATE_COMMENT", payload)
     }
 
+    // Gửi tin nhắn cập nhật comment
+    fun updateComment(commentId: String, content: String?, commentPicData: String?) {
+        var newCommentPicData = commentPicData
+        if(commentPicData?.isEmpty()==true) newCommentPicData = null
+        val payload = mapOf(
+            "commentId" to commentId,
+            "content" to content,
+            "commentPicId" to newCommentPicData
+        )
+        sendMessage("UPDATE_COMMENT", payload)
+    }
 
     // Gửi tin nhắn xóa comment
-    fun deleteComment(chatId: Int) {
-        val payload = mapOf("chatId" to chatId)
+    fun deleteComment(commentId: Int) {
+        val payload = mapOf("commentId" to commentId)
         sendMessage("DELETE_COMMENT", payload)
     }
 
@@ -158,10 +164,12 @@ class CommentRepository @Inject constructor(
 
     // Ngắt kết nối WebSocket
     fun disconnect() {
-        webSocketManager.disconnect(room = roomName)
-        _isConnected.value = false
+
+        scope.launch(Dispatchers.Main) {
+            webSocketManager.disconnect(room = roomName)
+            _isConnected.emit(false)
+        }
         _commentList.value = emptyList()
-        webSocketManager.removeListener(room = roomName, listener = listener)
 
     }
 }

@@ -18,12 +18,11 @@ import javax.inject.Inject
 class CommunityDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     navigationManager: NavigationManager,
-    communityProvider: CommunityProvider
+    private val communityProvider: CommunityProvider
 ) : BaseViewModel(navigationManager) {
     private val _id = savedStateHandle.getStateFlow("communityId", "")
 
-
-    private val _isLoading = MutableStateFlow(false) // Thêm trạng thái loading
+    private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _community = MutableStateFlow<Community?>(null)
@@ -33,16 +32,31 @@ class CommunityDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _id.collect { id ->
                 if (id.isNotEmpty()) {
-                    try {
-                        _isLoading.value = true
-                        _community.value = communityProvider.getCommunityById(id.toInt())
-                        _isLoading.value = false
-                    }
-                    catch (err:Exception){
-                        _community.value = null
-                        Log.e("From VM Error","Error: ${err.message}")
-                    }
+                    loadCommunity()
                 }
+            }
+        }
+    }
+
+    fun loadCommunity() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val id = _id.value.toIntOrNull()
+                if (id == null) {
+                    _community.value = null
+                    Log.e("CommunityDetailViewModel", "ID cộng đồng không hợp lệ: ${_id.value}")
+                    showToast("ID cộng đồng không hợp lệ")
+                    return@launch
+                }
+                _community.value = communityProvider.getCommunityById(id)
+                Log.d("CommunityDetailViewModel", "Đã tải chi tiết cộng đồng với ID: $id")
+            } catch (err: Exception) {
+                _community.value = null
+                Log.e("CommunityDetailViewModel", "Lỗi khi tải chi tiết cộng đồng: ${err.message}", err)
+                showToast("Lỗi khi tải chi tiết cộng đồng: ${err.message}")
+            } finally {
+                _isLoading.value = false
             }
         }
     }

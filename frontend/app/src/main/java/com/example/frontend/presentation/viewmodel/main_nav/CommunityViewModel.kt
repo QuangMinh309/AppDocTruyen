@@ -24,10 +24,10 @@ class CommunityViewModel @Inject constructor(
     private val notificationRepository: NotificationRepository,
     private val categoryProvider: CategoryProvider
 ) : BaseViewModel(navigationManager) {
-    private val _isLoadingCommunitiesFollowCategory = MutableStateFlow(false) // Thêm trạng thái loading cho CommunitiesFollowCategory
+    private val _isLoadingCommunitiesFollowCategory = MutableStateFlow(false)
     val isLoadingCommunitiesFollowCategory: StateFlow<Boolean> = _isLoadingCommunitiesFollowCategory
 
-    private val _isLoadingHotCommunities = MutableStateFlow(false) // Thêm trạng thái loading cho HotCommunities
+    private val _isLoadingHotCommunities = MutableStateFlow(false)
     val isLoadingHotCommunities: StateFlow<Boolean> = _isLoadingHotCommunities
 
     private val _communitiesFollowCategory = MutableStateFlow<List<Community>>(emptyList())
@@ -44,56 +44,76 @@ class CommunityViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-           _category.value = categoryProvider.fetchAllCategory()
-            _isLoadingCommunitiesFollowCategory.value=true
-           fetchCommunitiesFollowCategory(_category.value[0].id)
-           _isLoadingCommunitiesFollowCategory.value=false
-
-        }
-    }
-    init {
-        viewModelScope.launch {
-            _isLoadingHotCommunities.value = true
+            loadCategories()
             fetchHotCommunities()
-            _isLoadingHotCommunities.value = false
+            if (_category.value.isNotEmpty()) {
+                fetchCommunitiesFollowCategory(_category.value[0].id)
+            }
         }
-    }
-    init{
-
         viewModelScope.launch {
-            if(!notificationRepository.isConnected.value)
+            if (!notificationRepository.isConnected.value) {
                 notificationRepository.connect()
-
+            }
             try {
                 val result = notificationRepository.getUnreadNotificationCount()
                 _unReadNotificationsCount.value = when (result) {
                     is Result.Success -> result.data
                     is Result.Failure -> {
-                        Log.e("HomeViewModel", "Error loading user", result.exception)
+                        Log.e("CommunityViewModel", "Lỗi khi tải số thông báo chưa đọc", result.exception)
                         0
                     }
                 }
             } catch (e: Exception) {
-                _unReadNotificationsCount.value =0
-                Log.e("HomeViewModel", "Exception during load notificationscount", e)
-            } finally {
+                _unReadNotificationsCount.value = 0
+                Log.e("CommunityViewModel", "Lỗi khi tải số thông báo chưa đọc", e)
             }
         }
     }
 
-    private fun fetchHotCommunities() {
+    fun loadCategories() {
         viewModelScope.launch {
-            _hotCommunities.value = communityProvider.fetchAllCommunity()
-                .sortedByDescending { it.memberNum }
-                .take(20)
+            _isLoadingCommunitiesFollowCategory.value = true
+            try {
+                _category.value = categoryProvider.fetchAllCategory()
+                Log.d("CommunityViewModel", "Đã tải ${ _category.value.size } danh mục")
+            } catch (e: Exception) {
+                Log.e("CommunityViewModel", "Lỗi khi tải danh mục: ${e.message}", e)
+                showToast("Lỗi khi tải danh mục: ${e.message}")
+            } finally {
+                _isLoadingCommunitiesFollowCategory.value = false
+            }
         }
     }
 
-    fun fetchCommunitiesFollowCategory(id : Int) {
+    fun fetchHotCommunities() {
         viewModelScope.launch {
-            _isLoadingCommunitiesFollowCategory.value=true
-            _communitiesFollowCategory.value = communityProvider.filterCommunity(id)
-            _isLoadingCommunitiesFollowCategory.value=false
+            _isLoadingHotCommunities.value = true
+            try {
+                _hotCommunities.value = communityProvider.fetchAllCommunity()
+                    .sortedByDescending { it.memberNum }
+                    .take(20)
+                Log.d("CommunityViewModel", "Đã tải ${ _hotCommunities.value.size } cộng đồng hot")
+            } catch (e: Exception) {
+                Log.e("CommunityViewModel", "Lỗi khi tải cộng đồng hot: ${e.message}", e)
+                showToast("Lỗi khi tải cộng đồng hot: ${e.message}")
+            } finally {
+                _isLoadingHotCommunities.value = false
+            }
+        }
+    }
+
+    fun fetchCommunitiesFollowCategory(id: Int) {
+        viewModelScope.launch {
+            _isLoadingCommunitiesFollowCategory.value = true
+            try {
+                _communitiesFollowCategory.value = communityProvider.filterCommunity(id)
+                Log.d("CommunityViewModel", "Đã tải ${ _communitiesFollowCategory.value.size } cộng đồng theo danh mục $id")
+            } catch (e: Exception) {
+                Log.e("CommunityViewModel", "Lỗi khi tải cộng đồng theo danh mục: ${e.message}", e)
+                showToast("Lỗi khi tải cộng đồng theo danh mục: ${e.message}")
+            } finally {
+                _isLoadingCommunitiesFollowCategory.value = false
+            }
         }
     }
 }

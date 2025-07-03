@@ -98,7 +98,7 @@ fun ChatBubble(message: Chat) {
                 }
                 if(message.messagePicUrl!= null){
                     AsyncImage(
-                        model = message.messagePicUrl.takeIf { it.isNotEmpty() }?:R.drawable.broken_image,
+                        model = message.messagePicUrl.takeIf { it!="no picture." }?:R.drawable.broken_image,
                         contentDescription = "message pic",
                         placeholder = painterResource(id = R.drawable.broken_image),
                         modifier = Modifier
@@ -169,9 +169,8 @@ fun MyChatBubble(message: Chat) {
                         )
                     }
                 }
-                if(message.messagePicUrl!= null){
                     AsyncImage(
-                        model = message.messagePicUrl.takeIf { it.isNotEmpty() }?:R.drawable.broken_image,
+                        model = message.messagePicUrl.takeIf { it!="no picture." }?:R.drawable.broken_image,
                         contentDescription = "message pic",
                         placeholder = painterResource(id = R.drawable.broken_image),
                         modifier = Modifier
@@ -179,7 +178,7 @@ fun MyChatBubble(message: Chat) {
                             .clip(RoundedCornerShape(20.dp)),
                         contentScale = ContentScale.FillWidth
                     )
-                }
+
 
             }
         }

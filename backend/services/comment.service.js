@@ -4,6 +4,8 @@ import { getImageUrlFromCloudinary, uploadBase64ToCloudinary, deleteImageOnCloud
 import moment from 'moment-timezone'; // Use moment-timezone for timezone support
 import getStoryById from './story/story_get_id.service.js';
 import ChapterService from './chapter/chapter.service.js';
+import { fn, col } from 'sequelize';
+
 
 
 const getCommentImageData = async (commentJson) => {
@@ -83,10 +85,12 @@ const CommentService = {
     },
      async getAllCommentsOfChapter(id) {
         try {
-            const story = ChapterService.getChapterById(id)
-            if (!story) throw new ApiError(`Truyện này không tồn tại!`, 500);;
+            console.log(id)
+            const chapter = ChapterService.getChapterById(id)
+            if (!chapter) throw new ApiError(`chap này không tồn tại!`, 500);;
 
             const comments = await sequelize.models.Comment.findAll({
+                limit:20,
                   where: { communityId: id },
                 attributes: {
                     include: [

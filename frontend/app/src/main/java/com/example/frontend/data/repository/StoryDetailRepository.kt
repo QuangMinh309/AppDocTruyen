@@ -41,6 +41,33 @@ class StoryDetailRepository @Inject constructor(
             Result.Failure(e)
         }
     }
+    suspend fun purchaseChapter(chapterId: Int): Result<String> {
+        return try {
+            if(chapterId==0)
+                return  Result.Failure(Exception("Chapter id is not available"))
+            val response = apiService.purchaseChapter(chapterId)
+            Log.d("UpdateChapterRepository", "UpdateChapter Response - Code: ${response.code()}, Body: ${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.message?.let { Result.Success(it) } ?: Result.Failure(Exception("No message in response"))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                val errorMessage = if (errorBody != null) {
+                    try {
+                        val errorResponse = Gson().fromJson(errorBody, DeleteCategoryResponse::class.java)
+                        errorResponse.message
+                    } catch (e: Exception) {
+                        Result.Failure(Exception(e)).toString()
+                    }
+                } else {
+                    "Unknown error"
+                }
+                Result.Failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Log.e("UpdateChapterRepository", "Exception during updateChapter: ${e.message}", e)
+            Result.Failure(e)
+        }
+    }
 
     suspend fun getAllStories(): Result<List<Story>> {
         return try {

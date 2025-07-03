@@ -70,6 +70,7 @@ import java.math.BigDecimal
 fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val isShowDialog by viewModel.isShowDialog.collectAsState()
     val isFabVisible by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex > 2 || listState.firstVisibleItemScrollOffset > 300
@@ -115,6 +116,20 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                     isRefreshing = false
                 }
             }
+        }
+    )
+
+    ConfirmationDialog(
+        showDialog = isShowDialog,
+        title="Buy chapter",
+        text = "Are you sure to buy this chapter with ${viewModel.story.value?.pricePerChapter} ?",
+        onConfirm = {
+            viewModel.purchaseChapter()
+            viewModel.setShowDialogState(false)
+
+        },
+        onDismiss = {
+                viewModel.setShowDialogState(false)
         }
     )
 
@@ -197,7 +212,12 @@ fun StoryDetailScreen(viewModel: StoryDetailViewModel = hiltViewModel()) {
                                     chapter = chapter,
                                     isSelectionMode = isSelectionMode && viewModel.isAuthor.value,
                                     isSelected = chapter.chapterId in selectedChapters,
-                                    onClick = { viewModel.onGoToChapterScreen(chapter.chapterId,viewModel.finalChapterId.value?:chapter.chapterId,viewModel.storyId.value,viewModel.isAuthor.value) },
+                                    onClick = {
+                                        if(chapter.lockedStatus){
+                                            viewModel.setShowDialogState(true,chapter)
+                                        }
+                                        else
+                                             viewModel.onGoToChapterScreen(chapter.chapterId,viewModel.storyId.value,viewModel.isAuthor.value) },
                                     onLongClick = {
                                         isSelectionMode = true
                                         selectedChapters = selectedChapters + chapter.chapterId

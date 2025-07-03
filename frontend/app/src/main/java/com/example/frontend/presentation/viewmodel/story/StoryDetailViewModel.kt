@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.example.frontend.data.model.Chapter
 import com.example.frontend.data.model.Result
 import com.example.frontend.data.model.Story
 import com.example.frontend.data.repository.AuthRepository
@@ -26,8 +27,14 @@ class StoryDetailViewModel @Inject constructor(
     navigationManager: NavigationManager
 ) : BaseViewModel(navigationManager) {
 
+    private val _isShowDialog = MutableStateFlow(false)
+    val isShowDialog = _isShowDialog
+
     private val _storyId = MutableStateFlow(checkNotNull(savedStateHandle.get<Int>("storyId")))
     val storyId: StateFlow<Int> = _storyId.asStateFlow()
+
+    private val _selectedBuyChapter = MutableStateFlow<Chapter?>(null)
+    val selectedBuyChapter: StateFlow<Chapter?> = _selectedBuyChapter.asStateFlow()
 
     val story = mutableStateOf<Story?>(null)
     val isAuthor = mutableStateOf(false)
@@ -59,6 +66,11 @@ class StoryDetailViewModel @Inject constructor(
         }
     }
 
+
+    fun setShowDialogState(state :Boolean,selectedChapter:Chapter?=null) {
+        _isShowDialog.value = state
+        _selectedBuyChapter.value = selectedChapter
+    }
     private suspend fun loadData() {
         isLoading.value = true
         try {
@@ -69,7 +81,23 @@ class StoryDetailViewModel @Inject constructor(
             isLoading.value = false
         }
     }
-
+    fun purchaseChapter() {
+        viewModelScope.launch {
+            when (val result = storyDetailRepository.purchaseChapter(_selectedBuyChapter.value?.chapterId?:0)) {
+                is Result.Success -> {
+                     _toast.value = result.data
+                    if( _selectedBuyChapter.value!=null){
+                        onGoToChapterScreen( _selectedBuyChapter.value?.chapterId?:0,
+                            _selectedBuyChapter.value?.storyId?:0,
+                            isAuthor.value)
+                    }
+                }
+                is Result.Failure -> {
+                    _toast.value = result.exception.message
+                }
+            }
+        }
+    }
     suspend fun loadStoryDetails() {
         val result = storyDetailRepository.getStoryById(storyId.value)
         when (result) {
