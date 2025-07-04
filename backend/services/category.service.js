@@ -35,7 +35,7 @@ const CategoryService = {
     }
   },
 
-  async getAllCategories(limit = 10) {
+  async getAllCategories(limit = 30) {
     const categories = await Category.findAll({ limit });
     return categories.map((category) => category.toJSON());
   },
