@@ -110,7 +110,7 @@ class CommunityMgmtViewModel @Inject constructor(
 
     fun createCommunity(context : Context)
     {
-        if(_tbCommNameValue.value.isBlank() || _selectedCategory.value == null || selectedAvatarUri.value == null)
+        if(_tbCommNameValue.value.isBlank() || _selectedCategory.value == null)
             return
         viewModelScope.launch {
             try{

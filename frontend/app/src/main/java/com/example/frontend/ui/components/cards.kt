@@ -1281,7 +1281,8 @@ fun TransactionCard(
                 AsyncImage(
                     model = if(!item.user?.avatarUrl.isNullOrEmpty()) item.user?.avatarUrl else R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
-                    placeholder = painterResource(R.drawable.broken_image),
+                    placeholder = painterResource(R.drawable.intro_page1_bg),
+                    error = painterResource(R.drawable.placeholder_cover),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(50.dp, 50.dp)
@@ -1633,12 +1634,12 @@ fun CommunityCardCard(
                 verticalAlignment = Alignment.CenterVertically
             )
             {
-                Image(
-                    painter = rememberAsyncImagePainter(
-                        model = if(item.avatarUrl != "")item.avatarUrl else R.drawable.intro_page1_bg
-                    ),
+                AsyncImage(
+                    model = item.avatarUrl.takeIf { it?.isNotEmpty() == true } ?: R.drawable.intro_page1_bg,
                     contentDescription = "pfp",
                     contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.intro_page1_bg),
+                    error = painterResource(R.drawable.placeholder_cover),
                     modifier = Modifier
                         .size(50.dp, 50.dp)
                         .clip(RoundedCornerShape(50.dp))

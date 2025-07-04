@@ -285,7 +285,7 @@ fun CommunityManagementScreen(viewModel: CommunityMgmtViewModel = hiltViewModel(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            if(tbCommNameValue.isBlank() || selectedCategory == null || viewModel.selectedAvatarUri.value == null)
+                            if(tbCommNameValue.isBlank() || selectedCategory == null)
                             {
                                 Toast.makeText(context, "Please fill in all the necessary fields", Toast.LENGTH_SHORT).show()
                             }
